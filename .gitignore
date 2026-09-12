@@ -1,0 +1,133 @@
+###############################################################################
+# TPI-2026 — .gitignore raíz
+# Combina patrones de: Node/Angular, .NET, editores e IDEs, OS-specific
+###############################################################################
+
+# ─── Node / npm ────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json   # opcional: comentar si el equipo quiere trackearlo
+.npm/
+.yarn/
+
+# ─── Angular ───────────────────────────────────────────────────────────────────
+dist/
+.angular/
+.sass-cache/
+connect.lock
+coverage/
+libpeerconnection.log
+testem.log
+/typings/
+
+# ─── Archivos de entorno ────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ─── .NET / C# ─────────────────────────────────────────────────────────────────
+## Artefactos de build
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+.vscode/
+[Ee]xpress/
+$tf/
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+nuget.config
+
+## Publicación
+*.[Pp]ublish.xml
+*.azurePubxml
+*.pubxml
+*.publishproj
+
+## ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## Rider
+.idea/
+*.sln.iml
+
+## TestResults
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+## Coverlet / coverage
+coverage*.json
+coverage*.xml
+coverage*.info
+
+# ─── IDEs / Editores ────────────────────────────────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── OS ────────────────────────────────────────────────────────────────────────
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+## Linux
+*~
+.nfs*
+
+# ─── Logs genéricos ────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── Temporales ────────────────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.orig
