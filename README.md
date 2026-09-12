@@ -2,6 +2,9 @@
 
 > Trabajo Práctico Integrador — [Nombre de la materia] — [Año/Cuatrimestre]
 
+> 📘 **Para entender cómo funciona todo (Docker, base de datos, carpetas con ejemplos y
+> verificación del localhost): leer [docs/guia-de-arranque.md](docs/guia-de-arranque.md).**
+
 ## Stack tecnológico
 
 | Capa | Tecnología |
@@ -27,9 +30,9 @@
 ```
 TPI-2026/
 ├── frontend/       → App Angular
-├── backend/        → API ASP.NET Core
+├── backend/        → API ASP.NET Core (ver backend/README.md)
 ├── database/       → Scripts SQL, diagrama ER, seeds
-├── docs/           → Documentación del proyecto
+├── docs/           → Documentación del proyecto (empezar por docs/guia-de-arranque.md)
 ├── .gitignore
 ├── docker-compose.yml  → Base de datos MySQL para desarrollo
 └── README.md
@@ -67,18 +70,19 @@ Scripts útiles:
 ### Backend
 
 ```bash
-cd backend
+cd backend/src/TPI2026.API
 dotnet restore
 dotnet run
 # API disponible en http://localhost:5142
 # Swagger en http://localhost:5142/swagger
 ```
 
-EF Core usa Pomelo `9.0.20` (rama 9.x) sobre .NET 10. La CLI de migraciones es una herramienta local:
+EF Core usa Pomelo `9.0.20` (rama 9.x) sobre .NET 10. La CLI de migraciones es una herramienta local (manifest en la raíz de `backend/`):
 
 ```bash
 cd backend
 dotnet tool restore        # instala dotnet-ef 9.0.20 (local)
+cd src/TPI2026.API
 dotnet dotnet-ef --version
 ```
 
