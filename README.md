@@ -31,6 +31,7 @@ TPI-2026/
 ├── database/       → Scripts SQL, diagrama ER, seeds
 ├── docs/           → Documentación del proyecto
 ├── .gitignore
+├── docker-compose.yml  → Base de datos MySQL para desarrollo
 └── README.md
 ```
 
@@ -42,16 +43,26 @@ TPI-2026/
 
 - Node.js ≥ 20 y npm ≥ 10
 - .NET SDK ≥ 10
-- MySQL ≥ 8
+- Docker Engine + Docker Compose (para la base de datos)
+- MySQL ≥ 8 (solo si no se usa Docker)
 
 ### Frontend
 
 ```bash
 cd frontend
-npm install
+npm i
 npm start
-# App disponible en http://localhost:4200
+# App disponible en http://localhost:4200 (dev en http://localhost:4300)
 ```
+
+Scripts útiles:
+
+| Script | Descripción |
+|---|---|
+| `npm start` | Servidor de desarrollo (puerto 4300) |
+| `npm test` | Tests con Jest |
+| `npm run lint` | ESLint (reglas de Mercado Sinérgico) — corrige automáticamente |
+| `npm run format` | Prettier sobre `src/` |
 
 ### Backend
 
@@ -59,13 +70,42 @@ npm start
 cd backend
 dotnet restore
 dotnet run
-# API disponible en http://localhost:5000
-# Swagger en http://localhost:5000/swagger
+# API disponible en http://localhost:5142
+# Swagger en http://localhost:5142/swagger
 ```
+
+EF Core usa Pomelo `9.0.20` (rama 9.x) sobre .NET 10. La CLI de migraciones es una herramienta local:
+
+```bash
+cd backend
+dotnet tool restore        # instala dotnet-ef 9.0.20 (local)
+dotnet dotnet-ef --version
+```
+
+> ⚠️ No mezclar con paquetes EF Core 10: Pomelo 9.0.0 fija el stack a 9.0.x.
 
 ### Base de datos
 
-> Instrucciones de configuración de MySQL próximamente.
+Levantar MySQL (versión LTS `8.4`) con Docker, sin instalación local:
+
+```bash
+docker compose up -d
+# MySQL disponible en localhost:3306
+# Datos persistidos en el volumen nombrado `mysql_data`
+```
+
+Credenciales de desarrollo por defecto (definidas en `docker-compose.yml`):
+
+| Variable | Valor |
+|---|---|
+| Base de datos | `tpi2026` |
+| Usuario | `tpi2026` |
+| Contraseña | `tpi2026_dev` |
+| Root | `root_tpi2026` |
+
+Para bajar el contenedor: `docker compose down` (agregar `-v` para borrar también el volumen de datos).
+
+> El connection string del backend se configura en un paso aparte, una vez definidas las entidades.
 
 ---
 

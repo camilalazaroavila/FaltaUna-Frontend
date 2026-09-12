@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.{ts,html,scss,json}\""
   },
   "prettier": {
     "printWidth": 100,
@@ -24,13 +26,19 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/cdk": "^20.2.14",
     "@angular/common": "^20.3.0",
     "@angular/compiler": "^20.3.0",
     "@angular/core": "^20.3.0",
     "@angular/forms": "^20.3.0",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
+    "@fortawesome/fontawesome-free": "^7.3.1",
+    "@ng-icons/core": "^32.5.0",
+    "@ng-icons/feather-icons": "^32.5.0",
+    "ngx-sonner": "^3.1.0",
     "rxjs": "~7.8.0",
+    "sweetalert2": "^11.26.25",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
@@ -39,9 +47,14 @@
     "@angular/cli": "^20.3.13",
     "@angular/compiler-cli": "^20.3.0",
     "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
+    "angular-eslint": "^20.7.0",
+    "eslint": "^9.39.5",
     "jest": "^30.5.1",
     "jest-environment-jsdom": "^30.5.1",
     "jest-preset-angular": "^17.0.0",
+    "prettier": "^3.9.6",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.2"
   }
