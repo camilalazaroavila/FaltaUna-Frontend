@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+
+jobs:
+  # ==========================================
+  # JOB 1: Backend (.NET / C#)
+  # ==========================================
+  backend:
+    name: Backend (.NET)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restaurar dependencias
+        run: dotnet restore src/TPI2026.API
+
+      - name: Compilar Backend
+        run: dotnet build src/TPI2026.API --no-restore --configuration Release
+
+  # ==========================================
+  # JOB 2: Frontend (Angular / Node.js)
+  # ==========================================
+  frontend:
+    name: Frontend (Angular)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar Frontend (Production Build)
+        run: npm run build
+
+      - name: Ejecutar Tests (Jest)
+        run: npm test -- --ci --runInBand --watchAll=false
