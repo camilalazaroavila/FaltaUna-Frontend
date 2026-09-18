@@ -15,6 +15,7 @@ namespace TPI2026.API.Controladores
             _context = context;
         }
 
+        // GET: api/Usuarios
         [HttpGet]
         public async Task<IActionResult> ObtenerUsuarios()
         {
@@ -22,6 +23,17 @@ namespace TPI2026.API.Controladores
                 .ToListAsync();
 
             return Ok(usuarios);
+        }
+
+        // POST: api/Usuarios
+        [HttpPost]
+        public async Task<IActionResult> CrearUsuario([FromBody] Usuario usuario)
+        {
+            _context.Usuarios.Add(usuario);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(usuario);
         }
     }
 }

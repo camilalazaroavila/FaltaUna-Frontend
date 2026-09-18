@@ -114,7 +114,22 @@ namespace TPI2026.API.Infraestructura.Datos
                 .HasIndex(x => x.Codigo)
                 .IsUnique();
 
+            // ============================================================
+            // VALORES POR DEFECTO DE USUARIO
+            // ============================================================
+            modelBuilder.Entity<Usuario>()
+                .Property(x => x.FechaRegistro)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<Usuario>()
+                .Property(x => x.Oro)
+                .HasDefaultValue(0);
+
+            modelBuilder.Entity<Usuario>()
+                .Property(x => x.MonedasIntercambio)
+                .HasDefaultValue(0);
+            
             // ========================================================
             // USUARIO -> CARTAS
             // ========================================================

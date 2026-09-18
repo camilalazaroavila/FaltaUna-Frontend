@@ -13,9 +13,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+// CORS - Permitir Angular
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularPolicy", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4300")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// OpenAPI
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
@@ -30,6 +42,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// CORS
+app.UseCors("AngularPolicy");
 
 app.UseAuthorization();
 
