@@ -7,7 +7,7 @@ namespace TPI2026.API.Infraestructura.Datos
     // 1. USUARIO
     // ============================================================
 
-    [Table("usuario")]
+    [Table("Usuario")]
     public class Usuario
     {
         [Key]

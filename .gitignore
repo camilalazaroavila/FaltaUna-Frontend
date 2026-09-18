@@ -28,6 +28,9 @@ testem.log
 .env.local
 .env.*.local
 *.env
+appsettings.json
+appsettings.Development.json
+!appsettings.Example.json
 
 # ─── .NET / C# ─────────────────────────────────────────────────────────────────
 ## Artefactos de build
