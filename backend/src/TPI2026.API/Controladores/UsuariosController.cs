@@ -1,39 +1,61 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TPI2026.API.Infraestructura.Datos;
+using TPI2026.API.DTOs.Respuestas;
+using TPI2026.API.DTOs.Solicitudes;
+using TPI2026.Dominio.CasosDeUso.Usuarios;
 
-namespace TPI2026.API.Controladores
+namespace TPI2026.API.Controladores;
+
+[ApiController]
+[Route("api/[controller]")]
+public class UsuariosController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsuariosController : ControllerBase
+    private readonly ObtenerUsuariosUseCase _obtenerUsuariosUseCase;
+    private readonly CrearUsuarioUseCase _crearUsuarioUseCase;
+
+    public UsuariosController(
+        ObtenerUsuariosUseCase obtenerUsuariosUseCase,
+        CrearUsuarioUseCase crearUsuarioUseCase)
     {
-        private readonly AppDbContext _context;
+        _obtenerUsuariosUseCase = obtenerUsuariosUseCase;
+        _crearUsuarioUseCase = crearUsuarioUseCase;
+    }
 
-        public UsuariosController(AppDbContext context)
-        {
-            _context = context;
-        }
+    // GET: api/Usuarios
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<UsuarioRespuesta>>> ObtenerUsuarios()
+    {
+        var usuarios = await _obtenerUsuariosUseCase.EjecutarAsync();
+        var respuesta = usuarios.Select(u => new UsuarioRespuesta(
+            u.Id,
+            u.NombreUsuario,
+            u.Email,
+            u.FechaRegistro,
+            u.Oro,
+            u.MonedasIntercambio
+        ));
 
-        // GET: api/Usuarios
-        [HttpGet]
-        public async Task<IActionResult> ObtenerUsuarios()
-        {
-            var usuarios = await _context.Usuarios
-                .ToListAsync();
+        return Ok(respuesta);
+    }
 
-            return Ok(usuarios);
-        }
+    // POST: api/Usuarios
+    [HttpPost]
+    public async Task<ActionResult<UsuarioRespuesta>> CrearUsuario([FromBody] CrearUsuarioSolicitud solicitud)
+    {
+        var usuarioCreado = await _crearUsuarioUseCase.EjecutarAsync(
+            solicitud.NombreUsuario,
+            solicitud.Email,
+            solicitud.Password
+        );
 
-        // POST: api/Usuarios
-        [HttpPost]
-        public async Task<IActionResult> CrearUsuario([FromBody] Usuario usuario)
-        {
-            _context.Usuarios.Add(usuario);
+        var respuesta = new UsuarioRespuesta(
+            usuarioCreado.Id,
+            usuarioCreado.NombreUsuario,
+            usuarioCreado.Email,
+            usuarioCreado.FechaRegistro,
+            usuarioCreado.Oro,
+            usuarioCreado.MonedasIntercambio
+        );
 
-            await _context.SaveChangesAsync();
-
-            return Ok(usuario);
-        }
+        return CreatedAtAction(nameof(ObtenerUsuarios), new { id = respuesta.Id }, respuesta);
     }
 }

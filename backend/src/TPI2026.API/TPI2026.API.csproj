@@ -20,4 +20,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TPI2026.Dominio\TPI2026.Dominio.csproj" />
+    <ProjectReference Include="..\TPI2026.Infraestructura\TPI2026.Infraestructura.csproj" />
+  </ItemGroup>
+
 </Project>
