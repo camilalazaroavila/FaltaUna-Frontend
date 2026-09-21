@@ -39,8 +39,11 @@ public class AppDbContext : DbContext
     public DbSet<IntercambioMoneda> IntercambiosMonedas => Set<IntercambioMoneda>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-    }
+{
+    base.OnModelCreating(modelBuilder);
+
+    modelBuilder.ApplyConfigurationsFromAssembly(
+        typeof(AppDbContext).Assembly
+    );
+}
 }

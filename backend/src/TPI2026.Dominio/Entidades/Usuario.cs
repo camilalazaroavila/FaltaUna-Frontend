@@ -18,7 +18,7 @@
         [MaxLength(255)]
         public string PasswordHash { get; set; } = string.Empty;
 
-        public DateTime FechaRegistro { get; set; }
+        public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
 
         public int Oro { get; set; }
 

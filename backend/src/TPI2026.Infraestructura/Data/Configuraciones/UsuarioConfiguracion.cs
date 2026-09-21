@@ -9,6 +9,7 @@ public class UsuarioConfiguracion : IEntityTypeConfiguration<Usuario>
     public void Configure(EntityTypeBuilder<Usuario> builder)
     {
         builder.ToTable("Usuario");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.NombreUsuario)
@@ -30,8 +31,7 @@ public class UsuarioConfiguracion : IEntityTypeConfiguration<Usuario>
             .IsUnique();
 
         builder.Property(x => x.FechaRegistro)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP")
-            .ValueGeneratedOnAdd();
+            .IsRequired();
 
         builder.Property(x => x.Oro)
             .HasDefaultValue(0);
