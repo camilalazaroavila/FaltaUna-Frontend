@@ -15,10 +15,10 @@ export class App implements OnInit {
   nuevoUsuario = {
     nombreUsuario: '',
     email: '',
-    passwordHash: ''
+    password: ''
   };
 
-  constructor(private usuariosService: UsuariosService) {}
+  constructor(private usuariosService: UsuariosService) { }
 
   ngOnInit(): void {
 
@@ -46,7 +46,7 @@ export class App implements OnInit {
         this.nuevoUsuario = {
           nombreUsuario: '',
           email: '',
-          passwordHash: ''
+          password: ''
         };
 
       },

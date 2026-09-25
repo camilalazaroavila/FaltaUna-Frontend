@@ -6,32 +6,17 @@
 
     <div>
       <label>Nombre de usuario</label>
-      <input
-        type="text"
-        name="nombreUsuario"
-        [(ngModel)]="nuevoUsuario.nombreUsuario"
-        required
-      >
+      <input type="text" name="nombreUsuario" [(ngModel)]="nuevoUsuario.nombreUsuario" required>
     </div>
 
     <div>
       <label>Email</label>
-      <input
-        type="email"
-        name="email"
-        [(ngModel)]="nuevoUsuario.email"
-        required
-      >
+      <input type="email" name="email" [(ngModel)]="nuevoUsuario.email" required>
     </div>
 
     <div>
       <label>Contraseña</label>
-      <input
-        type="passwordHash"
-        name="passwordHash"
-        [(ngModel)]="nuevoUsuario.passwordHash"
-        required
-      >
+      <input type="passwordHash" name="passwordHash" [(ngModel)]="nuevoUsuario.password" required>
     </div>
 
     <button type="submit">

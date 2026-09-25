@@ -8,20 +8,16 @@ import { CrearUsuarioSolicitud, UsuarioRespuesta } from '../modelos/usuario.mode
   providedIn: 'root'
 })
 export class UsuariosService {
-  private readonly apiUrl = `${environment.apiUrl}/Usuarios`;
 
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = environment.apiUrl + '/Usuarios';
+
+  constructor(private http: HttpClient) { }
 
   obtenerUsuarios(): Observable<UsuarioRespuesta[]> {
     return this.http.get<UsuarioRespuesta[]>(this.apiUrl);
   }
 
   crearUsuario(solicitud: CrearUsuarioSolicitud): Observable<UsuarioRespuesta> {
-    const payload = {
-      nombreUsuario: solicitud.nombreUsuario,
-      email: solicitud.email,
-      password: solicitud.password ?? solicitud.passwordHash ?? ''
-    };
-    return this.http.post<UsuarioRespuesta>(this.apiUrl, payload);
+    return this.http.post<UsuarioRespuesta>(this.apiUrl, solicitud);
   }
 }

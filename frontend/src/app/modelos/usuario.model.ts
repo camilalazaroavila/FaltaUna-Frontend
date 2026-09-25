@@ -10,8 +10,7 @@ export interface Usuario {
 export interface CrearUsuarioSolicitud {
   nombreUsuario: string;
   email: string;
-  password?: string;
-  passwordHash?: string;
+  password: string;
 }
 
 export interface UsuarioRespuesta {
