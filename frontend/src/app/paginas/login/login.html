@@ -1,0 +1,123 @@
+<div class="min-h-screen bg-[#123f46] flex items-center justify-center px-6 py-10 relative overflow-hidden">
+
+  <!-- Decoraciones de fondo -->
+  <div class="absolute -top-24 -left-24 w-72 h-72 bg-[#f05b52] rounded-full opacity-20"></div>
+  <div class="absolute -bottom-32 -right-20 w-96 h-96 bg-[#4fa9a1] rounded-full opacity-20"></div>
+
+  <!-- Contenedor principal -->
+  <main class="relative z-10 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+
+    <!-- Presentación -->
+    <section class="text-white text-center lg:text-left">
+
+      <div class="inline-block bg-[#f05b52] px-5 py-2 rounded-full text-sm font-bold tracking-widest uppercase mb-5">
+        Coleccioná · Completá · Desbloqueá
+      </div>
+
+      <h1 class="text-5xl md:text-6xl font-black leading-none tracking-tight">
+        FALTA
+        <span class="text-[#f05b52]">UNA</span>
+      </h1>
+
+      <p class="mt-5 text-lg md:text-xl text-[#d5eeee] max-w-lg mx-auto lg:mx-0">
+        Volvé a entrar y seguí completando tus colecciones.
+        Tus cartas, álbumes e intercambios te esperan.
+      </p>
+
+      <!-- Carta decorativa -->
+      <div class="hidden lg:block mt-8 w-52 h-64 bg-white rounded-3xl rotate-[-6deg] shadow-2xl p-3">
+        <div class="h-full rounded-2xl bg-[#e9f5f3] border-4 border-[#f05b52] flex flex-col items-center justify-between p-4">
+          <span class="self-start bg-[#f05b52] text-white text-xs font-black px-3 py-1 rounded-full">
+            HOLA DE NUEVO
+          </span>
+          <div class="w-20 h-20 rounded-full bg-[#123f46] flex items-center justify-center">
+            <span class="text-white text-3xl font-black">!</span>
+          </div>
+          <div class="text-center">
+            <p class="font-black text-[#123f46]">TU COLECCIÓN TE ESPERA</p>
+            <p class="text-xs text-gray-500 mt-1">Iniciá sesión para seguir</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Formulario -->
+    <section class="bg-white rounded-[2rem] shadow-2xl p-7 md:p-10">
+
+      <div class="mb-8">
+        <p class="text-[#f05b52] font-black text-sm uppercase tracking-widest">
+          Bienvenido de nuevo
+        </p>
+        <h2 class="text-3xl md:text-4xl font-black text-[#123f46] mt-2">
+          Iniciar sesión
+        </h2>
+        <p class="text-gray-500 mt-2">
+          Ingresá con tu usuario o email para continuar.
+        </p>
+      </div>
+
+      @if (recienRegistrado) {
+        <div class="mb-5 rounded-xl bg-[#e9f5f3] border-2 border-[#4fa9a1]/40 text-[#123f46] text-sm font-bold px-4 py-3">
+          Cuenta creada con éxito. Ya podés iniciar sesión.
+        </div>
+      }
+
+      @if (error) {
+        <div class="mb-5 rounded-xl bg-red-50 border-2 border-[#f05b52]/30 text-[#f05b52] text-sm font-bold px-4 py-3">
+          {{ error }}
+        </div>
+      }
+
+      <form (ngSubmit)="iniciarSesion()" class="space-y-5">
+
+        <!-- Usuario o email -->
+        <div>
+          <label for="identificador" class="block text-sm font-bold text-[#123f46] mb-2">
+            Usuario o email
+          </label>
+          <input id="identificador" type="text" name="identificador" [(ngModel)]="credenciales.identificador" required
+            placeholder="Ej: Gonza123 o tu@email.com" class="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5
+                   outline-none transition
+                   focus:border-[#f05b52] focus:ring-4 focus:ring-[#f05b52]/10" />
+        </div>
+
+        <!-- Contraseña -->
+        <div>
+          <label for="password" class="block text-sm font-bold text-[#123f46] mb-2">
+            Contraseña
+          </label>
+          <input id="password" type="password" name="password" [(ngModel)]="credenciales.password" required
+            placeholder="Tu contraseña" class="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5
+                   outline-none transition
+                   focus:border-[#f05b52] focus:ring-4 focus:ring-[#f05b52]/10" />
+        </div>
+
+        <!-- Botón -->
+        <button type="submit" [disabled]="cargando" class="w-full bg-[#f05b52] hover:bg-[#dc4d45]
+                 text-white font-black text-lg
+                 rounded-xl py-4
+                 transition duration-200
+                 hover:-translate-y-0.5
+                 active:translate-y-0
+                 shadow-lg hover:shadow-xl
+                 disabled:opacity-60 disabled:hover:translate-y-0
+                 cursor-pointer">
+          {{ cargando ? 'INGRESANDO...' : 'INICIAR SESIÓN' }}
+        </button>
+
+      </form>
+
+      <div class="mt-7 pt-6 border-t border-gray-100 text-center">
+        <p class="text-sm text-gray-500">
+          ¿Todavía no tenés cuenta?
+          <a routerLink="/registro" class="font-bold text-[#123f46] hover:text-[#f05b52]">
+            Registrate
+          </a>
+        </p>
+      </div>
+
+    </section>
+
+  </main>
+</div>
