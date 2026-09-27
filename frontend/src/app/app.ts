@@ -18,10 +18,9 @@ export class App implements OnInit {
     password: ''
   };
 
-  constructor(private usuariosService: UsuariosService) { }
+  constructor(private usuariosService: UsuariosService) {}
 
   ngOnInit(): void {
-
     this.usuariosService.obtenerUsuarios().subscribe({
       next: (datos) => {
         console.log('Usuarios recibidos:', datos);
@@ -31,16 +30,12 @@ export class App implements OnInit {
         console.error('Error al obtener usuarios:', error);
       }
     });
-
   }
 
   registrarUsuario(): void {
-
     this.usuariosService.crearUsuario(this.nuevoUsuario).subscribe({
       next: (usuarioCreado) => {
-
         console.log('Usuario creado:', usuarioCreado);
-
         alert('Usuario registrado correctamente');
 
         this.nuevoUsuario = {
@@ -49,12 +44,12 @@ export class App implements OnInit {
           password: ''
         };
 
+        this.ngOnInit();
       },
       error: (error) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Detalle del error 400 desde .NET:', error.error);
         alert('No se pudo registrar el usuario');
       }
     });
-
   }
 }
