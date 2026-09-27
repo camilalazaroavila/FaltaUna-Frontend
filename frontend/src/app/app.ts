@@ -46,9 +46,13 @@ export class App implements OnInit {
 
         this.ngOnInit();
       },
-      error: (error) => {
-        console.error('Detalle del error 400 desde .NET:', error.error);
-        alert('No se pudo registrar el usuario');
+   error: (error) => {
+  console.error('STATUS:', error.status);
+  console.error('ERROR COMPLETO:', error);
+  console.error('ERROR DEL BACKEND:', JSON.stringify(error.error, null, 2));
+
+  alert('No se pudo registrar el usuario');
+
       }
     });
   }
