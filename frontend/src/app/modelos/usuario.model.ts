@@ -44,3 +44,8 @@ export interface LoginRespuesta {
   expiraUtc: string;
   usuario: UsuarioRespuesta;
 }
+
+export interface DisponibilidadRespuesta {
+  nombreUsuarioDisponible: boolean | null;
+  emailDisponible: boolean | null;
+}
