@@ -1,0 +1,605 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Rock+Salt&family=Russo+One&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import "tailwindcss";
+
+/* ==========================================================================
+   FALTA UNA — styles.css
+   Sistema de diseño en 3 capas con principios de diseño Impeccable:
+     1. Primitivos   → Colores base de marca y superficies (identidad visual).
+     2. Semánticos   → Tokens por significado y función (modo jugador y empresa).
+     3. Componentes  → Botones, badges, toasts, inputs (consumen solo semánticos).
+
+   Soporte de temas mediante atributo en <html> o contenedor:
+     <html data-modo="jugador">  → Oscuro deportivo (por defecto)
+     <html data-modo="empresa">  → Claro, crema editorial + violeta institucional
+
+   REGLA DE ORO (Impeccable):
+   Los componentes y vistas nunca consumen valores primitivos (#hex) directos.
+   Toda regla visual se referencia a través de tokens semánticos con contraste
+   WCAG AA/AAA verificado.
+   ========================================================================== */
+
+/* ==========================================================================
+   TIPOGRAFÍAS
+   - Titulares (Headings): 'Rock Salt' / 'Russo One' como alternativa libre a Rockstone
+     (estilo display rústico, enérgico, de impacto deportivo y urbano).
+   - Textos / Lectura: 'Merriweather' (serifa de altísima legibilidad y fuerte
+     contraste visual con los títulos).
+   - UI / Interfaz: Sistema de fuentes sans-serif moderno para badges y tablas.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   CAPA 1 — PRIMITIVOS
+   Paleta base extraída de la identidad visual de Falta Una.
+   ========================================================================== */
+:root {
+    /* --- Paleta Modo Jugador / Usuario --- */
+    --color-teal-base: #0D3B40;       /* Fondo profundo de la app */
+    --color-teal-superficie: #214448; /* Superficies, cards y contenedores */
+    --color-teal-elevado: #2A5459;    /* Cards elevadas, hover y dropdowns */
+    --color-teal-borde: #184A50;      /* Bordes sutiles sobre teal */
+    --color-teal-hundido: #072326;    /* Inputs inactivos, huecos, placeholders */
+
+    --color-verde-jugador: #3BD972;   /* Verde cancha vibrante, acción principal */
+    --color-verde-jugador-hover: #52E285;
+    --color-verde-jugador-activa: #29BF5E;
+
+    --color-amarillo-acento: #F2EEAE; /* Acento cálido del logo / estrellas */
+    --color-amarillo-hover: #F8F5C4;
+    --color-amarillo-activo: #DDD78E;
+
+    /* --- Verde institucional para fondos claros --- */
+    --color-verde-claro: #04862B;     /* Gran contraste sobre blanco/crema */
+    --color-verde-claro-hover: #036F23;
+    --color-verde-claro-activo: #02571B;
+
+    /* --- Paleta Modo Empresa --- */
+    --color-violeta-empresa: #675679; /* Violeta corporativo / panel de marcas */
+    --color-violeta-hover: #564667;
+    --color-violeta-activo: #433552;
+    --color-violeta-suave: rgba(103, 86, 121, 0.12);
+
+    --color-crema-fondo: #FCEFE0;     /* Fondo crema cálido y acogedor */
+    --color-crema-superficie: #FFFFFF;/* Tarjetas blancas sobre crema */
+    --color-crema-elevado: #F7E5D0;   /* Hover sobre fondo crema */
+    --color-crema-hundido: #EEDBC5;   /* Superficies hundidas */
+    --color-crema-borde: #E3CEB5;     /* Separadores y bordes modo claro */
+
+    --color-teal-profundo: #0A2E36;   /* Texto primario en empresa y contraste AAA */
+
+    /* --- Neutros y feedback compartidos --- */
+    --blanco-puro: #FFFFFF;
+    --negro-puro: #000000;
+}
+
+/* ==========================================================================
+   CAPA 2 — TOKENS SEMÁNTICOS · MODO JUGADOR (Por Defecto)
+   Ambiente nocturno deportivo: fondo teal profundo, acción verde flúor,
+   acentos amarillo crema y textos con legibilidad optimizada.
+   ========================================================================== */
+:root,
+[data-modo="jugador"] {
+    color-scheme: dark;
+
+    /* --- Identidad y Marca --- */
+    --marca-primaria: var(--color-verde-jugador);
+    --marca-primaria-hover: var(--color-verde-jugador-hover);
+    --marca-primaria-activa: var(--color-verde-jugador-activa);
+    --marca-primaria-suave: rgba(59, 217, 114, 0.14);
+    --marca-sobre-primaria: var(--color-teal-profundo); /* Contraste oscuro sobre verde brillante */
+
+    --marca-acento: var(--color-amarillo-acento);
+    --marca-acento-hover: var(--color-amarillo-hover);
+    --marca-acento-activo: var(--color-amarillo-activo);
+    --marca-acento-suave: rgba(242, 238, 174, 0.14);
+    --marca-sobre-acento: var(--color-teal-profundo);
+
+    /* --- Superficies y Capas Visuales --- */
+    --fondo-app: var(--color-teal-base);
+    --fondo-superficie: var(--color-teal-superficie);
+    --fondo-elevado: var(--color-teal-elevado);
+    --fondo-hundido: var(--color-teal-hundido);
+    --borde-default: var(--color-teal-borde);
+    --borde-fuerte: #35676E;
+    --borde-foco: var(--color-amarillo-acento); /* Foco visible con máximo contraste sobre teal */
+    --overlay: rgba(7, 35, 38, 0.82);
+
+    /* --- Tipografía y Jerarquía de Texto --- */
+    --texto-primario: #F4FAF6;             /* Blanco suave ligeramente verdoso (evita fatiga visual) */
+    --texto-secundario: #B8D3CF;           /* Lectura secundaria con ratio > 5.5:1 */
+    --texto-apagado: #7A9F9B;              /* Placeholders, metadatos y fechas */
+    --texto-sobre-oscuro: #F4FAF6;
+    --texto-sobre-claro: var(--color-teal-profundo);
+    --texto-link: var(--color-verde-jugador);
+    --texto-link-hover: var(--color-verde-jugador-hover);
+
+    /* --- Interacciones --- */
+    --interactivo-seleccionado: var(--marca-primaria-suave);
+    --interactivo-hover: rgba(244, 250, 246, 0.07);
+
+    /* ----------------------------------------------------------------------
+       SISTEMA DE FEEDBACK (Impeccable Design Standard)
+       Regla: nunca confiar únicamente en el color; acompañar con ícono y texto.
+       5 tokens por estado:
+         base   → Color sólido para íconos principales y badges de alto impacto.
+         fondo  → Tinte suave al 12-15% para no saturar la vista en tarjetas/toasts.
+         borde  → Contorno al 50-60% para delimitar la superficie con claridad.
+         texto  → Tono legible y armonioso sobre el fondo suave.
+         sobre  → Color del texto al colocarse sobre el color base sólido.
+       ---------------------------------------------------------------------- */
+
+    /* ÉXITO (Confirmación, partido armado, pago acreditado) */
+    --exito: #3BD972;
+    --exito-fondo: rgba(59, 217, 114, 0.13);
+    --exito-borde: rgba(59, 217, 114, 0.55);
+    --exito-texto: #7BF0A5;
+    --exito-sobre: var(--color-teal-profundo);
+
+    /* ERROR (Acción bloqueada, cupo agotado, error de red) */
+    --error: #FF6666;
+    --error-fondo: rgba(255, 102, 102, 0.14);
+    --error-borde: rgba(255, 102, 102, 0.60);
+    --error-texto: #FFA3A3;
+    --error-sobre: var(--color-teal-profundo);
+
+    /* ADVERTENCIA (Falta confirmar asistencia, tiempo por expirar) */
+    --advertencia: #F5A623;
+    --advertencia-fondo: rgba(245, 166, 35, 0.14);
+    --advertencia-borde: rgba(245, 166, 35, 0.60);
+    --advertencia-texto: #FFD085;
+    --advertencia-sobre: var(--color-teal-profundo);
+
+    /* ATENCIÓN / NOVEDAD (El jugador que falta, sobre de cartas disponible) */
+    --atencion: var(--color-amarillo-acento);
+    --atencion-fondo: rgba(242, 238, 174, 0.12);
+    --atencion-borde: rgba(242, 238, 174, 0.55);
+    --atencion-texto: #FAF7CA;
+    --atencion-sobre: var(--color-teal-profundo);
+
+    /* INFORMACIÓN (Reglas de la cancha, tips de usuario) */
+    --info: #55B5E6;
+    --info-fondo: rgba(85, 181, 230, 0.14);
+    --info-borde: rgba(85, 181, 230, 0.55);
+    --info-texto: #99DCFF;
+    --info-sobre: var(--color-teal-profundo);
+
+    /* --- Estados y Badges --- */
+    --estado-activo-fondo: var(--exito-fondo);
+    --estado-activo-texto: var(--exito-texto);
+    --estado-pendiente-fondo: var(--advertencia-fondo);
+    --estado-pendiente-texto: var(--advertencia-texto);
+    --estado-cerrado-fondo: var(--error-fondo);
+    --estado-cerrado-texto: var(--error-texto);
+    --estado-info-fondo: var(--info-fondo);
+    --estado-info-texto: var(--info-texto);
+    --estado-neutro-fondo: rgba(244, 250, 246, 0.08);
+    --estado-neutro-texto: var(--texto-secundario);
+
+    /* --- Cartas de Colección y Jugadores --- */
+    --carta-reverso: var(--color-teal-elevado);
+    --carta-desconocida: var(--color-amarillo-acento);
+    --carta-bloqueada: rgba(244, 250, 246, 0.22);
+    --rareza-1: #8FAF9A;   /* ★ Bronce / Iniciado */
+    --rareza-2: #48B4BC;   /* ★★ Plata / Calificado */
+    --rareza-3: var(--color-amarillo-acento); /* ★★★ Oro / Estrella */
+    --rareza-4: var(--color-verde-jugador);    /* ★★★★ Leyenda / Crack */
+
+    /* ----------------------------------------------------------------------
+       CAPA 3 — BOTONES (Modo Jugador)
+       ---------------------------------------------------------------------- */
+    /* Botón Primario: Verde vibrante, llamada a la acción imperdible */
+    --btn-primario-bg: var(--marca-primaria);
+    --btn-primario-texto: var(--marca-sobre-primaria);
+    --btn-primario-hover: var(--marca-primaria-hover);
+    --btn-primario-activo: var(--marca-primaria-activa);
+    --btn-primario-anillo: var(--marca-acento);
+
+    /* Botón Secundario: Acento amarillo crema */
+    --btn-secundario-bg: var(--marca-acento);
+    --btn-secundario-texto: var(--marca-sobre-acento);
+    --btn-secundario-hover: var(--marca-acento-hover);
+    --btn-secundario-activo: var(--marca-acento-activo);
+    --btn-secundario-anillo: var(--marca-primaria);
+
+    /* Botón Terciario: Delineado, acciones auxiliares */
+    --btn-terciario-bg: transparent;
+    --btn-terciario-texto: var(--texto-primario);
+    --btn-terciario-borde: var(--borde-fuerte);
+    --btn-terciario-hover: var(--interactivo-hover);
+    --btn-terciario-activo: rgba(244, 250, 246, 0.12);
+    --btn-terciario-anillo: var(--borde-foco);
+
+    /* Botones de Acción Feedback */
+    --btn-peligro-bg: var(--error);
+    --btn-peligro-texto: var(--error-sobre);
+    --btn-peligro-hover: #FF8585;
+    --btn-peligro-activo: #E65050;
+    --btn-peligro-anillo: var(--error-texto);
+
+    --btn-exito-bg: var(--exito);
+    --btn-exito-texto: var(--exito-sobre);
+    --btn-exito-hover: var(--color-verde-jugador-hover);
+    --btn-exito-activo: var(--color-verde-jugador-activa);
+    --btn-exito-anillo: var(--exito-texto);
+
+    --btn-fantasma-bg: transparent;
+    --btn-fantasma-texto: var(--texto-secundario);
+    --btn-fantasma-hover: var(--interactivo-hover);
+    --btn-fantasma-activo: rgba(244, 250, 246, 0.12);
+    --btn-fantasma-anillo: var(--borde-foco);
+
+    /* --- Familias Tipográficas --- */
+    --fuente-titulo: "Russo One", "Rock Salt", cursive, ui-sans-serif, system-ui, sans-serif;
+    --fuente-cuerpo: "Merriweather", Georgia, "Times New Roman", serif;
+    --fuente-interfaz: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ==========================================================================
+   CAPA 2 — TOKENS SEMÁNTICOS · MODO EMPRESA (Panel de Clubes y Marcas)
+   Ambiente claro, editorial y profesional: fondo crema cálido, marca violeta
+   y verde institucional (#04862B) para acentos con contraste accesible.
+   ========================================================================== */
+[data-modo="empresa"] {
+    color-scheme: light;
+
+    /* --- Identidad y Marca --- */
+    --marca-primaria: var(--color-violeta-empresa);
+    --marca-primaria-hover: var(--color-violeta-hover);
+    --marca-primaria-activa: var(--color-violeta-activo);
+    --marca-primaria-suave: var(--color-violeta-suave);
+    --marca-sobre-primaria: var(--blanco-puro);
+
+    /* Acento: Verde institucional para máxima legibilidad en modo claro */
+    --marca-acento: var(--color-verde-claro);
+    --marca-acento-hover: var(--color-verde-claro-hover);
+    --marca-acento-activo: var(--color-verde-claro-activo);
+    --marca-acento-suave: rgba(4, 134, 43, 0.13);
+    --marca-sobre-acento: var(--blanco-puro);
+
+    /* --- Superficies --- */
+    --fondo-app: var(--color-crema-fondo);
+    --fondo-superficie: var(--color-crema-superficie);
+    --fondo-elevado: var(--color-crema-elevado);
+    --fondo-hundido: var(--color-crema-hundido);
+    --borde-default: var(--color-crema-borde);
+    --borde-fuerte: #C7B096;
+    --borde-foco: var(--color-violeta-empresa);
+    --overlay: rgba(10, 46, 54, 0.58);
+
+    /* --- Texto sobre fondo claro --- */
+    --texto-primario: var(--color-teal-profundo); /* #0A2E36: Contraste impecable > 11:1 */
+    --texto-secundario: #3D555A;
+    --texto-apagado: #6B7D81;
+    --texto-sobre-oscuro: #F4FAF6;
+    --texto-sobre-claro: var(--color-teal-profundo);
+    --texto-link: var(--color-violeta-empresa);
+    --texto-link-hover: var(--color-violeta-hover);
+
+    /* --- Interacciones --- */
+    --interactivo-seleccionado: var(--color-violeta-suave);
+    --interactivo-hover: rgba(10, 46, 54, 0.05);
+
+    /* --- Feedback Adaptado a Fondo Claro (Tonos enriquecidos para legibilidad) --- */
+    --exito: var(--color-verde-claro);
+    --exito-fondo: #E6F6ED;
+    --exito-borde: #8FD8A8;
+    --exito-texto: #02571B;
+    --exito-sobre: var(--blanco-puro);
+
+    --error: #C92A2A;
+    --error-fondo: #FDEEEE;
+    --error-borde: #F2A3A3;
+    --error-texto: #8F1919;
+    --error-sobre: var(--blanco-puro);
+
+    --advertencia: #BD6400;
+    --advertencia-fondo: #FFF5E6;
+    --advertencia-borde: #F5C282;
+    --advertencia-texto: #7A3F00;
+    --advertencia-sobre: var(--blanco-puro);
+
+    --atencion: #8A7200;
+    --atencion-fondo: #FDFCE6;
+    --atencion-borde: #E5D574;
+    --atencion-texto: #594A00;
+    --atencion-sobre: var(--blanco-puro);
+
+    --info: #236599;
+    --info-fondo: #EAF4FA;
+    --info-borde: #93C2E6;
+    --info-texto: #144266;
+    --info-sobre: var(--blanco-puro);
+
+    /* --- Estados y Badges en Modo Empresa --- */
+    --estado-neutro-fondo: rgba(10, 46, 54, 0.07);
+    --estado-neutro-texto: var(--texto-secundario);
+
+    /* --- Botones en Modo Empresa --- */
+    --btn-primario-anillo: var(--color-violeta-hover);
+    --btn-secundario-anillo: var(--color-verde-claro);
+    --btn-terciario-borde: var(--color-violeta-empresa);
+    --btn-terciario-texto: var(--color-violeta-empresa);
+    --btn-terciario-hover: var(--color-violeta-suave);
+    --btn-terciario-activo: rgba(103, 86, 121, 0.22);
+    --btn-terciario-anillo: var(--color-violeta-empresa);
+
+    --btn-fantasma-texto: var(--color-violeta-empresa);
+    --btn-fantasma-hover: var(--color-violeta-suave);
+    --btn-fantasma-activo: rgba(103, 86, 121, 0.22);
+    --btn-fantasma-anillo: var(--color-violeta-empresa);
+}
+
+/* ==========================================================================
+   MAPEO A TAILWIND v4 (@theme inline)
+   `inline` permite que las utilidades (bg-marca-primaria, text-texto-primario)
+   se actualicen dinámicamente en tiempo real al cambiar el atributo data-modo.
+   ========================================================================== */
+@theme inline {
+    --color-marca-primaria: var(--marca-primaria);
+    --color-marca-primaria-hover: var(--marca-primaria-hover);
+    --color-marca-primaria-activa: var(--marca-primaria-activa);
+    --color-marca-primaria-suave: var(--marca-primaria-suave);
+    --color-marca-sobre-primaria: var(--marca-sobre-primaria);
+
+    --color-marca-acento: var(--marca-acento);
+    --color-marca-acento-hover: var(--marca-acento-hover);
+    --color-marca-acento-suave: var(--marca-acento-suave);
+    --color-marca-sobre-acento: var(--marca-sobre-acento);
+
+    --color-fondo-app: var(--fondo-app);
+    --color-fondo-superficie: var(--fondo-superficie);
+    --color-fondo-elevado: var(--fondo-elevado);
+    --color-fondo-hundido: var(--fondo-hundido);
+    --color-borde-default: var(--borde-default);
+    --color-borde-fuerte: var(--borde-fuerte);
+    --color-borde-foco: var(--borde-foco);
+
+    --color-texto-primario: var(--texto-primario);
+    --color-texto-secundario: var(--texto-secundario);
+    --color-texto-apagado: var(--texto-apagado);
+    --color-texto-sobre-oscuro: var(--texto-sobre-oscuro);
+    --color-texto-sobre-claro: var(--texto-sobre-claro);
+    --color-texto-link: var(--texto-link);
+
+    --color-exito: var(--exito);
+    --color-exito-fondo: var(--exito-fondo);
+    --color-exito-borde: var(--exito-borde);
+    --color-exito-texto: var(--exito-texto);
+
+    --color-error: var(--error);
+    --color-error-fondo: var(--error-fondo);
+    --color-error-borde: var(--error-borde);
+    --color-error-texto: var(--error-texto);
+
+    --color-advertencia: var(--advertencia);
+    --color-advertencia-fondo: var(--advertencia-fondo);
+    --color-advertencia-borde: var(--advertencia-borde);
+    --color-advertencia-texto: var(--advertencia-texto);
+
+    --color-atencion: var(--atencion);
+    --color-atencion-fondo: var(--atencion-fondo);
+    --color-atencion-borde: var(--atencion-borde);
+    --color-atencion-texto: var(--atencion-texto);
+
+    --color-info: var(--info);
+    --color-info-fondo: var(--info-fondo);
+    --color-info-borde: var(--info-borde);
+    --color-info-texto: var(--info-texto);
+
+    --color-estado-activo-fondo: var(--estado-activo-fondo);
+    --color-estado-activo-texto: var(--estado-activo-texto);
+    --color-estado-pendiente-fondo: var(--estado-pendiente-fondo);
+    --color-estado-pendiente-texto: var(--estado-pendiente-texto);
+    --color-estado-cerrado-fondo: var(--estado-cerrado-fondo);
+    --color-estado-cerrado-texto: var(--estado-cerrado-texto);
+    --color-estado-info-fondo: var(--estado-info-fondo);
+    --color-estado-info-texto: var(--estado-info-texto);
+    --color-estado-neutro-fondo: var(--estado-neutro-fondo);
+    --color-estado-neutro-texto: var(--estado-neutro-texto);
+
+    --color-rareza-1: var(--rareza-1);
+    --color-rareza-2: var(--rareza-2);
+    --color-rareza-3: var(--rareza-3);
+    --color-rareza-4: var(--rareza-4);
+    --color-carta-reverso: var(--carta-reverso);
+    --color-carta-desconocida: var(--carta-desconocida);
+
+    --font-titulo: var(--fuente-titulo);
+    --font-cuerpo: var(--fuente-cuerpo);
+    --font-interfaz: var(--fuente-interfaz);
+}
+
+/* ==========================================================================
+   ESTILOS BASE
+   ========================================================================== */
+body {
+    background-color: var(--fondo-app);
+    color: var(--texto-primario);
+    font-family: var(--fuente-cuerpo);
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--fuente-titulo);
+    letter-spacing: 0.02em;
+}
+
+p {
+    font-family: var(--fuente-cuerpo);
+}
+
+button, input, select, textarea, .badge, .chip {
+    font-family: var(--fuente-interfaz);
+}
+
+/* Foco accesible para teclado en cualquier tema */
+:focus-visible {
+    outline: 2px solid var(--borde-foco);
+    outline-offset: 2px;
+}
+
+/* Selección de texto estilizada */
+::selection {
+    background: var(--marca-primaria);
+    color: var(--marca-sobre-primaria);
+}
+
+/* ==========================================================================
+   ESTRUCTURA DE PÁGINA (Layout)
+   ========================================================================== */
+.page-container {
+    min-height: 100vh;
+    background-color: var(--fondo-app);
+    font-family: var(--fuente-cuerpo);
+}
+
+.page-content {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2rem 1rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.page-title {
+    font-family: var(--fuente-titulo);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    color: var(--texto-primario);
+    margin-bottom: 0.75rem;
+}
+
+.page-subtitle {
+    font-size: 1.125rem;
+    color: var(--texto-secundario);
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.page-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .page-layout {
+        flex-direction: row;
+    }
+}
+
+/* ==========================================================================
+   TOASTS (ngx-sonner)
+   Notificaciones conectadas directamente a la escala de feedback.
+   ========================================================================== */
+[data-sonner-toaster] {
+    font-family: var(--fuente-interfaz);
+}
+
+[data-sonner-toast] {
+    border-radius: 0.75rem;
+    padding: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+[data-sonner-toast][data-type="success"] {
+    background-color: var(--exito-fondo) !important;
+    border: 1px solid var(--exito-borde) !important;
+    color: var(--exito-texto) !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+    background-color: var(--error-fondo) !important;
+    border: 1px solid var(--error-borde) !important;
+    color: var(--error-texto) !important;
+}
+
+[data-sonner-toast][data-type="warning"] {
+    background-color: var(--advertencia-fondo) !important;
+    border: 1px solid var(--advertencia-borde) !important;
+    color: var(--advertencia-texto) !important;
+}
+
+[data-sonner-toast][data-type="info"] {
+    background-color: var(--info-fondo) !important;
+    border: 1px solid var(--info-borde) !important;
+    color: var(--info-texto) !important;
+}
+
+[data-sonner-toast][data-type="loading"] {
+    background-color: var(--fondo-elevado) !important;
+    border: 1px solid var(--borde-default) !important;
+    color: var(--texto-secundario) !important;
+}
+
+/* ==========================================================================
+   ANIMACIONES MICRO-INTERACTIVAS
+   ========================================================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Respeto por preferencias de movimiento reducido (A11y) */
+@media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-slide-up {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ==========================================================================
+   UTILIDADES DE SCROLLBAR
+   ========================================================================== */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--borde-default);
+    border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--marca-primaria);
+}
