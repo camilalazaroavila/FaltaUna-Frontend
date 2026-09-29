@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NgxSonnerToaster } from 'ngx-sonner';
 import { UsuariosService } from './servicios/usuario.service';
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule],
+  imports: [FormsModule, NgxSonnerToaster],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -18,10 +19,9 @@ export class App implements OnInit {
     password: ''
   };
 
-  constructor(private usuariosService: UsuariosService) { }
+  constructor(private usuariosService: UsuariosService) {}
 
   ngOnInit(): void {
-
     this.usuariosService.obtenerUsuarios().subscribe({
       next: (datos) => {
         console.log('Usuarios recibidos:', datos);
@@ -31,16 +31,12 @@ export class App implements OnInit {
         console.error('Error al obtener usuarios:', error);
       }
     });
-
   }
 
   registrarUsuario(): void {
-
     this.usuariosService.crearUsuario(this.nuevoUsuario).subscribe({
       next: (usuarioCreado) => {
-
         console.log('Usuario creado:', usuarioCreado);
-
         alert('Usuario registrado correctamente');
 
         this.nuevoUsuario = {
@@ -49,12 +45,12 @@ export class App implements OnInit {
           password: ''
         };
 
+        this.ngOnInit();
       },
       error: (error) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Detalle del error 400 desde .NET:', error.error);
         alert('No se pudo registrar el usuario');
       }
     });
-
   }
 }
