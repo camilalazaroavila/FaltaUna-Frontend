@@ -28,8 +28,8 @@ describe('App', () => {
       imports: [App],
       providers: [
         { provide: UsuariosService, useValue: usuariosServiceMock },
+        provideHttpClient()
       ],
-      providers: [provideHttpClient()]
     }).compileComponents();
   });
 
