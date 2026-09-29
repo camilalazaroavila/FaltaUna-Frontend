@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NgxSonnerToaster } from 'ngx-sonner';
+import { UsuariosService } from './servicios/usuario.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
+  imports: [FormsModule, NgxSonnerToaster],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
