@@ -134,3 +134,10 @@ logs/
 *.temp
 *.bak
 *.orig
+
+# ─── Herramientas de IA y Skills ───────────────────────────────────────────────
+.claude/
+.cursor/
+.impeccable
+.impeccable/
+

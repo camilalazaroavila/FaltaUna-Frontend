@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { App } from './app';
+import { UsuariosService } from './servicios/usuario.service';
 import { provideHttpClient } from '@angular/common/http';
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -15,11 +17,19 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 describe('App', () => {
+  const usuariosServiceMock = {
+    obtenerUsuarios: jest.fn().mockReturnValue(of([])),
+    crearUsuario: jest.fn().mockReturnValue(of({})),
+  };
+
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideHttpClient()]
+      providers: [
+        { provide: UsuariosService, useValue: usuariosServiceMock },
+        provideHttpClient()
+      ],
     }).compileComponents();
   });
 
