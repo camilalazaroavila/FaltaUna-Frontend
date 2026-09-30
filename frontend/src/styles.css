@@ -71,6 +71,13 @@
     /* --- Neutros y feedback compartidos --- */
     --blanco-puro: #FFFFFF;
     --negro-puro: #000000;
+
+    /* --- Radios de Borde (Compartidos) --- */
+    --radio-sm: 0.375rem;
+    --radio-md: 0.75rem;
+    --radio-lg: 1.25rem;
+    --radio-pildora: 9999px;
+    --radio-circulo: 50%;
 }
 
 /* ==========================================================================
@@ -104,6 +111,12 @@
     --borde-fuerte: #35676E;
     --borde-foco: var(--color-amarillo-acento); /* Foco visible con máximo contraste sobre teal */
     --overlay: rgba(7, 35, 38, 0.82);
+
+    /* --- Sombras (Modo Jugador / Oscuro Deportivo) --- */
+    --sombra-baja: 0 2px 8px rgba(0, 0, 0, 0.22);
+    --sombra-media: 0 8px 20px rgba(0, 0, 0, 0.32);
+    --sombra-alta: 0 16px 36px rgba(0, 0, 0, 0.45);
+    --sombra-brillo-verde: 0 0 20px color-mix(in srgb, var(--color-verde-jugador) 35%, transparent);
 
     /* --- Tipografía y Jerarquía de Texto --- */
     --texto-primario: #F4FAF6;             /* Blanco suave ligeramente verdoso (evita fatiga visual) */
@@ -267,6 +280,12 @@
     --borde-foco: var(--color-violeta-empresa);
     --overlay: rgba(10, 46, 54, 0.58);
 
+    /* --- Sombras Adaptadas (Modo Empresa / Fondo Claro Suave) --- */
+    --sombra-baja: 0 2px 8px rgba(10, 46, 54, 0.08);
+    --sombra-media: 0 8px 20px rgba(10, 46, 54, 0.14);
+    --sombra-alta: 0 16px 36px rgba(10, 46, 54, 0.20);
+    --sombra-brillo-verde: 0 0 20px color-mix(in srgb, var(--color-verde-claro) 25%, transparent);
+
     /* --- Texto sobre fondo claro --- */
     --texto-primario: var(--color-teal-profundo); /* #0A2E36: Contraste impecable > 11:1 */
     --texto-secundario: #3D555A;
@@ -408,6 +427,14 @@
     --font-titulo: var(--fuente-titulo);
     --font-cuerpo: var(--fuente-cuerpo);
     --font-interfaz: var(--fuente-interfaz);
+
+    --radius-pildora: var(--radio-pildora);
+    --radius-circulo: var(--radio-circulo);
+
+    --shadow-baja: var(--sombra-baja);
+    --shadow-media: var(--sombra-media);
+    --shadow-alta: var(--sombra-alta);
+    --shadow-brillo-verde: var(--sombra-brillo-verde);
 }
 
 /* ==========================================================================
