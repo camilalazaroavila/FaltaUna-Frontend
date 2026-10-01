@@ -53,6 +53,7 @@
     "@angular/build": "^20.3.13",
     "@angular/cli": "^20.3.13",
     "@angular/compiler-cli": "^20.3.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.70.0",
