@@ -1,9 +1,10 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   CrearUsuarioSolicitud,
+  DisponibilidadRespuesta,
   LoginRespuesta,
   LoginSolicitud,
   Rol,
@@ -23,7 +24,7 @@ export class AuthService {
   /** Señal con el usuario logueado (null si no hay sesión). Se actualiza sola al hacer login/logout. */
   usuarioActual = signal<Usuario | null>(this.leerUsuarioGuardado());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   registrar(solicitud: CrearUsuarioSolicitud): Observable<UsuarioRespuesta> {
     return this.http.post<UsuarioRespuesta>(`${this.apiUrl}/Usuarios`, solicitud);
@@ -83,5 +84,12 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  verificarDisponibilidad(params: { nombreUsuario?: string; email?: string }): Observable<DisponibilidadRespuesta> {
+    let consulta = new HttpParams();
+    if (params.nombreUsuario) consulta = consulta.set('nombreUsuario', params.nombreUsuario);
+    if (params.email) consulta = consulta.set('email', params.email);
+    return this.http.get<DisponibilidadRespuesta>(`${this.apiUrl}/Usuarios/disponibilidad`, { params: consulta });
   }
 }

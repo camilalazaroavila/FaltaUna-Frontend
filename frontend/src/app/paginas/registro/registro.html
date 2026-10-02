@@ -26,7 +26,8 @@
 
       <!-- Carta decorativa -->
       <div class="hidden lg:block mt-8 w-52 h-64 bg-white rounded-3xl rotate-[-6deg] shadow-2xl p-3">
-        <div class="h-full rounded-2xl bg-[#e9f5f3] border-4 border-[#f05b52] flex flex-col items-center justify-between p-4">
+        <div
+          class="h-full rounded-2xl bg-[#e9f5f3] border-4 border-[#f05b52] flex flex-col items-center justify-between p-4">
           <span class="self-start bg-[#f05b52] text-white text-xs font-black px-3 py-1 rounded-full">
             NUEVA
           </span>
@@ -58,9 +59,9 @@
       </div>
 
       @if (error) {
-        <div class="mb-5 rounded-xl bg-red-50 border-2 border-[#f05b52]/30 text-[#f05b52] text-sm font-bold px-4 py-3">
-          {{ error }}
-        </div>
+      <div class="mb-5 rounded-xl bg-red-50 border-2 border-[#f05b52]/30 text-[#f05b52] text-sm font-bold px-4 py-3">
+        {{ error }}
+      </div>
       }
 
       <form (ngSubmit)="registrarUsuario()" class="space-y-5">
@@ -72,15 +73,12 @@
           </label>
           <div class="grid grid-cols-3 gap-2">
             @for (rol of roles; track rol.valor) {
-              <button
-                type="button"
-                (click)="seleccionarRol(rol.valor)"
-                class="rounded-xl border-2 py-2.5 text-sm font-bold transition"
-                [class]="nuevoUsuario.rol === rol.valor
+            <button type="button" (click)="seleccionarRol(rol.valor)"
+              class="rounded-xl border-2 py-2.5 text-sm font-bold transition" [class]="nuevoUsuario.rol === rol.valor
                   ? 'bg-[#123f46] border-[#123f46] text-white'
                   : 'border-gray-200 text-[#123f46] hover:border-[#123f46]/40'">
-                {{ rol.etiqueta }}
-              </button>
+              {{ rol.etiqueta }}
+            </button>
             }
           </div>
         </div>
@@ -90,10 +88,21 @@
           <label for="nombreUsuario" class="block text-sm font-bold text-[#123f46] mb-2">
             Nombre de usuario
           </label>
-          <input id="nombreUsuario" type="text" name="nombreUsuario" [(ngModel)]="nuevoUsuario.nombreUsuario" required
-            placeholder="Ej: Gonza123" class="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5
-                   outline-none transition
-                   focus:border-[#f05b52] focus:ring-4 focus:ring-[#f05b52]/10" />
+          <input id="nombreUsuario" type="text" name="nombreUsuario" [(ngModel)]="nuevoUsuario.nombreUsuario"
+            (ngModelChange)="onNombreUsuarioChange($event)" required placeholder="Ej: Gonza123"
+            class="w-full rounded-xl border-2 px-4 py-3.5 text-[#123f46] outline-none transition focus:ring-4" [class]="!verificandoNombre() && nombreUsuarioDisponible() === false
+      ? 'border-red-400 focus:border-red-400 focus:ring-red-200'
+      : !verificandoNombre() && nombreUsuarioDisponible() === true
+        ? 'border-green-400 focus:border-green-400 focus:ring-green-200'
+        : 'border-gray-200 focus:border-[#f05b52] focus:ring-[#f05b52]/10'" />
+
+          @if (verificandoNombre()) {
+          <p class="text-xs text-blue-600 font-semibold mt-2">Buscando disponibilidad...</p>
+          } @else if (nombreUsuarioDisponible() === false) {
+          <p class="text-xs text-red-500 font-bold mt-2">Nombre de usuario ya en uso</p>
+          } @else if (nombreUsuarioDisponible() === true) {
+          <p class="text-xs text-green-500 font-bold mt-2">Nombre de usuario disponible</p>
+          }
         </div>
 
         <!-- Email -->
@@ -101,10 +110,24 @@
           <label for="email" class="block text-sm font-bold text-[#123f46] mb-2">
             Email
           </label>
-          <input id="email" type="email" name="email" [(ngModel)]="nuevoUsuario.email" required
-            placeholder="tu@email.com" class="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5
-                   outline-none transition
-                   focus:border-[#f05b52] focus:ring-4 focus:ring-[#f05b52]/10" />
+          <input id="email" type="email" name="email" [(ngModel)]="nuevoUsuario.email"
+            (ngModelChange)="onEmailChange($event)" required placeholder="tu@email.com"
+            class="w-full rounded-xl border-2 px-4 py-3.5 text-[#123f46] outline-none transition focus:ring-4" [class]="!verificandoEmail() && emailDisponible() === false
+      ? 'border-red-400 focus:border-red-400 focus:ring-red-200'
+      : !verificandoEmail() && emailDisponible() === true
+        ? 'border-green-400 focus:border-green-400 focus:ring-green-200'
+        : 'border-gray-200 focus:border-[#f05b52] focus:ring-[#f05b52]/10'" />
+
+          @if (errorEmail) {
+          <p class="text-xs text-red-500 font-bold mt-2">{{ errorEmail }}</p>
+          }
+          @if (verificandoEmail()) {
+          <p class="text-xs text-blue-600 font-semibold mt-2">Buscando disponibilidad...</p>
+          } @else if (emailDisponible() === false) {
+          <p class="text-xs text-red-500 font-bold mt-2">Ese email ya está registrado</p>
+          } @else if (emailDisponible() === true) {
+          <p class="text-xs text-green-500 font-bold mt-2">¡Email disponible!</p>
+          }
         </div>
 
         <!-- Contraseña -->
@@ -113,24 +136,23 @@
             Contraseña
           </label>
           <input id="password" type="password" name="password" [(ngModel)]="nuevoUsuario.password" required
-            placeholder="Mínimo 6 caracteres" class="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5
+            placeholder="Mínimo 6 caracteres" class="w-full  text-[#123f46] rounded-xl border-2 border-gray-200 px-4 py-3.5
                    outline-none transition
                    focus:border-[#f05b52] focus:ring-4 focus:ring-[#f05b52]/10" />
         </div>
 
         <!-- Botón -->
-        <button type="submit" [disabled]="cargando" class="w-full bg-[#f05b52] hover:bg-[#dc4d45]
-                 text-white font-black text-lg
-                 rounded-xl py-4
-                 transition duration-200
-                 hover:-translate-y-0.5
-                 active:translate-y-0
-                 shadow-lg hover:shadow-xl
-                 disabled:opacity-60 disabled:hover:translate-y-0
-                 cursor-pointer">
-          {{ cargando ? 'REGISTRANDO...' : 'REGISTRARME' }}
+        <button type="submit" [disabled]="cargando() || formularioInvalido" class="w-full bg-[#f05b52] hover:bg-[#dc4d45]
+         text-white font-black text-lg
+         rounded-xl py-4
+         transition duration-200
+         hover:-translate-y-0.5
+         active:translate-y-0
+         shadow-lg hover:shadow-xl
+         disabled:opacity-60 disabled:hover:translate-y-0
+         cursor-pointer">
+          {{ cargando() ? 'REGISTRANDO...' : 'REGISTRARME' }}
         </button>
-
       </form>
 
       <div class="mt-7 pt-6 border-t border-gray-100 text-center">
@@ -146,3 +168,4 @@
 
   </main>
 </div>
+<ngx-sonner-toaster position="top-right" [richColors]="true" [closeButton]="true" [expand]="true" />

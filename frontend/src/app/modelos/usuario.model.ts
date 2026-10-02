@@ -31,8 +31,15 @@ export interface CrearUsuarioSolicitud {
   nombreUsuario: string;
   email: string;
   password: string;
-  rol: Rol;
+  rol: string;
 }
+
+
+export interface DisponibilidadRespuesta {
+  nombreUsuarioDisponible: boolean | null;
+  emailDisponible: boolean | null;
+}
+
 
 export interface LoginSolicitud {
   identificador: string;
@@ -44,3 +51,4 @@ export interface LoginRespuesta {
   expiraUtc: string;
   usuario: UsuarioRespuesta;
 }
+
