@@ -1,0 +1,78 @@
+<div class="space-y-8">
+  <app-tarjeta-muestra
+    titulo="app-boton-icono"
+    descripcion="Control compacto de una sola acción. Como no tiene texto visible, etiquetaAria es obligatorio."
+  >
+    <div class="space-y-6">
+      @for (variante of variantes; track variante) {
+        <div class="space-y-3">
+          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+            variante=&quot;{{ variante }}&quot;
+          </h4>
+
+          <div class="flex flex-wrap items-center gap-6">
+            @for (tamanio of tamanios; track tamanio) {
+              <div class="flex flex-col items-center gap-1.5">
+                <app-boton-icono
+                  icono="phosphorXFill"
+                  etiquetaAria="Cerrar"
+                  [variante]="variante"
+                  [tamanio]="tamanio"
+                  (accion)="registrar('cerrar ' + variante + '/' + tamanio)"
+                />
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">{{ tamanio }}</span>
+              </div>
+
+              <div class="flex flex-col items-center gap-1.5">
+                <app-boton-icono
+                  icono="phosphorHeartFill"
+                  etiquetaAria="Marcar como favorita"
+                  [variante]="variante"
+                  [tamanio]="tamanio"
+                  (accion)="registrar('favorita ' + variante + '/' + tamanio)"
+                />
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">con icono</span>
+              </div>
+            }
+
+            <div class="flex flex-col items-center gap-1.5">
+              <app-boton-icono
+                icono="phosphorBellFill"
+                etiquetaAria="Notificaciones"
+                [variante]="variante"
+                [disabled]="true"
+                (accion)="registrar('no debería aparecer')"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">deshabilitado</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Pendiente de la Tanda D"
+    descripcion="Estos dos componentes todavía no existen, así que no hay muestra real que mostrar."
+  >
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div
+        class="flex flex-col items-center gap-2 rounded-md border border-dashed border-borde-fuerte bg-fondo-hundido p-6"
+      >
+        <code class="font-interfaz text-xs text-texto-secundario">&lt;app-icono-corazon&gt;</code>
+        <span class="font-interfaz text-xs text-texto-apagado">No implementado</span>
+      </div>
+
+      <div
+        class="flex flex-col items-center gap-2 rounded-md border border-dashed border-borde-fuerte bg-fondo-hundido p-6"
+      >
+        <code class="font-interfaz text-xs text-texto-secundario">&lt;app-flechas-navegacion&gt;</code>
+        <span class="font-interfaz text-xs text-texto-apagado">No implementado</span>
+      </div>
+    </div>
+  </app-tarjeta-muestra>
+
+  <div class="border-t border-borde-default pt-4">
+    <app-registro-eventos [registros]="registros()" />
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideIcons } from '@ng-icons/core';
 import {
   phosphorPlusFill,
@@ -17,6 +17,20 @@ import {
   phosphorLockFill,
   phosphorCaretRightFill,
   phosphorSealCheckFill,
+  phosphorHouseFill,
+  phosphorBellFill,
+  phosphorPlayFill,
+  phosphorMagnifyingGlassFill,
+  phosphorCardsFill,
+  phosphorStackFill,
+  phosphorArrowsLeftRightFill,
+  phosphorQrCodeFill,
+  phosphorTicketFill,
+  phosphorStorefrontFill,
+  phosphorCaretDownFill,
+  phosphorHashFill,
+  phosphorSparkleFill,
+  phosphorArrowRightFill,
 } from '@ng-icons/phosphor-icons/fill';
 import {
   heroPlusSolid,
@@ -43,7 +57,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     ...provideIcons({
       phosphorPlusFill,
       phosphorCheckFill,
@@ -59,6 +73,20 @@ export const appConfig: ApplicationConfig = {
       phosphorLockFill,
       phosphorCaretRightFill,
       phosphorSealCheckFill,
+      phosphorHouseFill,
+      phosphorBellFill,
+      phosphorPlayFill,
+      phosphorMagnifyingGlassFill,
+      phosphorCardsFill,
+      phosphorStackFill,
+      phosphorArrowsLeftRightFill,
+      phosphorQrCodeFill,
+      phosphorTicketFill,
+      phosphorStorefrontFill,
+      phosphorCaretDownFill,
+      phosphorHashFill,
+      phosphorSparkleFill,
+      phosphorArrowRightFill,
       heroPlusSolid,
       heroCheckSolid,
       heroXMarkSolid,

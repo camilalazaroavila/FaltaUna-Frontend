@@ -1,0 +1,165 @@
+<div class="space-y-8">
+  <!-- Matriz variante × tamaño -->
+  <app-tarjeta-muestra
+    titulo="button[app-boton]"
+    descripcion="Matriz completa de variantes por tamaño. Cada celda usa el componente real; el texto de la celda indica los inputs aplicados."
+  >
+    <div class="space-y-6">
+      @for (variante of variantes; track variante) {
+        <div class="space-y-3">
+          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+            variante=&quot;{{ variante }}&quot;
+          </h4>
+
+          <div class="flex flex-wrap items-start gap-4">
+            @for (tamanio of tamanios; track tamanio) {
+              <div class="flex flex-col items-center gap-2">
+                <button
+                  app-boton
+                  [variante]="variante"
+                  [tamanio]="tamanio"
+                  (click)="emitir(variante, tamanio)"
+                >
+                  {{ variante }}
+                </button>
+
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">{{ tamanio }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Formas -->
+  <app-tarjeta-muestra
+    titulo="Formas"
+    descripcion="pildora mantiene el padding horizontal; circulo fuerza aspect-square. El tamaño sm de circulo conserva el área táctil de 44px mediante la utilidad area-tactil."
+  >
+    <div class="space-y-6">
+      @for (forma of formas; track forma) {
+        <div class="space-y-3">
+          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+            forma=&quot;{{ forma }}&quot;
+          </h4>
+
+          <div class="flex flex-wrap items-center gap-4">
+            @for (tamanio of tamanios; track tamanio) {
+              @switch (forma) {
+                @case ('circulo') {
+                  <button
+                    app-boton
+                    variante="secundario"
+                    [forma]="forma"
+                    [tamanio]="tamanio"
+                    aria-label="Botón circular de tamaño {{ tamanio }}"
+                    (click)="registrar('accion emitida (circulo/' + tamanio + ')')"
+                  >
+                    <ng-icon name="phosphorPlusFill" size="18" aria-hidden="true" />
+                  </button>
+                }
+                @default {
+                  <button
+                    app-boton
+                    variante="secundario"
+                    [forma]="forma"
+                    [tamanio]="tamanio"
+                    (click)="registrar('accion emitida (pildora/' + tamanio + ')')"
+                  >
+                    Pastilla
+                  </button>
+                }
+              }
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-advertencia bg-advertencia-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-advertencia-texto">
+        Comparar los botones de la fila <strong>pildora</strong> con los de la fila
+        <strong>circulo</strong>: los circulares no tienen texto visible y por eso exigen
+        <code>aria-label</code>. Sin él, <code>app-boton</code> avisa por consola en desarrollo.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Estados -->
+  <app-tarjeta-muestra
+    titulo="Estados"
+    descripcion="Normal, cargando y deshabilitado. cargando y disabled se combinan en el mismo cálculo interno: cargando implica deshabilitado."
+  >
+    <div class="flex flex-wrap items-center gap-4">
+      <button app-boton variante="primario" (click)="registrar('accion emitida (normal)')">
+        Normal
+      </button>
+
+      <button app-boton variante="primario" cargando>Cargando</button>
+
+      <button app-boton variante="primario" [disabled]="true">Deshabilitado</button>
+
+      <button app-boton variante="primario" cargando [disabled]="true">
+        Cargando + deshabilitado
+      </button>
+
+      <a app-boton variante="primario" href="#boton" (click)="registrar('navegación (enlace)')">
+        Enlace
+      </a>
+
+      <a
+        app-boton
+        variante="primario"
+        href="#boton"
+        [disabled]="true"
+        (click)="registrar('este evento no debería aparecer')"
+      >
+        Enlace deshabilitado
+      </a>
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-marca-acento bg-marca-acento-suave px-3 py-2">
+      <p class="font-interfaz text-xs text-texto-primario">
+        El enlace deshabilitado queda fuera del recorrido de Tab y su clic se cancela. El
+        <code>href</code> sigue presente para que el stylesheet y las pruebas puedan distinguirlo.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Con y sin icono -->
+  <app-tarjeta-muestra
+    titulo="Con y sin icono"
+    descripcion="El contenido se proyecta con ng-content: el icono puede ir antes, después o no estar."
+  >
+    <div class="flex flex-wrap items-center gap-4">
+      <button app-boton variante="terciario" (click)="registrar('terciario con icono a la izquierda')">
+        <ng-icon name="phosphorArrowRightFill" size="16" aria-hidden="true" />
+        Con icono
+      </button>
+
+      <button app-boton variante="terciario" (click)="registrar('terciario con icono a la derecha')">
+        Icono a la derecha
+        <ng-icon name="phosphorCaretRightFill" size="16" aria-hidden="true" />
+      </button>
+
+      <button app-boton variante="terciario" (click)="registrar('terciario sin icono')">
+        Sin icono
+      </button>
+
+      <button
+        app-boton
+        variante="fantasma"
+        (click)="registrar('fantasma deshabilitado con icono')"
+        [disabled]="true"
+      >
+        <ng-icon name="phosphorSparkleFill" size="16" aria-hidden="true" />
+        Fantasma
+      </button>
+    </div>
+  </app-tarjeta-muestra>
+
+  <div class="border-t border-borde-default pt-4">
+    <app-registro-eventos [registros]="registros()" />
+  </div>
+</div>

@@ -1,43 +1,27 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { provideRouter } from '@angular/router';
 import { App } from './app';
-import { UsuariosService } from './servicios/usuario.service';
-import { provideHttpClient } from '@angular/common/http';
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation((query) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
+
 describe('App', () => {
-  const usuariosServiceMock = {
-    obtenerUsuarios: jest.fn().mockReturnValue(of([])),
-    crearUsuario: jest.fn().mockReturnValue(of({})),
-  };
-
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [
-        { provide: UsuariosService, useValue: usuariosServiceMock },
-        provideHttpClient()
-      ],
+      providers: [provideRouter([])],
     }).compileComponents();
   });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-
-    expect(app).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
+it('should render the router outlet and the global toaster', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
+    expect(compiled.querySelector('ngx-sonner-toaster')).toBeTruthy();
+  });
 });

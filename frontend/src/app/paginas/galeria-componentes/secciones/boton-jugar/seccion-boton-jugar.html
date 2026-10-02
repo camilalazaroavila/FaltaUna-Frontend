@@ -1,0 +1,40 @@
+<div class="space-y-8">
+  <app-tarjeta-muestra
+    titulo="app-boton-jugar"
+    descripcion="El CTA de mayor peso visual. Fondo oscuro para que se vea el halo de marca. Pasá el cursor: el halo respira y el botón rebota al presionar."
+  >
+    <div class="grid gap-8 rounded-lg bg-fondo-hundido p-8 sm:grid-cols-3 sm:items-center">
+      <div class="flex flex-col items-center gap-3">
+        <app-boton-jugar (accion)="registrar('accion emitida (texto por defecto)')" />
+        <span class="font-interfaz text-xs text-texto-apagado">texto por defecto</span>
+      </div>
+
+      <div class="flex flex-col items-center gap-3">
+        <app-boton-jugar
+          texto="ABRÍ UN PRIMER SOBRE"
+          subtexto="Gratis todos los días"
+          (accion)="registrar('accion emitida (con subtexto)')"
+        />
+        <span class="font-interfaz text-xs text-texto-apagado">con subtexto</span>
+      </div>
+
+      <div class="flex flex-col items-center gap-3">
+        <app-boton-jugar texto="DESHABILITADO" [deshabilitado]="true" />
+        <span class="font-interfaz text-xs text-texto-apagado">deshabilitado</span>
+      </div>
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-advertencia bg-advertencia-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-advertencia-texto">
+        Este componente usa el input <code>deshabilitado</code>, no <code>disabled</code> como
+        el resto de los botones. Y GSAP se cablea una sola vez en
+        <code>ngAfterViewInit</code>: por eso el interruptor de “reducir movimiento” de la
+        galería no puede volver a desactivar una animación ya iniciada en vivo.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <div class="border-t border-borde-default pt-4">
+    <app-registro-eventos [registros]="registros()" />
+  </div>
+</div>

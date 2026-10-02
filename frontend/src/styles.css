@@ -35,42 +35,68 @@
    ========================================================================== */
 :root {
     /* --- Paleta Modo Jugador / Usuario --- */
-    --color-teal-base: #0D3B40;       /* Fondo profundo de la app */
-    --color-teal-superficie: #214448; /* Superficies, cards y contenedores */
-    --color-teal-elevado: #2A5459;    /* Cards elevadas, hover y dropdowns */
-    --color-teal-borde: #184A50;      /* Bordes sutiles sobre teal */
-    --color-teal-hundido: #072326;    /* Inputs inactivos, huecos, placeholders */
+    --color-teal-base: #0D3B40;
+    /* Fondo profundo de la app */
+    --color-teal-superficie: #214448;
+    /* Superficies, cards y contenedores */
+    --color-teal-elevado: #2A5459;
+    /* Cards elevadas, hover y dropdowns */
+    --color-teal-borde: #184A50;
+    /* Bordes sutiles sobre teal */
+    --color-teal-hundido: #072326;
+    /* Inputs inactivos, huecos, placeholders */
 
-    --color-verde-jugador: #3BD972;   /* Verde cancha vibrante, acción principal */
+    --color-verde-jugador: #3BD972;
+    /* Verde cancha vibrante, acción principal */
     --color-verde-jugador-hover: #52E285;
     --color-verde-jugador-activa: #29BF5E;
 
-    --color-amarillo-acento: #F2EEAE; /* Acento cálido del logo / estrellas */
+--color-amarillo-acento: #F2EEAE;
+    /* Acento cǭlido del logo / estrellas */
     --color-amarillo-hover: #F8F5C4;
     --color-amarillo-activo: #DDD78E;
 
+    /* --- Botones de la pantalla de jugar --- */
+    --color-juego-claro: #F9F9A8;
+    /* Cara del paralelogramo de las opciones de juego */
+
     /* --- Verde institucional para fondos claros --- */
-    --color-verde-claro: #04862B;     /* Gran contraste sobre blanco/crema */
+    --color-verde-claro: #04862B;
+    /* Gran contraste sobre blanco/crema */
     --color-verde-claro-hover: #036F23;
     --color-verde-claro-activo: #02571B;
 
     /* --- Paleta Modo Empresa --- */
-    --color-violeta-empresa: #675679; /* Violeta corporativo / panel de marcas */
+    --color-violeta-empresa: #675679;
+    /* Violeta corporativo / panel de marcas */
     --color-violeta-hover: #564667;
     --color-violeta-activo: #433552;
     --color-violeta-suave: rgba(103, 86, 121, 0.12);
 
-    --color-crema-fondo: #FCEFE0;     /* Fondo crema cálido y acogedor */
-    --color-crema-superficie: #FFFFFF;/* Tarjetas blancas sobre crema */
-    --color-crema-elevado: #F7E5D0;   /* Hover sobre fondo crema */
-    --color-crema-hundido: #EEDBC5;   /* Superficies hundidas */
-    --color-crema-borde: #E3CEB5;     /* Separadores y bordes modo claro */
+    --color-crema-fondo: #FCEFE0;
+    /* Fondo crema cálido y acogedor */
+    --color-crema-superficie: #FFFFFF;
+    /* Tarjetas blancas sobre crema */
+    --color-crema-elevado: #F7E5D0;
+    /* Hover sobre fondo crema */
+    --color-crema-hundido: #EEDBC5;
+    /* Superficies hundidas */
+    --color-crema-borde: #E3CEB5;
+    /* Separadores y bordes modo claro */
 
-    --color-teal-profundo: #0A2E36;   /* Texto primario en empresa y contraste AAA */
+    --color-teal-profundo: #0A2E36;
+    /* Texto primario en empresa y contraste AAA */
 
     /* --- Neutros y feedback compartidos --- */
     --blanco-puro: #FFFFFF;
     --negro-puro: #000000;
+
+    /* --- Radios de Borde (Compartidos) --- */
+    --radio-sm: 0.375rem;
+    --radio-md: 0.75rem;
+    --radio-lg: 1.25rem;
+    --radio-pildora: 9999px;
+    --radio-circulo: 50%;
 }
 
 /* ==========================================================================
@@ -87,7 +113,8 @@
     --marca-primaria-hover: var(--color-verde-jugador-hover);
     --marca-primaria-activa: var(--color-verde-jugador-activa);
     --marca-primaria-suave: rgba(59, 217, 114, 0.14);
-    --marca-sobre-primaria: var(--color-teal-profundo); /* Contraste oscuro sobre verde brillante */
+    --marca-sobre-primaria: var(--color-teal-profundo);
+    /* Contraste oscuro sobre verde brillante */
 
     --marca-acento: var(--color-amarillo-acento);
     --marca-acento-hover: var(--color-amarillo-hover);
@@ -102,13 +129,23 @@
     --fondo-hundido: var(--color-teal-hundido);
     --borde-default: var(--color-teal-borde);
     --borde-fuerte: #35676E;
-    --borde-foco: var(--color-amarillo-acento); /* Foco visible con máximo contraste sobre teal */
+    --borde-foco: var(--color-amarillo-acento);
+    /* Foco visible con máximo contraste sobre teal */
     --overlay: rgba(7, 35, 38, 0.82);
 
+    /* --- Sombras (Modo Jugador / Oscuro Deportivo) --- */
+    --sombra-baja: 0 2px 8px rgba(0, 0, 0, 0.22);
+    --sombra-media: 0 8px 20px rgba(0, 0, 0, 0.32);
+    --sombra-alta: 0 16px 36px rgba(0, 0, 0, 0.45);
+    --sombra-brillo-verde: 0 0 20px color-mix(in srgb, var(--color-verde-jugador) 35%, transparent);
+
     /* --- Tipografía y Jerarquía de Texto --- */
-    --texto-primario: #F4FAF6;             /* Blanco suave ligeramente verdoso (evita fatiga visual) */
-    --texto-secundario: #B8D3CF;           /* Lectura secundaria con ratio > 5.5:1 */
-    --texto-apagado: #7A9F9B;              /* Placeholders, metadatos y fechas */
+    --texto-primario: #F4FAF6;
+    /* Blanco suave ligeramente verdoso (evita fatiga visual) */
+    --texto-secundario: #B8D3CF;
+    /* Lectura secundaria con ratio > 5.5:1 */
+    --texto-apagado: #7A9F9B;
+    /* Placeholders, metadatos y fechas */
     --texto-sobre-oscuro: #F4FAF6;
     --texto-sobre-claro: var(--color-teal-profundo);
     --texto-link: var(--color-verde-jugador);
@@ -180,10 +217,14 @@
     --carta-reverso: var(--color-teal-elevado);
     --carta-desconocida: var(--color-amarillo-acento);
     --carta-bloqueada: rgba(244, 250, 246, 0.22);
-    --rareza-1: #8FAF9A;   /* ★ Bronce / Iniciado */
-    --rareza-2: #48B4BC;   /* ★★ Plata / Calificado */
-    --rareza-3: var(--color-amarillo-acento); /* ★★★ Oro / Estrella */
-    --rareza-4: var(--color-verde-jugador);    /* ★★★★ Leyenda / Crack */
+    --rareza-1: #8FAF9A;
+    /* ★ Bronce / Iniciado */
+    --rareza-2: #48B4BC;
+    /* ★★ Plata / Calificado */
+    --rareza-3: var(--color-amarillo-acento);
+    /* ★★★ Oro / Estrella */
+    --rareza-4: var(--color-verde-jugador);
+    /* ★★★★ Leyenda / Crack */
 
     /* ----------------------------------------------------------------------
        CAPA 3 — BOTONES (Modo Jugador)
@@ -223,6 +264,14 @@
     --btn-exito-activo: var(--color-verde-jugador-activa);
     --btn-exito-anillo: var(--exito-texto);
 
+    /* Boton de opcion de juego: paralelogramo con sombra solida.
+       Cara y sombra son tokens distintos porque el ::before es fijo y el
+       ::after se desplaza en hover y active. */
+    --btn-juego-bg: var(--color-juego-claro);
+    --btn-juego-texto: var(--color-teal-profundo);
+    --btn-juego-sombra: var(--marca-primaria);
+    --btn-juego-foco: var(--marca-primaria);
+
     --btn-fantasma-bg: transparent;
     --btn-fantasma-texto: var(--texto-secundario);
     --btn-fantasma-hover: var(--interactivo-hover);
@@ -251,11 +300,12 @@
     --marca-sobre-primaria: var(--blanco-puro);
 
     /* Acento: Verde institucional para máxima legibilidad en modo claro */
-    --marca-acento: var(--color-verde-claro);
-    --marca-acento-hover: var(--color-verde-claro-hover);
-    --marca-acento-activo: var(--color-verde-claro-activo);
+    --marca-acento: var(--color-teal-base);
+    --marca-acento-hover: var(--color-teal-hundido);
+    --marca-acento-activo: var(--color-teal-elevado);
     --marca-acento-suave: rgba(4, 134, 43, 0.13);
     --marca-sobre-acento: var(--blanco-puro);
+
 
     /* --- Superficies --- */
     --fondo-app: var(--color-crema-fondo);
@@ -267,8 +317,15 @@
     --borde-foco: var(--color-violeta-empresa);
     --overlay: rgba(10, 46, 54, 0.58);
 
+    /* --- Sombras Adaptadas (Modo Empresa / Fondo Claro Suave) --- */
+    --sombra-baja: 0 2px 8px rgba(10, 46, 54, 0.08);
+    --sombra-media: 0 8px 20px rgba(10, 46, 54, 0.14);
+    --sombra-alta: 0 16px 36px rgba(10, 46, 54, 0.20);
+    --sombra-brillo-verde: 0 0 20px color-mix(in srgb, var(--color-verde-claro) 25%, transparent);
+
     /* --- Texto sobre fondo claro --- */
-    --texto-primario: var(--color-teal-profundo); /* #0A2E36: Contraste impecable > 11:1 */
+    --texto-primario: var(--color-teal-profundo);
+    /* #0A2E36: Contraste impecable > 11:1 */
     --texto-secundario: #3D555A;
     --texto-apagado: #6B7D81;
     --texto-sobre-oscuro: #F4FAF6;
@@ -344,6 +401,7 @@
 
     --color-marca-acento: var(--marca-acento);
     --color-marca-acento-hover: var(--marca-acento-hover);
+    --color-marca-acento-activo: var(--marca-acento-activo);
     --color-marca-acento-suave: var(--marca-acento-suave);
     --color-marca-sobre-acento: var(--marca-sobre-acento);
 
@@ -352,6 +410,11 @@
     --color-fondo-elevado: var(--fondo-elevado);
     --color-fondo-hundido: var(--fondo-hundido);
     --color-borde-default: var(--borde-default);
+
+    /* Atajos de superficie: los más usados en tarjetas, paneles y campos */
+    --color-superficie: var(--fondo-superficie);
+    --color-elevado: var(--fondo-elevado);
+    --color-hundido: var(--fondo-hundido);
     --color-borde-fuerte: var(--borde-fuerte);
     --color-borde-foco: var(--borde-foco);
 
@@ -361,31 +424,40 @@
     --color-texto-sobre-oscuro: var(--texto-sobre-oscuro);
     --color-texto-sobre-claro: var(--texto-sobre-claro);
     --color-texto-link: var(--texto-link);
+    --color-texto-link-hover: var(--texto-link-hover);
 
+    /* Los cinco tokens por estado. `-sobre` es el texto coloreado que se apoya
+       sobre el color base solido; sin mapeo, `text-{estado}-sobre` no existia
+       y los badges numericos heredaban el color del texto. */
     --color-exito: var(--exito);
     --color-exito-fondo: var(--exito-fondo);
     --color-exito-borde: var(--exito-borde);
     --color-exito-texto: var(--exito-texto);
+    --color-exito-sobre: var(--exito-sobre);
 
     --color-error: var(--error);
     --color-error-fondo: var(--error-fondo);
     --color-error-borde: var(--error-borde);
     --color-error-texto: var(--error-texto);
+    --color-error-sobre: var(--error-sobre);
 
     --color-advertencia: var(--advertencia);
     --color-advertencia-fondo: var(--advertencia-fondo);
     --color-advertencia-borde: var(--advertencia-borde);
     --color-advertencia-texto: var(--advertencia-texto);
+    --color-advertencia-sobre: var(--advertencia-sobre);
 
     --color-atencion: var(--atencion);
     --color-atencion-fondo: var(--atencion-fondo);
     --color-atencion-borde: var(--atencion-borde);
     --color-atencion-texto: var(--atencion-texto);
+    --color-atencion-sobre: var(--atencion-sobre);
 
     --color-info: var(--info);
     --color-info-fondo: var(--info-fondo);
     --color-info-borde: var(--info-borde);
     --color-info-texto: var(--info-texto);
+    --color-info-sobre: var(--info-sobre);
 
     --color-estado-activo-fondo: var(--estado-activo-fondo);
     --color-estado-activo-texto: var(--estado-activo-texto);
@@ -405,9 +477,101 @@
     --color-carta-reverso: var(--carta-reverso);
     --color-carta-desconocida: var(--carta-desconocida);
 
+    /* Botones: expuestos al mapeo de Tailwind para que los componentes usen
+       utilidades bg-, text- y border- en lugar de CSS puro.
+       Cada familia cubre base, hover y estado activo. */
+    --color-btn-primario-bg: var(--btn-primario-bg);
+    --color-btn-primario-texto: var(--btn-primario-texto);
+    --color-btn-primario-hover: var(--btn-primario-hover);
+    --color-btn-primario-activo: var(--btn-primario-activo);
+
+    --color-btn-secundario-bg: var(--btn-secundario-bg);
+    --color-btn-secundario-texto: var(--btn-secundario-texto);
+    --color-btn-secundario-hover: var(--btn-secundario-hover);
+    --color-btn-secundario-activo: var(--btn-secundario-activo);
+
+    --color-btn-terciario-bg: var(--btn-terciario-bg);
+    --color-btn-terciario-texto: var(--btn-terciario-texto);
+    --color-btn-terciario-borde: var(--btn-terciario-borde);
+    --color-btn-terciario-hover: var(--btn-terciario-hover);
+    --color-btn-terciario-activo: var(--btn-terciario-activo);
+
+    --color-btn-fantasma-bg: var(--btn-fantasma-bg);
+    --color-btn-fantasma-texto: var(--btn-fantasma-texto);
+    --color-btn-fantasma-hover: var(--btn-fantasma-hover);
+    --color-btn-fantasma-activo: var(--btn-fantasma-activo);
+
+    --color-btn-peligro-bg: var(--btn-peligro-bg);
+    --color-btn-peligro-texto: var(--btn-peligro-texto);
+    --color-btn-peligro-hover: var(--btn-peligro-hover);
+    --color-btn-peligro-activo: var(--btn-peligro-activo);
+
+    --color-btn-exito-bg: var(--btn-exito-bg);
+    --color-btn-exito-texto: var(--btn-exito-texto);
+    --color-btn-exito-hover: var(--btn-exito-hover);
+    --color-btn-exito-activo: var(--btn-exito-activo);
+
+    /* Boton de opcion de juego */
+    --color-btn-juego-bg: var(--btn-juego-bg);
+    --color-btn-juego-texto: var(--btn-juego-texto);
+    --color-btn-juego-sombra: var(--btn-juego-sombra);
+    --color-btn-juego-foco: var(--btn-juego-foco);
+
     --font-titulo: var(--fuente-titulo);
     --font-cuerpo: var(--fuente-cuerpo);
     --font-interfaz: var(--fuente-interfaz);
+
+    --radius-sm: var(--radio-sm);
+    --radius-md: var(--radio-md);
+    --radius-lg: var(--radio-lg);
+    --radius-pildora: var(--radio-pildora);
+    --radius-circulo: var(--radio-circulo);
+
+    --shadow-baja: var(--sombra-baja);
+    --shadow-media: var(--sombra-media);
+    --shadow-alta: var(--sombra-alta);
+    --shadow-brillo-verde: var(--sombra-brillo-verde);
+}
+
+/* ==========================================================================
+   VARIANTES PERSONALIZADAS
+   `habilitado` permite aplicar estados hover/active solo cuando el control
+   realmente responde. Funciona tanto en <button> (que soporta :disabled)
+   como en <a> (que solo admite aria-disabled), a diferencia de `enabled`.
+   ========================================================================== */
+@custom-variant habilitado (&:where(:not(:disabled):not([aria-disabled='true'])));
+
+/* ==========================================================================
+   UTILIDADES PERSONALIZADAS
+   ========================================================================== */
+
+/* Área táctil mínima de 44x44px (WCAG 2.5.5) sin alterar el tamaño visual.
+   Se aplica sobre controles compactos circulares. */
+@utility area-tactil {
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 44px;
+        min-height: 44px;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+/* Paralelogramo para menús y tabs de selección.
+   El contenedor se inclina y el contenido interior se contra-inclina para
+   que la tipografía display no se deforme. */
+@utility inclinar-menu {
+    transform: skewX(-12deg);
+}
+
+@utility desinclinar-menu {
+    transform: skewX(12deg);
 }
 
 /* ==========================================================================
@@ -423,7 +587,12 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: var(--fuente-titulo);
     letter-spacing: 0.02em;
 }
@@ -432,7 +601,11 @@ p {
     font-family: var(--fuente-cuerpo);
 }
 
-button, input, select, textarea, .badge, .chip {
+button,
+input,
+select,
+textarea,
+.chip {
     font-family: var(--fuente-interfaz);
 }
 
@@ -547,13 +720,25 @@ button, input, select, textarea, .badge, .chip {
    ANIMACIONES MICRO-INTERACTIVAS
    ========================================================================== */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
 }
 
 .animate-fade-in {
@@ -566,6 +751,7 @@ button, input, select, textarea, .badge, .chip {
 
 /* Respeto por preferencias de movimiento reducido (A11y) */
 @media (prefers-reduced-motion: reduce) {
+
     .animate-fade-in,
     .animate-slide-up {
         animation: none;
@@ -575,31 +761,56 @@ button, input, select, textarea, .badge, .chip {
 }
 
 /* ==========================================================================
-   UTILIDADES DE SCROLLBAR
+   SIMULACION DE MOVIMIENTO REDUCIDO
+   La galería de componentes (`/componentes`) replica la media query
+   `prefers-reduced-motion` con este atributo, porque esa consulta no se puede
+   forzar desde el DOM.
+
+   Solo neutraliza la mitad CSS: `motion-reduce:` de Tailwind y las
+   transiciones. NO afecta a GSAP, que lee `matchMedia` desde `GsapService`.
    ========================================================================== */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
+[data-movimiento='reducido'] *,
+[data-movimiento='reducido'] *::before,
+[data-movimiento='reducido'] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
 }
 
-.scrollbar-hide {
+/* ==========================================================================
+   UTILIDADES DE SCROLLBAR
+   Definidas como @utility para que respondan a variantes Tailwind
+   (hover:custom-scrollbar, lg:scrollbar-hide, etc.).
+   ========================================================================== */
+@utility scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
+@utility custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--borde-default) transparent;
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-}
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--borde-default);
-    border-radius: 9999px;
-}
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: var(--marca-primaria);
+    &::-webkit-scrollbar-thumb {
+        background: var(--borde-default);
+        border-radius: var(--radio-pildora);
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: var(--marca-primaria);
+    }
 }

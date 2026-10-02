@@ -1,0 +1,16 @@
+<section class="rounded-lg border border-borde-default bg-fondo-superficie p-5 shadow-baja">
+  <header class="mb-4">
+    <h3 class="font-interfaz text-sm font-bold tracking-wide text-marca-acento">
+      <code>&lt;{{ titulo() }}&gt;</code>
+    </h3>
+
+    @if (descripcion()) {
+      <p class="mt-1.5 font-cuerpo text-sm text-texto-secundario">{{ descripcion() }}</p>
+    }
+  </header>
+
+  <ng-content />
+
+  <!-- Slot opcional: cada seccion aporta su propia aclaracion y su estilo. -->
+  <ng-content select="[slot='nota']" />
+</section>

@@ -1,19 +1,30 @@
 import { Routes } from '@angular/router';
 import { rolGuard } from './guardias/rol.guard';
 
+/**
+ * Rutas de la aplicación.
+ *
+ * El flujo real de usuarios entra por `login`; los dashboards quedan detrás de
+ * `rolGuard`, que valida contra el rol del token. La ruta raíz redirige a
+ * `login` porque todavía no hay landing pública: la pantalla de inicio se
+ * construye en una tanda posterior.
+ *
+ * `componentes` es el banco de pruebas visual del sistema de diseño y no forma
+ * parte del flujo de producto.
+ */
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
 
   {
     path: 'login',
-    loadComponent: () =>
-      import('./paginas/login/login').then((m) => m.Login)
+    title: 'Ingresar · Falta Una',
+    loadComponent: () => import('./paginas/login/login').then((m) => m.Login),
   },
 
   {
     path: 'registro',
-    loadComponent: () =>
-      import('./paginas/registro/registro').then((m) => m.Registro)
+    title: 'Crear usuario · Falta Una',
+    loadComponent: () => import('./paginas/registro/registro').then((m) => m.Registro),
   },
 
   {
@@ -21,8 +32,7 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Usuario'] },
     loadComponent: () =>
-      import('./paginas/usuario-dashboard/usuario-dashboard')
-        .then((m) => m.UsuarioDashboard)
+      import('./paginas/usuario-dashboard/usuario-dashboard').then((m) => m.UsuarioDashboard),
   },
 
   {
@@ -30,8 +40,7 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Empleado'] },
     loadComponent: () =>
-      import('./paginas/empleado-dashboard/empleado-dashboard')
-        .then((m) => m.EmpleadoDashboard)
+      import('./paginas/empleado-dashboard/empleado-dashboard').then((m) => m.EmpleadoDashboard),
   },
 
   {
@@ -39,8 +48,7 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Empresa'] },
     loadComponent: () =>
-      import('./paginas/empresa-dashboard/empresa-dashboard')
-        .then((m) => m.EmpresaDashboard)
+      import('./paginas/empresa-dashboard/empresa-dashboard').then((m) => m.EmpresaDashboard),
   },
 
   {
@@ -48,9 +56,17 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Admin'] },
     loadComponent: () =>
-      import('./paginas/admin-dashboard/admin-dashboard')
-        .then((m) => m.AdminDashboard)
+      import('./paginas/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
   },
 
-  { path: '**', redirectTo: 'login' }
+  {
+    path: 'componentes',
+    title: 'Galería de componentes · Falta Una',
+    loadComponent: () =>
+      import('./paginas/galeria-componentes/galeria-componentes').then(
+        (m) => m.GaleriaComponentes,
+      ),
+  },
+
+  { path: '**', redirectTo: 'login' },
 ];

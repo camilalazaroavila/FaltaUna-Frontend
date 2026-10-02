@@ -1,0 +1,83 @@
+<div class="space-y-8">
+  <app-tarjeta-muestra
+    titulo="app-boton-flotante"
+    descripcion="Acción principal flotante, con y sin contador. El componente se ancla con position fixed, así que la caja de la derecha necesita transform-gpu para contenerlo."
+  >
+    <div class="grid gap-6 sm:grid-cols-2">
+      <!-- Caja con containing block para el fixed -->
+      <div
+        class="transform-gpu relative h-64 overflow-hidden rounded-lg border border-dashed border-borde-fuerte bg-fondo-hundido"
+      >
+        <p class="p-4 font-interfaz text-xs text-texto-apagado">
+          Caja de 256&nbsp;px con <code>transform-gpu</code>. El botón se ancla a esta esquina, no
+          a la de la página.
+        </p>
+
+        <app-boton-flotante
+          icono="phosphorGiftFill"
+          etiquetaAria="Abrir un sobre diario"
+          (accion)="registrar('flotante sin contador')"
+        />
+      </div>
+
+      <div
+        class="transform-gpu relative h-64 overflow-hidden rounded-lg border border-dashed border-borde-fuerte bg-fondo-hundido"
+      >
+        <p class="p-4 font-interfaz text-xs text-texto-apagado">
+          Con contador visible y con contador en cero, que no debería mostrar burbuja.
+        </p>
+
+        <app-boton-flotante
+          icono="phosphorBellFill"
+          etiquetaAria="Notificaciones"
+          [contador]="7"
+          (accion)="registrar('flotante con contador 7')"
+        />
+      </div>
+    </div>
+
+    <div class="mt-6 grid gap-6 sm:grid-cols-2">
+      <div
+        class="transform-gpu relative h-32 overflow-hidden rounded-lg border border-dashed border-borde-fuerte bg-fondo-hundido"
+      >
+        <p class="p-3 font-interfaz text-xs text-texto-apagado">
+          <code>[contador]="0"</code> → sin burbuja
+        </p>
+
+        <app-boton-flotante
+          icono="phosphorTicketFill"
+          etiquetaAria="Cupones"
+          [contador]="0"
+          (accion)="registrar('flotante con contador 0')"
+        />
+      </div>
+
+      <div
+        class="transform-gpu relative h-32 overflow-hidden rounded-lg border border-dashed border-borde-fuerte bg-fondo-hundido"
+      >
+        <p class="p-3 font-interfaz text-xs text-texto-apagado">Deshabilitado</p>
+
+        <app-boton-flotante
+          icono="phosphorLockFill"
+          etiquetaAria="Bloqueado"
+          [contador]="2"
+          [disabled]="true"
+          (accion)="registrar('no debería aparecer')"
+        />
+      </div>
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-advertencia bg-advertencia-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-advertencia-texto">
+        El botón usa <code>fixed right-5 bottom-5</code> sin ningún input de posición, así que
+        fuera de este truco de <code>transform-gpu</code> se escapa a la esquina inferior derecha
+        del viewport y queda pegado sobre el resto de la página. Además emite
+        <code>accion</code>, no <code>click</code> como estaba especificado.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <div class="border-t border-borde-default pt-4">
+    <app-registro-eventos [registros]="registros()" />
+  </div>
+</div>

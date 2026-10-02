@@ -1,0 +1,26 @@
+<button
+  #boton
+  type="button"
+  class="relative inline-flex select-none flex-col items-center justify-center gap-2 overflow-hidden rounded-lg border border-transparent bg-marca-primaria px-10 py-6 font-titulo uppercase leading-none text-marca-sobre-primaria shadow-alta transition-transform duration-200 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-borde-foco enabled:cursor-pointer enabled:hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:transform-none disabled:cursor-not-allowed disabled:bg-estado-neutro-fondo disabled:text-estado-neutro-texto disabled:opacity-60"
+  [disabled]="deshabilitado()"
+  (click)="accion.emit()"
+>
+  @if (movimientoPermitido()) {
+    <span
+      #halo
+      class="pointer-events-none absolute inset-0 rounded-lg bg-marca-acento opacity-40 shadow-brillo-verde"
+      aria-hidden="true"
+    ></span>
+  }
+
+  <span class="relative z-10 inline-flex flex-col items-center gap-1.5">
+    <ng-icon name="phosphorPlayFill" size="28" aria-hidden="true" />
+    <span class="text-xl tracking-[0.06em]">{{ texto() }}</span>
+
+    @if (haySubtexto()) {
+      <span class="font-cuerpo text-xs font-normal normal-case tracking-normal opacity-85">
+        {{ subtexto() }}
+      </span>
+    }
+  </span>
+</button>
