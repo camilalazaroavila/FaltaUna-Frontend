@@ -1,0 +1,37 @@
+<div class="min-h-screen bg-[#123f46] px-6 py-10 relative overflow-hidden">
+
+  <div class="absolute -top-24 -left-24 w-72 h-72 bg-[#f05b52] rounded-full opacity-20"></div>
+  <div class="absolute -bottom-32 -right-20 w-96 h-96 bg-[#4fa9a1] rounded-full opacity-20"></div>
+
+  <div class="relative z-10 max-w-5xl mx-auto">
+
+    <header class="flex items-center justify-between mb-10">
+      <div class="text-white">
+        <div class="inline-block bg-[#f05b52] px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-3">
+          Panel de usuario
+        </div>
+        <h1 class="text-3xl md:text-4xl font-black">
+          FALTA <span class="text-[#f05b52]">UNA</span>
+        </h1>
+      </div>
+
+      <button (click)="cerrarSesion()" class="bg-white/10 hover:bg-white/20 text-white font-bold text-sm
+             rounded-xl px-5 py-3 transition cursor-pointer border border-white/20">
+        Cerrar sesión
+      </button>
+    </header>
+
+    <section class="bg-white rounded-[2rem] shadow-2xl p-8 md:p-10">
+      <p class="text-[#f05b52] font-black text-sm uppercase tracking-widest">
+        Tu colección
+      </p>
+      <h2 class="text-2xl md:text-3xl font-black text-[#123f46] mt-2">
+        Hola, {{ authService.usuarioActual()?.nombreUsuario }}
+      </h2>
+      <p class="text-gray-500 mt-3 max-w-xl">
+        Acá vas a ver tus cartas, álbumes e intercambios. Esta vista es exclusiva para cuentas con rol Usuario.
+      </p>
+    </section>
+
+  </div>
+</div>

@@ -35,6 +35,7 @@ import {
   heroSparklesSolid,
 } from '@ng-icons/heroicons/solid';
 import { routes } from './app.routes';
+import { authInterceptor } from './interceptores/auth.interceptor';
 
 //test
 export const appConfig: ApplicationConfig = {
