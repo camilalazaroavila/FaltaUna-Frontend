@@ -56,6 +56,9 @@
     --color-amarillo-hover: #F8F5C4;
     --color-amarillo-activo: #DDD78E;
 
+    /* --- Botones de la pantalla de jugar --- */
+    --color-juego-claro: #F9F9A8;
+    /* Cara del paralelogramo de las opciones de juego */
 
     /* --- Verde institucional para fondos claros --- */
     --color-verde-claro: #04862B;
@@ -261,6 +264,13 @@
     --btn-exito-activo: var(--color-verde-jugador-activa);
     --btn-exito-anillo: var(--exito-texto);
 
+    /* Boton de opcion de juego: paralelogramo con sombra solida.
+       Cara y sombra son tokens distintos porque el ::before es fijo y el
+       ::after se desplaza en hover y active. */
+    --btn-juego-bg: var(--color-juego-claro);
+    --btn-juego-texto: var(--color-teal-profundo);
+    --btn-juego-sombra: var(--marca-primaria);
+    --btn-juego-foco: var(--marca-primaria);
 
     --btn-fantasma-bg: transparent;
     --btn-fantasma-texto: var(--texto-secundario);
@@ -501,6 +511,11 @@
     --color-btn-exito-hover: var(--btn-exito-hover);
     --color-btn-exito-activo: var(--btn-exito-activo);
 
+    /* Boton de opcion de juego */
+    --color-btn-juego-bg: var(--btn-juego-bg);
+    --color-btn-juego-texto: var(--btn-juego-texto);
+    --color-btn-juego-sombra: var(--btn-juego-sombra);
+    --color-btn-juego-foco: var(--btn-juego-foco);
 
     --font-titulo: var(--fuente-titulo);
     --font-cuerpo: var(--fuente-cuerpo);

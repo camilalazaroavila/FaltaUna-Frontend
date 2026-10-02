@@ -38,7 +38,12 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     titulo: 'app-boton-navegacion-circular',
     descripcion: 'Tamanos, activo, deshabilitado, insignia y barra lateral simulada.',
   },
-    {
+  {
+    id: 'boton-opcion-juego',
+    titulo: 'button[app-boton-opcion-juego]',
+    descripcion: 'Paralelogramo con sombra solida, los cuatro rotulos de la pantalla de jugar.',
+  },
+  {
     id: 'boton-jugar',
     titulo: 'app-boton-jugar',
     descripcion: 'CTA hero con halo y rebote de GSAP.',

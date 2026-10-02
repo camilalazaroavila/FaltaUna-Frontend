@@ -5,6 +5,7 @@ import { SeccionTokens } from './secciones/tokens/seccion-tokens';
 import { SeccionBoton } from './secciones/boton/seccion-boton';
 import { SeccionBadge } from './secciones/badge/seccion-badge';
 import { SeccionNavegacionCircular } from './secciones/navegacion-circular/seccion-navegacion-circular';
+import { SeccionBotonOpcionJuego } from './secciones/boton-opcion-juego/seccion-boton-opcion-juego';
 import { SeccionBotonJugar } from './secciones/boton-jugar/seccion-boton-jugar';
 import { SeccionBotonFlotante } from './secciones/boton-flotante/seccion-boton-flotante';
 import { SeccionBotonIcono } from './secciones/boton-icono/seccion-boton-icono';
@@ -19,6 +20,7 @@ export type ModoGaleria = 'jugador' | 'empresa';
     SeccionBoton,
     SeccionBadge,
     SeccionNavegacionCircular,
+    SeccionBotonOpcionJuego,
     SeccionBotonJugar,
     SeccionBotonFlotante,
     SeccionBotonIcono,

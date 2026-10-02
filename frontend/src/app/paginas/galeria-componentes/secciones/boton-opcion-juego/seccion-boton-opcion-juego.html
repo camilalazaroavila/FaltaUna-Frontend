@@ -1,0 +1,115 @@
+<div class="space-y-8">
+  <!-- Los cuatro rótulos reales -->
+  <app-tarjeta-muestra
+    titulo="button[app-boton-opcion-juego]"
+    descripcion="Las cuatro opciones de la pantalla de jugar, apiladas como van a aparecer. El paralelogramo y su sombra sólida se dibujan con los pseudo-elementos ::before y ::after; el sesgo nunca toca el host, así que la tipografía no se deforma. Todavía no navegan: la pantalla de jugar no existe."
+  >
+    <div class="mx-auto flex max-w-md flex-col gap-4">
+      @for (opcion of opciones; track opcion) {
+        <button
+          app-boton-opcion-juego
+          type="button"
+          ancho="completo"
+          (click)="registrar(opcion)"
+        >
+          {{ opcion }}
+        </button>
+      }
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-advertencia bg-advertencia-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-advertencia-texto">
+        El selector es de atributo y duplica la etiqueta, así que el mismo componente funciona
+        sobre <code>&lt;button&gt;</code> y sobre <code>&lt;a&gt;</code> con
+        <code>routerLink</code> o <code>href</code>. Cuando la pantalla exista, estas cuatro
+        opciones dejan de ser <code>&lt;button&gt;</code> y pasan a ser enlaces.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Los tres tamaños -->
+  <app-tarjeta-muestra
+    titulo="Tamaños"
+    descripcion="Los tres tamaños con su geometría propia. sm, md y lg escalan a la vez el desfase de la sombra, el radio, la sangría del sesgo y el padding, porque el recorte del paralelogramo depende del alto de la cara."
+  >
+    <div class="mx-auto flex max-w-md flex-col items-start gap-6">
+      <button
+        app-boton-opcion-juego
+        type="button"
+        tamanio="sm"
+        ancho="completo"
+        (click)="registrar('sm')"
+      >
+        Partida contra jugador
+      </button>
+      <button
+        app-boton-opcion-juego
+        type="button"
+        ancho="completo"
+        (click)="registrar('md')"
+      >
+        Partida contra la IA
+      </button>
+      <button
+        app-boton-opcion-juego
+        type="button"
+        tamanio="lg"
+        ancho="completo"
+        (click)="registrar('lg')"
+      >
+        Volver al inicio
+      </button>
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-advertencia bg-advertencia-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-advertencia-texto">
+        Ningún tamaño necesita <code>area-tactil</code>: el más chico ya mide 76px de alto, muy
+        por encima de los 44px de WCAG 2.5.5. Además esa utilidad engorda un <code>::before</code>,
+        que en este componente pertenece a la sombra.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Ancho y deshabilitado -->
+  <app-tarjeta-muestra
+    titulo="Ancho y deshabilitado"
+    descripcion="El eje ancho va de auto (solo el texto, el default del componente) a completo (toda la columna). Con disabled el control se atenúa, se avisa por aria-disabled y deja de disparar la acción, incluso siendo un enlace con routerLink."
+  >
+    <div class="mx-auto flex max-w-md flex-col items-start gap-4">
+      <button app-boton-opcion-juego type="button" (click)="registrar('ancho auto')">
+        Tutorial
+      </button>
+
+      <button
+        app-boton-opcion-juego
+        type="button"
+        ancho="completo"
+        [disabled]="true"
+      >
+        Partida contra la IA
+      </button>
+
+      <a
+        app-boton-opcion-juego
+        ancho="completo"
+        routerLink="/registro"
+        [disabled]="true"
+      >
+        Volver al inicio
+      </a>
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-marca-acento bg-marca-acento-suave px-3 py-2">
+      <p class="font-interfaz text-xs text-texto-primario">
+        El estado deshabilitado no usa <code>pointer-events-none</code>: el control sigue
+        recibiendo el cursor para que el motivo del bloqueo sea visible. Lo que bloquea la
+        acción es un <code>preventDefault</code> en fase de captura. Probá el enlace deshabilitado
+        con el teclado: no navega y sale del recorrido de tabulación.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <div class="border-t border-borde-default pt-4">
+    <app-registro-eventos [registros]="registros()" />
+  </div>
+</div>
