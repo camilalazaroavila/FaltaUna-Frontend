@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
   template: `
     <header class="encabezado">
       <a routerLink="/" class="encabezado__logo" aria-label="Falta Una, ir al inicio">
-        <img src="assets/logo-falta-una.svg" alt="" width="56" height="56" />
+        <img src="#" alt="" width="56" height="56" />
       </a>
 
       <form class="encabezado__buscador" role="search" (submit)="buscarCampania($event)">
