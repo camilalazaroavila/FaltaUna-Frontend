@@ -53,6 +53,7 @@
     "@angular/build": "^20.3.13",
     "@angular/cli": "^20.3.13",
     "@angular/compiler-cli": "^20.3.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.70.0",
@@ -64,5 +65,12 @@
     "prettier": "^3.9.6",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "lmdb@3.4.2": true,
+    "@parcel/watcher@2.6.0": true,
+    "msgpackr-extract@3.0.4": true,
+    "unrs-resolver@1.12.2": true
   }
 }

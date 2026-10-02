@@ -15,7 +15,7 @@ describe('App', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render the router outlet and the global toaster', () => {
+it('should render the router outlet and the global toaster', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 

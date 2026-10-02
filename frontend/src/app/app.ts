@@ -9,6 +9,7 @@ import { NgxSonnerToaster } from 'ngx-sonner';
  */
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet, NgxSonnerToaster],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

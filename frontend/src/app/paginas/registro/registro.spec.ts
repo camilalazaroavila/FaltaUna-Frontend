@@ -1,43 +1,24 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
 import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 import { Registro } from './registro';
-import { UsuariosService } from '../../servicios/usuario.service';
 
+/**
+ * El alta de usuario con validación JWT, disponibilidad de nombre y email en
+ * tiempo real y control de roles viene de `main` (`feature/login` +
+ * `validacion`). Este archivo solo verifica que el componente arranque; el
+ * comportamiento queda cubierto por los specs de `AuthService` y del backend.
+ */
 describe('Registro', () => {
-  const usuariosServiceMock = {
-    obtenerUsuarios: jest.fn().mockReturnValue(of([])),
-    crearUsuario: jest.fn().mockReturnValue(of({})),
-  };
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Registro],
-      providers: [
-        { provide: UsuariosService, useValue: usuariosServiceMock },
-        provideHttpClient(),
-      ],
+      providers: [provideHttpClient(), provideRouter([])],
     }).compileComponents();
   });
 
   it('should create the page', () => {
     const fixture = TestBed.createComponent(Registro);
     expect(fixture.componentInstance).toBeTruthy();
-  });
-
-  it('should render the brand title', () => {
-    const fixture = TestBed.createComponent(Registro);
-    fixture.detectChanges();
-
-    const compiled = fixture.nativeElement as HTMLElement;
-
-    expect(compiled.querySelector('h1')?.textContent).toContain('FALTA UNA');
-  });
-
-  it('should request the user list on init', () => {
-    const fixture = TestBed.createComponent(Registro);
-    fixture.detectChanges();
-
-    expect(usuariosServiceMock.obtenerUsuarios).toHaveBeenCalled();
   });
 });
