@@ -1,0 +1,19 @@
+<button
+  type="button"
+  [class]="clases()"
+  [disabled]="disabled()"
+  [attr.aria-label]="etiquetaAccesible()"
+  [attr.title]="etiquetaAria()"
+  (click)="accion.emit()"
+>
+  <ng-icon [name]="icono()" size="26" aria-hidden="true" />
+
+  @if (hayContador()) {
+    <span
+      class="absolute -top-1 -right-1 inline-flex min-w-6 items-center justify-center rounded-circulo bg-atencion px-1.5 font-interfaz text-xs font-bold leading-6 text-atencion-sobre"
+      aria-hidden="true"
+    >
+      {{ contador() }}
+    </span>
+  }
+</button>

@@ -1,0 +1,10 @@
+<button
+  type="button"
+  [class]="clases()"
+  [disabled]="disabled()"
+  [attr.aria-label]="etiquetaAria()"
+  [attr.title]="etiquetaAria()"
+  (click)="accion.emit()"
+>
+  <ng-icon [name]="icono()" [size]="tamanio() === 'sm' ? '16' : '20'" aria-hidden="true" />
+</button>

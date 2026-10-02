@@ -1,0 +1,17 @@
+@if (mostrados().length > 0) {
+  <ul class="flex flex-wrap gap-2" aria-live="polite">
+    @for (registro of mostrados(); track registro.clave) {
+      <li
+        class="inline-flex items-center gap-1.5 rounded-pildora border border-borde-default bg-fondo-hundido px-2.5 py-1 font-interfaz text-xs text-texto-secundario"
+      >
+        <span class="text-texto-primario">{{ registro.evento }}</span>
+        <span aria-hidden="true">&middot;</span>
+        <span>{{ registro.antiguedad }}</span>
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="font-interfaz text-xs text-texto-apagado">
+    Sin eventos: interactuá con el componente de arriba.
+  </p>
+}

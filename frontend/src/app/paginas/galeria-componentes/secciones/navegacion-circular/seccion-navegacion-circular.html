@@ -1,0 +1,125 @@
+<div class="space-y-8">
+  <!-- Tamaños y estados -->
+  <app-tarjeta-muestra
+    titulo="app-boton-navegacion-circular"
+    descripcion="Tamaños sm, md y lg. Estados normal, activo y deshabilitado, e insignia numérica y textual."
+  >
+    <div class="space-y-6">
+      @for (tamanio of tamanios; track tamanio) {
+        <div class="space-y-3">
+          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+            tamanio=&quot;{{ tamanio }}&quot;
+          </h4>
+
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="flex flex-col items-center gap-1.5">
+              <app-boton-navegacion-circular
+                icono="phosphorCardsFill"
+                etiquetaAria="Sobres"
+                [tamanio]="tamanio"
+                (accion)="registrar('normal ' + tamanio)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">normal</span>
+            </div>
+
+            <div class="flex flex-col items-center gap-1.5">
+              <app-boton-navegacion-circular
+                icono="phosphorStackFill"
+                etiquetaAria="Álbum"
+                [tamanio]="tamanio"
+                [activo]="true"
+                (accion)="registrar('activo ' + tamanio)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">activo</span>
+            </div>
+
+            <div class="flex flex-col items-center gap-1.5">
+              <app-boton-navegacion-circular
+                icono="phosphorQrCodeFill"
+                etiquetaAria="Escanear QR"
+                [tamanio]="tamanio"
+                [deshabilitado]="true"
+                (accion)="registrar('no debería aparecer ' + tamanio)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">deshabilitado</span>
+            </div>
+
+            <div class="flex flex-col items-center gap-1.5">
+              <app-boton-navegacion-circular
+                icono="phosphorBellFill"
+                etiquetaAria="Notificaciones"
+                [tamanio]="tamanio"
+                [insignia]="3"
+                (accion)="registrar('insignia numérica ' + tamanio)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">insignia 3</span>
+            </div>
+
+            <div class="flex flex-col items-center gap-1.5">
+              <app-boton-navegacion-circular
+                icono="phosphorGiftFill"
+                etiquetaAria="Recompensas"
+                [tamanio]="tamanio"
+                insignia="NUEVO"
+                (accion)="registrar('insignia de texto ' + tamanio)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">insignia texto</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-advertencia bg-advertencia-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-advertencia-texto">
+        Dos cosas para revisar acá. La insignia numérica usa
+        <code>text-atencion-sobre</code>, que <strong>no tiene mapeo</strong> en
+        <code>@theme inline</code> (<code>styles.css</code>), así que el texto de la insignia no
+        hereda el color de contraste previsto. Y el componente se llama
+        <em>circular</em> pero se dibuja con <code>rounded-pildora</code>.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Barra lateral simulada -->
+  <app-tarjeta-muestra
+    titulo="Barra lateral simulada"
+    descripcion="Los cinco destinos reales, sobre fondo oscuro. Tocá cualquiera: el estado activo se mueve."
+  >
+    <div class="flex gap-6">
+      <nav
+        aria-label="Barra lateral de ejemplo"
+        class="flex w-24 shrink-0 flex-col items-center gap-3 rounded-lg border border-borde-default bg-fondo-hundido p-4 shadow-alta"
+      >
+        @for (destino of destinos; track destino.id) {
+          <app-boton-navegacion-circular
+            [icono]="destino.icono"
+            [etiquetaAria]="destino.nombre"
+            [activo]="activoBarra() === destino.id"
+            [insignia]="destino.id === 'cupones' ? 2 : null"
+            (accion)="seleccionar(destino.id, destino.nombre)"
+          />
+        }
+      </nav>
+
+      <div class="min-w-0 flex-1">
+        <p class="font-interfaz text-xs uppercase text-texto-apagado">Destino activo</p>
+        <p class="mt-1 font-titulo text-xl text-texto-primario">
+          @for (destino of destinos; track destino.id) {
+            @if (activoBarra() === destino.id) {
+              {{ destino.nombre }}
+            }
+          }
+        </p>
+        <p class="mt-2 font-cuerpo text-sm text-texto-secundario">
+          El componente no consulta el Router: el estado activo lo fija el consumidor. Acá lo
+          maneja la seccion con un <code>signal&lt;string&gt;</code>.
+        </p>
+      </div>
+    </div>
+  </app-tarjeta-muestra>
+
+  <div class="border-t border-borde-default pt-4">
+    <app-registro-eventos [registros]="registros()" />
+  </div>
+</div>

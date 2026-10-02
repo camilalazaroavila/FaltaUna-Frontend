@@ -1,0 +1,92 @@
+<a
+  href="#contenido"
+  class="sr-only font-interfaz focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-pildora focus:bg-marca-primaria focus:px-4 focus:py-2 focus:text-marca-sobre-primaria"
+>
+  Saltar al contenido
+</a>
+
+<!-- Barra superior fija -->
+<header
+  class="sticky top-0 z-30 border-b border-borde-default bg-fondo-app/95 backdrop-blur supports-backdrop-blur:bg-fondo-app/80"
+>
+  <div
+    class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6"
+  >
+    <h1 class="font-titulo text-lg text-texto-primario">Galería</h1>
+
+    <!-- Selector de modo: usa radios nativos para heredar el recorrido con flechas del teclado -->
+    <fieldset class="flex items-center gap-2">
+      <legend class="sr-only">Modo de la interfaz</legend>
+
+      <span class="font-interfaz text-xs text-texto-apagado">Modo</span>
+
+      @for (opcion of ['jugador', 'empresa']; track opcion) {
+        <label
+          class="cursor-pointer rounded-pildora border border-borde-default px-3 py-1 font-interfaz text-xs uppercase transition-colors has-[:checked]:border-marca-primaria has-[:checked]:bg-marca-primaria has-[:checked]:text-marca-sobre-primaria has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-borde-foco"
+        >
+          <input
+            class="sr-only"
+            type="radio"
+            name="modo-galeria"
+            [value]="opcion"
+            [checked]="modo() === opcion"
+            (change)="modo.set($any($event.target).value)"
+          />
+          {{ opcion }}
+        </label>
+      }
+    </fieldset>
+
+    <!-- Simulación de prefers-reduced-motion -->
+    <label class="flex cursor-pointer items-center gap-2 font-interfaz text-xs text-texto-secundario">
+      <input
+        type="checkbox"
+        class="size-4 accent-marca-primaria"
+        [checked]="movimientoReduccion()"
+        (change)="movimientoReduccion.set(!movimientoReduccion())"
+      />
+      Reducir movimiento (solo CSS)
+    </label>
+
+    <a
+      routerLink="/registro"
+      class="ml-auto font-interfaz text-xs text-texto-link underline underline-offset-4 hover:text-texto-link-hover"
+    >
+      Volver
+    </a>
+  </div>
+
+  <!-- Índice -->
+  <nav aria-label="Índice de secciones" class="border-t border-borde-default">
+    <ul
+      class="custom-scrollbar mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 sm:px-6"
+    >
+      @for (seccion of secciones; track seccion.id) {
+        <li>
+          <a
+            [href]="'#' + seccion.id"
+            class="inline-block whitespace-nowrap rounded-pildora px-3 py-1.5 font-interfaz text-xs text-texto-secundario transition-colors hover:bg-marca-primaria-suave hover:text-texto-primario focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+          >
+            {{ seccion.titulo }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+</header>
+
+<main id="contenido" class="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:px-6">
+  <p class="font-cuerpo text-sm text-texto-secundario">
+    Página interna de revisión. Muestra los componentes reales de
+    <code class="font-interfaz text-texto-primario">compartidos/componentes</code>: no hay maquetas
+    ni replicas, así que cualquier defecto visual es el del componente.
+  </p>
+
+  <app-seccion-tokens id="tokens" />
+  <app-seccion-boton id="boton" />
+  <app-seccion-badge id="badge" />
+<app-seccion-navegacion-circular id="navegacion-circular" />
+    <app-seccion-boton-jugar id="boton-jugar" />
+  <app-seccion-boton-flotante id="boton-flotante" />
+  <app-seccion-boton-icono id="boton-icono" />
+</main>

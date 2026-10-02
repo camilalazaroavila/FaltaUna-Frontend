@@ -1,0 +1,100 @@
+<div class="space-y-8">
+  <!-- Variantes × tamaños × punto -->
+  <app-tarjeta-muestra
+    titulo="app-badge"
+    descripcion="Siete variantes en dos tamaños, con y sin punto. La variante acento ignora el input tamanio: es un rótulo display pegado a otro elemento."
+  >
+    <div class="space-y-6">
+      @for (variante of variantes; track variante) {
+        <div class="space-y-3">
+          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+            variante=&quot;{{ variante }}&quot;
+          </h4>
+
+          <div class="flex flex-wrap items-center gap-3">
+            @for (tamanio of tamanios; track tamanio) {
+              <div class="flex flex-col items-center gap-1.5">
+                <app-badge [variante]="variante" [tamanio]="tamanio">{{ variante }}</app-badge>
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  {{ tamanio }} · sin punto
+                </span>
+              </div>
+
+              <div class="flex flex-col items-center gap-1.5">
+                <app-badge [variante]="variante" [tamanio]="tamanio" punto>{{ variante }}</app-badge>
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  {{ tamanio }} · con punto
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-advertencia bg-advertencia-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-advertencia-texto">
+        La variante <code>acento</code> define su propia altura y padding
+        (<code>badge.ts</code>, rama <code>esAcento()</code>), por eso
+        <code>tamanio="sm"</code> y <code>tamanio="md"</code> se ven idénticos: es
+        intencional, no un fallo.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Casos reales -->
+  <app-tarjeta-muestra
+    titulo="Casos de uso reales"
+    descripcion="Los rótulos que la app muestra de verdad, con punto y sin punto."
+  >
+    <div class="flex flex-wrap items-center gap-3">
+      @for (caso of casos; track caso.texto) {
+        <div class="flex flex-col items-center gap-1.5">
+          <app-badge [variante]="caso.variante" punto>{{ caso.texto }}</app-badge>
+          <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+            {{ caso.variante }}
+          </span>
+        </div>
+      }
+
+      <div class="flex flex-col items-center gap-1.5">
+        <app-badge variante="neutro">Repetida ×3</app-badge>
+        <span class="font-interfaz text-[0.6875rem] text-texto-apagado">sin punto</span>
+      </div>
+
+      <div class="flex flex-col items-center gap-1.5">
+        <app-badge variante="atencion">2/2 GRÁTIS</app-badge>
+        <span class="font-interfaz text-[0.6875rem] text-texto-apagado">acento</span>
+      </div>
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Rareza -->
+  <app-tarjeta-muestra
+    titulo="Rareza"
+    descripcion="Cuatro niveles de rareza con sus tokens. Se lee mejor sobre superficie oscura."
+  >
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      @for (rareza of rarezas; track rareza.estrellas) {
+        <div
+          class="flex flex-col items-center gap-2 rounded-md border border-borde-default bg-fondo-elevado p-4"
+        >
+          <span class="font-titulo text-2xl tracking-[0.04em]" [class]="rareza.clase" aria-hidden="true">
+            {{ rareza.estrellas }}
+          </span>
+
+          <span class="font-interfaz text-xs text-texto-primario">{{ rareza.nombre }}</span>
+          <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+            {{ rareza.clase }}
+          </span>
+
+          <app-badge variante="acento">{{ rareza.estrellas }} {{ rareza.nombre }}</app-badge>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <div class="border-t border-borde-default pt-4">
+    <app-registro-eventos [registros]="registros()" />
+  </div>
+</div>

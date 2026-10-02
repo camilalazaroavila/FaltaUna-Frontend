@@ -1,0 +1,193 @@
+<div class="space-y-8">
+  <!-- Paleta semántica -->
+  <app-tarjeta-muestra
+    titulo="Paleta semántica (Capa 2)"
+    descripcion="Muestras de color con su nombre de token y la utilidad de Tailwind que expone el sistema vía `@theme inline`. Todas las utilidades de esta lista se verificaron contra el CSS compilado: si un token no estuviera mapeado, la clase no existiría y el swatch se vería igual porque resuelve el color con `var()`."
+  >
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (color of paleta; track color.token) {
+        <div class="flex flex-col gap-3 rounded-md border border-borde-default bg-fondo-elevado p-3">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <p class="font-interfaz text-xs font-bold uppercase text-texto-primario">
+                {{ color.token }}
+              </p>
+              <p class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                {{ color.uso }}
+              </p>
+            </div>
+
+            <div
+              class="flex size-10 shrink-0 items-center justify-center rounded-md border border-borde-default bg-fondo-hundido"
+              [style.background]="'var(' + color.token + ')'"
+              aria-hidden="true"
+            ></div>
+          </div>
+
+<p class="font-mono font-interfaz text-xs text-texto-secundario">
+                class="{{ color.utilidad }}"
+              </p>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Escala de feedback -->
+  <app-tarjeta-muestra
+    titulo="Escala de feedback (5 por estado)"
+    descripcion="Estados de éxito, error, advertencia, atención e información. Cada estado tiene 5 tokens y los 5 están registrados en `@theme inline`. El swatch de cada fila usa como color de texto el token que la propia escala le asigna como contraste, así que se lee la relación base/`-sobre` y tinte/`-texto` sin cambiar de sección. Tailwind v4 emite la utilidad solo si alguna plantilla la usa: hoy `text-atencion-sobre` sí aparece en el bundle porque la consumen dos componentes, y las otras cuatro quedan disponibles a pedido."
+  >
+    <div class="space-y-6">
+      @for (estado of feedback; track estado.id) {
+        <div class="space-y-3">
+          <h4
+            class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario"
+          >
+            {{ estado.nombre }} — <code class="text-texto-secundario">{{ estado.id }}</code>
+          </h4>
+
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            @for (variante of estado.variantes; track variante.sufijo) {
+              <div
+                class="flex flex-col justify-between gap-2 rounded-md border border-borde-default bg-fondo-elevado p-3"
+              >
+                <div>
+                  <p class="font-interfaz text-xs font-bold text-texto-primario">
+                    --{{ variante.sufijo }}
+                  </p>
+                  <p class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                    {{ variante.uso }}
+                  </p>
+                </div>
+
+                <div
+                  class="flex h-8 items-center justify-center rounded-sm border border-borde-default"
+                  [style.background]="'var(--' + variante.sufijo + ')'"
+                  aria-hidden="true"
+                >
+                  <span
+                    class="px-1 font-interfaz text-[0.625rem] uppercase"
+                    [style.color]="'var(--' + variante.contraste + ')'"
+                  >
+                    Ejemplo
+                  </span>
+                </div>
+
+                <p class="font-mono font-interfaz text-[0.6875rem] text-texto-secundario">
+                  {{ variante.utilidad }}
+                </p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Tipografías -->
+  <app-tarjeta-muestra
+    titulo="Tipografías"
+    descripcion="Familias cargadas vía Google Fonts: Russo One / Rock Salt para títulos, Merriweather para cuerpo y system-ui para controles."
+  >
+    <div class="space-y-4">
+      @for (fuente of tipografias; track fuente.token) {
+        <div class="rounded-md border border-borde-default bg-fondo-elevado p-4">
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p class="font-interfaz text-xs font-bold uppercase text-texto-primario">
+                {{ fuente.token }}
+              </p>
+              <p class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                {{ fuente.familia }}
+              </p>
+            </div>
+
+            <p class="font-interfaz text-[0.6875rem] text-texto-secundario">
+              <span class="font-mono">class=&quot;{{ fuente.utilidad }}&quot;</span>
+            </p>
+          </div>
+
+          <p class="mt-4 leading-relaxed" [class]="fuente.utilidad">
+            {{ fuente.ejemplo }}
+          </p>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Radios -->
+  <app-tarjeta-muestra titulo="Radios" descripcion="Tamaños de borde-redondeado expuestos en @theme inline.">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      @for (radio of radios; track radio.token) {
+        <div
+          class="flex flex-col items-center justify-between gap-3 rounded-md border border-borde-default bg-fondo-elevado p-3"
+        >
+          <div
+            class="flex size-12 items-center justify-center border border-borde-default bg-fondo-hundido"
+            [class]="radio.utilidad"
+            aria-hidden="true"
+          ></div>
+          <p class="font-interfaz text-xs font-bold text-texto-primario">{{ radio.token }}</p>
+          <p class="font-interfaz text-[0.6875rem] text-texto-apagado">{{ radio.valor }}</p>
+          <p class="font-interfaz text-[0.6875rem] font-mono text-texto-secundario">
+            {{ radio.utilidad }}
+          </p>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Sombras -->
+  <app-tarjeta-muestra titulo="Sombras" descripcion="Sombras elevadas para tarjetas, toasts y efectos de marca.">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      @for (sombra of sombras; track sombra.token) {
+        <div
+          class="flex flex-col items-center justify-between gap-3 rounded-md border border-borde-default bg-fondo-elevado p-4"
+        >
+          <div
+            class="flex h-14 w-full items-center justify-center rounded-md border border-borde-default bg-fondo-superficie"
+            [class]="sombra.utilidad"
+            aria-hidden="true"
+          >
+            <span class="font-interfaz text-[0.6875rem] text-texto-apagado">Demo</span>
+          </div>
+
+          <p class="font-interfaz text-xs font-bold text-texto-primario">{{ sombra.token }}</p>
+          <p class="font-interfaz text-[0.6875rem] font-mono text-texto-secundario">
+            {{ sombra.utilidad }}
+          </p>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Scrollbar -->
+  <app-tarjeta-muestra
+    titulo="Scrollbar personalizado"
+    descripcion="Utilidad custom-scrollbar aplicada a un contenedor con altura fija. La comparación scrollbar-hide oculta el scroll sin romper el overflow."
+  >
+    <div class="grid gap-4 lg:grid-cols-2">
+      <div>
+        <p class="mb-2 font-interfaz text-xs uppercase text-texto-apagado">custom-scrollbar</p>
+        <div class="custom-scrollbar h-48 overflow-y-auto rounded-md border border-borde-default bg-fondo-hundido p-3">
+          @for (linea of lineas; track linea) {
+            <p class="py-1 font-cuerpo text-xs text-texto-secundario">
+              Línea de contenido largo para forzar el scroll vertical — ítem {{ linea }}
+            </p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <p class="mb-2 font-interfaz text-xs uppercase text-texto-apagado">scrollbar-hide</p>
+        <div class="scrollbar-hide h-48 overflow-y-auto rounded-md border border-borde-default bg-fondo-hundido p-3">
+          @for (linea of lineas; track linea) {
+            <p class="py-1 font-cuerpo text-xs text-texto-secundario">
+              Línea de contenido largo (scroll oculto) — ítem {{ linea }}
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+  </app-tarjeta-muestra>
+</div>

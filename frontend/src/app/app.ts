@@ -1,56 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { NgxSonnerToaster } from 'ngx-sonner';
-import { UsuariosService } from './servicios/usuario.service';
 
+/**
+ * Cáscara de la aplicación: solo aporta el outlet del router y el toaster
+ * global. La lógica de negocio de la pantalla de alta de usuario migró a
+ * `paginas/registro`.
+ */
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, NgxSonnerToaster],
+  imports: [RouterOutlet, NgxSonnerToaster],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App implements OnInit {
-
-  usuarios: any[] = [];
-
-  nuevoUsuario = {
-    nombreUsuario: '',
-    email: '',
-    password: ''
-  };
-
-  constructor(private usuariosService: UsuariosService) {}
-
-  ngOnInit(): void {
-    this.usuariosService.obtenerUsuarios().subscribe({
-      next: (datos) => {
-        console.log('Usuarios recibidos:', datos);
-        this.usuarios = datos;
-      },
-      error: (error) => {
-        console.error('Error al obtener usuarios:', error);
-      }
-    });
-  }
-
-  registrarUsuario(): void {
-    this.usuariosService.crearUsuario(this.nuevoUsuario).subscribe({
-      next: (usuarioCreado) => {
-        console.log('Usuario creado:', usuarioCreado);
-        alert('Usuario registrado correctamente');
-
-        this.nuevoUsuario = {
-          nombreUsuario: '',
-          email: '',
-          password: ''
-        };
-
-        this.ngOnInit();
-      },
-      error: (error) => {
-        console.error('Detalle del error 400 desde .NET:', error.error);
-        alert('No se pudo registrar el usuario');
-      }
-    });
-  }
-}
+export class App {}
