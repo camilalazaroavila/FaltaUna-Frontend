@@ -1,24 +1,63 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, booleanAttribute, input } from '@angular/core';
 
 @Component({
   selector: 'app-carrusel-marcas',
   standalone: true,
+  imports: [NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section class="carrusel" aria-label="Marcas participantes">
-      <ul class="carrusel__pista" [style.--duracion.s]="duracionSegundos()">
-        @for (marca of marcas(); track marca.nombre) {
-          <li>
-            <img [src]="marca.logoUrl" [alt]="marca.nombre" height="40" loading="lazy" />
-          </li>
-        }
-        <!-- Copia decorativa para lograr el bucle continuo -->
-        @for (marca of marcas(); track marca.nombre) {
-          <li class="carrusel__copia" aria-hidden="true">
-            <img [src]="marca.logoUrl" alt="" height="40" loading="lazy" />
-          </li>
-        }
-      </ul>
+    <section
+      class="contenedor-pista bg-landing-marcas-fondo py-3 md:py-5 lg:py-7"
+      [ngClass]="animado() ? 'overflow-hidden' : 'franja-estatica overflow-x-auto'"
+      aria-label="Marcas participantes"
+    >
+      <div class="contenedor-landing">
+        <ul
+          class="flex items-center"
+          [ngClass]="animado() ? 'w-max mx-auto pista-animada' : 'w-full justify-between gap-0.5'"
+          [style.--duracion.s]="duracionSegundos()"
+        >
+          @for (marca of marcas(); track $index) {
+            <li class="flex items-center" [ngClass]="animado() ? 'px-6 md:px-10 lg:px-14' : 'px-0.5 shrink-0'">
+              @if (marca.logoUrl) {
+                <img
+                  [src]="marca.logoUrl"
+                  [alt]="marca.nombre"
+                  class="h-6 w-auto md:h-10 lg:h-14"
+                  loading="lazy"
+                />
+              } @else {
+                <span
+                  class="whitespace-nowrap font-titulo uppercase leading-none text-landing-claro-texto/80"
+                  [ngClass]="
+                    animado()
+                      ? 'text-lg md:text-2xl lg:text-landing-wordmark'
+                      : 'text-[10px] tracking-tighter min-[400px]:text-[11px] sm:text-xs md:text-2xl lg:text-3xl'
+                  "
+                >
+                  {{ marca.nombre }}
+                </span>
+              }
+            </li>
+          }
+
+          @if (animado()) {
+            <!-- Copia decorativa para lograr el bucle continuo -->
+            @for (marca of marcas(); track $index) {
+              <li class="copia flex items-center px-6 md:px-10 lg:px-14" aria-hidden="true">
+                @if (marca.logoUrl) {
+                  <img [src]="marca.logoUrl" alt="" class="h-6 w-auto md:h-10 lg:h-14" loading="lazy" />
+                } @else {
+                  <span class="whitespace-nowrap font-titulo text-lg uppercase leading-none text-landing-claro-texto/80 md:text-2xl lg:text-landing-wordmark">
+                    {{ marca.nombre }}
+                  </span>
+                }
+              </li>
+            }
+          }
+        </ul>
+      </div>
     </section>
   `,
   styles: `
@@ -26,39 +65,13 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       display: block;
     }
 
-    .carrusel {
-      overflow: hidden;
-      padding-block: 1.25rem;
-      background: var(--acento);
-      mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-    }
-
-    .carrusel__pista {
-      display: flex;
-      align-items: center;
-      width: max-content;
-      margin: 0;
-      padding: 0;
-      list-style: none;
+    .pista-animada {
       animation: desplazar var(--duracion, 30s) linear infinite;
     }
 
-    .carrusel:hover .carrusel__pista,
-    .carrusel:focus-within .carrusel__pista {
+    section:hover .pista-animada,
+    section:focus-within .pista-animada {
       animation-play-state: paused;
-    }
-
-    .carrusel__pista li {
-      display: flex;
-      align-items: center;
-      padding-inline: 2rem;
-    }
-
-    .carrusel__pista img {
-      height: 2.5rem;
-      width: auto;
-      filter: grayscale(1);
-      opacity: 0.85;
     }
 
     @keyframes desplazar {
@@ -67,16 +80,33 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       }
     }
 
-    /* Sin movimiento: lista estática y desplazable con scroll horizontal */
+    /* Franja estática: scroll manual solo como fallback en pantallas mínimas */
+    .franja-estatica {
+      scrollbar-width: none;
+    }
+
+    .franja-estatica::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Con reduced-motion la pista deja de animarse pero sigue siendo usable:
+       el overflow-hidden de Tailwind se revierte a scroll-x manual con la
+       scrollbar oculta, para poder recorrer las marcas a mano. */
     @media (prefers-reduced-motion: reduce) {
-      .carrusel {
-        overflow-x: auto;
-        mask-image: none;
+      .contenedor-pista {
+        overflow-x: auto !important;
+        scrollbar-width: none;
       }
-      .carrusel__pista {
+
+      .contenedor-pista::-webkit-scrollbar {
+        display: none;
+      }
+
+      .pista-animada {
         animation: none;
       }
-      .carrusel__copia {
+
+      .copia {
         display: none !important;
       }
     }
@@ -87,8 +117,13 @@ export class CarruselMarcas {
 
   /** Duración de una vuelta completa; más alto = más lento. */
   readonly duracionSegundos = input(30);
+
+  /** `false` deja la franja estática, sin marquee ni copia decorativa. */
+  readonly animado = input(true, { transform: booleanAttribute });
 }
+
 export interface MarcaCarrusel {
   nombre: string;
-  logoUrl: string;
+  /** Si no hay logo, el nombre se renderiza como wordmark tipográfico. */
+  logoUrl?: string;
 }

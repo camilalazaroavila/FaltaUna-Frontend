@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgxSonnerToaster } from 'ngx-sonner';
+import { Body } from './compartidos/componentes/body/body';
 
 /**
- * Cáscara de la aplicación: solo aporta el outlet del router y el toaster
- * global. La lógica de negocio de la pantalla de alta de usuario migró a
- * `paginas/registro`.
+ * Cáscara de la aplicación: el `Body` define el marco visual global, y dentro
+ * vive el outlet del router. El toaster queda fuera del marco.
  */
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgxSonnerToaster],
+  imports: [RouterOutlet, NgxSonnerToaster, Body],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
