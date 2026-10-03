@@ -51,10 +51,12 @@
     --color-verde-jugador-hover: #52E285;
     --color-verde-jugador-activa: #29BF5E;
 
---color-amarillo-acento: #F2EEAE;
+    --color-amarillo-acento: #F2EEAE;
     /* Acento cǭlido del logo / estrellas */
     --color-amarillo-hover: #F8F5C4;
     --color-amarillo-activo: #DDD78E;
+    --color-amarillo-logo: #F9F9B2;
+    /* Amarillo exacto del imagotipo (gradiente de la landing) */
 
     /* --- Botones de la pantalla de jugar --- */
     --color-juego-claro: #F9F9A8;
@@ -90,6 +92,14 @@
     /* --- Neutros y feedback compartidos --- */
     --blanco-puro: #FFFFFF;
     --negro-puro: #000000;
+
+    /* --- Lecturas y superficies complementarias de la landing --- */
+    --color-blanco-verdoso: #F4FAF6;
+    /* Texto principal sobre teal (evita fatiga visual) */
+    --color-gris-teal: #B8D3CF;
+    /* Lectura secundaria sobre teal */
+    --color-verde-lima: #E6EFCB;
+    /* Panel orgánico amarillo verdoso de la landing */
 
     /* --- Radios de Borde (Compartidos) --- */
     --radio-sm: 0.375rem;
@@ -388,6 +398,63 @@
 }
 
 /* ==========================================================================
+   CAPA 2 — TOKENS SEMÁNTICOS · LANDING PÚBLICA
+   La landing alterna bloques oscuros y claros y no depende de `data-modo`:
+   estos tokens viven en `:root` para que su superficie nunca cambie con el
+   tema de la aplicación. Consumen primitivos de la Capa 1 (regla de oro).
+   ========================================================================== */
+:root {
+    /* Bloques oscuros (deportivo / nocturno) */
+    --landing-oscuro-fondo: var(--color-teal-base);
+    --landing-oscuro-superficie: var(--color-teal-superficie);
+    --landing-oscuro-texto: var(--color-blanco-verdoso);
+    --landing-oscuro-tenue: var(--color-gris-teal);
+    --landing-oscuro-borde: var(--color-teal-borde);
+    /* Borde de controles (FAQ) sobre bloque oscuro: crema atenuada */
+    --landing-oscuro-borde-control: color-mix(in srgb, var(--color-crema-borde) 65%, transparent);
+    --landing-gradiente-amarillo-verde: linear-gradient(
+        to bottom,
+        var(--color-amarillo-logo) 0%,
+        var(--color-teal-profundo) 100%
+    );
+
+    /* Bloques claros (crema editorial) */
+    --landing-claro-fondo: var(--color-crema-fondo);
+    --landing-claro-superficie: var(--color-crema-superficie);
+    --landing-claro-texto: var(--color-teal-profundo);
+    --landing-claro-borde: var(--color-crema-borde);
+
+    /* Marca y acentos de la landing */
+    --landing-marca: var(--color-verde-jugador);
+    --landing-sobre-marca: var(--color-teal-profundo);
+    --landing-acento: var(--color-amarillo-acento);
+
+    /* Fondo de la franja de marcas (amarillo pálido del imagotipo) */
+    --landing-marcas-fondo: var(--color-amarillo-logo);
+
+    /* Panel orgánico de "¿Quiénes somos?" */
+    --landing-panel: var(--color-verde-lima);
+
+    /* Escala fluida de la landing.
+       Cada clamp está anclado a 1440px y 1920px y su piso replica el valor `md`
+       vigente, de modo que 375px y 768px conservan su tamaño actual. */
+    --landing-tipografia-hero: clamp(1rem, calc(0.125rem + 1.25vw), 1.625rem);
+    --landing-tipografia-titulo: clamp(3rem, calc(-0.25rem + 4.1667vw), 4.75rem);
+    --landing-tipografia-lista: clamp(1rem, 1.25vw, 1.5rem);
+    --landing-tipografia-faq: clamp(0.875rem, calc(0.0625rem + 1.0417vw), 1.3125rem);
+    --landing-tipografia-panel: clamp(1rem, calc(0.125rem + 1.0417vw), 1.375rem);
+    --landing-tipografia-marca: clamp(1.5rem, 2.0833vw, 2.5rem);
+    --landing-tipografia-ui: clamp(1rem, calc(0.375rem + 0.8333vw), 1.375rem);
+
+    --landing-medida-logo: clamp(10rem, calc(1.625rem + 13.75vw), 18.125rem);
+    --landing-medida-cta: clamp(3rem, calc(0.5rem + 3.3333vw), 4.5rem);
+    --landing-medida-sobres: clamp(28rem, calc(0.625rem + 35.4167vw), 43.125rem);
+    --landing-medida-ilustracion: clamp(7rem, 10.4167vw, 12.5rem);
+    --landing-medida-avatar: clamp(3.5rem, 4.1667vw, 5rem);
+    --landing-espacio-columna: clamp(2rem, calc(-2rem + 6.6667vw), 6rem);
+}
+
+/* ==========================================================================
    MAPEO A TAILWIND v4 (@theme inline)
    `inline` permite que las utilidades (bg-marca-primaria, text-texto-primario)
    se actualicen dinámicamente en tiempo real al cambiar el atributo data-modo.
@@ -517,6 +584,43 @@
     --color-btn-juego-sombra: var(--btn-juego-sombra);
     --color-btn-juego-foco: var(--btn-juego-foco);
 
+    /* Landing pública: superficies alternadas independientes de data-modo */
+    --color-landing-oscuro-fondo: var(--landing-oscuro-fondo);
+    --color-landing-oscuro-superficie: var(--landing-oscuro-superficie);
+    --color-landing-oscuro-texto: var(--landing-oscuro-texto);
+    --color-landing-oscuro-tenue: var(--landing-oscuro-tenue);
+    --color-landing-oscuro-borde: var(--landing-oscuro-borde);
+    --color-landing-oscuro-borde-control: var(--landing-oscuro-borde-control);
+    --color-landing-claro-fondo: var(--landing-claro-fondo);
+    --color-landing-claro-superficie: var(--landing-claro-superficie);
+    --color-landing-claro-texto: var(--landing-claro-texto);
+    --color-landing-claro-borde: var(--landing-claro-borde);
+    --color-landing-marca: var(--landing-marca);
+    --color-landing-sobre-marca: var(--landing-sobre-marca);
+    --color-landing-acento: var(--landing-acento);
+    --color-landing-marcas-fondo: var(--landing-marcas-fondo);
+    --color-landing-panel: var(--landing-panel);
+
+    /* Escala fluida de la landing expuesta a las utilidades de Tailwind:
+       `--text-*` genera text-*, y `--spacing-*` genera h-/w-/size-/gap-*. */
+    --text-landing-hero: var(--landing-tipografia-hero);
+    --text-landing-titulo: var(--landing-tipografia-titulo);
+    --text-landing-lista: var(--landing-tipografia-lista);
+    --text-landing-faq: var(--landing-tipografia-faq);
+    --text-landing-equipo: var(--landing-tipografia-panel);
+    --text-landing-wordmark: var(--landing-tipografia-marca);
+    --text-landing-ui: var(--landing-tipografia-ui);
+
+    --spacing-landing-logo: var(--landing-medida-logo);
+    --spacing-landing-cta: var(--landing-medida-cta);
+    --spacing-landing-sobres: var(--landing-medida-sobres);
+    --spacing-landing-ilustracion: var(--landing-medida-ilustracion);
+    --spacing-landing-avatar: var(--landing-medida-avatar);
+    --spacing-landing-columna: var(--landing-espacio-columna);
+
+    /* Fondo exterior de la app (namespace --background-image-* -> bg-*) */
+    --background-image-landing-gradiente-amarillo-verde: var(--landing-gradiente-amarillo-verde);
+
     --font-titulo: var(--fuente-titulo);
     --font-cuerpo: var(--fuente-cuerpo);
     --font-interfaz: var(--fuente-interfaz);
@@ -572,6 +676,15 @@
 
 @utility desinclinar-menu {
     transform: skewX(12deg);
+}
+
+/* Contenedor único de la landing: centra el contenido y aporta el padding
+   lateral responsive. Los fondos de cada sección se mantienen full-bleed. */
+@utility contenedor-landing {
+    width: 100%;
+    max-width: 112rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 5rem);
 }
 
 /* ==========================================================================

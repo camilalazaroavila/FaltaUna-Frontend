@@ -5,15 +5,19 @@ import { rolGuard } from './guardias/rol.guard';
  * Rutas de la aplicación.
  *
  * El flujo real de usuarios entra por `login`; los dashboards quedan detrás de
- * `rolGuard`, que valida contra el rol del token. La ruta raíz redirige a
- * `login` porque todavía no hay landing pública: la pantalla de inicio se
- * construye en una tanda posterior.
+ * `rolGuard`, que valida contra el rol del token. La ruta raíz es la landing
+ * pública y desde ella se accede a `login` y `registro`.
  *
  * `componentes` es el banco de pruebas visual del sistema de diseño y no forma
  * parte del flujo de producto.
  */
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'login' },
+  {
+    path: '',
+    pathMatch: 'full',
+    title: 'Falta Una · Partidos y cartas',
+    loadComponent: () => import('./paginas/landing/landing').then((m) => m.Landing),
+  },
 
   {
     path: 'login',

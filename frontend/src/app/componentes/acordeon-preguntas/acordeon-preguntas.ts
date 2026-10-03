@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  booleanAttribute,
+  computed,
+  input,
+  model,
+} from '@angular/core';
 
 let contadorIds = 0;
 
@@ -7,21 +14,22 @@ let contadorIds = 0;
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="acordeon" [class.acordeon--abierto]="abierto()">
+    <div
+      class="acordeon overflow-hidden rounded-md border border-landing-oscuro-borde-control bg-landing-oscuro-fondo text-landing-oscuro-texto"
+      [class.acordeon--abierto]="abierto()"
+    >
       <button
         type="button"
-        class="acordeon__cabecera"
+        [class]="clasesCabecera()"
         [id]="idCabecera"
         [attr.aria-expanded]="abierto()"
         [attr.aria-controls]="idPanel"
         (click)="alternar()"
       >
-        <span>{{ pregunta() }}</span>
+        <span class="min-w-0 truncate">{{ pregunta() }}</span>
         <svg
-          class="acordeon__flecha"
+          class="acordeon__flecha size-3 shrink-0 text-landing-marca md:size-4 lg:size-5"
           viewBox="0 0 24 24"
-          width="18"
-          height="18"
           fill="none"
           stroke="currentColor"
           stroke-width="3"
@@ -40,7 +48,7 @@ let contadorIds = 0;
         [attr.aria-labelledby]="idCabecera"
         [attr.inert]="abierto() ? null : ''"
       >
-        <div class="acordeon__contenido">
+        <div class="acordeon__contenido" [class]="clasesContenido()">
           <ng-content />
         </div>
       </div>
@@ -49,46 +57,6 @@ let contadorIds = 0;
   styles: `
     :host {
       display: block;
-    }
-
-    .acordeon {
-      border: 2px solid var(--acento);
-      border-radius: var(--radio-lg);
-      background: var(--superficie);
-      color: var(--texto);
-    }
-
-    .acordeon__cabecera {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      width: 100%;
-      padding: 0.6rem 1rem;
-      border: 0;
-      border-radius: inherit;
-      background: transparent;
-      color: inherit;
-      font-family: system-ui, sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-align: start;
-      cursor: pointer;
-    }
-
-    .acordeon__cabecera:focus-visible {
-      outline: 3px solid var(--marca);
-      outline-offset: 3px;
-    }
-
-    .acordeon__flecha {
-      flex-shrink: 0;
-      color: var(--acento);
-      transition: rotate 200ms ease;
-    }
-
-    .acordeon--abierto .acordeon__flecha {
-      rotate: 180deg;
     }
 
     /* Animación de altura sin medir con JS */
@@ -105,14 +73,19 @@ let contadorIds = 0;
     .acordeon__contenido {
       min-height: 0;
       overflow: hidden;
-      padding-inline: 1rem;
-      font-family: 'Merriweather', Georgia, serif;
-      font-size: 0.85rem;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     .acordeon--abierto .acordeon__contenido {
-      padding-block: 0.25rem 1rem;
+      padding-block: 0.25rem 0.75rem;
+    }
+
+    .acordeon__flecha {
+      transition: transform 200ms ease;
+    }
+
+    .acordeon--abierto .acordeon__flecha {
+      transform: rotate(180deg);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -128,6 +101,25 @@ export class AcordeonPregunta {
 
   /** Permite abrirlo desde afuera con [(abierto)]. */
   readonly abierto = model(false);
+
+  /** Versión reducida para el grid de dos columnas del FAQ. */
+  readonly compacto = input(false, { transform: booleanAttribute });
+
+  protected readonly clasesCabecera = computed(() =>
+    [
+      'flex w-full items-center justify-between gap-2 text-left font-interfaz font-semibold text-landing-oscuro-texto transition-colors hover:text-landing-marca',
+      this.compacto()
+        ? 'px-2.5 py-2 text-[11px] md:px-3 md:py-3 md:text-sm lg:px-3.5 lg:py-3.5 lg:text-landing-faq'
+        : 'px-4 py-2.5 text-sm',
+    ].join(' ')
+  );
+
+  protected readonly clasesContenido = computed(() =>
+    [
+      'acordeon__contenido font-cuerpo text-landing-oscuro-tenue',
+      this.compacto() ? 'px-2.5 text-[11px] md:px-3 md:text-sm lg:px-3.5 lg:text-landing-faq' : 'px-4 text-sm',
+    ].join(' ')
+  );
 
   private readonly id = ++contadorIds;
   protected readonly idCabecera = `acordeon-cabecera-${this.id}`;

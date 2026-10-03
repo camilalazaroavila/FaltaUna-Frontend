@@ -1,0 +1,209 @@
+<div class="w-full">
+  <div class="flow-root bg-landing-gradiente-amarillo-verde">
+    <app-header />
+
+    <!-- HERO -->
+    <section class="overflow-hidden py-5 text-landing-oscuro-texto md:py-10 lg:py-12">
+      <div class="contenedor-landing flex w-full items-center justify-between gap-4 md:gap-6">
+        <div class="min-w-0 flex-1 md:w-[45%] md:flex-none">
+          <img [src]="urlLogo" alt="Falta Una" class="h-16 w-auto md:h-40 lg:h-landing-logo" />
+          <p
+            class="mt-4 max-w-[28rem] font-interfaz text-xs font-bold uppercase leading-snug text-landing-claro-fondo md:mt-6 md:text-base lg:mt-8 lg:text-landing-hero"
+          >
+            Ganá descuentos coleccionando y jugando con cartas de tus marcas preferidas
+          </p>
+          <div class="mt-4 md:mt-6 lg:mt-8">
+            <a
+              app-boton
+              routerLink="/registro"
+              tamanio="sm"
+              class="inline-flex items-center gap-2 md:h-12 md:px-8 md:text-base lg:h-landing-cta lg:text-landing-ui"
+            >
+              Abrir mi primer sobre
+              <ng-icon name="phosphorArrowRightFill" class="shrink-0" aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+
+        <div
+          class="relative aspect-[7/5] w-[42%] max-w-[190px] shrink-0 md:w-[46%] md:max-w-none lg:w-landing-sobres"
+          aria-hidden="true"
+        >
+          <img
+            [src]="urlSobreIzquierda"
+            alt=""
+            class="absolute left-[24%] top-1/2 w-[36%] -translate-x-1/2 -translate-y-1/2 -rotate-[10deg]"
+          />
+          <img
+            [src]="urlSobreDerecha"
+            alt=""
+            class="absolute left-[76%] top-1/2 w-[36%] -translate-x-1/2 -translate-y-1/2 rotate-[10deg]"
+          />
+          <img
+            [src]="urlSobreCentro"
+            alt=""
+            class="absolute left-1/2 top-1/2 z-10 w-[40%] -translate-x-1/2 -translate-y-1/2"
+          />
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MARCAS (franja estática) -->
+  <app-carrusel-marcas [marcas]="marcas" [animado]="true" [duracionSegundos]="38" />
+
+  <!-- ¿CÓMO FUNCIONA? -->
+  <section class="bg-landing-oscuro-fondo py-5 text-landing-oscuro-texto md:py-10 lg:py-16">
+    <div
+      class="contenedor-landing grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3 lg:grid-cols-2 lg:items-center lg:gap-x-landing-columna"
+    >
+      <div class="contents lg:flex lg:flex-col lg:justify-center">
+        <h2
+          class="col-span-2 font-titulo text-4xl leading-[0.9] text-landing-acento md:text-5xl lg:text-landing-titulo"
+        >
+          ¿Cómo<br />funciona?
+        </h2>
+
+        <img
+          [src]="urlSobre"
+          alt=""
+          class="col-start-1 row-start-2 mt-3 h-16 w-auto shrink-0 -rotate-6 md:h-28 lg:mt-6 lg:h-landing-ilustracion"
+          aria-hidden="true"
+        />
+      </div>
+
+      <div class="contents lg:flex lg:flex-col lg:justify-center">
+        <ul
+          class="col-start-2 row-start-2 mt-3 min-w-0 space-y-1.5 text-xs leading-snug text-landing-oscuro-tenue md:space-y-2.5 md:text-base lg:mt-0 lg:space-y-3 lg:text-landing-lista"
+        >
+          @for (paso of pasos; track paso) {
+            <li class="flex gap-2">
+              <span class="mt-1.5 size-1.5 shrink-0 rounded-circulo bg-landing-marca"></span>
+              <span>{{ paso }}</span>
+            </li>
+          }
+        </ul>
+
+        <div class="col-start-2 row-start-3 mt-3 lg:mt-6">
+          <a app-boton routerLink="/login" tamanio="sm" class="lg:h-landing-cta lg:text-landing-ui"
+            >Comenzá a coleccionar</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ¿Y SI SOY UN NEGOCIO? -->
+  <section class="bg-landing-claro-fondo py-5 text-landing-claro-texto md:py-10 lg:py-16">
+    <div
+      class="contenedor-landing grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3 lg:grid-cols-2 lg:items-center lg:gap-x-landing-columna"
+    >
+      <div class="contents lg:flex lg:flex-col lg:justify-center">
+        <h2 class="col-span-2 font-titulo text-4xl leading-[0.9] md:text-5xl lg:text-landing-titulo">
+          ¿Y si soy un<br />negocio?
+        </h2>
+
+        <app-ilustracion-tienda
+          class="col-start-1 row-start-2 mt-3 w-16 shrink-0 text-landing-claro-texto md:w-28 lg:mt-6 lg:w-landing-ilustracion"
+        />
+      </div>
+
+      <div class="contents lg:flex lg:flex-col lg:justify-center">
+        <ul
+          class="col-start-2 row-start-2 mt-3 min-w-0 space-y-1.5 text-xs leading-snug text-landing-claro-texto/80 md:space-y-2.5 md:text-base lg:mt-0 lg:space-y-3 lg:text-landing-lista"
+        >
+          @for (beneficio of beneficios; track beneficio) {
+            <li class="flex gap-2">
+              <span class="mt-1.5 size-1.5 shrink-0 rounded-circulo bg-landing-marca"></span>
+              <span>{{ beneficio }}</span>
+            </li>
+          }
+        </ul>
+
+        <div class="col-start-2 row-start-3 mt-3 lg:mt-6">
+          <a app-boton routerLink="/registro" tamanio="sm" class="lg:h-landing-cta lg:text-landing-ui"
+            >Explorá el modo empresa</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PREGUNTAS FRECUENTES -->
+  <section
+    class="relative overflow-hidden bg-landing-oscuro-fondo py-5 text-landing-oscuro-texto md:py-10 lg:py-16"
+    aria-labelledby="faq-titulo"
+  >
+    <div class="contenedor-landing relative">
+      <div class="relative z-10">
+        <h2
+          id="faq-titulo"
+          class="text-center font-titulo text-2xl text-landing-acento md:text-3xl lg:text-4xl"
+        >
+          Preguntas frecuentes
+        </h2>
+
+        <div class="mt-4 grid w-full grid-cols-2 items-start gap-2 md:gap-3 lg:mt-8 lg:gap-4">
+          @for (item of preguntas; track item.pregunta) {
+            <app-acordeon-pregunta [pregunta]="item.pregunta" [compacto]="true">
+              {{ item.respuesta }}
+            </app-acordeon-pregunta>
+          }
+        </div>
+      </div>
+
+      <div class="pointer-events-none absolute -bottom-8 -right-8 z-0 flex" aria-hidden="true">
+        <img [src]="urlCartaIzquierda" alt="" class="w-20 rotate-12 md:w-32 lg:w-44" />
+        <img [src]="urlCartaCentro" alt="" class="-ml-8 w-24 -rotate-3 md:w-36 lg:w-52" />
+        <img [src]="urlCartaDerecha" alt="" class="-ml-8 w-20 -rotate-[18deg] md:w-32 lg:w-44" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ¿QUIÉNES SOMOS? -->
+  <section
+    class="bg-landing-claro-fondo py-5 text-landing-claro-texto md:py-10 lg:py-16"
+    aria-labelledby="equipo-titulo"
+  >
+    <div class="contenedor-landing">
+      <h2 id="equipo-titulo" class="font-titulo text-3xl leading-[0.9] md:text-4xl lg:text-5xl">
+        ¿Quiénes somos?
+      </h2>
+
+      <div class="mt-4 flex items-start gap-4 md:mt-8 md:items-stretch md:gap-8 lg:gap-12">
+        <div
+          class="grid w-[45%] min-w-0 grid-cols-4 gap-x-1.5 gap-y-3 md:gap-x-2 md:gap-y-4 lg:w-1/2 lg:gap-x-3 lg:gap-y-6"
+        >
+          @for (integrante of equipo; track integrante.nombre) {
+            <div class="flex min-w-0 flex-col items-center gap-1 text-center">
+              @if (integrante.avatarUrl) {
+                <img
+                  [src]="integrante.avatarUrl"
+                  [alt]="integrante.nombre"
+                  class="size-8 rounded-circulo border-2 border-landing-claro-texto object-cover md:size-14 lg:size-landing-avatar"
+                />
+              } @else {
+                <span
+                  class="grid size-8 place-items-center rounded-circulo border-2 border-landing-claro-texto bg-landing-panel font-interfaz text-[10px] font-bold md:size-14 md:text-base lg:size-landing-avatar lg:text-lg"
+                >
+                  {{ iniciales(integrante.nombre) }}
+                </span>
+              }
+              <span
+                class="w-full whitespace-nowrap text-[9px] leading-none md:text-xs lg:text-sm"
+                >{{ integrante.nombre }}</span
+              >
+            </div>
+          }
+        </div>
+
+        <p
+          class="w-[45%] rounded-[2rem_1rem_2.5rem_1.25rem] bg-landing-panel p-3 text-[11px] leading-snug md:w-1/2 md:p-6 md:text-base lg:p-8 lg:text-landing-equipo"
+        >
+          Somos un equipo de estudiantes apasionados por el fútbol y la tecnología. Creamos Falta Una para
+          que armar partido sea tan fácil como coleccionar tus cartas preferidas.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>

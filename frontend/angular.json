@@ -23,6 +23,9 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "loader": {
+              ".svg": "file"
+            },
             "assets": [
               {
                 "glob": "**/*",
