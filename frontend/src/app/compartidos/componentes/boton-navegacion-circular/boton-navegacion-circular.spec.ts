@@ -35,6 +35,26 @@ const ICONO_PRUEBA = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
       etiquetaAria="Escanear QR"
       [deshabilitado]="true"
     />
+    <app-boton-navegacion-circular
+      id="nav-url-icono"
+      urlIcono="/assets/icono-prueba.svg"
+      etiquetaAria="Icono personalizado"
+    />
+    <app-boton-navegacion-circular
+      id="nav-expandible-blanco"
+      urlIcono="/assets/icono-prueba.svg"
+      etiquetaAria="Mis cartas"
+      [expandible]="true"
+      [fondoBlanco]="true"
+    />
+    <app-boton-navegacion-circular
+      id="nav-expandible-activo"
+      urlIcono="/assets/icono-prueba.svg"
+      etiquetaAria="Álbum"
+      [expandible]="true"
+      [fondoBlanco]="true"
+      [activo]="true"
+    />
   `,
 })
 class TestHostComponent {
@@ -138,5 +158,37 @@ describe('BotonNavegacionCircular Component', () => {
     boton('nav-deshabilitado').click();
 
     expect(fixture.componentInstance.acciones).toEqual([]);
+  });
+
+  it('debe renderizar imagen cuando se provee urlIcono', () => {
+    const btnEl = boton('nav-url-icono');
+    const imgEl = btnEl.querySelector('img');
+
+    expect(imgEl).not.toBeNull();
+    expect(imgEl?.getAttribute('src')).toBe('/assets/icono-prueba.svg');
+    expect(imgEl?.classList.contains('size-5')).toBe(true);
+  });
+
+  it('debe aplicar fondo blanco cuando expandible y fondoBlanco están activos y no está seleccionado', () => {
+    const btnEl = boton('nav-expandible-blanco');
+
+    expect(btnEl.classList.contains('bg-white')).toBe(true);
+    expect(btnEl.classList.contains('rounded-full')).toBe(true);
+    expect(btnEl.classList.contains('size-11')).toBe(true);
+    // La etiqueta flotante existe en el DOM aunque esté invisible (opacity-0)
+    const etiqueta = btnEl.querySelector('span');
+    expect(etiqueta).not.toBeNull();
+    expect(etiqueta?.textContent?.trim()).toBe('Mis cartas');
+  });
+
+  it('debe aplicar fondo verde cuando expandible, fondoBlanco y activo son true', () => {
+    const btnEl = boton('nav-expandible-activo');
+
+    expect(btnEl.classList.contains('bg-marca-primaria')).toBe(true);
+    expect(btnEl.classList.contains('rounded-full')).toBe(true);
+    expect(btnEl.getAttribute('aria-pressed')).toBe('true');
+    // La etiqueta flotante usa colores de la marca activa
+    const etiqueta = btnEl.querySelector('span');
+    expect(etiqueta?.classList.contains('bg-marca-primaria')).toBe(true);
   });
 });

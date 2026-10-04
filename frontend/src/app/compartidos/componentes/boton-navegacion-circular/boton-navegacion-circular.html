@@ -8,7 +8,44 @@
   [attr.aria-pressed]="activo() ? 'true' : null"
   (click)="accion.emit()"
 >
-  <ng-icon [name]="icono()" [size]="tamanio() === 'lg' ? '24' : '20'" aria-hidden="true" />
+  @if (expandible()) {
+    <div
+      class="flex shrink-0 items-center justify-center"
+      [class]="tamanio() === 'sm' ? 'size-9' : tamanio() === 'lg' ? 'size-[3.25rem]' : 'size-11'"
+    >
+      @if (urlIcono()) {
+        <img
+          [src]="urlIcono()"
+          alt=""
+          [class]="tamanio() === 'lg' ? 'size-6' : 'size-5'"
+          class="shrink-0 object-contain"
+          aria-hidden="true"
+        />
+      } @else if (icono()) {
+        <ng-icon [name]="icono()!" [size]="tamanio() === 'lg' ? '24' : '20'" aria-hidden="true" />
+      }
+    </div>
+
+    <!-- Etiqueta flotante: aparece a la derecha del círculo sin afectar el ancho de la barra -->
+    <span
+      class="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg px-3 py-1.5 font-interfaz text-xs font-bold uppercase tracking-wider shadow-md opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out"
+      [class]="activo() ? 'bg-marca-primaria text-marca-sobre-primaria' : 'bg-white text-teal-950'"
+    >
+      {{ etiquetaAria() }}
+    </span>
+  } @else {
+    @if (urlIcono()) {
+      <img
+        [src]="urlIcono()"
+        alt=""
+        [class]="tamanio() === 'lg' ? 'size-6' : 'size-5'"
+        class="shrink-0 object-contain"
+        aria-hidden="true"
+      />
+    } @else if (icono()) {
+      <ng-icon [name]="icono()!" [size]="tamanio() === 'lg' ? '24' : '20'" aria-hidden="true" />
+    }
+  }
 
   @if (insignia() !== null) {
     <span

@@ -59,16 +59,56 @@ const CLASES_TAMANIO: Record<TamanioBotonNavegacion, string> = {
   },
 })
 export class BotonNavegacionCircular {
-  readonly icono = input.required<string>();
+  readonly icono = input<string | null>(null);
+  readonly urlIcono = input<string | null>(null);
   readonly etiquetaAria = input.required<string>();
   readonly activo = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly tamanio = input<TamanioBotonNavegacion>('md');
   readonly insignia = input<number | string | null>(null);
   readonly deshabilitado = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly expandible = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly fondoBlanco = input<boolean, unknown>(false, { transform: booleanAttribute });
 
   readonly accion = output<void>();
 
   protected readonly clases = computed(() => {
+    if (this.expandible() || this.fondoBlanco()) {
+      const base = [
+        'group relative inline-flex items-center justify-center shrink-0',
+        'border font-interfaz font-bold uppercase leading-none',
+        'transition-[background-color,border-color,color,box-shadow,scale] duration-200 ease-out',
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco',
+        'rounded-full cursor-pointer',
+      ];
+
+      if (this.activo()) {
+        base.push('border-transparent bg-marca-primaria text-marca-sobre-primaria shadow-baja');
+      } else {
+        base.push('border-transparent bg-white text-teal-950 shadow-sm hover:shadow-md');
+      }
+
+      // Dimensiones cuadradas para mantener forma circular perfecta
+      const tamanio = this.tamanio();
+      if (tamanio === 'sm') {
+        base.push('size-9');
+      } else if (tamanio === 'lg') {
+        base.push('size-[3.25rem]');
+      } else {
+        base.push('size-11');
+      }
+
+      // Escala al hover (animación de agrandarse)
+      if (!this.deshabilitado()) {
+        base.push('hover:scale-110 active:scale-100');
+      }
+
+      if (this.deshabilitado()) {
+        base.push(CLASES_DESHABILITADO);
+      }
+
+      return base.join(' ');
+    }
+
     const clases = [
       CLASES_BASE,
       this.activo() ? CLASES_ACTIVO : CLASES_INACTIVO,
