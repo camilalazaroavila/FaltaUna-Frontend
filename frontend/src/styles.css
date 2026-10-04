@@ -450,6 +450,12 @@
         var(--color-amarillo-logo) 0%,
         var(--color-teal-profundo) 100%
     );
+    --usuario-gradiente-amarillo-verde: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-amarillo-logo) 30%, transparent) 0%,
+    color-mix(in srgb, var(--color-amarillo-logo) 15%, transparent) 12%,
+    transparent 50%
+);
 
     /* Bloques claros (crema editorial) */
     --landing-claro-fondo: var(--color-crema-fondo);
@@ -664,6 +670,7 @@
 
     /* Fondo exterior de la app (namespace --background-image-* -> bg-*) */
     --background-image-landing-gradiente-amarillo-verde: var(--landing-gradiente-amarillo-verde);
+    --background-image-usuario-gradiente-amarillo-verde: var(--usuario-gradiente-amarillo-verde);
 
     --font-titulo: var(--fuente-titulo);
     --font-cuerpo: var(--fuente-cuerpo);
