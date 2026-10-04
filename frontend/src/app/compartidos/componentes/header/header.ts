@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import urlLogo from '../../compartidos/SVGs/Imagotipo_claro.svg';
+import urlLogo from '../../SVGs/Imagotipo_claro.svg';
 
 @Component({
   selector: 'app-header',
