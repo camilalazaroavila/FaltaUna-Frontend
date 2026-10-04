@@ -1,5 +1,6 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:5142/api',
-  hubUrl: 'http://localhost:5142/hubs/juego'
+  production: true,
+  apiUrl: 'https://faltauna-backend-0u91.onrender.com/api',
+  hubUrl: 'https://faltauna-backend-0u91.onrender.com/hubs/juego'
 };
+
