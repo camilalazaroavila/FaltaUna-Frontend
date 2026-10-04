@@ -49,6 +49,23 @@ export const PALETA_SEMANTICA: readonly MuestraColor[] = [
   color('--borde-foco', 'outline-borde-foco', 'Anillo de foco'),
 ] as const;
 
+/**
+ * Los seis tokens del sobre de cartas, que consume `app-sobre-marca`.
+ *
+ * No van en `PALETA_SEMANTICA` porque no son superficies de la app: el sobre es
+ * un elemento de marca, con su propio juego de color por variante. La seccion
+ * del sobre los muestra junto a los sobres reales, que es donde se verifica que
+ * el mapeo de `@theme inline` existe.
+ */
+export const COLORES_SOBRE_MARCA: readonly MuestraColor[] = [
+  color('--sobre-cuerpo-oscuro', 'bg-sobre-cuerpo-oscuro', 'Sobre oscuro: frente verde'),
+  color('--sobre-detalle-oscuro', 'bg-sobre-detalle-oscuro', 'Sobre oscuro: grafotipo y anillo'),
+  color('--sobre-sello-oscuro', 'bg-sobre-sello-oscuro', 'Sobre oscuro: placa del logo'),
+  color('--sobre-cuerpo-claro', 'bg-sobre-cuerpo-claro', 'Sobre claro: frente crema'),
+  color('--sobre-detalle-claro', 'bg-sobre-detalle-claro', 'Sobre claro: grafotipo y anillo'),
+  color('--sobre-sello-claro', 'bg-sobre-sello-claro', 'Sobre claro: placa del logo'),
+] as const;
+
 export interface VarianteFeedback {
   readonly nombre: string;
   /** Sufijo del token: `exito`, `exito-fondo`, `exito-sobre`… */
