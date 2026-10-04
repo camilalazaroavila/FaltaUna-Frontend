@@ -1,0 +1,176 @@
+<div class="space-y-8">
+  <app-tarjeta-muestra
+    titulo="app-sobre-marca"
+    descripcion="Sobre de cartas con el logo de una marca en el centro. La geometría sale de Paquete1.svg y Paquete2.svg: mismo cuerpo y mismas letras, solo cambia el color por variante. El tamaño fija el ancho y la altura sale de la proporción del SVG; el nombre se dibuja recortado a 16 caracteres porque el texto de SVG no envuelve, y el nombre completo queda en el aria-label. Con clickeable el sobre es un botón nativo, sin clickeable es una pieza visual."
+  >
+    <div class="space-y-6">
+      @for (variante of variantes; track variante.id) {
+        <div class="space-y-3">
+          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+            {{ variante.origen }} — <code class="text-texto-secundario">{{ variante.detalle }}</code>
+          </h4>
+
+          <div class="flex flex-wrap items-end gap-6">
+            @for (tamanio of tamanios; track tamanio) {
+              <div class="flex flex-col items-center gap-1.5">
+                <app-sobre-marca
+                  logoUrl="imagenes/lego.png"
+                  nombre="Lego"
+                  [variante]="variante.id"
+                  [tamanio]="tamanio"
+                  [clickeable]="true"
+                  (accion)="registrar('abrir sobre ' + variante.id + '/' + tamanio)"
+                />
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  {{ tamanio }}
+                </span>
+              </div>
+            }
+
+            <div class="flex flex-col items-center gap-1.5">
+              <app-sobre-marca
+                logoUrl="imagenes/lego.png"
+                nombre="Complejo Deportivo Noroeste"
+                [variante]="variante.id"
+                [tamanio]="'lg'"
+                [clickeable]="true"
+                (accion)="registrar('nombre largo ' + variante.id)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                nombre largo, recortado
+              </span>
+            </div>
+
+            <div class="flex flex-col items-center gap-1.5">
+              <app-sobre-marca
+                logoUrl="imagenes/lego.png"
+                [variante]="variante.id"
+                [tamanio]="'lg'"
+                [clickeable]="true"
+                (accion)="registrar('sin nombre ' + variante.id)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">sin nombre</span>
+            </div>
+
+            <div class="flex flex-col items-center gap-1.5">
+              <app-sobre-marca
+                nombre="Marca sin logo"
+                [variante]="variante.id"
+                [tamanio]="'lg'"
+                [clickeable]="true"
+                (accion)="registrar('sin logo ' + variante.id)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                sin logo: grafotipo
+              </span>
+            </div>
+
+            <div class="flex flex-col items-center gap-1.5">
+              <app-sobre-marca
+                logoUrl="imagenes/lego.png"
+                nombre="Lego"
+                [variante]="variante.id"
+                [tamanio]="'md'"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                no clickeable
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Marcas reales (variante por defecto)"
+    descripcion="La placa es un rectángulo de esquinas redondeadas que ocupa el 86% del ancho útil del frente, con márgenes parejos, y queda centrada sobre el pliegue central. El logo entra escalado y centrado con preserveAspectRatio=meet y recortado con las mismas esquinas, así que un JPG sin canal alfa y un PNG con alfa se ven igual. Todas las medidas son las reales de cada archivo."
+  >
+    <div class="grid gap-6 sm:grid-cols-3 lg:grid-cols-5">
+      @for (logo of logos; track logo.logoUrl) {
+        <div class="flex flex-col items-center gap-1.5">
+          <app-sobre-marca
+            [logoUrl]="logo.logoUrl"
+            [nombre]="logo.marca"
+            [tamanio]="'lg'"
+            [clickeable]="true"
+            (accion)="registrar('abrir ' + logo.marca)"
+          />
+          <span class="font-interfaz text-[0.6875rem] text-texto-primario">{{ logo.marca }}</span>
+          <span class="font-interfaz text-[0.625rem] text-texto-apagado">{{ logo.medidas }}</span>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Carga y error de la imagen"
+    descripcion="El estado se deriva comparando contra la URL actual, no con un booleano: si el padre cambia de logoUrl, un error anterior no sobrevive. Mientras la imagen no carga, la placa late y el logo queda oculto por opacidad; si la URL no resuelve, cae al grafotipo en vez de dejar el recuadro vacío que dibuja un image inválido."
+  >
+    <div class="flex flex-wrap items-end gap-6">
+      <div class="flex flex-col items-center gap-1.5">
+        <app-sobre-marca
+          logoUrl="imagenes/no-existe.png"
+          nombre="Marca sin archivo"
+          [tamanio]="'lg'"
+          [clickeable]="true"
+          (accion)="registrar('abrir fallback')"
+        />
+        <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+          URL que no resuelve
+        </span>
+      </div>
+
+      <div class="flex flex-col items-center gap-1.5">
+        <app-sobre-marca
+          nombre="Marca todavia sin logo"
+          [tamanio]="'lg'"
+          [clickeable]="true"
+          (accion)="registrar('abrir sin logo')"
+        />
+        <span class="font-interfaz text-[0.6875rem] text-texto-apagado">sin logoUrl</span>
+      </div>
+
+      <p class="max-w-sm font-interfaz text-[0.6875rem] leading-relaxed text-texto-apagado">
+        El estado de carga no se puede reproducir en una página estática: la
+        placa late y el logo permanece oculto por opacidad hasta el evento
+        <code class="font-mono text-texto-secundario">load</code>. Está cubierto
+        por las pruebas del componente.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Tokens del sobre (Capa 2)"
+    descripcion="El sobre es un elemento de marca, no una superficie de la app: por eso tiene su propio juego de seis tokens en vez de reusar los de la interfaz. Los dos tokens de placa valen el mismo blanco en las dos variantes porque el fondo del logo necesita ser neutro para los JPG sin canal alfa."
+  >
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (token of tokens; track token.token) {
+        <div class="flex flex-col gap-3 rounded-md border border-borde-default bg-fondo-elevado p-3">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <p class="font-interfaz text-xs font-bold uppercase text-texto-primario">
+                {{ token.token }}
+              </p>
+              <p class="font-interfaz text-[0.6875rem] text-texto-apagado">{{ token.uso }}</p>
+            </div>
+
+            <div
+              class="flex size-10 shrink-0 items-center justify-center rounded-md border border-borde-default bg-fondo-hundido"
+              [class]="token.utilidad"
+              aria-hidden="true"
+            ></div>
+          </div>
+
+          <p class="font-mono font-interfaz text-xs text-texto-secundario">
+            class="{{ token.utilidad }}"
+          </p>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <div class="border-t border-borde-default pt-4">
+    <app-registro-eventos [registros]="registros()" />
+  </div>
+</div>

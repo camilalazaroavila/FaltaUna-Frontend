@@ -66,8 +66,8 @@ describe('GaleriaComponentes', () => {
     document.documentElement.removeAttribute('data-movimiento');
   });
 
-  it('debe renderizar las ocho secciones de la galeria', () => {
-    expect(SECCIONES.length).toBe(8);
+  it('debe renderizar las nueve secciones de la galeria', () => {
+    expect(SECCIONES.length).toBe(9);
 
     for (const seccion of SECCIONES) {
       expect(html().querySelector(`#${seccion.id}`)).not.toBeNull();

@@ -58,4 +58,9 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     titulo: 'app-boton-icono',
     descripcion: 'Control compacto de una sola accion, sin texto visible.',
   },
+  {
+    id: 'sobre-marca',
+    titulo: 'app-sobre-marca',
+    descripcion: 'Sobre con logo de marca: variantes, tamanos, proporciones y fallback.',
+  },
 ] as const;

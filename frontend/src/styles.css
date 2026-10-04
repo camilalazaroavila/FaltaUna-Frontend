@@ -89,6 +89,14 @@
     --color-teal-profundo: #0A2E36;
     /* Texto primario en empresa y contraste AAA */
 
+    /* --- Sobres de cartas (Paquete1 / Paquete2) --- */
+    --color-sobre-verde: #709176;
+    /* Cuerpo del sobre oscuro (Paquete1) */
+    --color-sobre-tinta: #092328;
+    /* Detalle y letras del sobre claro (Paquete2) */
+    /* La crema del sobre es `--color-amarillo-logo`: mismo #F9F9B2 exacto del
+       imagotipo, no se duplica el hex. */
+
     /* --- Neutros y feedback compartidos --- */
     --blanco-puro: #FFFFFF;
     --negro-puro: #000000;
@@ -398,6 +406,31 @@
 }
 
 /* ==========================================================================
+   CAPA 2 — TOKENS SEMÁNTICOS · SOBRES DE CARTAS
+   El sobre es un elemento de marca, no una superficie de la app: sus dos
+   variantes (oscura y clara) NO cambian con `data-modo`, porque el envoltorio
+   del producto es el mismo en el panel del jugador y en el de la empresa.
+   Por eso viven en `:root` y no en los bloques de tema, igual que los tokens
+   de la landing.
+
+   Cada variante define cuerpo, detalle (las letras) y sello:
+     oscuro → cuerpo verde de cancha, detalle crema, placa blanca en el centro.
+     claro  → cuerpo crema, detalle tinta, placa blanca en el centro.
+   La placa del sello es blanca en las dos variantes a propósito: es el neutro
+   que mejor tolera los logos reales, que llegan en JPG sin canal alfa y se
+   funden con cualquier fondo de color.
+   ========================================================================== */
+:root {
+    --sobre-cuerpo-oscuro: var(--color-sobre-verde);
+    --sobre-detalle-oscuro: var(--color-amarillo-logo);
+    --sobre-sello-oscuro: var(--blanco-puro);
+
+    --sobre-cuerpo-claro: var(--color-amarillo-logo);
+    --sobre-detalle-claro: var(--color-sobre-tinta);
+    --sobre-sello-claro: var(--blanco-puro);
+}
+
+/* ==========================================================================
    CAPA 2 — TOKENS SEMÁNTICOS · LANDING PÚBLICA
    La landing alterna bloques oscuros y claros y no depende de `data-modo`:
    estos tokens viven en `:root` para que su superficie nunca cambie con el
@@ -543,6 +576,17 @@
     --color-rareza-4: var(--rareza-4);
     --color-carta-reverso: var(--carta-reverso);
     --color-carta-desconocida: var(--carta-desconocida);
+
+    /* Sobres de cartas: el componente los baja por cascada a tres variables
+       locales y de ahi los pinta con `fill`, asi que no usa utilidades. El
+       mapeo existe para que queden disponibles en la capa 3 (`bg-sobre-*`,
+       `fill-sobre-*`) y para que la galeria pueda enumerarlos. */
+    --color-sobre-cuerpo-oscuro: var(--sobre-cuerpo-oscuro);
+    --color-sobre-detalle-oscuro: var(--sobre-detalle-oscuro);
+    --color-sobre-sello-oscuro: var(--sobre-sello-oscuro);
+    --color-sobre-cuerpo-claro: var(--sobre-cuerpo-claro);
+    --color-sobre-detalle-claro: var(--sobre-detalle-claro);
+    --color-sobre-sello-claro: var(--sobre-sello-claro);
 
     /* Botones: expuestos al mapeo de Tailwind para que los componentes usen
        utilidades bg-, text- y border- en lugar de CSS puro.
