@@ -1,37 +1,259 @@
-<div class="min-h-screen bg-[#123f46] px-6 py-10 relative overflow-hidden">
+<div
+  class="relative flex min-h-screen flex-col justify-between overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white"
+>
+  <!-- TOP BAR / ENCABEZADO CON ESTILO DEL LANDING -->
+  <header class="w-full">
+    <div
+      class="m-3 flex items-center justify-between gap-2 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:m-5 sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
+    >
+      <!-- LOGO -->
+      <a routerLink="/" class="flex shrink-0 items-center" aria-label="Ir al inicio de Falta Una">
+        <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto object-contain sm:h-9 lg:h-[75px]" />
+      </a>
 
-  <div class="absolute -top-24 -left-24 w-72 h-72 bg-[#f05b52] rounded-full opacity-20"></div>
-  <div class="absolute -bottom-32 -right-20 w-96 h-96 bg-[#4fa9a1] rounded-full opacity-20"></div>
+      <!-- BUSCADOR CON FORMATO Y COLOR DEL LANDING -->
+      <form
+        role="search"
+        class="relative min-w-0 flex-1 md:w-64 md:flex-none lg:w-[320px]"
+        (submit)="buscarCampania($event)"
+      >
+        <label for="buscador-campanias" class="sr-only">Buscá tu campaña preferida</label>
+        <svg
+          class="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-landing-claro-texto/60"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="10.5" cy="10.5" r="6.5" />
+          <path d="M15.5 15.5 21 21" />
+        </svg>
+        <input
+          id="buscador-campanias"
+          type="search"
+          autocomplete="off"
+          placeholder="Buscá tu campaña preferida..."
+          [value]="terminoBusqueda()"
+          (input)="terminoBusqueda.set($any($event.target).value)"
+          class="h-9 w-full rounded-pildora border border-transparent bg-landing-claro-fondo py-1.5 pl-8 pr-3 font-interfaz text-[11px] text-landing-claro-texto outline-none placeholder:text-landing-claro-texto/55 focus-visible:border-landing-marca md:h-10 md:text-sm"
+        />
+      </form>
 
-  <div class="relative z-10 max-w-5xl mx-auto">
+      <!-- AVATAR Y MENÚ DE USUARIO -->
+      <div class="relative shrink-0 md:ml-auto">
+        <button
+          type="button"
+          (click)="toggleMenuUsuario()"
+          class="flex size-9 cursor-pointer items-center justify-center rounded-circulo border border-black/10 bg-marca-acento text-marca-sobre-acento shadow-sm transition hover:brightness-105 sm:size-10"
+          aria-label="Menú de perfil"
+          [attr.aria-expanded]="menuUsuarioAbierto()"
+        >
+          <svg
+            class="size-5 text-[#0d3b40] sm:size-6"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
 
-    <header class="flex items-center justify-between mb-10">
-      <div class="text-white">
-        <div class="inline-block bg-[#f05b52] px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-3">
-          Panel de usuario
-        </div>
-        <h1 class="text-3xl md:text-4xl font-black">
-          FALTA <span class="text-[#f05b52]">UNA</span>
-        </h1>
+        @if (menuUsuarioAbierto()) {
+          <div
+            class="absolute right-0 top-full mt-2 w-56 rounded-xl border border-white/10 bg-[#072428] p-3 shadow-alta backdrop-blur-md z-50"
+          >
+            <div class="border-b border-white/10 pb-2 mb-2">
+              <p class="font-interfaz text-xs uppercase tracking-wide text-texto-apagado">Sesión activa</p>
+              <p class="font-titulo text-sm text-marca-acento truncate">
+                {{ authService.usuarioActual()?.nombreUsuario || 'Usuario' }}
+              </p>
+            </div>
+            <button
+              type="button"
+              (click)="cerrarSesion()"
+              class="w-full rounded-lg bg-white/10 px-3 py-2 text-left font-interfaz text-xs font-bold text-white transition hover:bg-error/30 hover:text-white cursor-pointer"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- DOCK LATERAL IZQUIERDO -->
+  <aside aria-label="Navegación principal" class="fixed left-3 top-1/2 -translate-y-1/2 z-30 md:left-6">
+    <nav
+      class="flex flex-col items-center gap-2.5 rounded-2xl border border-white/10 bg-[#072428]/95 p-2 shadow-alta backdrop-blur-md md:gap-3 md:rounded-3xl md:p-2.5 overflow-visible"
+    >
+      @for (destino of destinos; track destino.id) {
+        <app-boton-navegacion-circular
+          [urlIcono]="destino.urlIcono"
+          [etiquetaAria]="destino.nombre"
+          [activo]="seccionActiva() === destino.id"
+          [expandible]="true"
+          [fondoBlanco]="true"
+          tamanio="md"
+          (accion)="seleccionarSeccion(destino.id)"
+        />
+      }
+    </nav>
+  </aside>
+
+  <!-- ESCENARIO CENTRAL / CARRUSEL DE SOBRES -->
+  <main class="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-8 md:py-12">
+    <!-- CONTADOR DE SOBRES DIARIOS -->
+    <div
+      class="mb-6 flex select-none items-center gap-2 font-titulo text-xl tracking-wider text-marca-acento md:mb-8 md:text-2xl lg:text-3xl"
+    >
+      <span class="inline-block size-2.5 rounded-circulo bg-marca-acento md:size-3"></span>
+      <span>{{ sobresDisponibles().actuales }}/{{ sobresDisponibles().maximo }} GRÁTIS</span>
+    </div>
+
+    <!-- ABANICO DE SOBRES -->
+    <div
+      class="relative aspect-[16/11] w-full max-w-[320px] flex items-center justify-center sm:max-w-md md:max-w-lg lg:max-w-xl"
+    >
+
+      <!-- SOBRE IZQUIERDO (MISTERIO) -->
+      <div
+        class="absolute left-[16%] top-1/2 z-10 w-[36%] -translate-x-1/2 -translate-y-1/2 -rotate-[10deg] cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30 md:left-[20%] md:-rotate-[12deg]"
+        (click)="abrirSelectorSobres()"
+        title="Sobre misterioso"
+      >
+        <img
+          [src]="urlSobreIzquierda"
+          alt="Sobre misterioso"
+          class="pointer-events-none h-auto w-full select-none drop-shadow-xl"
+        />
       </div>
 
-      <button (click)="cerrarSesion()" class="bg-white/10 hover:bg-white/20 text-white font-bold text-sm
-             rounded-xl px-5 py-3 transition cursor-pointer border border-white/20">
-        Cerrar sesión
-      </button>
-    </header>
+      <!-- SOBRE DERECHO (TEMÁTICO) -->
+      <div
+        class="absolute left-[84%] top-1/2 z-10 w-[36%] -translate-x-1/2 -translate-y-1/2 rotate-[10deg] cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30 md:left-[80%] md:rotate-[12deg]"
+        (click)="abrirSelectorSobres()"
+        title="Sobre temático de marcas"
+      >
+        <img
+          [src]="urlSobreDerecha"
+          alt="Sobre temático"
+          class="pointer-events-none h-auto w-full select-none drop-shadow-xl"
+        />
+      </div>
 
-    <section class="bg-white rounded-[2rem] shadow-2xl p-8 md:p-10">
-      <p class="text-[#f05b52] font-black text-sm uppercase tracking-widest">
-        Tu colección
-      </p>
-      <h2 class="text-2xl md:text-3xl font-black text-[#123f46] mt-2">
-        Hola, {{ authService.usuarioActual()?.nombreUsuario }}
-      </h2>
-      <p class="text-gray-500 mt-3 max-w-xl">
-        Acá vas a ver tus cartas, álbumes e intercambios. Esta vista es exclusiva para cuentas con rol Usuario.
-      </p>
-    </section>
+      <!-- SOBRE CENTRAL (PRINCIPAL VERDE) -->
+      <div
+        class="absolute left-1/2 top-1/2 z-20 w-[42%] -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30"
+        (click)="abrirSelectorSobres()"
+        title="Sobre diario principal"
+      >
+        <img
+          [src]="urlSobreCentro"
+          alt="Sobre principal"
+          class="pointer-events-none h-auto w-full select-none drop-shadow-2xl"
+        />
+      </div>
+    </div>
 
-  </div>
+    <!-- BOTÓN DE ACCIÓN: VER SOBRES -->
+    <button
+      id="btn-ver-sobres"
+      type="button"
+      (click)="abrirSelectorSobres()"
+      class="mt-6 cursor-pointer rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-sm font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:shadow-brillo-verde active:scale-[0.98] md:mt-10 md:px-12 md:py-3.5 md:text-base"
+    >
+      VER SOBRES
+    </button>
+  </main>
+
+  <!-- ESQUINA INFERIOR DERECHA: ACCESO RÁPIDO CON ICON_PELEA -->
+  <aside
+    class="fixed bottom-4 right-4 z-20 cursor-pointer transition-transform hover:scale-110 active:scale-95 md:bottom-8 md:right-8"
+    (click)="abrirSelectorSobres()"
+    title="Abrir sobres y jugar"
+  >
+    <img
+      [src]="urlIconPelea"
+      alt="Abrir sobre"
+      class="pointer-events-none size-16 select-none drop-shadow-lg sm:size-20 md:size-24"
+    />
+  </aside>
+
+  <!-- PANEL LATERAL DESLIZABLE: SELECTOR DE SOBRES -->
+  @if (selectorSobresAbierto()) {
+    <!-- BACKDROP -->
+    <div
+      class="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity"
+      (click)="cerrarSelectorSobres()"
+      aria-hidden="true"
+    ></div>
+
+    <!-- DRAWER / PANEL -->
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-selector-sobres"
+      class="fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col border-l border-white/10 bg-[#082226] p-6 shadow-2xl overflow-y-auto sm:max-w-md"
+    >
+      <!-- ENCABEZADO DEL DRAWER -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div>
+          <h2 id="titulo-selector-sobres" class="font-titulo text-xl text-marca-acento md:text-2xl">
+            Tus Sobres
+          </h2>
+          <p class="font-interfaz text-xs text-texto-secundario mt-0.5">
+            Elegí un sobre para descubrir nuevas cartas
+          </p>
+        </div>
+        <button
+          type="button"
+          (click)="cerrarSelectorSobres()"
+          class="flex size-9 cursor-pointer items-center justify-center rounded-circulo bg-white/10 text-white transition hover:bg-white/20"
+          aria-label="Cerrar selector de sobres"
+        >
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- LISTADO DE SOBRES -->
+      <div class="mt-6 flex flex-col gap-4">
+        @for (sobre of opcionesSobres; track sobre.id) {
+          <div
+            class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-marca-primaria/50 hover:bg-white/10"
+          >
+            <img [src]="sobre.urlImagen" alt="" class="h-20 w-auto shrink-0 object-contain drop-shadow-md" />
+            <div class="min-w-0 flex-1">
+              <h3 class="font-titulo text-base text-white truncate">{{ sobre.titulo }}</h3>
+              <p class="mt-1 font-interfaz text-xs text-texto-secundario line-clamp-2">
+                {{ sobre.descripcion }}
+              </p>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="rounded-pildora bg-white/10 px-2 py-0.5 font-interfaz text-[11px] text-marca-acento">
+                  {{ sobre.cantidadCartas }} cartas
+                </span>
+                <button
+                  type="button"
+                  (click)="abrirSobre(sobre)"
+                  [disabled]="!sobre.disponible"
+                  class="rounded-pildora px-3.5 py-1.5 font-interfaz text-xs font-bold transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                  [class]="sobre.disponible ? 'bg-marca-primaria text-marca-sobre-primaria hover:bg-marca-primaria-hover' : 'bg-white/10 text-texto-apagado'"
+                >
+                  {{ sobre.disponible ? 'Abrir' : 'Bloqueado' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
 </div>
