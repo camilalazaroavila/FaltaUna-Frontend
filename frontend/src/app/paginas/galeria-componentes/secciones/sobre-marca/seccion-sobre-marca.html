@@ -1,7 +1,7 @@
 <div class="space-y-8">
   <app-tarjeta-muestra
     titulo="app-sobre-marca"
-    descripcion="Sobre de cartas con el logo de una marca en el centro. La geometría sale de Paquete1.svg y Paquete2.svg: mismo cuerpo y mismas letras, solo cambia el color por variante. El tamaño fija el ancho y la altura sale de la proporción del SVG; el nombre se dibuja recortado a 16 caracteres porque el texto de SVG no envuelve, y el nombre completo queda en el aria-label. Con clickeable el sobre es un botón nativo, sin clickeable es una pieza visual."
+    descripcion="Sobre de cartas con el logo de una marca o el icono de una categoría en el centro. La geometría sale de Paquete1.svg y Paquete2.svg: mismo cuerpo y mismas letras, solo cambia el color por variante. El tamaño fija el ancho y la altura sale de la proporción del SVG. El nombre se dibuja recortado a 16 caracteres porque el texto de SVG no envuelve, y el nombre completo queda en el aria-label; en xs y sm no se dibuja porque mediría menos de 6 px. Con clickeable el sobre es un botón nativo y el halo aparece; sin clickeable es una pieza visual y el halo no existe."
   >
     <div class="space-y-6">
       @for (variante of variantes; track variante.id) {
@@ -10,7 +10,7 @@
             {{ variante.origen }} — <code class="text-texto-secundario">{{ variante.detalle }}</code>
           </h4>
 
-          <div class="flex flex-wrap items-end gap-6">
+          <div class="flex flex-wrap items-end gap-10 py-6">
             @for (tamanio of tamanios; track tamanio) {
               <div class="flex flex-col items-center gap-1.5">
                 <app-sobre-marca
@@ -22,7 +22,7 @@
                   (accion)="registrar('abrir sobre ' + variante.id + '/' + tamanio)"
                 />
                 <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
-                  {{ tamanio }}
+                  {{ tamanio }} · {{ anchoDeTamanio[tamanio] }}
                 </span>
               </div>
             }
@@ -84,7 +84,7 @@
 
   <app-tarjeta-muestra
     titulo="Marcas reales (variante por defecto)"
-    descripcion="La placa es un rectángulo de esquinas redondeadas que ocupa el 86% del ancho útil del frente, con márgenes parejos, y queda centrada sobre el pliegue central. El logo entra escalado y centrado con preserveAspectRatio=meet y recortado con las mismas esquinas, así que un JPG sin canal alfa y un PNG con alfa se ven igual. Todas las medidas son las reales de cada archivo."
+    descripcion="La placa es un rectángulo de esquinas redondeadas que ocupa el 86% del ancho útil del frente, con márgenes parejos, y queda centrada sobre el pliegue central. El logo entra escalado y centrado con preserveAspectRatio=meet y recortado con las esquinas del área útil, no con las de la placa: ese margen interior de 12 unidades es lo que impide que el logo toque el borde y que las esquinas redondeadas le muerdan la marca. Todas las medidas son las reales de cada archivo."
   >
     <div class="grid gap-6 sm:grid-cols-3 lg:grid-cols-5">
       @for (logo of logos; track logo.logoUrl) {
@@ -98,6 +98,193 @@
           />
           <span class="font-interfaz text-[0.6875rem] text-texto-primario">{{ logo.marca }}</span>
           <span class="font-interfaz text-[0.625rem] text-texto-apagado">{{ logo.medidas }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="mt-6 border-t border-borde-default pt-4">
+      <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+        Margen interno del logo
+      </h4>
+      <p class="mt-1 max-w-prose font-interfaz text-[0.6875rem] leading-relaxed text-texto-apagado">
+        El aire entre el borde de la placa y el logo, medido sobre el ancho de la
+        placa. Se compararon tres valores por captura; el vigente es el primero.
+        Bajar el margen hace el logo más grande, que es lo que se buscaba, pero a
+        6 unidades el logo ya toca el borde de la placa y a 8 las esquinas
+        redondeadas rozan el corte.
+      </p>
+
+      <ul class="mt-3 grid gap-2 sm:grid-cols-3">
+        @for (margen of margenes; track margen.u) {
+          <li class="rounded-md border border-borde-default bg-fondo-elevado p-3">
+            <p class="font-interfaz text-xs font-bold text-texto-primario">
+              {{ margen.u }}u <span class="text-texto-apagado">({{ margen.pct }})</span>
+            </p>
+            <p class="mt-0.5 font-interfaz text-[0.6875rem] leading-relaxed text-texto-apagado">
+              {{ margen.nota }}
+            </p>
+          </li>
+        }
+      </ul>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Categorías"
+    descripcion="Cuando no hay logo, el sobre pinta el icono de la categoría. Los seis SVG de diseño llegan sin fill, así que el color sale del token --sobre-iconio-*, y cada uno se normaliza a una caja cuadrada: los viewBox de origen van de 0,89:1 a 1,21:1 y sin ese encuadre el más alto parecería un 20% más grande que el más bajo. El nombre del padre manda sobre la categoría en el aria-label, y si el logo falla al cargar el icono toma su lugar en vez de caer al grafotipo."
+  >
+    <div class="space-y-6">
+      @for (variante of variantes; track variante.id) {
+        <div class="space-y-3">
+          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+            {{ variante.origen }}
+          </h4>
+
+<div class="flex flex-wrap items-end gap-10 py-6">
+            @for (categoria of categorias; track categoria) {
+              <div class="flex flex-col items-center gap-1.5">
+                <app-sobre-marca
+                  [categoria]="categoria"
+                  [variante]="variante.id"
+                  [tamanio]="'lg'"
+                  [clickeable]="true"
+                  (accion)="registrar('abrir ' + variante.id + '/' + categoria)"
+                />
+                <span class="font-interfaz text-[0.6875rem] text-texto-primario">
+                  {{ etiquetas[categoria] }}
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+    <div class="mt-6 border-t border-borde-default pt-4">
+      <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+        Aura del sobre
+      </h4>
+      <p class="mt-1 max-w-prose font-interfaz text-[0.6875rem] leading-relaxed text-texto-apagado">
+        El halo sigue la silueta del sobre completo, no la placa ni el icono, y va
+        dibujado antes del cuerpo para quedar atrás. Son tres copias de esa
+        silueta, cada una con su retardo de arranque (0 / 0,8 / 1,6 s), que se
+        expanden desde el centro del
+        <code class="font-mono text-texto-secundario">viewBox</code> (208,67 ×
+        340,93) y se apagan: en cualquier instante hay un anillo saliendo, otro
+        en plenitud y otro muriéndose. Solo anima
+        <code class="font-mono text-texto-secundario">transform</code> y
+        <code class="font-mono text-texto-secundario">opacity</code>, y se
+        apilan copias en vez de usar un
+        <code class="font-mono text-texto-secundario">feGaussianBlur</code> a
+        propósito: un filtro obliga a rasterizar el sobre y repintarlo en cada
+        cambio. No aparece en los sobres que no son clickeables. Al hacer click
+        el sobre se achica y el halo se apaga, para que no se desalinee del
+        contorno. Pasa el puntero por encima de un sobre para verla; con
+        movimiento reducido el halo queda fijo, sin loops.
+      </p>
+      <p class="mt-3 max-w-prose font-interfaz text-[0.6875rem] leading-relaxed text-texto-apagado">
+        <strong class="text-texto-primario">El hueco del arte.</strong> El
+        sobre de origen no es una sola silueta: son cuatro paneles separados, y
+        entre la banda exterior y los paneles interiores queda una separación de
+        ~5,8 unidades por la que se ve el fondo de la página. Está en
+        <code class="font-mono text-texto-secundario">Paquete1.svg</code> y
+        <code class="font-mono text-texto-secundario">Paquete2.svg</code>, así que
+        el sobre en reposo lo conserva tal cual. Como el aura va detrás, el
+        componente le agrega un rect que cierra ese hueco solo dentro de la
+        silueta del halo: si no, la luz se vería cortando el sobre en cuatro
+        tiras. Al ser el aura del mismo verde que el cuerpo, en hover el hueco se
+        completa con el color del sobre y deja de verse partido.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Color del icono (a decidir)"
+    descripcion="Dos candidatos sobre el blanco real de la placa. Para un gráfico la WCAG 1.4.11 pide 3:1 y no 4,5:1 como el texto, así que los dos pasan el umbral y la elección es de jerarquía visual: si el icono debe leerse como parte de la misma familia que el grafotipo, verde; si tiene que destacar como dato, teal. La comparación se pinta sobre una réplica de la placa y no overrumiende el componente, porque la regla :host(.sobre-marca--oscuro) gana por especificidad a cualquier herencia."
+  >
+    <div class="space-y-6">
+      @for (candidato of candidatosColor; track candidato.id) {
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center gap-3">
+            <div
+              class="flex size-8 shrink-0 items-center justify-center rounded-md border border-borde-default"
+              [class]="candidato.utilidad"
+              aria-hidden="true"
+            ></div>
+
+            <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+              {{ candidato.token }}
+            </h4>
+
+            <code class="font-mono text-xs text-texto-secundario">{{ candidato.hex }}</code>
+            <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+              {{ candidato.contraste }} sobre la placa
+            </span>
+          </div>
+
+          <p class="max-w-prose font-interfaz text-[0.6875rem] leading-relaxed text-texto-apagado">
+            {{ candidato.nota }}
+          </p>
+
+          <div class="flex flex-wrap items-end gap-6">
+            @for (icono of iconos; track icono.categoria) {
+              <div class="flex flex-col items-center gap-1.5">
+                <svg
+                  [attr.viewBox]="'0 0 ' + (placaComparacion.x + placaComparacion.ancho) + ' ' + (placaComparacion.y + placaComparacion.alto)"
+                  class="w-28"
+                  role="img"
+                  [attr.aria-label]="'Icono de ' + icono.etiqueta + ' en ' + candidato.token"
+                >
+                  <rect
+                    [attr.x]="placaComparacion.x"
+                    [attr.y]="placaComparacion.y"
+                    [attr.width]="placaComparacion.ancho"
+                    [attr.height]="placaComparacion.alto"
+                    [attr.rx]="placaComparacion.radio"
+                    fill="var(--color-sobre-sello-oscuro)"
+                  />
+                  <g [attr.transform]="icono.transform" [style.fill]="'var(' + candidato.token + ')'">
+                    @for (d of icono.trazos; track $index) {
+                      <path [attr.d]="d" />
+                    }
+                  </g>
+                </svg>
+                <span class="font-interfaz text-[0.6875rem] text-texto-primario">
+                  {{ icono.etiqueta }}
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Escala del sobre genérico"
+    descripcion="Sin logo ni categoría el sobre pinta las letras FALTA UNA. La escala es la misma que en las otras tarjetas: el ancho lo fija el tamaño, la altura sale de la proporción del viewBox y nunca se deforma. Sirve para comparar la silueta desnuda, que es la que sigue el halo."
+  >
+    <div class="space-y-6">
+      @for (variante of variantes; track variante.id) {
+        <div class="space-y-3">
+          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+            {{ variante.origen }}
+          </h4>
+
+          <div class="flex flex-wrap items-end gap-10 py-6">
+            @for (tamanio of tamanios; track tamanio) {
+              <div class="flex flex-col items-center gap-1.5">
+                <app-sobre-marca
+                  [variante]="variante.id"
+                  [tamanio]="tamanio"
+                  [clickeable]="true"
+                  (accion)="registrar('abrir generico ' + variante.id + '/' + tamanio)"
+                />
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  {{ tamanio }} · {{ anchoDeTamanio[tamanio] }}
+                </span>
+              </div>
+            }
+          </div>
         </div>
       }
     </div>
@@ -142,7 +329,7 @@
 
   <app-tarjeta-muestra
     titulo="Tokens del sobre (Capa 2)"
-    descripcion="El sobre es un elemento de marca, no una superficie de la app: por eso tiene su propio juego de seis tokens en vez de reusar los de la interfaz. Los dos tokens de placa valen el mismo blanco en las dos variantes porque el fondo del logo necesita ser neutro para los JPG sin canal alfa."
+    descripcion="El sobre es un elemento de marca, no una superficie de la app: por eso tiene su propio juego de catorce tokens en vez de reusar los de la interfaz. Los dos tokens de sello valen el mismo blanco en las dos variantes porque el fondo del logo necesita ser neutro para los JPG sin canal alfa, pero el borde de la placa es obligatorio: sin él el blanco sobre el crema de la variante clara queda en 1,09:1 y la insignia desaparece. El nombre tiene token propio porque en la variante oscura el crema de detalle no llega al 4,5:1 que pide WCAG AA para texto normal."
   >
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       @for (token of tokens; track token.token) {

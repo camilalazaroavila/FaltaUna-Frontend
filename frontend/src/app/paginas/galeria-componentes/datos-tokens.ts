@@ -50,7 +50,7 @@ export const PALETA_SEMANTICA: readonly MuestraColor[] = [
 ] as const;
 
 /**
- * Los seis tokens del sobre de cartas, que consume `app-sobre-marca`.
+ * Los ocho tokens del sobre de cartas, que consume `app-sobre-marca`.
  *
  * No van en `PALETA_SEMANTICA` porque no son superficies de la app: el sobre es
  * un elemento de marca, con su propio juego de color por variante. La seccion
@@ -61,9 +61,17 @@ export const COLORES_SOBRE_MARCA: readonly MuestraColor[] = [
   color('--sobre-cuerpo-oscuro', 'bg-sobre-cuerpo-oscuro', 'Sobre oscuro: frente verde'),
   color('--sobre-detalle-oscuro', 'bg-sobre-detalle-oscuro', 'Sobre oscuro: grafotipo y anillo'),
   color('--sobre-sello-oscuro', 'bg-sobre-sello-oscuro', 'Sobre oscuro: placa del logo'),
+  color('--sobre-icono-oscuro', 'bg-sobre-icono-oscuro', 'Sobre oscuro: icono de categoría'),
   color('--sobre-cuerpo-claro', 'bg-sobre-cuerpo-claro', 'Sobre claro: frente crema'),
   color('--sobre-detalle-claro', 'bg-sobre-detalle-claro', 'Sobre claro: grafotipo y anillo'),
   color('--sobre-sello-claro', 'bg-sobre-sello-claro', 'Sobre claro: placa del logo'),
+  color('--sobre-icono-claro', 'bg-sobre-icono-claro', 'Sobre claro: icono de categoría'),
+  color('--sobre-placa-borde-oscuro', 'bg-sobre-placa-borde-oscuro', 'Sobre oscuro: borde de placa'),
+  color('--sobre-placa-borde-claro', 'bg-sobre-placa-borde-claro', 'Sobre claro: borde de placa'),
+  color('--sobre-nombre-oscuro', 'bg-sobre-nombre-oscuro', 'Sobre oscuro: nombre de marca'),
+  color('--sobre-nombre-claro', 'bg-sobre-nombre-claro', 'Sobre claro: nombre de marca'),
+  color('--sobre-aura-oscuro', 'bg-sobre-aura-oscuro', 'Sobre oscuro: halo de hover'),
+  color('--sobre-aura-claro', 'bg-sobre-aura-claro', 'Sobre claro: halo de hover'),
 ] as const;
 
 export interface VarianteFeedback {
