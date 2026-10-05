@@ -64,6 +64,19 @@ export const routes: Routes = [
           import('./paginas/empresa-planes/empresa-planes').then((m) => m.EmpresaPlanes),
       },
       {
+        path: 'album/pago/:resultado',
+        title: 'Estado del pago · Falta Una',
+        loadComponent: () =>
+          import(
+            './paginas/empresa-pago-resultado/empresa-pago-resultado'
+          ).then((m) => m.EmpresaPagoResultado),
+      },
+      {
+        path: 'album/pago',
+        pathMatch: 'full',
+        redirectTo: 'album/pago/pendiente',
+      },
+      {
         path: 'panel',
         title: 'Panel de empresa · Falta Una',
         loadComponent: () =>

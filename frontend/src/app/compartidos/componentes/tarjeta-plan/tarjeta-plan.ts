@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 
 import { Plan, PlanId } from '../../../modelos/plan.model';
-
 import { Boton } from '../boton/boton';
 
 const FONDO_TITULO: Record<PlanId, string> = {
@@ -27,7 +26,6 @@ const FONDO_TITULO: Record<PlanId, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <article class="flex h-full flex-col items-center gap-6 text-texto-primario">
-
       <h2
         class="flex h-20 w-44 items-center justify-center border-4 border-texto-primario px-3 text-center font-titulo text-2xl uppercase text-marca-sobre-primaria"
         [class]="fondoTitulo()"
@@ -44,32 +42,36 @@ const FONDO_TITULO: Record<PlanId, string> = {
         }
       </ul>
 
-      <p
-        class="font-titulo text-4xl leading-none tracking-wider"
-        [attr.aria-label]="'Nivel de precio ' + plan().nivelPrecio + ' de 4'"
-      >
-        {{ simbolos() }}
-      </p>
+      <div class="text-center">
+        <p
+          class="font-titulo text-3xl leading-none tracking-wider sm:text-4xl"
+          [attr.aria-label]="'Precio $' + plan().precio + ' pesos por mes'"
+        >
+          \${{ precioFormateado() }}
+        </p>
+        <span class="font-interfaz text-xs font-semibold text-texto-secundario">/ mes</span>
+      </div>
 
       <button
         app-boton
         type="button"
         variante="secundario"
+        [cargando]="cargando()"
         (click)="elegir.emit(plan())"
       >
         Elegir plan {{ plan().nombre }}
       </button>
-
     </article>
   `,
 })
 export class TarjetaPlan {
   readonly plan = input.required<Plan>();
+  readonly cargando = input<boolean>(false);
 
   readonly elegir = output<Plan>();
 
-  protected readonly simbolos = computed(
-    () => '$100'.repeat(this.plan().nivelPrecio),
+  protected readonly precioFormateado = computed(() =>
+    this.plan().precio.toLocaleString('es-AR'),
   );
 
   protected readonly fondoTitulo = computed(

@@ -22,7 +22,11 @@
     aria-label="Planes mensuales disponibles"
   >
     @for (plan of planes; track plan.id) {
-      <app-tarjeta-plan [plan]="plan" (elegir)="elegirPlan($event)" />
+      <app-tarjeta-plan
+        [plan]="plan"
+        [cargando]="cargandoPlanId() === plan.backendId"
+        (elegir)="elegirPlan($event)"
+      />
     }
   </section>
 </main>
