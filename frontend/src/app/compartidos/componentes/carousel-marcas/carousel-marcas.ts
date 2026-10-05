@@ -24,7 +24,7 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input } from '@an
                 <img
                   [src]="marca.logoUrl"
                   [alt]="marca.nombre"
-                  class="h-8 w-auto rounded-[var(--radio-circulo)] md:h-14 lg:h-16"
+                  class="h-6 w-auto md:h-10 lg:h-14"
                   loading="lazy"
                 />
               } @else {
@@ -47,7 +47,7 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input } from '@an
             @for (marca of marcas(); track $index) {
               <li class="copia flex items-center px-6 md:px-10 lg:px-14" aria-hidden="true">
                 @if (marca.logoUrl) {
-                  <img [src]="marca.logoUrl" alt="" class="h-8 w-auto rounded-[var(--radio-circulo)] md:h-14 lg:h-16" loading="lazy" />
+                  <img [src]="marca.logoUrl" alt="" class="h-6 w-auto md:h-10 lg:h-14" loading="lazy" />
                 } @else {
                   <span class="whitespace-nowrap font-titulo text-lg uppercase leading-none text-landing-claro-texto/80 md:text-2xl lg:text-landing-wordmark">
                     {{ marca.nombre }}
