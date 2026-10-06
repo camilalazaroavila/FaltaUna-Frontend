@@ -1,0 +1,242 @@
+<main class="mx-auto w-full max-w-4xl px-4 pb-16 pt-4 sm:px-8">
+  <nav class="mb-4" aria-label="Navegación">
+    <a
+      routerLink="/empresa"
+      class="inline-flex items-center gap-2 font-interfaz text-xs font-bold uppercase text-texto-primario hover:text-marca-primaria"
+    >
+      <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+      Volver a planes
+    </a>
+  </nav>
+
+  <div class="mb-8 grid items-start gap-6 md:grid-cols-[1fr_auto_1fr]">
+    <h1 class="font-titulo text-3xl uppercase leading-[0.95] text-marca-primaria sm:text-4xl">
+      Estado de tu pago
+    </h1>
+
+    <app-stepper-suscripcion [pasoActual]="3" />
+
+    <span class="hidden md:block" aria-hidden="true"></span>
+  </div>
+
+  @switch (estadoVista()) {
+    @case ('cargando') {
+      <section
+        class="flex flex-col items-center justify-center rounded-lg border border-borde-default bg-fondo-superficie p-12 text-center shadow-media"
+        aria-live="polite"
+      >
+        <ng-icon
+          name="phosphorSpinnerGapFill"
+          class="size-12 animate-spin text-marca-primaria"
+          aria-hidden="true"
+        />
+        <h2 class="mt-4 font-titulo text-2xl uppercase text-texto-primario">
+          Verificando tu pago con Mercado Pago...
+        </h2>
+        <p class="mt-2 font-interfaz text-sm text-texto-secundario">
+          Estamos sincronizando los detalles de tu suscripción. Aguardá unos instantes.
+        </p>
+      </section>
+    }
+
+    @case ('exito') {
+      <article
+        class="overflow-hidden rounded-lg border border-borde-default bg-fondo-superficie shadow-alta"
+        aria-label="Confirmación de pago aprobado"
+      >
+        <header
+          class="flex flex-col items-center justify-center gap-3 border-b border-exito-borde bg-exito-fondo px-6 py-8 text-center sm:px-10"
+        >
+          <div
+            class="flex size-16 items-center justify-center rounded-circulo border-2 border-exito-borde bg-fondo-superficie text-exito"
+          >
+            <ng-icon name="phosphorSealCheckFill" class="size-10" aria-hidden="true" />
+          </div>
+          <h2 class="font-titulo text-3xl uppercase text-exito-texto sm:text-4xl">
+            ¡Pago acreditado con éxito!
+          </h2>
+          <p class="max-w-xl font-cuerpo text-sm text-texto-primario sm:text-base">
+            Tu suscripción para el plan <strong>{{ planNombre() }}</strong> ya está activa.
+            Podés continuar configurando la marca de tu complejo y gestionar las cartas de tus jugadores.
+          </p>
+        </header>
+
+        <div class="space-y-6 p-6 sm:p-10">
+          <div class="rounded-md border border-borde-default bg-fondo-elevado p-4 sm:p-6">
+            <h3 class="mb-4 font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario">
+              Resumen de la transacción
+            </h3>
+            <dl class="grid grid-cols-1 gap-4 font-interfaz text-sm sm:grid-cols-2">
+              <div>
+                <dt class="text-texto-secundario">Plan contratado:</dt>
+                <dd class="font-bold text-texto-primario">{{ planNombre() }}</dd>
+              </div>
+              <div>
+                <dt class="text-texto-secundario">Total abonado:</dt>
+                <dd class="font-bold text-texto-primario">\${{ montoFormateado() }} ARS</dd>
+              </div>
+              @if (externalReference()) {
+                <div>
+                  <dt class="text-texto-secundario">Referencia interna:</dt>
+                  <dd class="font-mono text-xs font-semibold text-texto-primario">
+                    {{ externalReference() }}
+                  </dd>
+                </div>
+              }
+              @if (paymentId()) {
+                <div>
+                  <dt class="text-texto-secundario">ID Mercado Pago:</dt>
+                  <dd class="font-mono text-xs font-semibold text-texto-primario">
+                    {{ paymentId() }}
+                  </dd>
+                </div>
+              }
+            </dl>
+          </div>
+
+          <footer class="flex flex-col items-center justify-end gap-3 sm:flex-row">
+            <a
+              app-boton
+              routerLink="/empresa"
+              variante="claro"
+              class="w-full sm:w-auto"
+            >
+              Ver planes
+            </a>
+            <button
+              app-boton
+              type="button"
+              variante="primario"
+              class="w-full sm:w-auto"
+              (click)="irAlPanel()"
+            >
+              Continuar al panel de empresa
+              <i class="fa-solid fa-arrow-right ml-1" aria-hidden="true"></i>
+            </button>
+          </footer>
+        </div>
+      </article>
+    }
+
+    @case ('pendiente') {
+      <article
+        class="overflow-hidden rounded-lg border border-borde-default bg-fondo-superficie shadow-alta"
+        aria-label="Aviso de pago pendiente"
+      >
+        <header
+          class="flex flex-col items-center justify-center gap-3 border-b border-advertencia-borde bg-advertencia-fondo px-6 py-8 text-center sm:px-10"
+        >
+          <div
+            class="flex size-16 items-center justify-center rounded-circulo border-2 border-advertencia-borde bg-fondo-superficie text-advertencia"
+          >
+            <ng-icon name="phosphorWarningCircleFill" class="size-10" aria-hidden="true" />
+          </div>
+          <h2 class="font-titulo text-3xl uppercase text-advertencia-texto sm:text-4xl">
+            Pago pendiente de confirmación
+          </h2>
+          <p class="max-w-xl font-cuerpo text-sm text-texto-primario sm:text-base">
+            Mercado Pago está procesando el cobro. Si elegiste pagar en efectivo (Pago Fácil / Rapipago),
+            se acreditará de forma automática ni bien se registre el pago.
+          </p>
+        </header>
+
+        <div class="space-y-6 p-6 sm:p-10">
+          <div class="rounded-md border border-borde-default bg-fondo-elevado p-4 sm:p-6">
+            <h3 class="mb-4 font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario">
+              Detalles registrados
+            </h3>
+            <dl class="grid grid-cols-1 gap-4 font-interfaz text-sm sm:grid-cols-2">
+              <div>
+                <dt class="text-texto-secundario">Plan seleccionado:</dt>
+                <dd class="font-bold text-texto-primario">{{ planNombre() }}</dd>
+              </div>
+              <div>
+                <dt class="text-texto-secundario">Monto a abonar:</dt>
+                <dd class="font-bold text-texto-primario">\${{ montoFormateado() }} ARS</dd>
+              </div>
+              @if (externalReference()) {
+                <div>
+                  <dt class="text-texto-secundario">Referencia de seguimiento:</dt>
+                  <dd class="font-mono text-xs font-semibold text-texto-primario">
+                    {{ externalReference() }}
+                  </dd>
+                </div>
+              }
+            </dl>
+          </div>
+
+          <footer class="flex flex-col items-center justify-end gap-3 sm:flex-row">
+            <button
+              app-boton
+              type="button"
+              variante="claro"
+              class="w-full sm:w-auto"
+              (click)="reintentar()"
+            >
+              Reintentar pago
+            </button>
+            <button
+              app-boton
+              type="button"
+              variante="primario"
+              class="w-full sm:w-auto"
+              (click)="irAlPanel()"
+            >
+              Ir a mi panel
+            </button>
+          </footer>
+        </div>
+      </article>
+    }
+
+    @case ('error') {
+      <article
+        class="overflow-hidden rounded-lg border border-borde-default bg-fondo-superficie shadow-alta"
+        aria-label="Aviso de pago rechazado o cancelado"
+      >
+        <header
+          class="flex flex-col items-center justify-center gap-3 border-b border-error-borde bg-error-fondo px-6 py-8 text-center sm:px-10"
+        >
+          <div
+            class="flex size-16 items-center justify-center rounded-circulo border-2 border-error-borde bg-fondo-superficie text-error"
+          >
+            <ng-icon name="phosphorXFill" class="size-10" aria-hidden="true" />
+          </div>
+          <h2 class="font-titulo text-3xl uppercase text-error-texto sm:text-4xl">
+            No se pudo procesar el pago
+          </h2>
+          <p class="max-w-xl font-cuerpo text-sm text-texto-primario sm:text-base">
+            El pago fue rechazado o cancelado por Mercado Pago. No se ha realizado ningún cobro en tu cuenta.
+            Podés reintentar seleccionando otro medio de pago o tarjeta.
+          </p>
+        </header>
+
+        <div class="space-y-6 p-6 sm:p-10">
+          <div class="rounded-md border border-borde-default bg-fondo-elevado p-4 sm:p-6">
+            <h3 class="mb-4 font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario">
+              ¿Qué podés hacer?
+            </h3>
+            <ul class="list-disc space-y-1 pl-5 font-interfaz text-sm text-texto-primario">
+              <li>Verificar que la tarjeta tenga fondos suficientes o límite habilitado.</li>
+              <li>Revisar los datos de vencimiento y código de seguridad.</li>
+              <li>Intentar con otra tarjeta de crédito, débito o dinero en cuenta de Mercado Pago.</li>
+            </ul>
+          </div>
+
+          <footer class="flex flex-col items-center justify-end gap-3 sm:flex-row">
+            <button
+              app-boton
+              type="button"
+              variante="primario"
+              class="w-full sm:w-auto"
+              (click)="reintentar()"
+            >
+              Volver a elegir plan
+              <i class="fa-solid fa-arrow-rotate-right ml-1" aria-hidden="true"></i>
+            </button>
+          </footer>
+        </div>
+      </article>
+    }
+  }
+</main>

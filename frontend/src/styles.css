@@ -57,6 +57,18 @@
     --color-amarillo-activo: #DDD78E;
     --color-amarillo-logo: #F9F9B2;
     /* Amarillo exacto del imagotipo (gradiente de la landing) */
+    --color-amarillo-crema: #FFF3A0;
+    /* Amarillo crema del nombre, los números y las estrellas de carta */
+
+    /* --- Paleta de cartas coleccionables --- */
+    --color-carta-fondo: #0F2E36;
+    /* Verde azulado muy oscuro de la vista "Mis cartas" */
+    --color-carta-superficie: #14383F;
+    /* Superficies de la vista "Mis cartas" (toolbar, inputs) */
+    --color-carta-cuadrado: #1E3B33;
+    /* Verde oscuro del CuadradoNumero (atributos e icono de categoría) */
+    --color-legendaria-brillo: #7BF0A5;
+    /* Verde brillante del acento de rareza legendaria */
 
     /* --- Botones de la pantalla de jugar --- */
     --color-juego-claro: #F9F9A8;
@@ -231,7 +243,7 @@
     --estado-neutro-fondo: rgba(244, 250, 246, 0.08);
     --estado-neutro-texto: var(--texto-secundario);
 
-    /* --- Cartas de Colección y Jugadores --- */
+/* --- Cartas de Colección y Jugadores --- */
     --carta-reverso: var(--color-teal-elevado);
     --carta-desconocida: var(--color-amarillo-acento);
     --carta-bloqueada: rgba(244, 250, 246, 0.22);
@@ -243,6 +255,38 @@
     /* ★★★ Oro / Estrella */
     --rareza-4: var(--color-verde-jugador);
     /* ★★★★ Leyenda / Crack */
+
+    /* Componente `app-carta`: acentos propios. El fondo de cada rareza ya
+       trae su color en el SVG, así que acá sólo van la tipografía, los
+       cuadrados de número y el detalle de la legendaria. */
+    --carta-color-nombre: var(--color-amarillo-crema);
+    --carta-color-numero: var(--color-amarillo-crema);
+    --carta-color-estrella: var(--color-amarillo-crema);
+    --carta-color-cuadrado: var(--color-carta-cuadrado);
+    --carta-color-borde-imagen: rgba(255, 243, 160, 0.25);
+    --carta-legendaria-acento: var(--color-legendaria-brillo);
+    --carta-legendaria-halo: rgba(59, 217, 114, 0.45);
+    --carta-opacidad-no-obtenida: 0.55;
+
+    /* Filtros de tinte para los SVG monocromos que se pintan con `<img>`.
+       Los SVG decategoría, la estrella y el cuadrado llegan sin `fill`, así
+       que se renderizan negros: con estos filtros cada uno toma el color del
+       token que le corresponde sin tocar la fuente original. */
+    --carta-filtro-icono: invert(84%) sepia(38%) saturate(2078%) hue-rotate(2deg) brightness(103%) contrast(97%);
+    --carta-filtro-estrella: invert(84%) sepia(38%) saturate(2078%) hue-rotate(2deg) brightness(103%) contrast(97%);
+    --carta-filtro-cuadrado: invert(11%) sepia(19%) saturate(1120%) hue-rotate(112deg) brightness(90%) contrast(88%);
+    /* Cuadrado izquierdo: fondo claro para que el número oscuro se lea. */
+    --carta-filtro-cuadrado-izq: invert(93%) sepia(24%) saturate(658%) hue-rotate(348deg) brightness(103%) contrast(92%);
+
+    /* Vista "Mis cartas" */
+    --fondo-coleccion: var(--color-carta-fondo);
+    --fondo-coleccion-superficie: var(--color-carta-superficie);
+    --borde-coleccion: rgba(244, 250, 246, 0.08);
+    --interactivo-coleccion-hover: rgba(244, 250, 246, 0.06);
+    --marca-coleccion: var(--marca-primaria);
+    --marca-coleccion-sobre: var(--marca-sobre-primaria);
+    --marca-coleccion-fondo: var(--exito-fondo);
+    --marca-coleccion-borde: rgba(59, 217, 114, 0.3);
 
     /* ----------------------------------------------------------------------
        CAPA 3 — BOTONES (Modo Jugador)
@@ -582,6 +626,15 @@
     --color-rareza-4: var(--rareza-4);
     --color-carta-reverso: var(--carta-reverso);
     --color-carta-desconocida: var(--carta-desconocida);
+
+    /* Vista "Mis cartas" */
+    --color-fondo-coleccion: var(--fondo-coleccion);
+    --color-fondo-coleccion-superficie: var(--fondo-coleccion-superficie);
+    --color-borde-coleccion: var(--borde-coleccion);
+    --color-borde-coleccion-fuerte: var(--marca-coleccion-borde);
+    --color-marca-coleccion: var(--marca-coleccion);
+    --color-marca-coleccion-sobre: var(--marca-coleccion-sobre);
+    --color-marca-coleccion-fondo: var(--marca-coleccion-fondo);
 
     /* Sobres de cartas: el componente los baja por cascada a tres variables
        locales y de ahi los pinta con `fill`, asi que no usa utilidades. El

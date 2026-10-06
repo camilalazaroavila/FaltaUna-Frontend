@@ -1,0 +1,48 @@
+.coleccion__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .coleccion__layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.coleccion__aside {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .coleccion__aside {
+    width: 16rem;
+    flex-shrink: 0;
+  }
+}
+
+.coleccion__contenido {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.coleccion__grilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 480px) {
+  .coleccion__grilla {
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .coleccion__grilla {
+    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    gap: 1.5rem;
+  }
+}
