@@ -40,6 +40,15 @@ export const routes: Routes = [
   },
 
   {
+    path: 'usuario/mis-cartas',
+    title: 'Mis cartas · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/mis-cartas/mis-cartas').then((m) => m.MisCartas),
+  },
+
+  {
     path: 'empleado',
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Empleado'] },

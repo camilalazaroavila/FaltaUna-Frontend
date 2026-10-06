@@ -1,0 +1,39 @@
+﻿<div class="carta__marco">
+  <img
+    class="carta__fondo"
+    [src]="urlFondo()"
+    alt=""
+    aria-hidden="true"
+    draggable="false"
+  />
+
+  <div class="carta__atributo carta__atributo--izq">
+    <img class="carta__cuadrado carta__cuadrado--izq" [src]="urlCuadrado" alt="" aria-hidden="true" draggable="false" />
+    <span class="carta__numero carta__numero--izq">{{ carta().atributoIzquierdo }}</span>
+  </div>
+
+  <!-- Atributo derecho (esquina sup. der.) -->
+  <div class="carta__atributo carta__atributo--der">
+    <img class="carta__cuadrado carta__cuadrado--der" [src]="urlCuadrado" alt="" aria-hidden="true" draggable="false" />
+    <span class="carta__numero carta__numero--der">{{ carta().atributoDerecho }}</span>
+  </div>
+
+  <div class="carta__categoria" style="padding: 2%;">
+    <img class="carta__cuadrado carta__cuadrado--categoria" [src]="urlCuadrado" alt="" aria-hidden="true" draggable="false"/>
+    <app-icono-categoria [categoria]="carta().categoria"></app-icono-categoria>
+  </div>
+
+  <div class="carta__imagen-wrapper">
+    <img class="carta__imagen" [src]="carta().imagenUrl" [alt]="altImagen()" loading="lazy" />
+  </div>
+
+  <div class="carta__nombre-wrapper">
+    <span class="carta__nombre">{{ nombreVisible() }}</span>
+  </div>
+
+  <div class="carta__estrellas">
+    @for (estrella of estrellas(); track $index) {
+      <app-estrella-rareza class="carta__estrella-slot"></app-estrella-rareza>
+    }
+  </div>
+</div>

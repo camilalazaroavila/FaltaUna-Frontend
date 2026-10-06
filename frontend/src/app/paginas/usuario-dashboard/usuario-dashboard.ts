@@ -11,14 +11,15 @@ import urlIconPelea from '../../compartidos/SVGs/IconPelea.svg';
 
 import urlIconoMisCartas from '../../compartidos/SVGs/Icon_misCartas.svg';
 import urlIconoAlbum from '../../compartidos/SVGs/Icon_Album.svg';
-import urlIconoIntercambio from '../../compartidos/SVGs/Icon_Intercambio.svg';
+import urlIconoIntercambios from '../../compartidos/SVGs/Icon_Intercambio.svg';
 import urlIconoQr from '../../compartidos/SVGs/Icon_Qr.svg';
 import urlIconoDescuento from '../../compartidos/SVGs/Icon_Descuento.svg';
 
 export interface DestinoNavegacion {
   readonly id: string;
   readonly nombre: string;
-  readonly ruta: string;
+  /** Ruta implementada. Si falta, el destino todavía no navega. */
+  readonly ruta?: string;
   readonly urlIcono: string;
 }
 
@@ -50,13 +51,12 @@ export class UsuarioDashboard {
   protected readonly urlSobreDerecha = urlSobreDerecha;
   protected readonly urlIconPelea = urlIconPelea;
 
-  // Destinos de la barra lateral preparados para sus rutas futuras
   protected readonly destinos: readonly DestinoNavegacion[] = [
-    { id: 'cartas', nombre: 'Mis cartas', ruta: '/cartas', urlIcono: urlIconoMisCartas },
-    { id: 'album', nombre: 'Álbumes', ruta: '/album', urlIcono: urlIconoAlbum },
-    { id: 'intercambios', nombre: 'Intercambio', ruta: '/intercambios', urlIcono: urlIconoIntercambio },
-    { id: 'qr', nombre: 'Canje', ruta: '/qr', urlIcono: urlIconoQr },
-    { id: 'cupones', nombre: 'Mis cupones', ruta: '/cupones', urlIcono: urlIconoDescuento },
+    { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
+    { id: 'album', nombre: 'Álbumes', urlIcono: urlIconoAlbum },
+    { id: 'intercambios', nombre: 'Intercambio', urlIcono: urlIconoIntercambios },
+    { id: 'qr', nombre: 'Canje', urlIcono: urlIconoQr },
+    { id: 'cupones', nombre: 'Mis cupones', urlIcono: urlIconoDescuento },
   ];
 
   // Opciones para el selector lateral de sobres
@@ -102,6 +102,10 @@ export class UsuarioDashboard {
 
   seleccionarSeccion(id: string): void {
     this.seccionActiva.set(id);
+    const destino = this.destinos.find((d) => d.id === id);
+    if (destino?.ruta) {
+      this.router.navigateByUrl(destino.ruta);
+    }
   }
 
   abrirSelectorSobres(): void {
