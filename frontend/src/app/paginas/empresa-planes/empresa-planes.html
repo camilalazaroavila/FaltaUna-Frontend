@@ -1,0 +1,32 @@
+<main class="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-8">
+  <a
+    routerLink="/"
+    class="inline-flex items-center gap-2 font-interfaz text-xs font-bold uppercase text-texto-primario hover:text-marca-primaria"
+  >
+    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+    Volver
+  </a>
+
+  <div class="mt-4 grid items-start gap-6 md:grid-cols-[1fr_auto_1fr]">
+    <h1 class="max-w-[8ch] font-titulo text-5xl uppercase leading-[0.95] text-marca-primaria sm:text-6xl">
+      Elegí tu plan
+    </h1>
+
+    <app-stepper-suscripcion [pasoActual]="1" />
+
+    <span class="hidden md:block" aria-hidden="true"></span>
+  </div>
+
+  <section
+    class="mt-10 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+    aria-label="Planes mensuales disponibles"
+  >
+    @for (plan of planes; track plan.id) {
+      <app-tarjeta-plan
+        [plan]="plan"
+        [cargando]="cargandoPlanId() === plan.backendId"
+        (elegir)="elegirPlan($event)"
+      />
+    }
+  </section>
+</main>

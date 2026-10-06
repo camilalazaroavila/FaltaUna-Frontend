@@ -57,11 +57,41 @@ export const routes: Routes = [
   },
 
   {
+    // Rol Empresa: el layout aporta header y tema claro. Al entrar (/empresa)
+    // se ve la elección de plan; el panel actual queda en /empresa/panel.
     path: 'empresa',
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Empresa'] },
     loadComponent: () =>
-      import('./paginas/empresa-dashboard/empresa-dashboard').then((m) => m.EmpresaDashboard),
+      import('./paginas/empresa-layout/empresa-layout').then((m) => m.EmpresaLayout),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        title: 'Elegí tu plan · Falta Una',
+        loadComponent: () =>
+          import('./paginas/empresa-planes/empresa-planes').then((m) => m.EmpresaPlanes),
+      },
+      {
+        path: 'album/pago/:resultado',
+        title: 'Estado del pago · Falta Una',
+        loadComponent: () =>
+          import(
+            './paginas/empresa-pago-resultado/empresa-pago-resultado'
+          ).then((m) => m.EmpresaPagoResultado),
+      },
+      {
+        path: 'album/pago',
+        pathMatch: 'full',
+        redirectTo: 'album/pago/pendiente',
+      },
+      {
+        path: 'panel',
+        title: 'Panel de empresa · Falta Una',
+        loadComponent: () =>
+          import('./paginas/empresa-dashboard/empresa-dashboard').then((m) => m.EmpresaDashboard),
+      },
+    ],
   },
 
   {
