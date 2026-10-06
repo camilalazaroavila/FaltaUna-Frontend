@@ -4,25 +4,26 @@ import {
   Component,
   booleanAttribute,
   computed,
+  effect,
   input,
   output,
   signal,
 } from '@angular/core';
 
-/** `oscuro` es el sobre verde de cancha (Paquete1), `claro` el crema (Paquete2). */
+import type { CategoriaSobre } from '../../../modelos/categoria.model';
+import { ETIQUETAS_CATEGORIA } from '../../../modelos/categoria.model';
+import { ICONOS_CATEGORIA } from './iconos-categoria';
+
+/** oscuro es el sobre verde de cancha (Paquete1), claro el crema (Paquete2). */
 export type VarianteSobreMarca = 'oscuro' | 'claro';
 
 /**
- * Anchos en rem, no alturas: el sobre es vertical (viewBox `208.67 x 340.93`)
+ * Anchos en rem, no alturas: el sobre es vertical (viewBox 208.67 x 340.93)
  * y la altura sale de la proporcion intrinseca del SVG, que nunca se deforma.
  */
 export type TamanioSobreMarca = 'sm' | 'md' | 'lg';
 
-const CLASES_BASE = [
-  'rounded-md',
-  'transition-[transform,box-shadow] duration-200 ease-out',
-  'motion-reduce:transition-none motion-reduce:transform-none',
-].join(' ');
+const CLASES_BASE = ['motion-reduce:transition-none motion-reduce:transform-none',].join(' ');
 
 /**
  * El hover y el anillo de foco viven en el elemento interactivo (el `<button>`
@@ -36,7 +37,6 @@ const CLASES_BASE = [
 const CLASES_INTERACTIVAS = [
   'habilitado:cursor-pointer',
   'habilitado:hover:-translate-y-0.5',
-  'habilitado:hover:shadow-media',
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco',
 ].join(' ');
 
@@ -62,7 +62,38 @@ const recortar = (texto: string): string =>
     : texto;
 
 /**
- * Cada sobre necesita un `id` distinto para su `<clipPath>`: varias placas en
+ * Zona maxima donde entra el logo de una marca, en unidades del viewBox del
+ * sobre. Es la misma que ocupa la placa de los sobres de categoria, asi los
+ * tres tipos de sobre quedan alineados y centrados sobre el pliegue.
+ */
+const ZONA_LOGO = { ancho: 157, alto: 150, centroX: 104.5, centroY: 157 } as const;
+
+/** Las cuatro caras del sobre (Paquete1 / Paquete2): una sola fuente para el cuerpo y la silueta. */
+const CUERPO_SOBRE: readonly string[] = [
+  'M195.39,156.79V271.91a9.61,9.61,0,0,1-9.61,9.6H23.29a9.61,9.61,0,0,1-9.61-9.61V156.79C83.92,236.55,121.63,79.23,195.39,156.79Z',
+  'M13.68,156.79V41.68a9.61,9.61,0,0,1,9.61-9.61H185.78a9.61,9.61,0,0,1,9.61,9.61V156.79C121,166.49,86.66,280.13,13.68,156.79Z',
+  'M200.72,161.64,200.56,25H7.79L8,150.77,0,141.52V15.6c77-21.84,145.8-19.74,208.67,0V170.89Z',
+  'M8,150.77,8.11,287.4H200.88l-.16-125.76,7.95,9.25V323.56C137.7,347,68.18,346.44,0,323.56v-182Z',
+];
+
+/** Variables CSS que el puntero escribe en el `<button>`. */
+const VARIABLES_PUNTERO = [
+  '--puntero-x',
+  '--puntero-y',
+  '--rotar-x',
+  '--rotar-y',
+  '--fondo-x',
+  '--fondo-y',
+] as const;
+
+/** Inclinacion maxima (grados) en los bordes del sobre. */
+const INCLINACION_MAXIMA = 12;
+
+const acotar = (valor: number, minimo: number, maximo: number): number =>
+  Math.min(maximo, Math.max(minimo, valor));
+
+/**
+ * Cada sobre necesita un `id` distinto para su `<clipPath>`: varios sobres en
  * pantalla (un `@for` de la galería, una grilla de colecciones) no pueden
  * compartirlo, porque el `url(#id)` del recorte resolvería siempre al primero.
  * El contador es de módulo, monotono y sin dependencias.
@@ -70,27 +101,7 @@ const recortar = (texto: string): string =>
 let instancias = 0;
 
 /**
- * Sobres de cartas con el logo de una marca en el centro.
- *
- * Es presentacion pura: no hace peticiones HTTP y no sabe de donde sale el
- * logo. Todo llega por inputs, asi que el padre puede usarlo en un `@for`
- * alimentado por un servicio sin que el componente tenga nada hardcodeado.
- *
- * El SVG va INLINE en el template, no como `<img src>`: dentro de un `<img>`
- * las referencias internas a recursos no cargan, y el `<image>` del logo es
- * justamente un recurso. Ademas el `<img>` obligaria a escribir el color en el
- * markup de cada sobre.
- *
- * La geometria (4 paths de cuerpo y 9 de letras) es exactamente la de
- * `compartidos/SVGs/Paquete1.svg` y `Paquete2.svg`, que son la unica fuente:
- * los dos archivos comparten la misma geometria y solo cambian los colores, asi
- * que acá hay un unico juego de paths y el color lo decide la variante por
- * token. NO usar `PaqueteUnColor.svg`, que viene sin fill y se dibuja negro.
- *
- * Sin `logoUrl` muestra las letras "FALTA UNA" originales, que ocupan casi
- * todo el frente y por eso se ocultan cuando hay logo. El logo no lleva ningun
- * `mask` ni gradiente: el unico `id` del SVG es el del recorte de la placa, y es
- * unico por instancia.
+ * Sobres de cartas con el logo de una marca o el icono de una categoría en el centro.
  */
 @Component({
   selector: 'app-sobre-marca',
@@ -102,15 +113,6 @@ let instancias = 0;
     '[class.sobre-marca--claro]': 'variante() === "claro"',
   },
   styles: `
-    /* El host aporta el layout y la variante: las tres variables locales bajan
-       por cascada hasta las partes del SVG, asi que cada grupo escribe su fill
-       una sola vez.
-
-       OJO con el alcance: la variante tiene que usar :host(...). Escrita suelta,
-       Angular compila ".sobre-marca--oscuro" como ".sobre-marca--oscuro[
-       _ngcontent-xxx]", y el host nunca lleva _ngcontent (lleva _nghost): la
-       regla no matchea, las tres variables quedan sin definir y todos los fill
-       caen al valor inicial, que es negro. */
     :host {
       display: inline-flex;
     }
@@ -140,6 +142,72 @@ let instancias = 0;
       fill: var(--sobre-sello-local);
     }
 
+    .sobre__icono {
+      fill: var(--color-teal-profundo);
+    }
+
+    /* Efecto holografico: solo en sobres clickeables. */
+    .sobre__escena {
+      position: relative;
+      display: block;
+      width: 100%;
+    }
+
+    .sobre__escena--holo {
+      transform: perspective(700px) rotateX(var(--rotar-x, 0deg)) rotateY(var(--rotar-y, 0deg));
+      transition: transform 180ms ease-out;
+    }
+
+    .sobre__brillo,
+    .sobre__reflejo {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 250ms ease-out;
+    }
+
+    .sobre__brillo {
+      background:
+        repeating-linear-gradient(
+          110deg,
+          var(--sobre-holo-a) 0%,
+          var(--sobre-holo-b) 14%,
+          var(--sobre-holo-c) 28%,
+          var(--sobre-holo-d) 42%,
+          var(--sobre-holo-e) 56%,
+          var(--sobre-holo-a) 70%
+        ),
+        radial-gradient(
+          farthest-corner circle at var(--puntero-x, 50%) var(--puntero-y, 50%),
+          var(--sobre-reflejo) 0%,
+          transparent 55%
+        );
+      background-size: 300% 300%, 100% 100%;
+      background-position: var(--fondo-x, 50%) var(--fondo-y, 50%), center;
+      mix-blend-mode: color-dodge;
+      filter: brightness(0.85) contrast(1.15) saturate(1.2);
+    }
+
+    .sobre__reflejo {
+      background: radial-gradient(
+        farthest-corner circle at var(--puntero-x, 50%) var(--puntero-y, 50%),
+        var(--sobre-reflejo) 0%,
+        transparent 60%
+      );
+      mix-blend-mode: overlay;
+    }
+
+    button:hover .sobre__brillo,
+    button:focus-visible .sobre__brillo {
+      opacity: var(--sobre-brillo-intensidad, 0.5);
+    }
+
+    button:hover .sobre__reflejo,
+    button:focus-visible .sobre__reflejo {
+      opacity: 1;
+    }
+
     .sobre__logo {
       opacity: 1;
       transition: opacity 200ms ease-out;
@@ -153,6 +221,11 @@ let instancias = 0;
       animation: sobre-pulso 1.2s ease-in-out infinite;
     }
 
+    :host-context([data-movimiento='reducido']) .sobre__escena--holo {
+      transform: none;
+      transition: none;
+    }
+
     @keyframes sobre-pulso {
       50% {
         opacity: 0.45;
@@ -160,6 +233,15 @@ let instancias = 0;
     }
 
     @media (prefers-reduced-motion: reduce) {
+      .sobre__escena--holo {
+        transform: none;
+        transition: none;
+      }
+
+      .sobre__brillo,
+      .sobre__reflejo {
+        transition: none;
+      }
       .sobre__logo {
         transition: none;
       }
@@ -171,70 +253,98 @@ let instancias = 0;
   `,
 })
 export class SobreMarca {
-  /** `id` del `<clipPath>` de la placa: unico por instancia. */
+  /** `id` del `<clipPath>` del logo o de la placa: unico por instancia. */
   protected readonly idPlaca = `sobre-marca-placa-${++instancias}`;
 
+  /** `id` del recorte con la silueta del sobre (capas del efecto holografico). */
+  protected readonly idSilueta = `sobre-marca-silueta-${++instancias}`;
+
+  protected readonly cuerpo = CUERPO_SOBRE;
+
   /**
-   * URL del logo de la marca (PNG/JPG/SVG/WebP). Viene del backend
-   * (`Coleccion.ImagenUrl`) y puede venir de otro origen: para mostrarlo no
-   * hay problema, solo para exportarlo a canvas.
+   * URL del logo de la marca (PNG/JPG/SVG/WebP).
    */
   readonly logoUrl = input<string | null>(null);
 
   /**
-   * Nombre de la marca. Opcional: si el logo ya incluye el nombre, se omite.
-   * Solo se dibuja cuando hay logo, porque las letras "FALTA UNA" ocupan el
-   * frente completo del sobre.
+   * Nombre de la marca.
    */
   readonly nombre = input<string | null>(null);
+
+  /**
+   * Categoría de la carta/sobre. Si está presente, muestra el icono de categoría.
+   */
+  readonly categoria = input<CategoriaSobre | null>(null);
 
   readonly variante = input<VarianteSobreMarca>('oscuro');
   readonly tamanio = input<TamanioSobreMarca>('md');
 
-  /**
-   * `false` (por defecto) deja el sobre como pieza visual: sin boton, sin foco
-   * y sin hover. `true` lo convierte en un control que emite `accion`.
-   */
   readonly clickeable = input<boolean, unknown>(false, { transform: booleanAttribute });
 
   readonly accion = output<void>();
 
-  /** URL del logo que termino de cargar. */
   private readonly urlCargada = signal<string | null>(null);
-
-  /** URL del logo que fallo. */
   private readonly urlFallida = signal<string | null>(null);
 
-  /**
-   * El estado de la imagen se deriva comparando contra la URL actual, en vez de
-   * con un boolean. Asi un error de una URL anterior no sobrevive a un cambio de
-   * `logoUrl`: el caso normal de un `@for` que reutiliza la instancia para otra
-   * marca. Tampoco hace falta un `effect` para reiniciar nada.
-   */
+  /** Proporcion real (ancho / alto) del logo, medida una vez cargado. */
+  private readonly medidaLogo = signal<{ url: string; proporcion: number } | null>(null);
+
+  protected readonly esCategoria = computed(() => !!this.categoria());
+
+  protected readonly iconoCategoria = computed(() => {
+    const cat = this.categoria();
+    return cat ? ICONOS_CATEGORIA[cat] : null;
+  });
+
   protected readonly cargando = computed(() => {
     const url = this.logoUrl();
     return !!url && this.urlCargada() !== url;
   });
 
-  /**
-   * Un logo que no carga cae al envoltorio generico de la app: un `<image>`
-   * invalido se dibuja como un recuadro vacio, que es justo el "espacio roto"
-   * que el sobre no puede mostrar.
-   */
   protected readonly fallo = computed(() => {
     const url = this.logoUrl();
     return !!url && this.urlFallida() === url;
   });
 
-  /** Hay logo y todavia no fallo: corresponde pintar el sello. */
   protected readonly conLogo = computed(() => !!this.logoUrl() && !this.fallo());
 
+  /**
+   * Rectangulo del logo: respeta su proporcion, entra en la zona maxima y
+   * queda centrado sobre el pliegue. Hasta medirlo, se asume cuadrado.
+   */
+  protected readonly cajaLogo = computed(() => {
+    const medida = this.medidaLogo();
+    const proporcion = medida && medida.url === this.logoUrl() ? medida.proporcion : 1;
+
+    let ancho: number = ZONA_LOGO.ancho;
+    let alto = ancho / proporcion;
+    if (alto > ZONA_LOGO.alto) {
+      alto = ZONA_LOGO.alto;
+      ancho = alto * proporcion;
+    }
+
+    return {
+      x: ZONA_LOGO.centroX - ancho / 2,
+      y: ZONA_LOGO.centroY - alto / 2,
+      ancho,
+      alto,
+    };
+  });
+
   protected readonly etiqueta = computed(() => {
+    const cat = this.categoria();
+    if (cat) {
+      return `Sobre de ${ETIQUETAS_CATEGORIA[cat]}`;
+    }
     const nombre = this.nombre()?.trim();
     return nombre ? `Sobre de ${nombre}` : ETIQUETA_SOBRE_POR_DEFECTO;
   });
 
   protected readonly nombreVisible = computed(() => {
+    const cat = this.categoria();
+    if (cat) {
+      return ETIQUETAS_CATEGORIA[cat];
+    }
     const nombre = this.nombre()?.trim();
     return nombre ? recortar(nombre) : null;
   });
@@ -252,4 +362,72 @@ export class SobreMarca {
   protected readonly imagenCargada = (): void => this.urlCargada.set(this.logoUrl());
 
   protected readonly imagenFallida = (): void => this.urlFallida.set(this.logoUrl());
+
+  private punteroPresente = false;
+  private cuadroPendiente = false;
+
+  /**
+   * Traduce la posicion del puntero a variables CSS del `<button>`. No toca
+   * signals ni el template: el navegador solo recompone transform y opacity.
+   */
+  protected moverPuntero(evento: PointerEvent): void {
+    this.punteroPresente = true;
+    if (this.cuadroPendiente) {
+      return;
+    }
+
+    const objetivo = evento.currentTarget as HTMLElement;
+    const { clientX, clientY } = evento;
+    this.cuadroPendiente = true;
+
+    requestAnimationFrame(() => {
+      this.cuadroPendiente = false;
+      if (!this.punteroPresente) {
+        return;
+      }
+
+      const caja = objetivo.getBoundingClientRect();
+      if (!caja.width || !caja.height) {
+        return;
+      }
+
+      const x = acotar(((clientX - caja.left) / caja.width) * 100, 0, 100);
+      const y = acotar(((clientY - caja.top) / caja.height) * 100, 0, 100);
+
+      objetivo.style.setProperty('--puntero-x', `${x.toFixed(1)}%`);
+      objetivo.style.setProperty('--puntero-y', `${y.toFixed(1)}%`);
+      objetivo.style.setProperty('--rotar-y', `${(((x - 50) / 50) * INCLINACION_MAXIMA).toFixed(2)}deg`);
+      objetivo.style.setProperty('--rotar-x', `${((-(y - 50) / 50) * INCLINACION_MAXIMA).toFixed(2)}deg`);
+      objetivo.style.setProperty('--fondo-x', `${(37 + (x / 100) * 26).toFixed(1)}%`);
+      objetivo.style.setProperty('--fondo-y', `${(37 + (y / 100) * 26).toFixed(1)}%`);
+    });
+  }
+
+  protected soltarPuntero(evento: PointerEvent): void {
+    this.punteroPresente = false;
+    const objetivo = evento.currentTarget as HTMLElement;
+    for (const variable of VARIABLES_PUNTERO) {
+      objetivo.style.removeProperty(variable);
+    }
+  }
+
+  constructor() {
+    // Mide la proporcion real del logo para dibujarlo ajustado, sin blanco sobrante.
+    effect(() => {
+      const url = this.logoUrl();
+      if (!url || typeof Image === 'undefined') {
+        return;
+      }
+
+      const imagen = new Image();
+      imagen.onload = () => {
+        const proporcion = imagen.naturalWidth / imagen.naturalHeight;
+        this.medidaLogo.set({
+          url,
+          proporcion: Number.isFinite(proporcion) && proporcion > 0 ? proporcion : 1,
+        });
+      };
+      imagen.src = url;
+    });
+  }
 }

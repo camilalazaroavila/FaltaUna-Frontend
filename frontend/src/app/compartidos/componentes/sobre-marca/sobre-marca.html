@@ -1,8 +1,11 @@
 <!--
   El `<svg>` vive en un `<ng-template>` y se proyecta con `ngTemplateOutlet`
   dentro del `<button>` o del `<div>` segun `clickeable`. Asi el markup del
-  sobre es una sola fuente de verdad y el modo visual no hereda nada de un
-  boton: no tiene `type`, ni `disabled`, ni semantica de control.
+  sobre es una sola fuente de verdad.
+
+  Efecto holografico (solo clickeable): el puntero mueve variables CSS en el
+  `<button>`; la escena se inclina y dos capas HTML (brillo y reflejo) se
+  recortan con la silueta del sobre. Todo el movimiento es transform/opacity.
 -->
 @if (clickeable()) {
   <button
@@ -11,6 +14,8 @@
     [attr.aria-label]="etiqueta()"
     [attr.title]="etiqueta()"
     (click)="accion.emit()"
+    (pointermove)="moverPuntero($event)"
+    (pointerleave)="soltarPuntero($event)"
   >
     <ng-container [ngTemplateOutlet]="sobre"></ng-container>
   </button>
@@ -21,95 +26,104 @@
 }
 
 <ng-template #sobre>
-  <!-- `aria-hidden` + `focusable=false`: el nombre accesible lo aporta el
-       envoltorio, y asi el SVG no duplica la lectura ni entra en el recorrido
-       de tabulacion. -->
-  <svg
-    viewBox="0 0 208.67 340.93"
-    xmlns="http://www.w3.org/2000/svg"
-    class="block h-auto w-full"
-    aria-hidden="true"
-    focusable="false"
-  >
-    <!-- Cuatro caras del envoltorio (Paquete1 / Paquete2): misma geometria,
-         solo cambian los colores por token. -->
-    <g class="sobre__cuerpo">
-      <path d="M195.39,156.79V271.91a9.61,9.61,0,0,1-9.61,9.6H23.29a9.61,9.61,0,0,1-9.61-9.61V156.79C83.92,236.55,121.63,79.23,195.39,156.79Z" />
-      <path d="M13.68,156.79V41.68a9.61,9.61,0,0,1,9.61-9.61H185.78a9.61,9.61,0,0,1,9.61,9.61V156.79C121,166.49,86.66,280.13,13.68,156.79Z" />
-      <path d="M200.72,161.64,200.56,25H7.79L8,150.77,0,141.52V15.6c77-21.84,145.8-19.74,208.67,0V170.89Z" />
-      <path d="M8,150.77,8.11,287.4H200.88l-.16-125.76,7.95,9.25V323.56C137.7,347,68.18,346.44,0,323.56v-182Z" />
-    </g>
-
-    @if (conLogo()) {
-      <!--
-        Recorte de la placa. El id es por instancia (`idPlaca`), asi que varias
-        placas en pantalla no se pisan el `url(#...)`.
-      -->
+  <span class="sobre__escena" [class.sobre__escena--holo]="clickeable()">
+    <svg
+      viewBox="0 0 208.67 340.93"
+      xmlns="http://www.w3.org/2000/svg"
+      class="block h-auto w-full"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <!-- Silueta del sobre (los 4 paths del cuerpo) normalizada a 0..1 para
+           recortar las capas HTML del efecto. Id unico por instancia. -->
       <defs>
-        <clipPath [attr.id]="idPlaca">
-          <rect x="26" y="82" width="157" height="150" rx="16" />
+        <clipPath [attr.id]="idSilueta" clipPathUnits="objectBoundingBox">
+          <g transform="scale(0.00479226 0.00293315)">
+            @for (d of cuerpo; track $index) {
+              <path [attr.d]="d" />
+            }
+          </g>
         </clipPath>
       </defs>
 
-      <!--
-        Placa del logo: rectángulo de esquinas redondeadas, no un sello
-        circular. Ocupa el 86% del ancho útil del frente (márgenes parejos de
-        ~12 a cada lado) y queda centrada sobre el pliegue central, que es lo
-        que la hace leer como una etiqueta impresa y no como un sticker pegado.
-        El blanco viene de `--sobre-sello-*` y es el mismo en las dos variantes
-        porque es el fondo que mejor tolera los JPG sin canal alfa. Sin anillo:
-        un contorno es justamente lo que hace que algo parezca pegado.
-      -->
-      <rect
-        class="sobre__placa"
-        [class.sobre__placa--cargando]="cargando()"
-        x="26"
-        y="82"
-        width="157"
-        height="150"
-        rx="16"
-      />
+      <!-- Cuatro caras del envoltorio (Paquete1 / Paquete2): misma geometria,
+           solo cambian los colores por token. -->
+      <g class="sobre__cuerpo">
+        @for (d of cuerpo; track $index) {
+          <path [attr.d]="d" />
+        }
+      </g>
 
-      <!--
-        El logo entra escalado y centrado (`meet`), nunca deformado, y recortado
-        con las mismas esquinas de la placa: un PNG con alfa y un JPG sin alfa
-        quedan igual. Las medidas coinciden con las de la placa para que el
-        recorte sea el de la placa y no el de la imagen.
-      -->
-      <image
-        class="sobre__logo"
-        [class.sobre__logo--oculto]="cargando()"
-        [attr.href]="logoUrl()"
-        [attr.clip-path]="'url(#' + idPlaca + ')'"
-        x="26"
-        y="82"
-        width="157"
-        height="150"
-        preserveAspectRatio="xMidYMid meet"
-        (load)="imagenCargada()"
-        (error)="imagenFallida()"
-      />
+      @if (esCategoria() && iconoCategoria(); as icono) {
+        <!-- Sobre de categoria: placa blanca + icono con aire + nombre -->
+        <defs>
+          <clipPath [attr.id]="idPlaca">
+            <rect x="26" y="82" width="157" height="150" rx="16" />
+          </clipPath>
+        </defs>
 
-      @if (nombreVisible(); as texto) {
-        <!-- Nombre en unidades del viewBox: escala con el sobre en cualquier
-             tamano sin tocar el `font-size`. Va debajo de la placa, sobre el
-             cuerpo del sobre. -->
-        <text
-          x="104.3"
-          y="262"
-          text-anchor="middle"
-          class="sobre__nombre"
-          font-size="15"
-          letter-spacing="0.04em"
-        >
-          {{ texto }}
-        </text>
-      }
-    } @else {
-      <!-- Sin marca, o con una URL que no carga: el envoltorio generico de la
-           app. Las letras ocupan el frente, por eso no pueden convivir con el
-           logo ni con el nombre. -->
-      <g class="sobre__letras">
+        <rect class="sobre__placa" x="26" y="82" width="157" height="150" rx="16" />
+
+        <g [attr.clip-path]="'url(#' + idPlaca + ')'">
+          <svg
+            [attr.viewBox]="'0 0 ' + icono.ancho + ' ' + icono.alto"
+            x="46"
+            y="102"
+            width="117"
+            height="110"
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden="true"
+            focusable="false"
+          >
+            @for (d of icono.trazos; track $index) {
+              <path [attr.d]="d" class="sobre__icono" />
+            }
+          </svg>
+        </g>
+
+        @if (nombreVisible(); as texto) {
+          <text x="104.3" y="262" text-anchor="middle" class="sobre__nombre" font-size="16" letter-spacing="0.04em">
+            {{ texto }}
+          </text>
+        }
+      } @else if (conLogo()) {
+        @let caja = cajaLogo();
+
+        <!-- Sobre de marca: sin placa blanca. La imagen es lo que se ve, con
+             esquinas redondeadas y las medidas exactas de su proporcion. -->
+        <defs>
+          <clipPath [attr.id]="idPlaca">
+            <rect [attr.x]="caja.x" [attr.y]="caja.y" [attr.width]="caja.ancho" [attr.height]="caja.alto" rx="14" />
+          </clipPath>
+        </defs>
+
+        @if (cargando()) {
+          <rect class="sobre__placa sobre__placa--cargando" x="26" y="82" width="157" height="150" rx="16" />
+        }
+
+        <image
+          #logoImagen
+          class="sobre__logo"
+          [class.sobre__logo--oculto]="cargando()"
+          [attr.href]="logoUrl()"
+          [attr.clip-path]="'url(#' + idPlaca + ')'"
+          [attr.x]="caja.x"
+          [attr.y]="caja.y"
+          [attr.width]="caja.ancho"
+          [attr.height]="caja.alto"
+          preserveAspectRatio="xMidYMid meet"
+          (load)="imagenCargada()"
+          (error)="imagenFallida()"
+        />
+
+        @if (nombreVisible(); as texto) {
+          <text x="104.3" y="262" text-anchor="middle" class="sobre__nombre" font-size="16" letter-spacing="0.04em">
+            {{ texto }}
+          </text>
+        }
+      } @else {
+        <!-- Sin marca, o con una URL que no carga: el envoltorio generico. -->
+        <g class="sobre__letras">
         <path d="M19.91,45.19c10.36,0,20.58,0,30.8,0,.09,7.4.24,13.75.33,21.15a101,101,0,0,1-16.47.77c.52,6.68.78,10,1.29,16.77a77.91,77.91,0,0,0,12.34,3q.28,13.43.58,26.86a42.14,42.14,0,0,1-10.14-1.41q-.35,15.56-.71,31.1a94,94,0,0,1-18-15.05C19.68,99.82,20.15,73.69,19.91,45.19Z" />
         <path d="M73.06,147.92c-.72-5.2-1.08-7.88-1.81-13.37a53.29,53.29,0,0,1-10.39,1.13c-.37,5.49-.46,9-.83,14.41a35.81,35.81,0,0,1-12.33-2c3.58-33.72,6.86-69.2,9.94-103H80c3,31.36,6.69,62.75,10.65,94A90.79,90.79,0,0,1,73.06,147.92ZM69.64,74.75q-2,17.7-4.07,35.4c3.28-.14,4.92-.29,8.2-.7Q71.63,92.1,69.64,74.75Z" />
         <path d="M91.8,45.16c6.76,0,6,0,12.73,0,0,19.59,0,44.27,0,63.86,4.39-2.75,13.93-10.48,18.32-13q.29,10.45.58,20.91c-10.68,6.47-20.24,14.39-30.82,21C92.57,107.35,91.84,75.72,91.8,45.16Z" />
@@ -119,7 +133,13 @@
         <path d="M108.54,195.05c.28-12.08.84-23.59,1.12-35.68,5-3.26,9.86-7,15.09-9.93-.25,31.47-.48,65.11-.71,96.58H109.29c-3.78-12.63-7.86-25.27-12.56-37.59q.4,18.8.84,37.59c-5.32,0-7.65,0-12.95,0-.05-23.34-.27-46.3-.31-69.65,5.35-3.29,8.35-4.9,13.7-8.7C101.73,177.15,105.13,185.51,108.54,195.05Z" />
         <path d="M151.54,246c-.72-6.66-1.14-9.31-1.86-15.86-4.16-.06-6.24-.06-10.4,0-.36,6.13-.53,9.57-.89,15.86-5.17,0-7.38,0-12.45,0,3.21-33.36,6.47-68.69,10-102,7.15-2.77,14.83-2.92,22.53-2.6,3.63,34.73,7,69.9,10.38,104.65C163.05,246,157.57,246,151.54,246ZM148.06,168Q146,185.34,144,202.72c3.28-.07,4.92-.06,8.2.08Q150.18,185.37,148.06,168Z" />
         <path d="M175.56,148.26a136.65,136.65,0,0,1,15.87,13.53V263.2H19.91V161.79c4.84,4.49,6.12,5.65,10.87,9.93-3.3,82.82,0,1.19-3.3,84,78.19-.35,78.19.23,156.38,0C180.83,217.59,180.58,188.17,175.56,148.26Z" />
-      </g>
+        </g>
+      }
+    </svg>
+
+    @if (clickeable()) {
+      <span class="sobre__brillo" aria-hidden="true" [style.clip-path]="'url(#' + idSilueta + ')'"></span>
+      <span class="sobre__reflejo" aria-hidden="true" [style.clip-path]="'url(#' + idSilueta + ')'"></span>
     }
-  </svg>
+  </span>
 </ng-template>

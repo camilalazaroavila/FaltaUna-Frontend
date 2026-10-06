@@ -141,6 +141,57 @@
   </app-tarjeta-muestra>
 
   <app-tarjeta-muestra
+    titulo="Sobres de categoría (ícono + nombre de categoría)"
+    descripcion="Cuando hay input `categoria`, se dibuja el ícono de esa categoría en lugar del logo. No hay aura, y el nombre visible es la etiqueta de la categoría. Se respetan tamaños sm/md/lg y variantes oscuro/claro."
+  >
+    <div class="space-y-6">
+      @for (variante of variantes; track variante.id) {
+        <div class="space-y-3">
+          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+            {{ variante.origen }} — <code class="text-texto-secundario">{{ variante.detalle }}</code>
+          </h4>
+          <div class="flex flex-wrap items-end gap-6">
+            @for (tamanio of tamanios; track tamanio) {
+              <div class="flex flex-col items-center gap-1.5">
+                <app-sobre-marca
+                  [categoria]="'tecnologia'"
+                  [variante]="variante.id"
+                  [tamanio]="tamanio"
+                  [clickeable]="true"
+                  (accion)="registrar('categoria tecnologia ' + variante.id + '/' + tamanio)"
+                />
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  {{ tamanio }} — Tecnología
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+      <div class="space-y-3">
+        <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+          Todas las categorías (md, variante por defecto)
+        </h4>
+        <div class="flex flex-wrap items-end gap-6">
+          @for (cat of categorias; track cat) {
+            <div class="flex flex-col items-center gap-1.5">
+              <app-sobre-marca
+                [categoria]="cat"
+                [tamanio]="'md'"
+                [clickeable]="true"
+                (accion)="registrar('categoria ' + cat)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                {{ etiquetasCategoria[cat] }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
     titulo="Tokens del sobre (Capa 2)"
     descripcion="El sobre es un elemento de marca, no una superficie de la app: por eso tiene su propio juego de seis tokens en vez de reusar los de la interfaz. Los dos tokens de placa valen el mismo blanco en las dos variantes porque el fondo del logo necesita ser neutro para los JPG sin canal alfa."
   >

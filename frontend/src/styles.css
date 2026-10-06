@@ -46,6 +46,8 @@
     --color-teal-hundido: #072326;
     /* Inputs inactivos, huecos, placeholders */
 
+
+
     --color-verde-jugador: #3BD972;
     /* Verde cancha vibrante, acción principal */
     --color-verde-jugador-hover: #52E285;
@@ -127,6 +129,14 @@
     --radio-lg: 1.25rem;
     --radio-pildora: 9999px;
     --radio-circulo: 50%;
+
+    --sobre-holo-a: hsl(2 100% 73%);
+    --sobre-holo-b: hsl(53 100% 69%);
+    --sobre-holo-c: hsl(93 100% 69%);
+    --sobre-holo-d: hsl(176 100% 76%);
+    --sobre-holo-e: hsl(228 100% 74%);
+    --sobre-reflejo: hsl(0 0% 100% / 0.55);
+    --sobre-brillo-intensidad: 0.5;
 }
 
 /* ==========================================================================
@@ -243,7 +253,7 @@
     --estado-neutro-fondo: rgba(244, 250, 246, 0.08);
     --estado-neutro-texto: var(--texto-secundario);
 
-/* --- Cartas de Colección y Jugadores --- */
+    /* --- Cartas de Colección y Jugadores --- */
     --carta-reverso: var(--color-teal-elevado);
     --carta-desconocida: var(--color-amarillo-acento);
     --carta-bloqueada: rgba(244, 250, 246, 0.22);
@@ -489,17 +499,13 @@
     --landing-oscuro-borde: var(--color-teal-borde);
     /* Borde de controles (FAQ) sobre bloque oscuro: crema atenuada */
     --landing-oscuro-borde-control: color-mix(in srgb, var(--color-crema-borde) 65%, transparent);
-    --landing-gradiente-amarillo-verde: linear-gradient(
-        to bottom,
-        var(--color-amarillo-logo) 0%,
-        var(--color-teal-profundo) 100%
-    );
-    --usuario-gradiente-amarillo-verde: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-amarillo-logo) 30%, transparent) 0%,
-    color-mix(in srgb, var(--color-amarillo-logo) 15%, transparent) 12%,
-    transparent 50%
-);
+    --landing-gradiente-amarillo-verde: linear-gradient(to bottom,
+            var(--color-amarillo-logo) 0%,
+            var(--color-teal-profundo) 100%);
+    --usuario-gradiente-amarillo-verde: linear-gradient(to bottom,
+            color-mix(in srgb, var(--color-amarillo-logo) 30%, transparent) 0%,
+            color-mix(in srgb, var(--color-amarillo-logo) 15%, transparent) 12%,
+            transparent 50%);
 
     /* Bloques claros (crema editorial) */
     --landing-claro-fondo: var(--color-crema-fondo);
