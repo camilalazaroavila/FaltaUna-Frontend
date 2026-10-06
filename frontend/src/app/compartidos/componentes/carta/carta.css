@@ -1,0 +1,237 @@
+/* ── Medidas: único lugar para retocar proporciones ── */
+:host {
+  --carta-aspect: 5 / 7;
+  --carta-sombra: 0 0.1em 0.3em rgba(0, 0, 0, 0.35);
+  --carta-transicion: 0.25s ease;
+
+  display: block;
+  container-type: inline-size;
+  width: 100%;
+}
+
+.carta__marco {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--carta-aspect);
+  filter: drop-shadow(var(--carta-sombra));
+  transition:
+    transform var(--carta-transicion),
+    filter var(--carta-transicion);
+}
+
+:host(:hover) .carta__marco {
+  transform: translateY(-2%) scale(1.03);
+}
+
+.carta__svg {
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.carta__fondo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.carta__atributo {
+  position: absolute;
+  top: 1.5%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 17%;
+  aspect-ratio: 1;
+}
+
+.carta__atributo--izq {
+  left: 2%;
+}
+
+.carta__atributo--der {
+  right: 2%;
+}
+
+.carta__cuadrado {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: var(--carta-filtro-cuadrado);
+  z-index: 0;
+}
+
+.carta__cuadrado--der {
+  transform: rotate(-45deg);
+}
+
+/* Cuadrado izquierdo: fondo claro, número oscuro. */
+.carta__cuadrado--izq {
+  filter: var(--carta-filtro-cuadrado-izq);
+}
+
+.carta__numero {
+  position: relative;
+  z-index: 1;
+  color: var(--carta-color-numero);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 9cqi;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.carta__numero--izq {
+  color: var(--color-teal-profundo);
+}
+
+.carta__numero--der {
+  color: var(--carta-color-numero);
+  transform: none;
+}
+
+.carta__categoria {
+  position: absolute;
+  top: 22%;
+  right: 2%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 17%;
+  aspect-ratio: 1;
+}
+
+.carta__icono-categoria {
+  position: absolute;
+  inset: 0;
+  width: 58%;
+  height: 58%;
+  object-fit: contain;
+  filter: var(--carta-filtro-icono);
+  z-index: 1;
+  left: 21%;
+  top: 21%;
+}
+
+.carta__imagen-wrapper {
+  position: absolute;
+  top: 6%;
+  bottom: 34%;
+  left: 10%;
+  right: 10%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 0.28em solid var(--carta-color-borde-imagen);
+  border-radius: 0.4em;
+  transform: rotate(-2.5deg);
+}
+
+.carta__imagen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carta__nombre-wrapper {
+  position: absolute;
+  right: 4%;
+  bottom: 16%;
+  left: 4%;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  transform: rotate(-3deg);
+}
+
+.carta__nombre {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--carta-color-nombre);
+  font-family: var(--fuente-titulo);
+  font-size: 12cqi;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.08;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-shadow: 0 0.08em 0.16em rgba(0, 0, 0, 0.65);
+  user-select: none;
+}
+
+.carta__estrellas {
+  position: absolute;
+  right: 0;
+  bottom: 3%;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 2%;
+}
+
+.carta__estrella-slot {
+  width: 14%;
+  height: auto;
+  aspect-ratio: 112.62 / 109.03;
+}
+
+.carta__estrella {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: var(--carta-filtro-estrella);
+}
+
+:host(.carta--no-obtenida) .carta__marco {
+  filter: grayscale(1) drop-shadow(var(--carta-sombra));
+  opacity: var(--carta-opacidad-no-obtenida);
+}
+
+:host(.carta--legendaria) .carta__nombre {
+  color: var(--carta-legendaria-acento);
+  text-shadow:
+    0 0.08em 0.16em rgba(0, 0, 0, 0.55),
+    0 0 0.4em var(--carta-legendaria-halo);
+}
+
+:host(.carta--legendaria) .carta__imagen-wrapper {
+  border-color: var(--carta-legendaria-acento);
+}
+
+@container (max-width: 8.75rem) {
+  .carta__numero {
+    font-size: 8cqi;
+  }
+
+  .carta__nombre {
+    font-size: 10cqi;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carta__marco {
+    transition: none;
+  }
+
+  :host(:hover) .carta__marco {
+    transform: none;
+  }
+}
