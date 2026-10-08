@@ -1,7 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../servicios/auth.service';
+import { SobresService } from '../../servicios/sobres.service';
 import { BotonNavegacionCircular } from '../../compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
+import { FlujoAperturaSobres } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
+import { AperturaSobreRespuesta, SobreRespuesta } from '../../modelos/sobre.model';
 
 import urlLogo from '../../compartidos/SVGs/Imagotipo_claro.svg';
 import urlSobreIzquierda from '../../compartidos/SVGs/PaqueteHuhDosColores.svg';
@@ -18,7 +21,6 @@ import urlIconoDescuento from '../../compartidos/SVGs/Icon_Descuento.svg';
 export interface DestinoNavegacion {
   readonly id: string;
   readonly nombre: string;
-  /** Ruta implementada. Si falta, el destino todavía no navega. */
   readonly ruta?: string;
   readonly urlIcono: string;
 }
@@ -36,15 +38,15 @@ export interface SobreOpcion {
 @Component({
   selector: 'app-usuario-dashboard',
   standalone: true,
-  imports: [RouterLink, BotonNavegacionCircular],
+  imports: [RouterLink, BotonNavegacionCircular, FlujoAperturaSobres],
   templateUrl: './usuario-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UsuarioDashboard {
+export class UsuarioDashboard implements OnInit {
   readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-
-  // Assets SVG
+  private readonly sobresService = inject(SobresService);
+  protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
   protected readonly urlLogo = urlLogo;
   protected readonly urlSobreIzquierda = urlSobreIzquierda;
   protected readonly urlSobreCentro = urlSobreCentro;
@@ -59,7 +61,6 @@ export class UsuarioDashboard {
     { id: 'cupones', nombre: 'Mis cupones', urlIcono: urlIconoDescuento },
   ];
 
-  // Opciones para el selector lateral de sobres
   protected readonly opcionesSobres: readonly SobreOpcion[] = [
     {
       id: 'sobre-diario',
@@ -90,7 +91,6 @@ export class UsuarioDashboard {
     },
   ];
 
-  // Estado reactivo (Signals)
   protected readonly seccionActiva = signal<string>('cartas');
   protected readonly selectorSobresAbierto = signal<boolean>(false);
   protected readonly menuUsuarioAbierto = signal<boolean>(false);
@@ -99,6 +99,28 @@ export class UsuarioDashboard {
     actuales: 2,
     maximo: 2,
   });
+
+  ngOnInit(): void {
+    this.cargarSobres();
+  }
+
+  private cargarSobres(): void {
+    this.sobresService.obtenerSobres().subscribe({
+      next: (sobres) => {
+        this.sobresCatalogo.set(sobres);
+      },
+      error: () => {
+        // En caso de que el backend no responda, mantiene catálogo vacío
+      },
+    });
+  }
+
+  alCompletarApertura(apertura: AperturaSobreRespuesta): void {
+    this.sobresDisponibles.update((s) => ({
+      ...s,
+      actuales: Math.max(0, s.actuales - 1),
+    }));
+  }
 
   seleccionarSeccion(id: string): void {
     this.seccionActiva.set(id);
