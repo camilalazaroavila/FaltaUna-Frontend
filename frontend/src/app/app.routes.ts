@@ -40,7 +40,17 @@ export const routes: Routes = [
   },
 
   {
+    path: 'usuario/cupones',
+    title: 'Mis cupones · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/usuario-cupones/usuario-cupones').then((m) => m.UsuarioCupones),
+  },
+
+  {
     path: 'empleado',
+    title: 'Canje de cupones · Falta Una',
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Empleado'] },
     loadComponent: () =>

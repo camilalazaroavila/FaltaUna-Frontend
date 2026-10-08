@@ -102,6 +102,9 @@ export class UsuarioDashboard {
 
   seleccionarSeccion(id: string): void {
     this.seccionActiva.set(id);
+    if (id === 'cupones') {
+      this.router.navigate(['/usuario/cupones']);
+    }
   }
 
   abrirSelectorSobres(): void {

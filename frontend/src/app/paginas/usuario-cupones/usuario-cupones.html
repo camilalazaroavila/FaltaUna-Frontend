@@ -1,0 +1,187 @@
+<div
+  class="relative flex min-h-dvh flex-col bg-btn-juego-bg px-4 pb-6 pt-4 text-btn-juego-texto sm:px-8"
+>
+  <!-- Encabezado -->
+  <a
+    routerLink="/usuario"
+    class="inline-flex w-fit items-center gap-1 font-interfaz text-xs font-bold uppercase tracking-wide focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+  >
+    <span aria-hidden="true">←</span> Volver
+  </a>
+  <h1 class="mt-2 font-titulo text-3xl uppercase tracking-wide sm:text-5xl">Mis cupones</h1>
+
+  <div class="mt-4 flex min-h-0 flex-1 gap-3 sm:gap-6">
+    <!-- Filtro por categoría -->
+    <nav aria-label="Categorías de cupones" class="flex shrink-0 flex-col gap-3 sm:gap-4">
+      @for (categoria of categorias; track categoria.id) {
+        <div class="flex items-center gap-1">
+          <button
+            type="button"
+            (click)="elegirCategoria(categoria.id)"
+            [attr.aria-label]="categoria.nombre"
+            [attr.aria-pressed]="categoriaActiva() === categoria.id"
+            [attr.title]="categoria.nombre"
+            class="flex size-10 cursor-pointer items-center justify-center rounded-lg transition hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none sm:size-12"
+            [class.bg-marca-primaria]="categoriaActiva() === categoria.id"
+          >
+            <img [src]="categoria.urlIcono" alt="" class="size-6 object-contain sm:size-8" />
+          </button>
+          <span
+            aria-hidden="true"
+            class="text-xs"
+            [class.invisible]="categoriaActiva() !== categoria.id"
+            >◀</span
+          >
+        </div>
+      }
+    </nav>
+
+    <div aria-hidden="true" class="hidden w-1.5 shrink-0 rounded-pildora bg-marca-primaria sm:block"></div>
+
+    <!-- Grilla de sellos -->
+    <main class="zona-scroll min-w-0 flex-1 overflow-y-auto pr-2">
+      @if (cargando()) {
+        <p class="font-interfaz text-sm font-bold" role="status">Cargando tus cupones…</p>
+      } @else if (error()) {
+        <div role="alert" class="font-interfaz text-sm">
+          <p class="font-bold">{{ error() }}</p>
+          <button
+            type="button"
+            (click)="cargarCupones()"
+            class="mt-3 cursor-pointer rounded-pildora bg-landing-oscuro-fondo px-5 py-2 text-xs font-bold uppercase text-landing-oscuro-texto"
+          >
+            Reintentar
+          </button>
+        </div>
+      } @else if (cuponesFiltrados().length === 0) {
+        <p class="font-interfaz text-sm font-bold">
+          Todavía no tenés cupones en esta categoría.
+        </p>
+      } @else {
+        <ul class="grid grid-cols-2 gap-4 p-1 md:grid-cols-3 xl:grid-cols-4">
+          @for (cupon of cuponesFiltrados(); track cupon.id) {
+            <li>
+              <button
+                type="button"
+                (click)="abrirCupon(cupon)"
+                [attr.aria-label]="'Ver cupón de ' + cupon.marca + ': ' + cupon.descripcion"
+                class="sello group relative block aspect-[4/3] w-full cursor-pointer p-1.5 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+                [class.opacity-55]="cupon.estado !== 'Disponible'"
+              >
+                <span class="relative block size-full overflow-hidden bg-btn-juego-bg p-1.5">
+                  <span
+                    class="relative block size-full overflow-hidden border-2 border-solid border-btn-juego-texto"
+                  >
+                    <svg
+                      class="absolute inset-0 size-full text-marca-primaria"
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="16"
+                      aria-hidden="true"
+                    >
+                      <path vector-effect="non-scaling-stroke" d="M-10 8 C 25 -12, 45 32, 110 6" />
+                      <path vector-effect="non-scaling-stroke" d="M-10 38 C 25 18, 45 62, 110 36" />
+                      <path vector-effect="non-scaling-stroke" d="M-10 68 C 25 48, 45 92, 110 66" />
+                      <path vector-effect="non-scaling-stroke" d="M-10 98 C 25 78, 45 122, 110 96" />
+                    </svg>
+                    <span
+                      class="relative flex size-full items-center justify-center px-1 text-center font-titulo text-sm uppercase leading-tight sm:text-lg"
+                    >
+                      <span class="bg-btn-juego-bg/70 px-1">{{ cupon.marca }}</span>
+                    </span>
+                  </span>
+                </span>
+                @if (cupon.estado !== 'Disponible') {
+                  <span
+                    class="absolute right-2 top-2 rounded-pildora bg-landing-oscuro-fondo px-2 py-0.5 font-interfaz text-[10px] font-bold uppercase text-landing-oscuro-texto"
+                  >
+                    {{ cupon.estado }}
+                  </span>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </main>
+  </div>
+
+  <!-- Modal del cupón -->
+  @if (cuponSeleccionado(); as cupon) {
+    <div
+      class="fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
+      (click)="cerrarCupon()"
+      aria-hidden="true"
+    ></div>
+
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-cupon"
+      class="fixed left-1/2 top-1/2 z-50 max-h-[92dvh] w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-alta"
+    >
+      <button
+        type="button"
+        (click)="cerrarCupon()"
+        aria-label="Cerrar cupón"
+        class="absolute right-3 top-3 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-primaria font-bold text-marca-sobre-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      >
+        ✕
+      </button>
+
+      <h2 id="titulo-cupon" class="font-titulo text-3xl uppercase text-marca-acento">
+        {{ cupon.marca }}
+      </h2>
+      <p class="mt-2 font-interfaz text-base font-bold">{{ cupon.descripcion }}</p>
+      <p class="mt-1 font-interfaz text-xs font-bold text-texto-secundario">
+        Válido hasta el {{ cupon.vigenteHastaUtc | date: 'dd/MM/yy' : 'UTC' }}
+      </p>
+      <p class="mt-1 font-interfaz text-xs text-texto-secundario">{{ cupon.detalles }}</p>
+
+      @if (cuponUtilizable()) {
+        <div class="relative mx-auto mt-4 size-48 rounded-lg bg-white p-2 sm:size-56">
+          @if (qrCargando()) {
+            <p class="flex size-full items-center justify-center font-interfaz text-xs text-teal-950" role="status">
+              Generando QR…
+            </p>
+          } @else if (qrError()) {
+            <p class="flex size-full items-center justify-center font-interfaz text-xs text-teal-950" role="alert">
+              No pudimos generar el QR. Usá el código de abajo.
+            </p>
+          } @else if (urlQr()) {
+            <img
+              [src]="urlQr()"
+              [alt]="'Código QR del cupón de ' + cupon.marca"
+              class="size-full object-contain"
+            />
+            <button
+              type="button"
+              (click)="descargarQr()"
+              aria-label="Descargar QR"
+              class="absolute -right-3 -top-3 flex size-9 cursor-pointer items-center justify-center rounded-circulo bg-marca-primaria text-marca-sobre-primaria shadow-media focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+            >
+              <span aria-hidden="true">⬇</span>
+            </button>
+          }
+        </div>
+
+        <p class="mt-3 font-interfaz text-lg font-black tracking-widest" aria-label="Código del cupón">
+          {{ cupon.codigo }}
+        </p>
+        <p class="mt-3 font-interfaz text-sm font-bold text-marca-primaria">
+          Mostrá este QR al vendedor del negocio más cercano para conseguir los beneficios.
+        </p>
+      } @else {
+        <p class="mt-6 rounded-xl bg-white/10 p-4 font-interfaz text-sm font-bold" role="status">
+          @if (cupon.estado === 'Usado') {
+            Este cupón ya fue canjeado.
+          } @else {
+            Este cupón venció y ya no se puede usar.
+          }
+        </p>
+      }
+    </div>
+  }
+</div>

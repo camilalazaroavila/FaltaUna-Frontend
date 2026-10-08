@@ -1,37 +1,172 @@
-<div class="min-h-screen bg-[#123f46] px-6 py-10 relative overflow-hidden">
+<div
+  class="relative flex min-h-dvh flex-col bg-btn-juego-bg text-btn-juego-texto"
+>
+  <!-- Encabezado -->
+  <header class="w-full">
+    <div
+      class="m-3 flex items-center justify-between gap-3 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:m-5 sm:px-4 lg:rounded-2xl lg:px-8 lg:py-3"
+    >
+      <a routerLink="/empleado" class="flex shrink-0 items-center" aria-label="Falta Una">
+        <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto object-contain sm:h-9 lg:h-[75px]" />
+      </a>
 
-  <div class="absolute -top-24 -left-24 w-72 h-72 bg-[#f05b52] rounded-full opacity-20"></div>
-  <div class="absolute -bottom-32 -right-20 w-96 h-96 bg-[#4fa9a1] rounded-full opacity-20"></div>
+      <p class="hidden font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario sm:block">
+        Panel de empleado
+      </p>
 
-  <div class="relative z-10 max-w-5xl mx-auto">
+      <div class="relative shrink-0">
+        <button
+          type="button"
+          (click)="menuAbierto.set(!menuAbierto())"
+          class="flex size-9 cursor-pointer items-center justify-center rounded-circulo bg-marca-acento text-marca-sobre-acento shadow-sm transition hover:brightness-105 sm:size-10"
+          aria-label="Menú de perfil"
+          [attr.aria-expanded]="menuAbierto()"
+        >
+          <svg class="size-5 sm:size-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
 
-    <header class="flex items-center justify-between mb-10">
-      <div class="text-white">
-        <div class="inline-block bg-[#f05b52] px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-3">
-          Panel de empleado
-        </div>
-        <h1 class="text-3xl md:text-4xl font-black">
-          FALTA <span class="text-[#f05b52]">UNA</span>
-        </h1>
+        @if (menuAbierto()) {
+          <div
+            class="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-white/10 bg-fondo-hundido p-3 shadow-alta"
+          >
+            <p class="font-interfaz text-xs uppercase tracking-wide text-texto-apagado">Sesión activa</p>
+            <p class="mb-2 truncate border-b border-white/10 pb-2 font-titulo text-sm text-marca-acento">
+              {{ authService.usuarioActual()?.nombreUsuario || 'Empleado' }}
+            </p>
+            <button
+              type="button"
+              (click)="cerrarSesion()"
+              class="w-full cursor-pointer rounded-lg bg-white/10 px-3 py-2 text-left font-interfaz text-xs font-bold text-white transition hover:bg-error/30"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- Canje -->
+  <main class="flex flex-1 flex-col items-center justify-center gap-6 px-4 pb-16 text-center">
+    <h1 class="font-titulo text-3xl uppercase tracking-wide sm:text-5xl">
+      Ingrese el código de canje
+    </h1>
+
+    <form class="flex w-full max-w-md flex-col items-center gap-6" (submit)="canjear($event)">
+      <label for="codigo-canje" class="sr-only">Código de canje</label>
+      <input
+        id="codigo-canje"
+        type="text"
+        name="codigo"
+        autocomplete="off"
+        autocapitalize="characters"
+        spellcheck="false"
+        maxlength="14"
+        placeholder="XXXX-XXXX-XXXX"
+        [value]="codigo()"
+        (input)="alEscribir($event)"
+        class="h-12 w-full rounded-pildora border-2 border-solid border-btn-juego-texto bg-landing-claro-fondo px-6 text-center font-interfaz text-lg font-black tracking-widest text-btn-juego-texto outline-none placeholder:text-btn-juego-texto/40 focus-visible:border-marca-primaria focus-visible:ring-4 focus-visible:ring-marca-primaria/40"
+      />
+
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="submit"
+          [disabled]="!codigo() || enviando()"
+          class="inline-flex cursor-pointer items-center gap-2 rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-base font-black uppercase text-marca-sobre-primaria shadow-baja transition hover:bg-marca-primaria-hover disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
+        >
+          {{ enviando() ? 'Validando…' : 'Canjear' }}
+          <span aria-hidden="true">→</span>
+        </button>
+
+        @if (escanerDisponible) {
+          <button
+            type="button"
+            (click)="iniciarEscaner()"
+            class="inline-flex cursor-pointer items-center gap-2 rounded-pildora border-2 border-solid border-btn-juego-texto px-6 py-3 font-interfaz text-base font-black uppercase transition hover:bg-btn-juego-texto hover:text-btn-juego-bg motion-reduce:transition-none"
+          >
+            Escanear QR
+          </button>
+        }
       </div>
 
-      <button (click)="cerrarSesion()" class="bg-white/10 hover:bg-white/20 text-white font-bold text-sm
-             rounded-xl px-5 py-3 transition cursor-pointer border border-white/20">
-        Cerrar sesión
+      @if (errorEscaner()) {
+        <p class="font-interfaz text-sm font-bold" role="alert">{{ errorEscaner() }}</p>
+      }
+    </form>
+  </main>
+
+  <!-- Escáner -->
+  @if (escaneando()) {
+    <div class="fixed inset-0 z-40 bg-landing-oscuro-fondo/80 backdrop-blur-xs" aria-hidden="true"></div>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Escanear código QR"
+      class="fixed left-1/2 top-1/2 z-50 w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-landing-oscuro-fondo p-5 text-center text-landing-oscuro-texto shadow-alta"
+    >
+      <video #video playsinline muted class="aspect-square w-full rounded-xl bg-black object-cover"></video>
+      <p class="mt-3 font-interfaz text-sm font-bold">Apuntá la cámara al QR del cliente</p>
+      <button
+        type="button"
+        (click)="detenerEscaner()"
+        class="mt-3 cursor-pointer rounded-pildora bg-white/10 px-6 py-2 font-interfaz text-xs font-bold uppercase transition hover:bg-white/20"
+      >
+        Cancelar
       </button>
-    </header>
+    </div>
+  }
 
-    <section class="bg-white rounded-[2rem] shadow-2xl p-8 md:p-10">
-      <p class="text-[#f05b52] font-black text-sm uppercase tracking-widest">
-        Gestión interna
-      </p>
-      <h2 class="text-2xl md:text-3xl font-black text-[#123f46] mt-2">
-        Hola, {{ authService.usuarioActual()?.nombreUsuario }}
-      </h2>
-      <p class="text-gray-500 mt-3 max-w-xl">
-        Acá van las herramientas de soporte y moderación para el equipo. Esta vista es exclusiva para cuentas con rol Empleado.
-      </p>
-    </section>
+  <!-- Resultado del canje -->
+  @if (resultado(); as res) {
+    <div
+      class="fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
+      (click)="cerrarResultado()"
+      aria-hidden="true"
+    ></div>
 
-  </div>
+    <div
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="titulo-resultado"
+      class="fixed left-1/2 top-1/2 z-50 w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-alta"
+    >
+      <button
+        type="button"
+        (click)="cerrarResultado()"
+        aria-label="Cerrar"
+        class="absolute right-3 top-3 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-primaria font-bold text-marca-sobre-primaria"
+      >
+        ✕
+      </button>
+
+      @if (res.tipo === 'exito') {
+        <h2 id="titulo-resultado" class="font-titulo text-3xl uppercase text-marca-primaria">
+          ¡Canjeo exitoso!
+        </h2>
+        <span
+          aria-hidden="true"
+          class="mx-auto mt-4 flex size-16 items-center justify-center rounded-circulo bg-marca-primaria text-4xl font-black text-marca-sobre-primaria"
+          >✓</span
+        >
+        <p class="mt-4 font-interfaz text-sm font-bold">{{ res.cupon.marca }} · {{ res.cupon.descripcion }}</p>
+        <p class="mt-1 font-interfaz text-sm">Ahora puedes reclamar las recompensas</p>
+      } @else {
+        <h2 id="titulo-resultado" class="font-titulo text-3xl uppercase text-marca-primaria">
+          Hubo un problema :(
+        </h2>
+        <span
+          aria-hidden="true"
+          class="mx-auto mt-4 flex size-16 items-center justify-center rounded-circulo bg-error text-4xl font-black text-error-sobre"
+          >✕</span
+        >
+        <p class="mt-4 font-interfaz text-sm">{{ res.mensaje }}</p>
+      }
+    </div>
+  }
 </div>
