@@ -20,6 +20,13 @@ export const routes: Routes = [
   },
 
   {
+    path: 'empresa/landing',
+    title: 'Falta Una · Para empresas',
+    loadComponent: () =>
+      import('./paginas/landing-empresa/landing-empresa').then((m) => m.LandingEmpresa),
+  },
+
+  {
     path: 'login',
     title: 'Ingresar · Falta Una',
     loadComponent: () => import('./paginas/login/login').then((m) => m.Login),

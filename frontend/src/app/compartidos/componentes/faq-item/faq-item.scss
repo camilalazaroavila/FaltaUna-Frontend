@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.acordeon__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease;
+}
+
+.acordeon--abierto .acordeon__panel {
+  grid-template-rows: 1fr;
+}
+
+.acordeon__contenido {
+  min-height: 0;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.acordeon--abierto .acordeon__contenido {
+  padding-block: 0.25rem 0.75rem;
+}
+
+.acordeon__flecha {
+  transition: transform 200ms ease;
+}
+
+.acordeon--abierto .acordeon__flecha {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acordeon__flecha,
+  .acordeon__panel {
+    transition: none;
+  }
+}

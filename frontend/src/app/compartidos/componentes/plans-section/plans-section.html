@@ -1,0 +1,31 @@
+<section
+  id="planes"
+  class="bg-landing-claro-fondo py-5 text-landing-claro-texto md:py-10 lg:py-16"
+  aria-labelledby="planes-titulo"
+>
+  <div class="contenedor-landing">
+    <h2
+      id="planes-titulo"
+      class="font-titulo text-4xl leading-[0.9] md:text-5xl lg:text-landing-titulo"
+    >
+      Planes para tu marca
+    </h2>
+
+    <div class="mt-4 flex flex-col gap-4 md:mt-8 md:gap-6 lg:mt-10 lg:gap-8">
+      @for (plan of planes(); track plan.id) {
+        <app-plan-card [plan]="plan" />
+      }
+    </div>
+
+    <div class="mt-6 md:mt-8">
+      <a
+        app-boton
+        routerLink="/empresa"
+        tamanio="sm"
+        class="!bg-[var(--color-azul-empresa)] !text-white hover:!bg-[color-mix(in_srgb,var(--color-azul-empresa)_86%,#ffffff)] lg:h-landing-cta lg:text-landing-ui"
+      >
+        Crear mi primer álbum
+      </a>
+    </div>
+  </div>
+</section>

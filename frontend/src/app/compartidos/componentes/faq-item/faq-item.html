@@ -1,0 +1,39 @@
+<div
+  class="overflow-hidden rounded-md border border-landing-oscuro-borde-control bg-landing-oscuro-fondo text-landing-oscuro-texto"
+  [class.acordeon--abierto]="abierto()"
+>
+  <button
+    type="button"
+    class="flex w-full items-center justify-between gap-2 px-2.5 py-2 text-left font-interfaz text-[11px] font-semibold text-landing-oscuro-texto transition-colors hover:text-landing-marca md:px-3 md:py-3 md:text-sm lg:px-3.5 lg:py-3.5 lg:text-landing-faq"
+    [id]="idCabecera"
+    [attr.aria-expanded]="abierto()"
+    [attr.aria-controls]="idPanel"
+    (click)="alternar.emit()">
+    <span class="min-w-0">{{ pregunta() }}</span>
+    <svg
+      class="acordeon__flecha size-3 shrink-0 text-landing-marca md:size-4 lg:size-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </button>
+
+  <div
+    class="acordeon__panel"
+    role="region"
+    [id]="idPanel"
+    [attr.aria-labelledby]="idCabecera"
+    [attr.inert]="abierto() ? null : ''"
+  >
+    <div
+      class="acordeon__contenido font-cuerpo text-landing-oscuro-tenue px-2.5 text-[11px] md:px-3 md:text-sm lg:px-3.5 lg:text-landing-faq"
+    >
+      {{ respuesta() }}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<section
+  class="overflow-hidden py-5 text-landing-claro-texto md:py-10 lg:py-12"
+  aria-labelledby="hero-titulo"
+>
+  <div class="contenedor-landing flex w-full items-center justify-between gap-4 md:gap-6">
+    <div class="min-w-0 flex-1 md:w-[45%] md:flex-none">
+      <img [src]="urlLogoEmpresa" alt="Falta Una" class="h-16 w-auto md:h-40 lg:h-landing-logo" />
+
+      <h1
+        id="hero-titulo"
+        class="mt-4 max-w-[28rem] font-interfaz text-xs font-bold uppercase leading-snug text-landing-claro-texto md:mt-6 md:text-base lg:mt-8 lg:text-landing-hero"
+      >
+        Creá campañas de cartas para tu marca y hacé crecer tu comunidad
+      </h1>
+
+      <div class="mt-4 md:mt-6 lg:mt-8">
+        <button
+          type="button"
+          app-boton
+          tamanio="sm"
+          class="inline-flex items-center gap-2 !bg-[var(--color-azul-empresa)] !text-white hover:!bg-[color-mix(in_srgb,var(--color-azul-empresa)_86%,#ffffff)] md:h-12 md:px-8 md:text-base lg:h-landing-cta lg:text-landing-ui"
+          (click)="irAPlanes()">
+          Ver los planes
+          <ng-icon name="phosphorCaretDownFill" class="shrink-0" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="relative aspect-[7/5] w-[42%] max-w-[190px] shrink-0 md:w-[46%] md:max-w-none lg:w-landing-sobres"
+      aria-hidden="true"
+    >
+      <img
+        [src]="urlGastro"
+        alt=""
+        class="absolute left-[24%] top-1/2 w-[36%] -translate-x-1/2 -translate-y-1/2 -rotate-[10deg] brightness-0 saturate-100 hue-rotate-[240deg]"
+      />
+      <img
+        [src]="urlIndumentaria"
+        alt=""
+        class="absolute left-[76%] top-1/2 w-[36%] -translate-x-1/2 -translate-y-1/2 rotate-[10deg] brightness-0 saturate-100 hue-rotate-[240deg]"
+      />
+      <img
+        [src]="urlMusica"
+        alt=""
+        class="absolute left-1/2 top-1/2 z-10 w-[40%] -translate-x-1/2 -translate-y-1/2 brightness-0 saturate-100 hue-rotate-[240deg]"
+      />
+    </div>
+  </div>
+</section>

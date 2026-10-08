@@ -106,6 +106,9 @@
     --color-teal-profundo: #0A2E36;
     /* Texto primario en empresa y contraste AAA */
 
+    --color-azul-empresa: #1A3A5D;
+    /* Azul corporativo de la landing empresarial (etiquetas de planes) */
+
     /* --- Sobres de cartas (Paquete1 / Paquete2) --- */
     --color-sobre-verde: #709176;
     /* Cuerpo del sobre oscuro (Paquete1) */

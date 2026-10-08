@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+.faq-seccion-empresa {
+  background: var(--color-crema-fondo);
+  color: var(--color-teal-profundo);
+  padding: 2.5rem 0;
+}
+
+.faq-seccion-empresa__titulo {
+  margin: 0;
+  text-align: center;
+  font-family: var(--fuente-titulo);
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  color: var(--color-teal-profundo);
+}
+
+.faq-seccion-empresa__grilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .faq-seccion-empresa__grilla {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .faq-seccion-empresa {
+    padding: 3.5rem 0;
+  }
+
+  .faq-seccion-empresa__grilla {
+    margin-top: 2rem;
+  }
+}
