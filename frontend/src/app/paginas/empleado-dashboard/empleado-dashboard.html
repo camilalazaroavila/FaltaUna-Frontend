@@ -55,11 +55,11 @@
   <!-- Canje -->
   <main class="flex flex-1 flex-col items-center justify-center gap-6 px-4 pb-16 text-center">
     <h1 class="font-titulo text-3xl uppercase tracking-wide sm:text-5xl">
-      Ingrese el código de canje
+      Ingrese el token de canje
     </h1>
 
-    <form class="flex w-full max-w-md flex-col items-center gap-6" (submit)="canjear($event)">
-      <label for="codigo-canje" class="sr-only">Código de canje</label>
+    <form class="flex w-full max-w-md flex-col items-center gap-6" (submit)="validar($event)">
+      <label for="codigo-canje" class="sr-only">Token de canje</label>
       <input
         id="codigo-canje"
         type="text"
@@ -67,11 +67,11 @@
         autocomplete="off"
         autocapitalize="characters"
         spellcheck="false"
-        maxlength="14"
-        placeholder="XXXX-XXXX-XXXX"
+        maxlength="100"
+        placeholder="Token del QR"
         [value]="codigo()"
         (input)="alEscribir($event)"
-        class="h-12 w-full rounded-pildora border-2 border-solid border-btn-juego-texto bg-landing-claro-fondo px-6 text-center font-interfaz text-lg font-black tracking-widest text-btn-juego-texto outline-none placeholder:text-btn-juego-texto/40 focus-visible:border-marca-primaria focus-visible:ring-4 focus-visible:ring-marca-primaria/40"
+        class="h-12 w-full rounded-pildora border-2 border-solid border-btn-juego-texto bg-landing-claro-fondo px-6 text-center font-interfaz text-lg font-black tracking-wide text-btn-juego-texto outline-none placeholder:text-btn-juego-texto/40 focus-visible:border-marca-primaria focus-visible:ring-4 focus-visible:ring-marca-primaria/40"
       />
 
       <div class="flex flex-wrap items-center justify-center gap-3">
@@ -80,7 +80,7 @@
           [disabled]="!codigo() || enviando()"
           class="inline-flex cursor-pointer items-center gap-2 rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-base font-black uppercase text-marca-sobre-primaria shadow-baja transition hover:bg-marca-primaria-hover disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
         >
-          {{ enviando() ? 'Validando…' : 'Canjear' }}
+          {{ enviando() ? 'Validando…' : 'Validar' }}
           <span aria-hidden="true">→</span>
         </button>
 
@@ -119,6 +119,53 @@
       >
         Cancelar
       </button>
+    </div>
+  }
+
+  <!-- Cupón validado: el empleado confirma el canje -->
+  @if (validacion(); as cupon) {
+    <div
+      class="fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
+      (click)="cancelarValidacion()"
+      aria-hidden="true"
+    ></div>
+
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-validacion"
+      class="fixed left-1/2 top-1/2 z-50 w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-alta"
+    >
+      <h2 id="titulo-validacion" class="font-titulo text-3xl uppercase text-marca-primaria">
+        Cupón válido
+      </h2>
+      <p class="mt-4 font-titulo text-2xl uppercase text-marca-acento">{{ cupon.marca }}</p>
+      <p class="mt-1 font-interfaz text-base font-bold">{{ cupon.titulo }}</p>
+      <p class="mt-1 font-interfaz text-sm">{{ cupon.descuento }}% de descuento</p>
+      <p class="mt-3 font-interfaz text-xs text-texto-secundario">
+        Cliente: <span class="font-bold">{{ cupon.usuario }}</span> · Código:
+        <span class="font-bold">{{ cupon.codigo }}</span>
+      </p>
+      <p class="mt-1 font-interfaz text-xs text-texto-secundario">
+        Vence el {{ cupon.vencimientoUtc | date: 'dd/MM/yy' : 'UTC' }}
+      </p>
+
+      <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          (click)="confirmarCanje()"
+          class="cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2 font-interfaz text-sm font-black uppercase text-marca-sobre-primaria transition hover:bg-marca-primaria-hover motion-reduce:transition-none"
+        >
+          Confirmar canje
+        </button>
+        <button
+          type="button"
+          (click)="cancelarValidacion()"
+          class="cursor-pointer rounded-pildora bg-white/10 px-6 py-2 font-interfaz text-xs font-bold uppercase transition hover:bg-white/20 motion-reduce:transition-none"
+        >
+          Cancelar
+        </button>
+      </div>
     </div>
   }
 

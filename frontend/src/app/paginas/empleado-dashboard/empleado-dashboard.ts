@@ -7,11 +7,12 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../servicios/auth.service';
 import { CuponesService } from '../../servicios/cupones.service';
-import { CanjeErrorRespuesta, CanjeExitosoRespuesta } from '../../modelos/cupon.model';
+import { CanjeErrorRespuesta, CanjeExitosoRespuesta, CuponValidado } from '../../modelos/cupon.model';
 
 import urlLogo from '../../compartidos/SVGs/Imagotipo_claro.svg';
 
@@ -29,16 +30,17 @@ interface DetectorBarcode {
 type ConstructorDetector = new (opciones: { formats: string[] }) => DetectorBarcode;
 
 /**
- * Panel del empleado: valida cupones ingresando el código o escaneando el QR
- * del cliente. El canje lo decide siempre el servidor.
+ * Panel del empleado: ingresa el token o escanea el QR del cliente, VALIDA el cupón
+ * (el servidor muestra a qué cupón y usuario corresponde) y recién después lo canjea.
+ * La validación y el canje los decide siempre el servidor.
  */
 @Component({
   selector: 'app-empleado-dashboard',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe],
   templateUrl: './empleado-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:keydown.escape)': 'cerrarResultado()' },
+  host: { '(document:keydown.escape)': 'cerrarModales()' },
 })
 export class EmpleadoDashboard {
   readonly authService = inject(AuthService);
@@ -50,6 +52,8 @@ export class EmpleadoDashboard {
   protected readonly codigo = signal('');
   protected readonly enviando = signal(false);
   protected readonly resultado = signal<ResultadoCanje | null>(null);
+  /** Cupón verificado por el servidor, pendiente de confirmar el canje. */
+  protected readonly validacion = signal<CuponValidado | null>(null);
   protected readonly menuAbierto = signal(false);
 
   protected readonly escaneando = signal(false);
@@ -66,16 +70,46 @@ export class EmpleadoDashboard {
     inject(DestroyRef).onDestroy(() => this.detenerEscaner());
   }
 
-  /** Deja el código en formato XXXX-XXXX-XXXX mientras se escribe o se pega. */
+  /** Normaliza lo que se escribe o pega: sin espacios y en mayúsculas (el token puede ser largo). */
   protected alEscribir(evento: Event): void {
     const entrada = evento.target as HTMLInputElement;
-    const limpio = entrada.value
-      .replace(/[^a-zA-Z0-9]/g, '')
-      .toUpperCase()
-      .slice(0, 12);
-    const formateado = limpio.replace(/(.{4})(?=.)/g, '$1-');
-    entrada.value = formateado;
-    this.codigo.set(formateado);
+    const limpio = entrada.value.replace(/\s/g, '').toUpperCase();
+    entrada.value = limpio;
+    this.codigo.set(limpio);
+  }
+
+  /** Paso 1: verifica el token sin consumir el cupón. */
+  protected validar(evento?: Event): void {
+    evento?.preventDefault();
+    const codigo = this.codigo().trim();
+    if (!codigo || this.enviando()) return;
+
+    this.enviando.set(true);
+    this.cuponesService.validar(codigo).subscribe({
+      next: (cupon) => {
+        this.enviando.set(false);
+        this.validacion.set(cupon);
+      },
+      error: (respuesta: HttpErrorResponse) => {
+        this.enviando.set(false);
+        this.resultado.set({ tipo: 'error', mensaje: this.mensajeDeError(respuesta) });
+      },
+    });
+  }
+
+  /** Paso 2: el empleado confirma y el cupón se consume. */
+  protected confirmarCanje(): void {
+    this.validacion.set(null);
+    this.canjear();
+  }
+
+  protected cancelarValidacion(): void {
+    this.validacion.set(null);
+  }
+
+  protected cerrarModales(): void {
+    this.validacion.set(null);
+    this.resultado.set(null);
   }
 
   protected canjear(evento?: Event): void {
@@ -150,7 +184,7 @@ export class EmpleadoDashboard {
         if (lecturas.length > 0) {
           this.detenerEscaner();
           this.codigo.set(lecturas[0].rawValue.toUpperCase());
-          this.canjear();
+          this.validar();
           return;
         }
       } catch {

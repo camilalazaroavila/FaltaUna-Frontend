@@ -75,6 +75,8 @@ export class UsuarioCupones {
 
   protected readonly cuponSeleccionado = signal<CuponDescuento | null>(null);
   protected readonly urlQr = signal<string | null>(null);
+  /** Token que lleva el QR: es lo que el empleado usa para canjear. */
+  protected readonly tokenQr = signal<string | null>(null);
   protected readonly qrCargando = signal(false);
   protected readonly qrError = signal(false);
 
@@ -120,10 +122,11 @@ export class UsuarioCupones {
     if (cupon.estado !== 'Disponible') return;
 
     this.qrCargando.set(true);
-    this.cuponesService.obtenerQr(cupon.codigo).subscribe({
-      next: (imagen) => {
+    this.cuponesService.obtenerQr(cupon.id).subscribe({
+      next: ({ imagen, token }) => {
         // Si el usuario ya cerró o cambió de cupón, se descarta la respuesta.
-        if (this.cuponSeleccionado()?.codigo !== cupon.codigo) return;
+        if (this.cuponSeleccionado()?.id !== cupon.id) return;
+        this.tokenQr.set(token);
         this.urlQr.set(URL.createObjectURL(imagen));
         this.qrCargando.set(false);
       },
@@ -155,5 +158,6 @@ export class UsuarioCupones {
     const url = this.urlQr();
     if (url) URL.revokeObjectURL(url);
     this.urlQr.set(null);
+    this.tokenQr.set(null);
   }
 }

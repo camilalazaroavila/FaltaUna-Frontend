@@ -36,7 +36,10 @@
       }
     </nav>
 
-    <div aria-hidden="true" class="hidden w-1.5 shrink-0 rounded-pildora bg-marca-primaria sm:block"></div>
+    <div
+      aria-hidden="true"
+      class="hidden w-1.5 shrink-0 rounded-pildora bg-marca-primaria sm:block"
+    ></div>
 
     <!-- Grilla de sellos -->
     <main class="zona-scroll min-w-0 flex-1 overflow-y-auto pr-2">
@@ -54,9 +57,7 @@
           </button>
         </div>
       } @else if (cuponesFiltrados().length === 0) {
-        <p class="font-interfaz text-sm font-bold">
-          Todavía no tenés cupones en esta categoría.
-        </p>
+        <p class="font-interfaz text-sm font-bold">Todavía no tenés cupones en esta categoría.</p>
       } @else {
         <ul class="grid grid-cols-2 gap-4 p-1 md:grid-cols-3 xl:grid-cols-4">
           @for (cupon of cuponesFiltrados(); track cupon.id) {
@@ -84,7 +85,10 @@
                       <path vector-effect="non-scaling-stroke" d="M-10 8 C 25 -12, 45 32, 110 6" />
                       <path vector-effect="non-scaling-stroke" d="M-10 38 C 25 18, 45 62, 110 36" />
                       <path vector-effect="non-scaling-stroke" d="M-10 68 C 25 48, 45 92, 110 66" />
-                      <path vector-effect="non-scaling-stroke" d="M-10 98 C 25 78, 45 122, 110 96" />
+                      <path
+                        vector-effect="non-scaling-stroke"
+                        d="M-10 98 C 25 78, 45 122, 110 96"
+                      />
                     </svg>
                     <span
                       class="relative flex size-full items-center justify-center px-1 text-center font-titulo text-sm uppercase leading-tight sm:text-lg"
@@ -143,11 +147,17 @@
       @if (cuponUtilizable()) {
         <div class="relative mx-auto mt-4 size-48 rounded-lg bg-white p-2 sm:size-56">
           @if (qrCargando()) {
-            <p class="flex size-full items-center justify-center font-interfaz text-xs text-teal-950" role="status">
+            <p
+              class="flex size-full items-center justify-center font-interfaz text-xs text-teal-950"
+              role="status"
+            >
               Generando QR…
             </p>
           } @else if (qrError()) {
-            <p class="flex size-full items-center justify-center font-interfaz text-xs text-teal-950" role="alert">
+            <p
+              class="flex size-full items-center justify-center font-interfaz text-xs text-teal-950"
+              role="alert"
+            >
               No pudimos generar el QR. Usá el código de abajo.
             </p>
           } @else if (urlQr()) {
@@ -167,9 +177,17 @@
           }
         </div>
 
-        <p class="mt-3 font-interfaz text-lg font-black tracking-widest" aria-label="Código del cupón">
+        <p
+          class="mt-3 font-interfaz text-lg font-black tracking-widest"
+          aria-label="Código del cupón"
+        >
           {{ cupon.codigo }}
         </p>
+        @if (tokenQr(); as token) {
+          <p class="mt-1 break-all font-interfaz text-xs text-texto-secundario">
+            Token de canje: <span class="font-bold">{{ token }}</span>
+          </p>
+        }
         <p class="mt-3 font-interfaz text-sm font-bold text-marca-primaria">
           Mostrá este QR al vendedor del negocio más cercano para conseguir los beneficios.
         </p>
