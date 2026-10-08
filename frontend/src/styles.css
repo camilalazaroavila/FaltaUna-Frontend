@@ -89,6 +89,9 @@
     --color-violeta-activo: #433552;
     --color-violeta-suave: rgba(103, 86, 121, 0.12);
 
+    /* Fondo del header en pantallas de auth modo empresa (marrón cálido) */
+    --color-marron-empresa: #413333;
+
     --color-crema-fondo: #FCEFE0;
     /* Fondo crema cálido y acogedor */
     --color-crema-superficie: #FFFFFF;
@@ -172,6 +175,17 @@
     --borde-foco: var(--color-amarillo-acento);
     /* Foco visible con máximo contraste sobre teal */
     --overlay: rgba(7, 35, 38, 0.82);
+
+    /* --- Auth: panel de imagen (login / register) ---
+       El panel lateral cubre la foto con un degradado del modo para que el
+       texto (o el fallback) se lea sobre la imagen sin depender de la foto. */
+    --auth-imagen-texto: var(--texto-sobre-oscuro);
+    --auth-imagen-overlay: linear-gradient(165deg,
+            color-mix(in srgb, var(--color-teal-profundo) 85%, transparent) 0%,
+            color-mix(in srgb, var(--color-teal-profundo) 40%, transparent) 58%,
+            transparent 100%);
+    --auth-imagen-fondo: var(--fondo-superficie);
+    --header-auth-fondo: var(--color-teal-base);
 
     /* --- Sombras (Modo Jugador / Oscuro Deportivo) --- */
     --sombra-baja: 0 2px 8px rgba(0, 0, 0, 0.22);
@@ -389,6 +403,21 @@
     --borde-foco: var(--color-violeta-empresa);
     --overlay: rgba(10, 46, 54, 0.58);
 
+    /* --- Auth: panel de imagen (login / register) ---
+       Misma API que en modo jugador; el degradado toma la identidad violeta
+       corporativa y el texto sigue siendo claro para convivir con la foto. */
+    --auth-imagen-texto: var(--texto-sobre-oscuro);
+    --auth-imagen-overlay: linear-gradient(165deg,
+            color-mix(in srgb, var(--color-violeta-empresa) 85%, transparent) 0%,
+            color-mix(in srgb, var(--color-violeta-empresa) 40%, transparent) 58%,
+            transparent 100%);
+    --auth-imagen-fondo: var(--fondo-superficie);
+    /* Fondo de login/register en auth-empresa: crema arriba, violeta abajo */
+    --auth-fondo-gradiente: linear-gradient(180deg,
+            var(--color-crema-fondo) 0%,
+            var(--color-violeta-empresa) 100%);
+    --header-auth-fondo: var(--color-marron-empresa);
+
     /* --- Sombras Adaptadas (Modo Empresa / Fondo Claro Suave) --- */
     --sombra-baja: 0 2px 8px rgba(10, 46, 54, 0.08);
     --sombra-media: 0 8px 20px rgba(10, 46, 54, 0.14);
@@ -573,6 +602,15 @@
     --color-hundido: var(--fondo-hundido);
     --color-borde-fuerte: var(--borde-fuerte);
     --color-borde-foco: var(--borde-foco);
+
+    /* Auth (login / register): panel de imagen lateral. El degradado va en el
+       namespace `background-image` para que `bg-auth-imagen-overlay` genere
+       `background-image` y no `background-color` (no es un color plano). */
+    --color-auth-imagen-texto: var(--auth-imagen-texto);
+    --color-auth-imagen-fondo: var(--auth-imagen-fondo);
+    --background-image-auth-imagen-overlay: var(--auth-imagen-overlay);
+    --color-header-auth-fondo: var(--header-auth-fondo);
+    --background-image-auth-fondo-gradiente: var(--auth-fondo-gradiente);
 
     --color-texto-primario: var(--texto-primario);
     --color-texto-secundario: var(--texto-secundario);

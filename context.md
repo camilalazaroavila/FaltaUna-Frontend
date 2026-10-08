@@ -14,6 +14,29 @@
   - **Empresas / Clubes / Marcas:** Administran complejos deportivos, publican canchas y torneos, ofrecen cupones promocionales y gestionan su presencia a través de un panel especializado.
   - **Administradores y Empleados:** Supervisan el estado de reservas, validan canjes de cupones y gestionan usuarios y roles.
 
+### Identidad de marca y copy (fuente: landing pública)
+
+- **Tono de voz:** voseo rioplatense, frases cortas e imperativas («Abrí mi primer sobre», «Comenzá a coleccionar», «Explorá el modo empresa»). El copy de marca nunca usa infinitivo de manual ni formalidad de ustedes.
+- **Vocabulario de marca:** partido, cancha, torneo, asistencia, sobre diario, carta (rareza ★ a ★★★★), álbum, intercambio, cupón, marca, descuento. Evitar sinónimos inventados.
+- **Claim / tagline:** «Ganá descuentos coleccionando y jugando con cartas de tus marcas preferidas» (hero de la landing).
+- **Definición de producto (verbatim de la landing):** «La plataforma donde organizás partidos de fútbol amateur y coleccionás cartas de tus marcas favoritas».
+- **Audiencias por modo:**
+  - `[data-modo="jugador"]` → jugadores/coleccionistas: partidos, confirmación de asistencia, sobres diarios, álbum e intercambios.
+  - `[data-modo="empresa"]` → clubes/marcas: «Publicá tus canchas y torneos en minutos», «Gestioná reservas desde un panel propio», cupones y métricas de campaña.
+- **Gradiente de marca:** `--landing-gradiente-amarillo-verde` (amarillo-logo → teal-profundo) con utility `bg-landing-gradiente-amarillo-verde`. Es exclusivo de bloques públicos/en modo jugador; en modo empresa la landing usa superficie crema.
+- **Logos según fondo:** `Imagotipo_Alt.svg` (oscuro) sobre amarillo o gradiente claro; `Imagotipo_claro.svg` sobre fondos oscuros; `Imagotipo_Empresa.svg` en modo empresa.
+- **Open decisions de marca (sin resolver):** tagline oficial definitiva, propuesta de valor consolidada para empresas y guía de tono formal — no existen como documento en el repo.
+
+### Documentos de contexto: desalineación conocida (sin resolver)
+
+Tres documentos describen el modelo de negocio de forma distinta y conviven sin reconciliar:
+
+1. `context.md` (este archivo): fútbol amateur + cartas (igual que la landing).
+2. `Reglas de negocio_ TCG de marcas.md`: TCG puro con pilares de cartas/sobres/misiones.
+3. `FaltaUna-auth/context.md`: versión detallada alineada al modelo TCG.
+
+**Decisión:** queda solo documentada; no se unificó a propósito (pendiente de decisión de los equipos).
+
 ---
 
 ## 2. Stack Tecnológico y Entorno de Ejecución
