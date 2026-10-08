@@ -47,6 +47,10 @@ export const PALETA_SEMANTICA: readonly MuestraColor[] = [
   color('--borde-default', 'border-borde-default', 'Separadores'),
   color('--borde-fuerte', 'border-borde-fuerte', 'Bordes con presencia'),
   color('--borde-foco', 'outline-borde-foco', 'Anillo de foco'),
+  color('--auth-imagen-texto', 'text-auth-imagen-texto', 'Texto sobre el panel de imagen (login/register)'),
+  color('--auth-imagen-overlay', 'bg-auth-imagen-overlay', 'Degradado sobre el panel de imagen (login/register)'),
+  color('--auth-imagen-fondo', 'bg-auth-imagen-fondo', 'Fondo de respaldo del carrusel de auth'),
+  color('--header-auth-fondo', 'bg-header-auth-fondo', 'Header de las pantallas de auth (login/register)'),
 ] as const;
 
 /**

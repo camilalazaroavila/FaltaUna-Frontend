@@ -1,11 +1,5 @@
 export type Rol = 'Usuario' | 'Empleado' | 'Empresa' | 'Admin';
 
-export const ROLES_REGISTRABLES: { valor: Rol; etiqueta: string }[] = [
-  { valor: 'Usuario', etiqueta: 'Usuario' },
-  { valor: 'Empleado', etiqueta: 'Empleado' },
-  { valor: 'Empresa', etiqueta: 'Empresa' }
-];
-
 export interface Usuario {
   id: number;
   nombreUsuario: string;
