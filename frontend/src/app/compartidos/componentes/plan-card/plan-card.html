@@ -1,0 +1,22 @@
+<article
+  class="overflow-hidden rounded-[2rem_1rem_2.5rem_1.25rem] border border-landing-claro-borde bg-landing-claro-superficie shadow-baja md:flex md:items-stretch"
+  [class.md:flex-row-reverse]="plan().alineacion === 'derecha'"
+  [attr.aria-label]="'Plan ' + plan().nombre"
+>
+  <p [class]="clasesEtiqueta()">{{ plan().nombre }}</p>
+
+  <ul class="grid flex-1 gap-3 p-5 md:grid-cols-2 md:gap-x-6 md:gap-y-4 md:p-7 gap-3 p-5 md:p-7">
+    @for (beneficio of plan().beneficios; track beneficio.texto) {
+      <li
+        class="flex items-start gap-3 font-interfaz text-sm leading-snug text-landing-claro-texto md:text-base"
+      >
+        <ng-icon
+          [name]="iconoDe(beneficio)"
+          class="mt-0.5 size-5 shrink-0 text-marca-primaria"
+          aria-hidden="true"
+        />
+        <span [innerHTML]="resaltarNumero(beneficio.texto)"></span>
+      </li>
+    }
+  </ul>
+</article>

@@ -1,0 +1,35 @@
+<div
+  class="faq-empresa"
+  [class.faq-empresa--abierto]="abierto()">
+  <button
+    type="button"
+    class="faq-empresa__cabecera"
+    [id]="idCabecera"
+    [attr.aria-expanded]="abierto()"
+    [attr.aria-controls]="idPanel"
+    (click)="alternar.emit()">
+    <span class="faq-empresa__pregunta">{{ pregunta() }}</span>
+    <svg
+      class="faq-empresa__flecha"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </button>
+
+  <div
+    class="faq-empresa__panel"
+    role="region"
+    [id]="idPanel"
+    [attr.aria-labelledby]="idCabecera"
+    [attr.inert]="abierto() ? null : ''">
+    <div class="faq-empresa__contenido">
+      <p class="faq-empresa__respuesta">{{ respuesta() }}</p>
+    </div>
+  </div>
+</div>

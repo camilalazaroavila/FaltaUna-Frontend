@@ -1,0 +1,22 @@
+<header
+  class="m-5 flex items-center justify-between rounded-md bg-marca-primaria px-3 py-2 text-marca-sobre-primaria shadow-md sm:px-4 lg:rounded-2xl lg:px-8 lg:py-3"
+>
+  <a routerLink="/" class="shrink-0" aria-label="Falta Una, ir al inicio">
+    <img [src]="urlLogo" alt="" class="h-8 w-auto sm:h-9 lg:h-[75px]" />
+  </a>
+
+  <nav class="flex shrink-0 items-center gap-2 sm:gap-4" aria-label="Acceso a la cuenta">
+    <a
+      routerLink="/login"
+      class="font-interfaz text-[10px] font-bold uppercase tracking-wide text-marca-sobre-primaria transition-colors hover:opacity-90 sm:text-[11px] lg:font-titulo lg:text-xl"
+    >
+      Iniciar sesión
+    </a>
+    <a
+      routerLink="/registro"
+      class="font-interfaz text-[10px] font-bold uppercase tracking-wide text-marca-sobre-primaria transition-colors hover:opacity-90 sm:text-[11px] lg:font-titulo lg:text-xl"
+    >
+      Registrarse
+    </a>
+  </nav>
+</header>
