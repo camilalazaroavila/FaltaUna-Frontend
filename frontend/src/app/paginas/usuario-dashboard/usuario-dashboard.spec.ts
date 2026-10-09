@@ -87,7 +87,7 @@ describe('UsuarioDashboard Component', () => {
 
   it('debe mostrar el contador de sobres diarios disponibles', () => {
     const textoContador = fixture.nativeElement.textContent;
-    expect(textoContador).toContain('2/2 GRÁTIS');
+    expect(textoContador).toContain('2/2 GRATIS');
   });
 
   it('debe abrir el panel selector de sobres al presionar VER SOBRES', () => {
