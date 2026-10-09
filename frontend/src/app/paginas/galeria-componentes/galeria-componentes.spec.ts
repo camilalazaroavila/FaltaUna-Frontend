@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+﻿import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideIcons } from '@ng-icons/core';
 import { GaleriaComponentes } from './galeria-componentes';
@@ -66,8 +66,8 @@ describe('GaleriaComponentes', () => {
     document.documentElement.removeAttribute('data-movimiento');
   });
 
-  it('debe renderizar las nueve secciones de la galeria', () => {
-    expect(SECCIONES.length).toBe(9);
+  it('debe renderizar las diez secciones de la galeria', () => {
+    expect(SECCIONES.length).toBe(10);
 
     for (const seccion of SECCIONES) {
       expect(html().querySelector(`#${seccion.id}`)).not.toBeNull();
