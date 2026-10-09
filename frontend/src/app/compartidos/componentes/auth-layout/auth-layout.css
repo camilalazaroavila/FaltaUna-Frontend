@@ -34,6 +34,19 @@
     animation: authFadeEmpresa 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/**
+ * Modo empresa en login/registro: la acción principal usa el verde oscuro
+ * `--color-teal-profundo` (el mismo del título "Creá tu cuenta de empresa")
+ * en lugar del violeta primario.
+ * Se acota a `data-modo-auth` porque sólo aplica a estas pantallas.
+ */
+[data-modo-auth='empresa'] {
+    --btn-primario-bg: var(--color-teal-profundo);
+    --btn-primario-texto: var(--blanco-puro);
+    --btn-primario-hover: var(--color-teal-base);
+    --btn-primario-activo: var(--color-teal-hundido);
+}
+
 @media (prefers-reduced-motion: reduce) {
 
     [data-modo-auth] {

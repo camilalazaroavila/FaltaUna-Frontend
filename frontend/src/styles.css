@@ -419,7 +419,7 @@
     --auth-fondo-gradiente: linear-gradient(180deg,
             var(--color-crema-fondo) 0%,
             var(--color-violeta-empresa) 100%);
-    --header-auth-fondo: var(--color-marron-empresa);
+    --header-auth-fondo: var(--color-violeta-empresa);
 
     /* --- Sombras Adaptadas (Modo Empresa / Fondo Claro Suave) --- */
     --sombra-baja: 0 2px 8px rgba(10, 46, 54, 0.08);
