@@ -1,23 +1,21 @@
 <div
-  class="relative flex min-h-screen flex-col justify-between overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white"
+  class="relative flex min-h-[100dvh] min-h-screen flex-col justify-between overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white"
 >
-  <!-- TOP BAR / ENCABEZADO CON ESTILO DEL LANDING -->
-  <header class="w-full">
+
+  <header class="relative z-40 w-full">
     <div
       class="m-3 flex items-center justify-between gap-2 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:m-5 sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
     >
-      <!-- LOGO -->
       <a routerLink="/" class="flex shrink-0 items-center" aria-label="Ir al inicio de Falta Una">
         <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto object-contain sm:h-9 lg:h-[75px]" />
       </a>
 
-      <!-- BUSCADOR CON FORMATO Y COLOR DEL LANDING -->
       <form
         role="search"
         class="relative min-w-0 flex-1 md:w-64 md:flex-none lg:w-[320px]"
         (submit)="buscarCampania($event)"
       >
-        <label for="buscador-campanias" class="sr-only">Buscá tu campaña preferida</label>
+        <label for="buscador-campanias" class="sr-only">Buscá tu álbum preferido</label>
         <svg
           class="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-landing-claro-texto/60"
           viewBox="0 0 24 24"
@@ -42,7 +40,6 @@
         />
       </form>
 
-      <!-- AVATAR Y MENÚ DE USUARIO -->
       <div class="relative shrink-0 md:ml-auto">
         <button
           type="button"
@@ -88,10 +85,13 @@
     </div>
   </header>
 
-  <!-- DOCK LATERAL IZQUIERDO -->
-  <aside aria-label="Navegación principal" class="fixed left-3 top-1/2 -translate-y-1/2 z-30 md:left-6">
+  <!-- MENÚ LATERAL -->
+  <aside
+    aria-label="Navegación principal"
+    class="fixed left-2 sm:left-3 md:left-5 lg:left-7 xl:left-8 top-[calc(50%+24px)] -translate-y-1/2 z-30 max-h-[calc(100dvh-130px)]"
+  >
     <nav
-      class="flex flex-col items-center gap-2.5 rounded-2xl border border-white/10 bg-[#072428]/95 p-2 shadow-alta backdrop-blur-md md:gap-3 md:rounded-3xl md:p-2.5 overflow-visible"
+      class="flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-[#072428]/95 p-1.5 shadow-alta backdrop-blur-md sm:gap-2.5 sm:p-2 md:gap-2.5 md:rounded-3xl md:p-2.5 lg:gap-3 lg:p-3 xl:gap-3.5 xl:p-3.5 overflow-visible md:scale-100 lg:scale-105 xl:scale-115 origin-left transition-transform"
     >
       @for (destino of destinos; track destino.id) {
         <app-boton-navegacion-circular
@@ -107,153 +107,89 @@
     </nav>
   </aside>
 
-  <!-- ESCENARIO CENTRAL / CARRUSEL DE SOBRES -->
-  <main class="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-8 md:py-12">
-    <!-- CONTADOR DE SOBRES DIARIOS -->
+  <!-- ZONA CENTRAL -->
+  <main class="relative z-10 flex flex-1 flex-col items-center justify-center pl-14 pr-3 py-3 sm:pl-16 sm:px-4 sm:py-6 md:pl-24 md:py-8 lg:pl-32 xl:pl-40 min-h-0">
+    <!-- Contador de sobres disponibles -->
     <div
-      class="mb-6 flex select-none items-center gap-2 font-titulo text-xl tracking-wider text-marca-acento md:mb-8 md:text-2xl lg:text-3xl"
+      class="mb-2 sm:mb-4 md:mb-6 flex select-none items-center gap-2 font-titulo text-base sm:text-xl md:text-2xl lg:text-3xl tracking-wider text-marca-acento shrink-0"
     >
-      <span class="inline-block size-2.5 rounded-circulo bg-marca-acento md:size-3"></span>
-      <span>{{ sobresDisponibles().actuales }}/{{ sobresDisponibles().maximo }} GRÁTIS</span>
+      <span class="inline-block size-2 rounded-circulo bg-marca-acento sm:size-2.5 md:size-3"></span>
+      <span>{{ sobresDisponibles().actuales }}/{{ sobresDisponibles().maximo }} GRATIS</span>
     </div>
 
-    <!-- ABANICO DE SOBRES -->
+    <!-- Abanico de Sobres -->
     <div
-      class="relative aspect-[16/11] w-full max-w-[320px] flex items-center justify-center sm:max-w-md md:max-w-lg lg:max-w-xl"
+      class="relative flex items-center justify-center shrink-0 my-auto h-40 sm:h-52 md:h-64 lg:h-72 xl:h-80 max-h-[34vh] aspect-[16/10] w-auto max-w-[90vw]"
     >
-
-      <!-- SOBRE IZQUIERDO (MISTERIO) -->
+      <!-- Sobre Izquierdo -->
       <div
-        class="absolute left-[16%] top-1/2 z-10 w-[36%] -translate-x-1/2 -translate-y-1/2 -rotate-[10deg] cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30 md:left-[20%] md:-rotate-[12deg]"
+        class="absolute left-[24%] sm:left-[28%] top-1/2 -translate-x-1/2 -translate-y-1/2 h-[82%] w-auto -rotate-[12deg] z-10 cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30"
         (click)="abrirSelectorSobres()"
         title="Sobre misterioso"
       >
         <img
           [src]="urlSobreIzquierda"
           alt="Sobre misterioso"
-          class="pointer-events-none h-auto w-full select-none drop-shadow-xl"
+          class="pointer-events-none h-full w-auto object-contain select-none drop-shadow-xl"
         />
       </div>
 
-      <!-- SOBRE DERECHO (TEMÁTICO) -->
+      <!-- Sobre Derecho -->
       <div
-        class="absolute left-[84%] top-1/2 z-10 w-[36%] -translate-x-1/2 -translate-y-1/2 rotate-[10deg] cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30 md:left-[80%] md:rotate-[12deg]"
+        class="absolute left-[76%] sm:left-[72%] top-1/2 -translate-x-1/2 -translate-y-1/2 h-[82%] w-auto rotate-[12deg] z-10 cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30"
         (click)="abrirSelectorSobres()"
         title="Sobre temático de marcas"
       >
         <img
           [src]="urlSobreDerecha"
           alt="Sobre temático"
-          class="pointer-events-none h-auto w-full select-none drop-shadow-xl"
+          class="pointer-events-none h-full w-auto object-contain select-none drop-shadow-xl"
         />
       </div>
 
-      <!-- SOBRE CENTRAL (PRINCIPAL VERDE) -->
+      <!-- Sobre Central -->
       <div
-        class="absolute left-1/2 top-1/2 z-20 w-[42%] -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30"
+        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[96%] w-auto z-20 cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30"
         (click)="abrirSelectorSobres()"
         title="Sobre diario principal"
       >
         <img
           [src]="urlSobreCentro"
           alt="Sobre principal"
-          class="pointer-events-none h-auto w-full select-none drop-shadow-2xl"
+          class="pointer-events-none h-full w-auto object-contain select-none drop-shadow-2xl"
         />
       </div>
     </div>
 
-    <!-- BOTÓN DE ACCIÓN: VER SOBRES -->
+    <!-- Botón Principal "VER SOBRES" -->
     <button
       id="btn-ver-sobres"
       type="button"
       (click)="abrirSelectorSobres()"
-      class="mt-6 cursor-pointer rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-sm font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:shadow-brillo-verde active:scale-[0.98] md:mt-10 md:px-12 md:py-3.5 md:text-base"
+      class="mt-3 sm:mt-5 md:mt-8 shrink-0 cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2.5 sm:px-8 sm:py-3 font-interfaz text-xs sm:text-sm font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:shadow-brillo-verde active:scale-[0.98] md:px-12 md:py-3.5 md:text-base"
     >
       VER SOBRES
     </button>
   </main>
 
-  <!-- ESQUINA INFERIOR DERECHA: ACCESO RÁPIDO CON ICON_PELEA -->
+  <!-- ICONO FLOTANTE DE JUGAR -->
   <aside
-    class="fixed bottom-4 right-4 z-20 cursor-pointer transition-transform hover:scale-110 active:scale-95 md:bottom-8 md:right-8"
+    class="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6 lg:bottom-8 lg:right-8 xl:bottom-10 xl:right-10 z-20 cursor-pointer transition-transform hover:scale-110 active:scale-95"
     (click)="abrirSelectorSobres()"
     title="Abrir sobres y jugar"
   >
     <img
       [src]="urlIconPelea"
       alt="Abrir sobre"
-      class="pointer-events-none size-16 select-none drop-shadow-lg sm:size-20 md:size-24"
+      class="pointer-events-none size-12 sm:size-16 md:size-20 lg:size-24 xl:size-32 select-none drop-shadow-xl"
     />
   </aside>
 
-  <!-- PANEL LATERAL DESLIZABLE: SELECTOR DE SOBRES -->
-  @if (selectorSobresAbierto()) {
-    <!-- BACKDROP -->
-    <div
-      class="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity"
-      (click)="cerrarSelectorSobres()"
-      aria-hidden="true"
-    ></div>
-
-    <!-- DRAWER / PANEL -->
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="titulo-selector-sobres"
-      class="fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col border-l border-white/10 bg-[#082226] p-6 shadow-2xl overflow-y-auto sm:max-w-md"
-    >
-      <!-- ENCABEZADO DEL DRAWER -->
-      <div class="flex items-center justify-between border-b border-white/10 pb-4">
-        <div>
-          <h2 id="titulo-selector-sobres" class="font-titulo text-xl text-marca-acento md:text-2xl">
-            Tus Sobres
-          </h2>
-          <p class="font-interfaz text-xs text-texto-secundario mt-0.5">
-            Elegí un sobre para descubrir nuevas cartas
-          </p>
-        </div>
-        <button
-          type="button"
-          (click)="cerrarSelectorSobres()"
-          class="flex size-9 cursor-pointer items-center justify-center rounded-circulo bg-white/10 text-white transition hover:bg-white/20"
-          aria-label="Cerrar selector de sobres"
-        >
-          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- LISTADO DE SOBRES -->
-      <div class="mt-6 flex flex-col gap-4">
-        @for (sobre of opcionesSobres; track sobre.id) {
-          <div
-            class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-marca-primaria/50 hover:bg-white/10"
-          >
-            <img [src]="sobre.urlImagen" alt="" class="h-20 w-auto shrink-0 object-contain drop-shadow-md" />
-            <div class="min-w-0 flex-1">
-              <h3 class="font-titulo text-base text-white truncate">{{ sobre.titulo }}</h3>
-              <p class="mt-1 font-interfaz text-xs text-texto-secundario line-clamp-2">
-                {{ sobre.descripcion }}
-              </p>
-              <div class="mt-3 flex items-center justify-between">
-                <span class="rounded-pildora bg-white/10 px-2 py-0.5 font-interfaz text-[11px] text-marca-acento">
-                  {{ sobre.cantidadCartas }} cartas
-                </span>
-                <button
-                  type="button"
-                  (click)="abrirSobre(sobre)"
-                  [disabled]="!sobre.disponible"
-                  class="rounded-pildora px-3.5 py-1.5 font-interfaz text-xs font-bold transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
-                  [class]="sobre.disponible ? 'bg-marca-primaria text-marca-sobre-primaria hover:bg-marca-primaria-hover' : 'bg-white/10 text-texto-apagado'"
-                >
-                  {{ sobre.disponible ? 'Abrir' : 'Bloqueado' }}
-                </button>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  }
+  <app-flujo-apertura-sobres
+    [abierto]="selectorSobresAbierto()"
+    [sobresCatalogo]="sobresCatalogo()"
+    [sobresDiariosDisponibles]="sobresDisponibles().actuales"
+    (cerrar)="cerrarSelectorSobres()"
+    (aperturaRealizada)="alCompletarApertura($event)"
+  />
 </div>

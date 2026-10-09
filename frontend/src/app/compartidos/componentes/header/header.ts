@@ -51,7 +51,7 @@ import urlLogoClaro from '../../SVGs/Imagotipo_claro.svg';
             id="buscador-campania"
             type="search"
             autocomplete="off"
-            placeholder="Buscá tu campaña preferida..."
+            placeholder="Buscá tu álbum preferido..."
             [value]="termino()"
             (input)="termino.set($any($event.target).value)"
             class="w-full rounded-pildora border border-transparent bg-landing-claro-fondo py-1.5 pl-8 pr-3 font-interfaz text-[11px] text-landing-claro-texto outline-none placeholder:text-landing-claro-texto/55 focus-visible:border-landing-marca md:h-10 md:text-sm"
