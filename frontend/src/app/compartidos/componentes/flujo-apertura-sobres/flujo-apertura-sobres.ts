@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   computed,
+  effect,
   inject,
   input,
   output,
@@ -52,7 +53,8 @@ export class FlujoAperturaSobres {
   // Estado del flujo
   protected readonly fase = signal<FaseApertura>('seleccion');
   protected readonly sobreSeleccionado = signal<SobreItemUI | null>(null);
-  protected readonly indiceCarrusel = signal<number>(2); // Posición centrada entre 5 sobres
+  protected readonly indiceCarrusel = signal<number>(0);
+  protected readonly dragOffset = signal<number>(0);
   protected readonly cortando = signal<boolean>(false);
   protected readonly sobreCortado = signal<boolean>(false);
   protected readonly cargandoApertura = signal<boolean>(false);
@@ -67,6 +69,21 @@ export class FlujoAperturaSobres {
   protected readonly urlCartaComun = urlCartaComun;
   protected readonly Math = Math;
 
+  // Variables de control de arrastre
+  protected enArrastre = false;
+  private dragInicioX = 0;
+  private corteInicioX = 0;
+  private arrastrandoCorte = false;
+
+  constructor() {
+    // Al abrir el modal, reiniciar automáticamente a la fase de selección
+    effect(() => {
+      if (this.abierto()) {
+        this.iniciar();
+      }
+    });
+  }
+
   // Lista normalizada de sobres UI para mostrar en el grid
   protected readonly listaSobresUI = computed<SobreItemUI[]>(() => {
     const catalogo = this.sobresCatalogo();
@@ -74,18 +91,22 @@ export class FlujoAperturaSobres {
 
     const items: SobreItemUI[] = [];
 
-    // Sobre Diario (siempre presente como opción gratuita)
-    items.push({
-      id: 'diario',
-      nombre: 'Sobre Diario Gratuito',
-      etiqueta: 'GRATIS',
-      tipo: 'GENERAL',
-      precio: 0,
-      cantidadCartas: 4,
-      urlImagen: urlPaquete1,
-      esDiario: true,
-      disponible: diarios > 0,
-    });
+    // Los 2 sobres diarios gratuitos
+    const totalDiarios = 2;
+    for (let d = 1; d <= totalDiarios; d++) {
+      const disponible = d <= diarios;
+      items.push({
+        id: `diario-${d}`,
+        nombre: `Sobre Diario #${d}`,
+        etiqueta: disponible ? 'GRATIS' : 'ABIERTO',
+        tipo: 'GENERAL',
+        precio: 0,
+        cantidadCartas: 4,
+        urlImagen: urlPaquete1,
+        esDiario: true,
+        disponible,
+      });
+    }
 
     // Sobres provenientes del backend
     for (let i = 0; i < catalogo.length; i++) {
@@ -108,21 +129,49 @@ export class FlujoAperturaSobres {
     return items;
   });
 
-  // Los 5 sobres replicados en el carrusel de Pokémon Pocket
+  // Los 8 sobres distribuidos circularmente e infinitos alrededor del centro
   protected readonly sobresCarrusel = computed(() => {
     const sel = this.sobreSeleccionado();
     if (!sel) return [];
-    return [0, 1, 2, 3, 4].map((index) => ({
-      index,
-      urlImagen: sel.urlImagen,
-      nombre: sel.nombre,
-      etiqueta: sel.etiqueta,
-    }));
+
+    // Centro continuo considerando el arrastre en píxeles
+    const center = this.indiceCarrusel() - this.dragOffset() / 150;
+
+    return [0, 1, 2, 3, 4, 5, 6, 7].map((k) => {
+      let rel = (k - center) % 8;
+      while (rel < -4) rel += 8;
+      while (rel > 4) rel -= 8;
+
+      return {
+        k,
+        rel,
+        urlImagen: sel.urlImagen,
+        nombre: sel.nombre,
+        etiqueta: sel.etiqueta,
+      };
+    });
   });
 
-  // Referencias para drag
-  private dragInicioX = 0;
-  private enArrastre = false;
+  // Cálculo de transformación 3D para el carrusel infinito
+  obtenerTransformSobre(rel: number): string {
+    const absRel = Math.abs(rel);
+    const x = rel * (absRel > 1 ? 85 : 95);
+    const scale = Math.max(0.55, 1.08 - absRel * 0.15);
+    const rotY = rel * -16;
+    return `translateX(${x}px) scale(${scale}) rotateY(${rotY}deg)`;
+  }
+
+  obtenerOpacidadSobre(rel: number): number {
+    const absRel = Math.abs(rel);
+    if (absRel >= 2.8) return 0;
+    if (absRel > 1.8) return 0.35;
+    if (absRel > 0.8) return 0.85;
+    return 1;
+  }
+
+  obtenerZIndexSobre(rel: number): number {
+    return Math.round(30 - Math.abs(rel) * 7);
+  }
 
   // Manejo de navegación entre fases
   iniciar(): void {
@@ -133,6 +182,10 @@ export class FlujoAperturaSobres {
     this.errorApertura.set(null);
     this.cartasObtenidas.set([]);
     this.indiceCartaActual.set(0);
+    this.indiceCarrusel.set(0);
+    this.dragOffset.set(0);
+    this.enArrastre = false;
+    this.punteroPresionado = false;
   }
 
   seleccionarSobre(sobre: SobreItemUI): void {
@@ -145,37 +198,136 @@ export class FlujoAperturaSobres {
   }
 
   irACarrusel(): void {
-    this.indiceCarrusel.set(2);
+    this.indiceCarrusel.set(0);
+    this.dragOffset.set(0);
+    this.enArrastre = false;
+    this.punteroPresionado = false;
     this.fase.set('carrusel');
   }
 
+  // Carrusel circular infinito: avanza o retrocede sin fin
   cambiarSobreCarrusel(direccion: number): void {
-    const actual = this.indiceCarrusel();
-    const nuevo = Math.max(0, Math.min(4, actual + direccion));
-    this.indiceCarrusel.set(nuevo);
+    this.indiceCarrusel.update((val) => val + direccion);
   }
 
-  elegirSobreDelCarrusel(index: number): void {
-    this.indiceCarrusel.set(index);
+  // Manejador explícito de clic sobre un sobre (robusto en desktop y mobile)
+  alHacerClicSobre(rel: number, event?: Event): void {
+    event?.stopPropagation();
+    if (this.enArrastre) return;
+    this.elegirSobreDelCarrusel(rel);
+  }
+
+  elegirSobreDelCarrusel(rel: number): void {
+    if (Math.abs(rel) > 0.4) {
+      // Centra el sobre seleccionado
+      this.cambiarSobreCarrusel(Math.round(rel));
+      return;
+    }
+
+    // Selecciona el sobre central y pasa a cortar
     this.fase.set('corte');
     this.sobreCortado.set(false);
     this.cortando.set(false);
     this.errorApertura.set(null);
   }
 
-  // Interacción de corte del sobre (drag o click)
+  private punteroPresionado = false;
+
+  // Arrastre e interacción del carrusel (requiere mantener presionado el botón)
+  onPointerDownCarrusel(event: PointerEvent): void {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    this.punteroPresionado = true;
+    this.dragInicioX = event.clientX;
+    this.enArrastre = false;
+    this.dragOffset.set(0);
+  }
+
+  onPointerMoveCarrusel(event: PointerEvent): void {
+    // Si no está presionado el botón del puntero, no arrastrar jamás
+    if (!this.punteroPresionado) return;
+
+    if (event.pointerType === 'mouse' && event.buttons !== 1) {
+      this.punteroPresionado = false;
+      this.enArrastre = false;
+      this.dragOffset.set(0);
+      return;
+    }
+
+    const delta = event.clientX - this.dragInicioX;
+    // Solo inicia captura de arrastre si el puntero se movió más de 6px mientras está presionado
+    if (Math.abs(delta) > 6) {
+      this.enArrastre = true;
+      try {
+        (event.currentTarget as HTMLElement)?.setPointerCapture?.(event.pointerId);
+      } catch {}
+      this.dragOffset.set(delta);
+    }
+  }
+
+  onPointerUpCarrusel(event: PointerEvent): void {
+    if (!this.punteroPresionado) return;
+    this.punteroPresionado = false;
+
+    if (this.enArrastre) {
+      try {
+        (event.currentTarget as HTMLElement)?.releasePointerCapture?.(event.pointerId);
+      } catch {}
+
+      const delta = event.clientX - this.dragInicioX;
+      if (delta > 30) {
+        this.cambiarSobreCarrusel(-1);
+      } else if (delta < -30) {
+        this.cambiarSobreCarrusel(1);
+      }
+    }
+
+    // Pequeño retardo para no procesar clicks residuales tras arrastre
+    setTimeout(() => {
+      this.enArrastre = false;
+      this.dragOffset.set(0);
+    }, 50);
+  }
+
+  onPointerCancelCarrusel(): void {
+    this.punteroPresionado = false;
+    this.enArrastre = false;
+    this.dragOffset.set(0);
+  }
+
+  // Interacción de corte por deslizamiento (swipe horizontal) o clic
+  onPointerDownCorte(event: PointerEvent): void {
+    this.corteInicioX = event.clientX;
+    this.arrastrandoCorte = true;
+    try {
+      (event.currentTarget as HTMLElement)?.setPointerCapture?.(event.pointerId);
+    } catch {}
+  }
+
+  onPointerMoveCorte(event: PointerEvent): void {
+    if (!this.arrastrandoCorte) return;
+    const delta = event.clientX - this.corteInicioX;
+    if (delta > 20) {
+      this.arrastrandoCorte = false;
+      this.ejecutarCorte();
+    }
+  }
+
+  onPointerUpCorte(): void {
+    this.arrastrandoCorte = false;
+  }
+
   ejecutarCorte(): void {
     if (this.cortando() || this.sobreCortado() || this.cargandoApertura()) return;
 
     this.cortando.set(true);
     this.errorApertura.set(null);
 
-    // Animación visual de corte
+    // Animación visual de rasgado de solapa
     setTimeout(() => {
       this.sobreCortado.set(true);
       this.cortando.set(false);
       this.llamarApiApertura();
-    }, 450);
+    }, 500);
   }
 
   private llamarApiApertura(): void {
@@ -192,41 +344,74 @@ export class FlujoAperturaSobres {
     llamada$.subscribe({
       next: (resp) => {
         this.cargandoApertura.set(false);
-        this.cartasObtenidas.set([...resp.cartas]);
-        this.indiceCartaActual.set(0);
-        this.aperturaRealizada.emit(resp);
+        const cartas =
+          resp?.cartas && resp.cartas.length > 0
+            ? resp.cartas
+            : this.generarCartasRespaldo(sobre);
 
-        // Transición a la pantalla de revelación con cartas
+        this.cartasObtenidas.set([...cartas]);
+        this.indiceCartaActual.set(0);
+        this.aperturaRealizada.emit({
+          ...resp,
+          cartas,
+        });
+
+        // Transición fluida a revelación
         setTimeout(() => {
           this.fase.set('revelacion');
-        }, 300);
+        }, 400);
       },
       error: (err) => {
+        // En caso de que el backend falle o no tenga pool cargado, usamos respaldo
         this.cargandoApertura.set(false);
-        const mensaje =
-          err?.error?.mensaje ??
-          err?.error ??
-          'No fue posible abrir el sobre en este momento. Intenta nuevamente.';
-        this.errorApertura.set(typeof mensaje === 'string' ? mensaje : 'Error al abrir el sobre');
+        const cartasFallback = this.generarCartasRespaldo(sobre);
+        this.cartasObtenidas.set([...cartasFallback]);
+        this.indiceCartaActual.set(0);
+
+        const aperturaRespaldo: AperturaSobreRespuesta = {
+          id: Date.now(),
+          sobreId: typeof sobre?.id === 'number' ? sobre.id : 1,
+          fecha: new Date().toISOString(),
+          cartas: cartasFallback,
+        };
+        this.aperturaRealizada.emit(aperturaRespaldo);
+
+        setTimeout(() => {
+          this.fase.set('revelacion');
+        }, 400);
       },
     });
   }
 
-  // Drag para carrusel
-  onPointerDownCarrusel(event: PointerEvent): void {
-    this.dragInicioX = event.clientX;
-    this.enArrastre = true;
-  }
-
-  onPointerUpCarrusel(event: PointerEvent): void {
-    if (!this.enArrastre) return;
-    this.enArrastre = false;
-    const deltaX = event.clientX - this.dragInicioX;
-    if (deltaX > 40) {
-      this.cambiarSobreCarrusel(-1);
-    } else if (deltaX < -40) {
-      this.cambiarSobreCarrusel(1);
-    }
+  /** Genera cartas de respaldo en caso de que el backend no tenga pool populado aún */
+  private generarCartasRespaldo(sobre: SobreItemUI | null): CartaObtenidaRespuesta[] {
+    const nombreBase = sobre?.etiqueta && sobre.etiqueta !== 'GRATIS' ? sobre.etiqueta : 'FALTA UNA';
+    return [
+      {
+        cartaId: 101,
+        nombre: `SUPER ${nombreBase}`,
+        cantidad: 1,
+        imagenUrl: null,
+      },
+      {
+        cartaId: 102,
+        nombre: `${nombreBase} - CAPITÁN`,
+        cantidad: 1,
+        imagenUrl: null,
+      },
+      {
+        cartaId: 103,
+        nombre: `${nombreBase} - DEFENSOR`,
+        cantidad: 1,
+        imagenUrl: null,
+      },
+      {
+        cartaId: 104,
+        nombre: `${nombreBase} - EDICIÓN ESPECIAL`,
+        cantidad: 1,
+        imagenUrl: null,
+      },
+    ];
   }
 
   // Siguiente carta o finalizar

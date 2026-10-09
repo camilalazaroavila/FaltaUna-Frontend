@@ -30,7 +30,7 @@ export interface AbrirSobreSolicitud {
 }
 
 export interface SobreItemUI {
-  readonly id: number | 'diario';
+  readonly id: number | string;
   readonly nombre: string;
   readonly etiqueta: string;
   readonly tipo: TipoSobre;

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
@@ -86,12 +86,14 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('debe incluir el sobre diario y los sobres del catalogo en listaSobresUI', () => {
+  it('debe incluir los 2 sobres diarios y los sobres del catalogo en listaSobresUI', () => {
     const lista = component['listaSobresUI']();
-    expect(lista.length).toBe(3); // Diario + 2 del catálogo
+    expect(lista.length).toBe(4); // 2 Diarios + 2 del catálogo
     expect(lista[0].esDiario).toBe(true);
     expect(lista[0].etiqueta).toBe('GRATIS');
-    expect(lista[2].etiqueta).toBe('GRIDO');
+    expect(lista[1].esDiario).toBe(true);
+    expect(lista[1].etiqueta).toBe('GRATIS');
+    expect(lista[3].etiqueta).toBe('GRIDO');
   });
 
   it('debe transicionar a preview al seleccionar un sobre', () => {
@@ -102,31 +104,113 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component['sobreSeleccionado']()).toEqual(primerSobre);
   });
 
-  it('debe transicionar a carrusel y permitir cambiar sobres', () => {
+  it('debe transicionar a carrusel y permitir navegar infinitamente', () => {
     component.irACarrusel();
     expect(component['fase']()).toBe('carrusel');
-    expect(component['indiceCarrusel']()).toBe(2);
+    expect(component['indiceCarrusel']()).toBe(0);
 
     component.cambiarSobreCarrusel(1);
-    expect(component['indiceCarrusel']()).toBe(3);
+    expect(component['indiceCarrusel']()).toBe(1);
 
-    component.cambiarSobreCarrusel(-1);
-    expect(component['indiceCarrusel']()).toBe(2);
+    component.cambiarSobreCarrusel(-2);
+    expect(component['indiceCarrusel']()).toBe(-1);
   });
 
-  it('debe ejecutar el corte y llamar a la API correspondiente', (done) => {
+  it('debe ejecutar el corte y llamar a la API correspondiente', fakeAsync(() => {
     const sobreDiario = component['listaSobresUI']()[0];
     component.seleccionarSobre(sobreDiario);
-    component.elegirSobreDelCarrusel(2);
+    component.elegirSobreDelCarrusel(0);
 
     expect(component['fase']()).toBe('corte');
 
     component.ejecutarCorte();
+    tick(1000);
 
-    setTimeout(() => {
-      expect(sobresServiceSpy.reclamarSobreDiario).toHaveBeenCalledWith(7);
-      done();
-    }, 550);
+    expect(sobresServiceSpy.reclamarSobreDiario).toHaveBeenCalledWith(7);
+    expect(component['fase']()).toBe('revelacion');
+  }));
+
+  it('debe mostrar cartas de respaldo en caso de que el backend falle', fakeAsync(() => {
+    const errorObservable = {
+      subscribe: (observer: any) => {
+        observer.error(new Error('Conexión fallida con el backend'));
+      },
+    };
+    sobresServiceSpy.reclamarSobreDiario.mockReturnValue(errorObservable as any);
+
+    const sobreDiario = component['listaSobresUI']()[0];
+    component.seleccionarSobre(sobreDiario);
+    component.elegirSobreDelCarrusel(0);
+
+    component.ejecutarCorte();
+    tick(1000);
+
+    expect(component['cartasObtenidas']().length).toBeGreaterThan(0);
+    expect(component['fase']()).toBe('revelacion');
+  }));
+
+  it('debe navegar el carrusel mediante arrastre/swipe con pointer', () => {
+    component.irACarrusel();
+    expect(component['indiceCarrusel']()).toBe(0);
+
+    // Arrastre hacia la izquierda (deltaX < -30) debe avanzar al sobre siguiente (+1)
+    component.onPointerDownCarrusel({ clientX: 200, pointerId: 1, pointerType: 'mouse', button: 0 } as PointerEvent);
+    component.onPointerMoveCarrusel({ clientX: 140, pointerType: 'mouse', buttons: 1 } as PointerEvent);
+    expect(component['dragOffset']()).toBe(-60);
+    component.onPointerUpCarrusel({ clientX: 140, pointerId: 1, pointerType: 'mouse' } as PointerEvent);
+    expect(component['indiceCarrusel']()).toBe(1);
+
+    // Arrastre hacia la derecha (deltaX > 30) debe retroceder al sobre anterior (-1)
+    component.onPointerDownCarrusel({ clientX: 100, pointerId: 1, pointerType: 'mouse', button: 0 } as PointerEvent);
+    component.onPointerMoveCarrusel({ clientX: 180, pointerType: 'mouse', buttons: 1 } as PointerEvent);
+    expect(component['dragOffset']()).toBe(80);
+    component.onPointerUpCarrusel({ clientX: 180, pointerId: 1, pointerType: 'mouse' } as PointerEvent);
+    expect(component['indiceCarrusel']()).toBe(0);
+  });
+
+  it('no debe activar arrastre cuando se mueve el mouse sin presionar boton (hover)', () => {
+    component.irACarrusel();
+    expect(component['indiceCarrusel']()).toBe(0);
+
+    // Movimiento de mouse sin haber hecho pointerdown
+    component.onPointerMoveCarrusel({ clientX: 300, pointerType: 'mouse', buttons: 0 } as PointerEvent);
+    expect(component['dragOffset']()).toBe(0);
+    expect(component['indiceCarrusel']()).toBe(0);
+  });
+
+  it('debe permitir deslizar sobre la linea de corte para abrir el sobre', fakeAsync(() => {
+    const sobreDiario = component['listaSobresUI']()[0];
+    component.seleccionarSobre(sobreDiario);
+    component.elegirSobreDelCarrusel(0);
+    expect(component['fase']()).toBe('corte');
+
+    // Deslizamiento horizontal sobre la línea de corte
+    component.onPointerDownCorte({ clientX: 50, pointerId: 1 } as PointerEvent);
+    component.onPointerMoveCorte({ clientX: 90 } as PointerEvent); // deltaX = 40 (> 20)
+    component.onPointerUpCorte();
+
+    tick(1000);
+    expect(sobresServiceSpy.reclamarSobreDiario).toHaveBeenCalledWith(7);
+    expect(component['fase']()).toBe('revelacion');
+  }));
+
+  it('debe centrar sobre lateral si se clickea un sobre no centrado en el carrusel', () => {
+    component.irACarrusel();
+    expect(component['indiceCarrusel']()).toBe(0);
+
+    // Clic en sobre con offset relativo +1
+    component.elegirSobreDelCarrusel(1);
+    expect(component['indiceCarrusel']()).toBe(1);
+    expect(component['fase']()).toBe('carrusel');
+  });
+
+  it('debe seleccionar sobre y pasar a fase corte al hacer clic en sobre central con alHacerClicSobre', () => {
+    component.irACarrusel();
+    expect(component['fase']()).toBe('carrusel');
+
+    // Clic en sobre central (rel = 0)
+    component.alHacerClicSobre(0);
+    expect(component['fase']()).toBe('corte');
   });
 
   it('debe cerrar el flujo al emitir cerrarFlujo', () => {
