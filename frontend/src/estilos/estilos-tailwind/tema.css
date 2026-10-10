@@ -124,6 +124,9 @@
     --color-sobre-cuerpo-claro: var(--sobre-cuerpo-claro);
     --color-sobre-detalle-claro: var(--sobre-detalle-claro);
     --color-sobre-sello-claro: var(--sobre-sello-claro);
+    --color-sobre-sombra-placa: var(--sobre-sombra-placa);
+    --color-sobre-categoria-cuerpo: var(--sobre-categoria-cuerpo);
+    --color-sobre-categoria-detalle: var(--sobre-categoria-detalle);
 
     /* Botones: expuestos al mapeo de Tailwind para que los componentes usen
        utilidades bg-, text- y border- en lugar de CSS puro.

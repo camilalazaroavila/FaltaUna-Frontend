@@ -28,4 +28,13 @@
     --sobre-cuerpo-claro: var(--color-amarillo-logo);
     --sobre-detalle-claro: var(--color-sobre-tinta);
     --sobre-sello-claro: var(--blanco-puro);
+
+    /* Placa de marca: sombra cartoon desplazada sobre el cuerpo del sobre. */
+    --sobre-sombra-placa: var(--color-sobre-tinta);
+
+    /* Sobre de categoría: cuerpo amarillo del imagotipo + detalle verde oscuro.
+       El verde es `--color-carta-cuadrado`, con contraste AA/AAA sobre el
+       amarillo. Ignora la variante: siempre se ve igual. */
+    --sobre-categoria-cuerpo: var(--color-amarillo-logo);
+    --sobre-categoria-detalle: var(--color-carta-cuadrado);
 }

@@ -390,6 +390,24 @@ describe('SobreMarca', () => {
       expect(host().classList.contains('sobre-marca--categoria')).toBe(true);
       expect(svg().querySelector('.sobre__placa--marca')).toBeNull();
     });
+
+    it('Dado un sobre de categoria frente a uno de marca con logo, Cuando se renderiza cada uno, Entonces solo la marca dibuja placa y sombra', () => {
+      // Given / When: la rama de categoria.
+      renderizar({ categoria: 'tecnologia' });
+
+      // Then: el host la marca como categoria y no queda ningun nodo de placa.
+      expect(host().classList.contains('sobre-marca--categoria')).toBe(true);
+      expect(svg().querySelectorAll('[class*="sobre__placa"]').length).toBe(0);
+
+      // When: la rama de marca con logo.
+      renderizar({ logoUrl: '/imagenes/lego.png', nombre: 'Lego' });
+
+      // Then: la placa vuelve como <path> con su sombra solida, y el host ya no
+      // es de categoria (la rama amarilla no quedo pegada a la instancia).
+      expect(host().classList.contains('sobre-marca--categoria')).toBe(false);
+      expect(svg().querySelector('path.sobre__placa--marca')).not.toBeNull();
+      expect(svg().querySelector('.sobre__placa-sombra')).not.toBeNull();
+    });
   });
 
   describe('dentro de un listado', () => {
