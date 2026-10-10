@@ -1,6 +1,15 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SobreMarca, ETIQUETA_SOBRE_POR_DEFECTO } from './sobre-marca';
+import {
+  SobreMarca,
+  ETIQUETA_SOBRE_POR_DEFECTO,
+  ZONA_LOGO,
+  CAJA_ZONA_LOGO,
+  calcularCajaLogo,
+  construirTrazoPlaca,
+} from './sobre-marca';
+import { ETIQUETAS_CATEGORIA } from '../../../modelos/categoria.model';
+import type { CategoriaSobre } from '../../../modelos/categoria.model';
 
 interface MarcaDePrueba {
   readonly nombre: string;
@@ -39,12 +48,15 @@ describe('SobreMarca', () => {
   const boton = (): HTMLButtonElement | null => host().querySelector('button');
   const controlVisual = (): HTMLElement | null =>
     host().querySelector('div[role="img"]');
+  const iconoCategoria = (): SVGSVGElement | null =>
+    svg()?.querySelector('svg.sobre__icono-marco') ?? null;
 
   /** Aplica inputs y renderiza, que es el "When" de todos los casos. */
   const renderizar = (
     inputs: Partial<{
       logoUrl: string | null;
       nombre: string | null;
+      categoria: CategoriaSobre | null;
       variante: 'oscuro' | 'claro';
       tamanio: 'sm' | 'md' | 'lg';
       clickeable: boolean;
@@ -52,6 +64,7 @@ describe('SobreMarca', () => {
   ): void => {
     fixture.componentRef.setInput('logoUrl', inputs.logoUrl ?? null);
     fixture.componentRef.setInput('nombre', inputs.nombre ?? null);
+    fixture.componentRef.setInput('categoria', inputs.categoria ?? null);
     fixture.componentRef.setInput('variante', inputs.variante ?? 'oscuro');
     fixture.componentRef.setInput('tamanio', inputs.tamanio ?? 'md');
     fixture.componentRef.setInput('clickeable', inputs.clickeable ?? false);
@@ -240,25 +253,30 @@ describe('SobreMarca', () => {
     expect(host().classList.contains('sobre-marca--claro')).toBe(false);
   });
 
-  it('Dado un sobre con logo, Cuando se renderiza, Entonces la placa es un rectángulo redondeado y no un círculo', () => {
+  it('Dado un sobre con logo, Cuando se renderiza, Entonces la placa es un path con borde cartoon y sombra solida', () => {
     // Given / When
     renderizar({ logoUrl: '/imagenes/lego.png' });
 
-    // Then: el sello circular quedo reemplazado por una etiqueta de esquinas
-    // redondeadas, que es lo que evita el aspecto de sticker pegado.
+    // Then: no hay circulo, la placa es una silueta irregular y su sombra
+    // desplazada es una copia solida de la misma silueta.
     expect(svg().querySelectorAll('circle').length).toBe(0);
 
-    const placa = svg().querySelector('.sobre__placa');
-    expect(placa?.tagName.toLowerCase()).toBe('rect');
-    expect(Number(placa?.getAttribute('rx'))).toBeGreaterThan(0);
+    const placa = svg().querySelector('.sobre__placa--marca');
+    expect(placa?.tagName.toLowerCase()).toBe('path');
+    expect(placa?.getAttribute('d')).toBeTruthy();
+
+    const sombra = svg().querySelector('.sobre__placa-sombra');
+    expect(sombra).not.toBeNull();
+    expect(sombra?.tagName.toLowerCase()).toBe('path');
+    expect(sombra?.getAttribute('transform')).toContain('translate(9 9)');
   });
 
-  it('Dado un sobre con logo, Cuando se renderiza, Entonces el logo se recorta con las mismas esquinas de la placa', () => {
+  it('Dado un sobre con logo, Cuando se renderiza, Entonces el logo se recorta con la misma silueta de la placa', () => {
     // Given / When
     renderizar({ logoUrl: '/imagenes/cocacola.jpg' });
 
-    // Then: el recorte apunta a un <clipPath> propio, y su rect es el mismo
-    // rectángulo que la placa: asi el logo no puede asomar por las esquinas.
+    // Then: el recorte apunta a un <clipPath> propio y su path es el mismo
+    // que pinta la placa, asi el logo no puede asomar por los cortes.
     const referencia = imagen()?.getAttribute('clip-path') ?? '';
     const id = referencia.match(/^url\(#(.+)\)$/)?.[1];
     expect(id).toBeTruthy();
@@ -266,12 +284,112 @@ describe('SobreMarca', () => {
     const clip = svg().querySelector('clipPath');
     expect(clip?.getAttribute('id')).toBe(id);
 
-    const recorte = clip?.querySelector('rect');
-    const placa = svg().querySelector('.sobre__placa');
-    expect(recorte?.getAttribute('width')).toBe(placa?.getAttribute('width'));
-    expect(recorte?.getAttribute('height')).toBe(placa?.getAttribute('height'));
-    expect(recorte?.getAttribute('rx')).toBe(placa?.getAttribute('rx'));
-    expect(Number(recorte?.getAttribute('rx'))).toBeGreaterThan(0);
+    const recorte = clip?.querySelector('path');
+    const placa = svg().querySelector('.sobre__placa--marca');
+    expect(recorte?.getAttribute('d')).toBe(placa?.getAttribute('d'));
+  });
+
+  it('Dado un logo horizontal, Cuando mide su proporcion, Entonces la caja y el trazo usan esa proporcion y no la cuadrada', () => {
+    // Given: la proporcion medida de un logo apaisado (1,66:1).
+    const caja = calcularCajaLogo(1.66);
+
+    // Then: entrada y salida usan el ancho maximo, el alto sale de la proporcion
+    // y la silueta hereda esa caja.
+    expect(caja.ancho).toBeCloseTo(ZONA_LOGO.ancho, 5);
+    expect(caja.alto).toBeCloseTo(ZONA_LOGO.ancho / 1.66, 5);
+    expect(caja.alto).toBeLessThanOrEqual(ZONA_LOGO.alto);
+
+    const trazo = construirTrazoPlaca(caja);
+    expect(trazo.endsWith('Z')).toBe(true);
+    expect(trazo).toContain(`${caja.x + caja.ancho}`);
+  });
+
+  it('Dado un logo vertical, Cuando mide su proporcion, Entonces la caja ocupa el alto maximo y centra el ancho', () => {
+    // Given: la proporcion medida de un logo vertical (0,2:1).
+    const caja = calcularCajaLogo(0.2);
+
+    // Then
+    expect(caja.alto).toBeCloseTo(ZONA_LOGO.alto, 5);
+    expect(caja.ancho).toBeCloseTo(ZONA_LOGO.alto * 0.2, 5);
+    expect(caja.x + caja.ancho / 2).toBeCloseTo(ZONA_LOGO.centroX, 5);
+    expect(caja.y + caja.alto / 2).toBeCloseTo(ZONA_LOGO.centroY, 5);
+  });
+
+  describe('construirTrazoPlaca', () => {
+    it('Dada una caja, Genera una silueta cerrada con cortes en las cuatro esquinas', () => {
+      // Given / When
+      const d = construirTrazoPlaca(CAJA_ZONA_LOGO);
+
+      // Then: empieza en el borde superior, tiene arcos para las esquinas y
+      // cierra sobre el inicio.
+      expect(d.startsWith('M ')).toBe(true);
+      expect(d.endsWith('Z')).toBe(true);
+      expect(d).toContain(' A ');
+    });
+
+    it('Dadas proporciones distintas, Genera siluetas distintas pero siempre finitas', () => {
+      // Given / When
+      const apaisado = construirTrazoPlaca(calcularCajaLogo(1.66));
+      const cuadrado = construirTrazoPlaca(calcularCajaLogo(1));
+      const vertical = construirTrazoPlaca(calcularCajaLogo(0.2));
+
+      // Then: ninguna cae en valores invalidos y no son identicas entre si.
+      for (const trazo of [apaisado, cuadrado, vertical]) {
+        expect(trazo).not.toMatch(/NaN|Infinity/);
+      }
+      expect(apaisado).not.toBe(cuadrado);
+      expect(cuadrado).not.toBe(vertical);
+    });
+  });
+
+  describe('sobre de categoria', () => {
+    it('Dado un sobre con categoria, Cuando se renderiza, Entonces no hay placa, sombra ni recorte de placa', () => {
+      // Given / When
+      renderizar({ categoria: 'tecnologia' });
+
+      // Then: el icono va directo sobre el cuerpo; nada de la placa de marca.
+      expect(host().classList.contains('sobre-marca--categoria')).toBe(true);
+      expect(svg().querySelector('.sobre__placa--marca')).toBeNull();
+      expect(svg().querySelector('.sobre__placa-sombra')).toBeNull();
+      expect(svg().querySelector('clipPath')).toBeNull();
+      expect(svg().querySelectorAll('.sobre__icono').length).toBeGreaterThan(0);
+    });
+
+    it('Dado un sobre con categoria, Cuando se renderiza, Entonces el icono ocupa la zona central completa con meet', () => {
+      // Given / When
+      renderizar({ categoria: 'cosmetica' });
+
+      // Then: el marco del icono es exactamente la zona que dejo la placa.
+      const marco = iconoCategoria();
+      expect(marco).not.toBeNull();
+      expect(marco?.getAttribute('x')).toBe(String(CAJA_ZONA_LOGO.x));
+      expect(marco?.getAttribute('y')).toBe(String(CAJA_ZONA_LOGO.y));
+      expect(marco?.getAttribute('width')).toBe(String(CAJA_ZONA_LOGO.ancho));
+      expect(marco?.getAttribute('height')).toBe(String(CAJA_ZONA_LOGO.alto));
+      expect(marco?.getAttribute('preserveAspectRatio')).toBe('xMidYMid meet');
+    });
+
+    it('Dado un sobre con categoria, Cuando se renderiza, Entonces el nombre visible es la etiqueta de la categoria', () => {
+      // Given / When
+      renderizar({ categoria: 'musica' });
+
+      // Then
+      expect(svg().querySelector('.sobre__nombre')?.textContent?.trim()).toBe(
+        ETIQUETAS_CATEGORIA['musica'],
+      );
+      expect(controlVisual()?.getAttribute('aria-label')).toBe(
+        `Sobre de ${ETIQUETAS_CATEGORIA['musica']}`,
+      );
+    });
+
+    it('Dado un sobre con categoria, Cuando cambia la variante, Entonces sigue siendo categoria y no reusa la placa', () => {
+      // Given / When: la variante clara no debe tocar la rama amarilla.
+      renderizar({ categoria: 'gastronomia', variante: 'claro' });
+
+      // Then
+      expect(host().classList.contains('sobre-marca--categoria')).toBe(true);
+      expect(svg().querySelector('.sobre__placa--marca')).toBeNull();
+    });
   });
 
   describe('dentro de un listado', () => {

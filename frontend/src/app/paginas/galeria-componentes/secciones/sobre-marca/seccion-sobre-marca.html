@@ -1,7 +1,7 @@
 <div class="space-y-8">
   <app-tarjeta-muestra
     titulo="app-sobre-marca"
-    descripcion="Sobre de cartas con el logo de una marca en el centro. La geometría sale de Paquete1.svg y Paquete2.svg: mismo cuerpo y mismas letras, solo cambia el color por variante. El tamaño fija el ancho y la altura sale de la proporción del SVG; el nombre se dibuja recortado a 16 caracteres porque el texto de SVG no envuelve, y el nombre completo queda en el aria-label. Con clickeable el sobre es un botón nativo, sin clickeable es una pieza visual."
+    descripcion="Sobre de cartas con el logo de una marca o el icono de una categoría en el centro. La geometría sale de Paquete1.svg y Paquete2.svg: mismo cuerpo y mismas letras, solo cambia el color por variante. La placa del logo se recorta a la proporción real de cada marca con una silueta cartoon y su sombra nunca corta contra el borde del sobre. El tamaño fija el ancho y la altura sale de la proporción del SVG; el nombre se dibuja recortado a 16 caracteres porque el texto de SVG no envuelve, y el nombre completo queda en el aria-label. Con clickeable el sobre es un botón nativo, sin clickeable es una pieza visual."
   >
     <div class="space-y-6">
       @for (variante of variantes; track variante.id) {
@@ -84,7 +84,7 @@
 
   <app-tarjeta-muestra
     titulo="Marcas reales (variante por defecto)"
-    descripcion="La placa es un rectángulo de esquinas redondeadas que ocupa el 86% del ancho útil del frente, con márgenes parejos, y queda centrada sobre el pliegue central. El logo entra escalado y centrado con preserveAspectRatio=meet y recortado con las mismas esquinas, así que un JPG sin canal alfa y un PNG con alfa se ven igual. Todas las medidas son las reales de cada archivo."
+    descripcion="La placa dejó de ser un rectángulo fijo: se recorta a la proporción real de cada logo con una silueta cartoon (esquinas chicas y desiguales, dos casi en punta) y una sombra sólida desplazada 9 unidades hacia abajo-derecha. Como la caja de la placa coincide con la proporción del logo, no queda sobrante blanco ni bordes; un JPG sin canal alfa y un PNG con alfa se ven igual. Todas las medidas son las reales de cada archivo."
   >
     <div class="grid gap-6 sm:grid-cols-3 lg:grid-cols-5">
       @for (logo of logos; track logo.logoUrl) {
@@ -141,33 +141,30 @@
   </app-tarjeta-muestra>
 
   <app-tarjeta-muestra
-    titulo="Sobres de categoría (ícono + nombre de categoría)"
-    descripcion="Cuando hay input `categoria`, se dibuja el ícono de esa categoría en lugar del logo. No hay aura, y el nombre visible es la etiqueta de la categoría. Se respetan tamaños sm/md/lg y variantes oscuro/claro."
+    titulo="Sobres de categoría (icono + nombre de categoría)"
+    descripcion="Cuando hay input `categoria`, el sobre ignora la variante: siempre cuerpo amarillo del imagotipo con icono y nombre en verde oscuro, sin placa ni sombra. El icono ocupa la zona central que antes dejaba la placa, y el nombre visible es la etiqueta de la categoría."
   >
     <div class="space-y-6">
-      @for (variante of variantes; track variante.id) {
-        <div class="space-y-3">
-          <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
-            {{ variante.origen }} — <code class="text-texto-secundario">{{ variante.detalle }}</code>
-          </h4>
-          <div class="flex flex-wrap items-end gap-6">
-            @for (tamanio of tamanios; track tamanio) {
-              <div class="flex flex-col items-center gap-1.5">
-                <app-sobre-marca
-                  [categoria]="'tecnologia'"
-                  [variante]="variante.id"
-                  [tamanio]="tamanio"
-                  [clickeable]="true"
-                  (accion)="registrar('categoria tecnologia ' + variante.id + '/' + tamanio)"
-                />
-                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
-                  {{ tamanio }} — Tecnología
-                </span>
-              </div>
-            }
-          </div>
+      <div class="space-y-3">
+        <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
+          Tamaños (variante por defecto)
+        </h4>
+        <div class="flex flex-wrap items-end gap-6">
+          @for (tamanio of tamanios; track tamanio) {
+            <div class="flex flex-col items-center gap-1.5">
+              <app-sobre-marca
+                [categoria]="'tecnologia'"
+                [tamanio]="tamanio"
+                [clickeable]="true"
+                (accion)="registrar('categoria tecnologia ' + tamanio)"
+              />
+              <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                {{ tamanio }} — Tecnología
+              </span>
+            </div>
+          }
         </div>
-      }
+      </div>
       <div class="space-y-3">
         <h4 class="font-interfaz text-sm font-bold uppercase tracking-wide text-texto-primario">
           Todas las categorías (md, variante por defecto)
@@ -193,7 +190,7 @@
 
   <app-tarjeta-muestra
     titulo="Tokens del sobre (Capa 2)"
-    descripcion="El sobre es un elemento de marca, no una superficie de la app: por eso tiene su propio juego de seis tokens en vez de reusar los de la interfaz. Los dos tokens de placa valen el mismo blanco en las dos variantes porque el fondo del logo necesita ser neutro para los JPG sin canal alfa."
+    descripcion="El sobre es un elemento de marca, no una superficie de la app: por eso tiene su propio juego de tokens en vez de reusar los de la interfaz. La placa del logo ya no pide un blanco neutro: su silueta usa `--sobre-sombra-placa`, y el sobre de categoría lleva cuerpo y detalle propios."
   >
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       @for (token of tokens; track token.token) {
