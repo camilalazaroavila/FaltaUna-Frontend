@@ -14,7 +14,7 @@
       Estado de tu pago
     </h1>
 
-    <app-stepper-suscripcion [pasoActual]="3" />
+    <app-stepper-suscripcion [pasoActual]="2" />
 
     <span class="hidden md:block" aria-hidden="true"></span>
   </div>
@@ -57,7 +57,7 @@
           </h2>
           <p class="max-w-xl font-cuerpo text-sm text-texto-primario sm:text-base">
             Tu suscripción para el plan <strong>{{ planNombre() }}</strong> ya está activa.
-            Podés continuar configurando la marca de tu complejo y gestionar las cartas de tus jugadores.
+            Ahora podés crear el álbum de tu marca. Te llevamos al siguiente paso en unos segundos…
           </p>
         </header>
 
@@ -73,7 +73,7 @@
               </div>
               <div>
                 <dt class="text-texto-secundario">Total abonado:</dt>
-                <dd class="font-bold text-texto-primario">\${{ montoFormateado() }} ARS</dd>
+                <dd class="font-bold text-texto-primario">${{ montoFormateado() }} ARS</dd>
               </div>
               @if (externalReference()) {
                 <div>
@@ -108,9 +108,9 @@
               type="button"
               variante="primario"
               class="w-full sm:w-auto"
-              (click)="irAlPanel()"
+              (click)="irACrearAlbum()"
             >
-              Continuar al panel de empresa
+              Crear mi álbum
               <i class="fa-solid fa-arrow-right ml-1" aria-hidden="true"></i>
             </button>
           </footer>
@@ -152,7 +152,7 @@
               </div>
               <div>
                 <dt class="text-texto-secundario">Monto a abonar:</dt>
-                <dd class="font-bold text-texto-primario">\${{ montoFormateado() }} ARS</dd>
+                <dd class="font-bold text-texto-primario">${{ montoFormateado() }} ARS</dd>
               </div>
               @if (externalReference()) {
                 <div>

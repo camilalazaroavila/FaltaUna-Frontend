@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { rolGuard } from './guardias/rol.guard';
+import { pagoAprobadoGuard } from './guardias/pago-aprobado.guard';
 
 /**
  * Rutas de la aplicación.
@@ -85,6 +86,38 @@ export const routes: Routes = [
         path: 'album/pago',
         pathMatch: 'full',
         redirectTo: 'album/pago/pendiente',
+      },
+      {
+        // Pasos 3 a 5: solo con pago aprobado (pagoAprobadoGuard).
+        path: 'album/crear',
+        canActivate: [pagoAprobadoGuard],
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'marca' },
+          {
+            path: 'marca',
+            title: 'Tu marca · Falta Una',
+            loadComponent: () =>
+              import('./paginas/empresa-album-marca/empresa-album-marca').then(
+                (m) => m.EmpresaAlbumMarca,
+              ),
+          },
+          {
+            path: 'identidad',
+            title: 'Qué te identifica · Falta Una',
+            loadComponent: () =>
+              import('./paginas/empresa-album-identidad/empresa-album-identidad').then(
+                (m) => m.EmpresaAlbumIdentidad,
+              ),
+          },
+          {
+            path: 'listo',
+            title: 'Álbum creado · Falta Una',
+            loadComponent: () =>
+              import('./paginas/empresa-album-exito/empresa-album-exito').then(
+                (m) => m.EmpresaAlbumExito,
+              ),
+          },
+        ],
       },
       {
         path: 'panel',

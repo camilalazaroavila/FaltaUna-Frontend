@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   computed,
   inject,
@@ -32,6 +33,10 @@ export class EmpresaPagoResultado implements OnInit {
   private readonly router = inject(Router);
   private readonly pagos = inject(PagosService);
   private readonly estado = inject(SuscripcionEstado);
+  private temporizador: ReturnType<typeof setTimeout> | null = null;
+
+  /** Segundos que se muestra el pago aprobado antes de pasar solo al paso 3. */
+  private static readonly ESPERA_AVANCE_MS = 3000;
 
   protected readonly resultadoRuta = signal<ResultadoUrlPago>('pendiente');
   protected readonly paymentId = signal<string | null>(null);
@@ -52,6 +57,12 @@ export class EmpresaPagoResultado implements OnInit {
     const monto = this.pago()?.monto ?? this.estado.planElegido()?.precio ?? 0;
     return monto.toLocaleString('es-AR');
   });
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      if (this.temporizador) clearTimeout(this.temporizador);
+    });
+  }
 
   ngOnInit(): void {
     const resultadoParam =
@@ -85,29 +96,11 @@ export class EmpresaPagoResultado implements OnInit {
     fallbackUrl: ResultadoUrlPago,
   ): void {
     this.pagos.confirmarPago(referencia, pagoMercadoPagoId).subscribe({
-      next: (pagoConfirmado) => {
-        this.pago.set(pagoConfirmado);
-        this.estado.ultimoPago.set(pagoConfirmado);
-
-        if (pagoConfirmado.estado === 'Aprobado') {
-          this.estadoVista.set('exito');
-        } else if (
-          pagoConfirmado.estado === 'Rechazado' ||
-          pagoConfirmado.estado === 'Cancelado'
-        ) {
-          this.estadoVista.set('error');
-        } else {
-          this.estadoVista.set('pendiente');
-        }
-      },
+      next: (pago) => this.aplicarPago(pago),
       error: () => {
         // Si el endpoint de confirmación falla, caemos de manera segura en el resultado de URL
         this.estadoVista.set(
-          fallbackUrl === 'exito'
-            ? 'exito'
-            : fallbackUrl === 'error'
-              ? 'error'
-              : 'pendiente',
+          fallbackUrl === 'exito' ? 'exito' : fallbackUrl === 'error' ? 'error' : 'pendiente',
         );
       },
     });
@@ -115,25 +108,34 @@ export class EmpresaPagoResultado implements OnInit {
 
   private consultarPago(referencia: string, fallbackUrl: ResultadoUrlPago): void {
     this.pagos.obtenerPago(referencia).subscribe({
-      next: (pagoExistente) => {
-        this.pago.set(pagoExistente);
-        this.estado.ultimoPago.set(pagoExistente);
-
-        if (pagoExistente.estado === 'Aprobado') {
-          this.estadoVista.set('exito');
-        } else if (
-          pagoExistente.estado === 'Rechazado' ||
-          pagoExistente.estado === 'Cancelado'
-        ) {
-          this.estadoVista.set('error');
-        } else {
-          this.estadoVista.set('pendiente');
-        }
-      },
-      error: () => {
-        this.estadoVista.set(fallbackUrl);
-      },
+      next: (pago) => this.aplicarPago(pago),
+      error: () => this.estadoVista.set(fallbackUrl),
     });
+  }
+
+  /** Refleja el pago confirmado por el backend. Si está aprobado, avanza solo al paso 3. */
+  private aplicarPago(pago: PagoRespuesta): void {
+    this.pago.set(pago);
+    this.estado.ultimoPago.set(pago);
+
+    if (pago.estado === 'Aprobado') {
+      this.estadoVista.set('exito');
+      // Solo se avanza solo con un pago VERIFICADO por el backend (el guard del paso 3 lo exige).
+      this.temporizador = setTimeout(
+        () => this.irACrearAlbum(),
+        EmpresaPagoResultado.ESPERA_AVANCE_MS,
+      );
+    } else if (pago.estado === 'Rechazado' || pago.estado === 'Cancelado') {
+      this.estadoVista.set('error');
+    } else {
+      this.estadoVista.set('pendiente');
+    }
+  }
+
+  /** Pago aprobado: sigue el alta en el paso 3 (nombre e imágenes de la marca). */
+  protected irACrearAlbum(): void {
+    if (this.temporizador) clearTimeout(this.temporizador);
+    this.router.navigate(['/empresa/album/crear/marca']);
   }
 
   protected irAlPanel(): void {

@@ -1,0 +1,59 @@
+<main class="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-8">
+  <app-encabezado-paso
+    titulo="¿Cómo te llamamos?"
+    [paso]="3"
+    rutaVolver="/empresa/album/pago/exito"
+    etiquetaVolver="Volver"
+  />
+
+  <form class="mt-10 grid gap-10 lg:grid-cols-2" (ngSubmit)="siguiente()" novalidate>
+    <div class="space-y-8">
+      <app-campo-texto
+        etiqueta="Nombre de tu marca"
+        [requerido]="true"
+        [maxLength]="40"
+        autocompletar="organization"
+        [error]="errorNombre()"
+        [ngModel]="borrador.nombreMarca()"
+        (ngModelChange)="borrador.nombreMarca.set($event)"
+        name="nombreMarca"
+      />
+
+      <div>
+        <app-etiqueta-campo
+          texto="Subí el logo de tu marca"
+          [contador]="(borrador.logo() ? 1 : 0) + '/1'"
+          [ayuda]="'La imagen no puede pesar más de ' + maxKb + 'kb.'"
+        />
+        <app-subida-imagen
+          etiquetaAccesible="logo de la marca"
+          [maxKb]="maxKb"
+          [(archivo)]="borrador.logo"
+          (rechazado)="avisarRechazo($event)"
+        />
+      </div>
+    </div>
+
+    <div>
+      <app-etiqueta-campo
+        texto="Subí las imágenes que van a formar parte de tu álbum de marca"
+        [contador]="borrador.cantidadImagenes() + '/' + cantidad"
+        [ayuda]="'La imagen no puede pesar más de ' + maxKb + 'kb.'"
+      />
+      <app-grilla-imagenes
+        [cantidad]="cantidad"
+        [maxKb]="maxKb"
+        etiquetaAccesible="Imágenes del álbum"
+        [(archivos)]="borrador.imagenes"
+        (rechazado)="avisarRechazo($event)"
+      />
+    </div>
+
+    <div class="flex justify-end lg:col-span-2">
+      <button app-boton type="submit" variante="secundario" tamanio="lg">
+        Siguiente paso
+        <ng-icon name="phosphorArrowRightFill" aria-hidden="true" />
+      </button>
+    </div>
+  </form>
+</main>
