@@ -1,0 +1,123 @@
+/* ==========================================================================
+   Falta Una - Primitivos (Capa 1)
+   Paleta base de marca, superficies, neutros compartidos, radios y los tokens
+   del sobre holografico (--sobre-holo-*). Solo colores crudos y medidas base:
+   ningun componente consume estos #hex directamente (regla de oro Impeccable).
+   Origen: antiguo bloque "CAPA 1 - PRIMITIVOS" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   CAPA 1 — PRIMITIVOS
+   Paleta base extraída de la identidad visual de Falta Una.
+   ========================================================================== */
+:root {
+    /* --- Paleta Modo Jugador / Usuario --- */
+    --color-teal-base: #0D3B40;
+    /* Fondo profundo de la app */
+    --color-teal-superficie: #214448;
+    /* Superficies, cards y contenedores */
+    --color-teal-elevado: #2A5459;
+    /* Cards elevadas, hover y dropdowns */
+    --color-teal-borde: #184A50;
+    /* Bordes sutiles sobre teal */
+    --color-teal-hundido: #072326;
+    /* Inputs inactivos, huecos, placeholders */
+
+
+
+    --color-verde-jugador: #3BD972;
+    /* Verde cancha vibrante, acción principal */
+    --color-verde-jugador-hover: #52E285;
+    --color-verde-jugador-activa: #29BF5E;
+
+    --color-amarillo-acento: #F2EEAE;
+    /* Acento cǭlido del logo / estrellas */
+    --color-amarillo-hover: #F8F5C4;
+    --color-amarillo-activo: #DDD78E;
+    --color-amarillo-logo: #F9F9B2;
+    /* Amarillo exacto del imagotipo (gradiente de la landing) */
+    --color-amarillo-crema: #FFF3A0;
+    /* Amarillo crema del nombre, los números y las estrellas de carta */
+
+    /* --- Paleta de cartas coleccionables --- */
+    --color-carta-fondo: #0F2E36;
+    /* Verde azulado muy oscuro de la vista "Mis cartas" */
+    --color-carta-superficie: #14383F;
+    /* Superficies de la vista "Mis cartas" (toolbar, inputs) */
+    --color-carta-cuadrado: #1E3B33;
+    /* Verde oscuro del CuadradoNumero (atributos e icono de categoría) */
+    --color-legendaria-brillo: #7BF0A5;
+    /* Verde brillante del acento de rareza legendaria */
+
+    /* --- Botones de la pantalla de jugar --- */
+    --color-juego-claro: #F9F9A8;
+    /* Cara del paralelogramo de las opciones de juego */
+
+    /* --- Verde institucional para fondos claros --- */
+    --color-verde-claro: #04862B;
+    /* Gran contraste sobre blanco/crema */
+    --color-verde-claro-hover: #036F23;
+    --color-verde-claro-activo: #02571B;
+
+    /* --- Paleta Modo Empresa --- */
+    --color-violeta-empresa: #675679;
+    /* Violeta corporativo / panel de marcas */
+    --color-violeta-hover: #564667;
+    --color-violeta-activo: #433552;
+    --color-violeta-suave: rgba(103, 86, 121, 0.12);
+
+    /* Fondo del header en pantallas de auth modo empresa (marrón cálido) */
+    --color-marron-empresa: #413333;
+
+    --color-crema-fondo: #FCEFE0;
+    /* Fondo crema cálido y acogedor */
+    --color-crema-superficie: #FFFFFF;
+    /* Tarjetas blancas sobre crema */
+    --color-crema-elevado: #F7E5D0;
+    /* Hover sobre fondo crema */
+    --color-crema-hundido: #EEDBC5;
+    /* Superficies hundidas */
+    --color-crema-borde: #E3CEB5;
+    /* Separadores y bordes modo claro */
+
+    --color-teal-profundo: #0A2E36;
+    /* Texto primario en empresa y contraste AAA */
+
+    --color-azul-empresa: #1A3A5D;
+    /* Azul corporativo de la landing empresarial (etiquetas de planes) */
+
+    /* --- Sobres de cartas (Paquete1 / Paquete2) --- */
+    --color-sobre-verde: #709176;
+    /* Cuerpo del sobre oscuro (Paquete1) */
+    --color-sobre-tinta: #092328;
+    /* Detalle y letras del sobre claro (Paquete2) */
+    /* La crema del sobre es `--color-amarillo-logo`: mismo #F9F9B2 exacto del
+       imagotipo, no se duplica el hex. */
+
+    /* --- Neutros y feedback compartidos --- */
+    --blanco-puro: #FFFFFF;
+    --negro-puro: #000000;
+
+    /* --- Lecturas y superficies complementarias de la landing --- */
+    --color-blanco-verdoso: #F4FAF6;
+    /* Texto principal sobre teal (evita fatiga visual) */
+    --color-gris-teal: #B8D3CF;
+    /* Lectura secundaria sobre teal */
+    --color-verde-lima: #E6EFCB;
+    /* Panel orgánico amarillo verdoso de la landing */
+
+    /* --- Radios de Borde (Compartidos) --- */
+    --radio-sm: 0.375rem;
+    --radio-md: 0.75rem;
+    --radio-lg: 1.25rem;
+    --radio-pildora: 9999px;
+    --radio-circulo: 50%;
+
+    --sobre-holo-a: hsl(2 100% 73%);
+    --sobre-holo-b: hsl(53 100% 69%);
+    --sobre-holo-c: hsl(93 100% 69%);
+    --sobre-holo-d: hsl(176 100% 76%);
+    --sobre-holo-e: hsl(228 100% 74%);
+    --sobre-reflejo: hsl(0 0% 100% / 0.55);
+    --sobre-brillo-intensidad: 0.5;
+}

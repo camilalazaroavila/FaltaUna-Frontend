@@ -1,0 +1,76 @@
+/* ==========================================================================
+   Falta Una - Rol Empresa (Capa 2)
+   Equivalente claro/editorial del modo jugador: color-scheme, marca violeta,
+   superficies crema, auth, sombras, texto e interacciones.
+   Se carga despues de jugador.css para ganar la cascada (misma especificidad).
+   Origen: porcion de identidad del bloque "MODO EMPRESA" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   CAPA 2 — TOKENS SEMÁNTICOS · MODO EMPRESA (Panel de Clubes y Marcas)
+   Ambiente claro, editorial y profesional: fondo crema cálido, marca violeta
+   y verde institucional (#04862B) para acentos con contraste accesible.
+   ========================================================================== */
+[data-modo="empresa"] {
+    color-scheme: light;
+
+    /* --- Identidad y Marca --- */
+    --marca-primaria: var(--color-violeta-empresa);
+    --marca-primaria-hover: var(--color-violeta-hover);
+    --marca-primaria-activa: var(--color-violeta-activo);
+    --marca-primaria-suave: var(--color-violeta-suave);
+    --marca-sobre-primaria: var(--blanco-puro);
+
+    /* Acento: Verde institucional para máxima legibilidad en modo claro */
+    --marca-acento: var(--color-teal-base);
+    --marca-acento-hover: var(--color-teal-hundido);
+    --marca-acento-activo: var(--color-teal-elevado);
+    --marca-acento-suave: rgba(4, 134, 43, 0.13);
+    --marca-sobre-acento: var(--blanco-puro);
+
+
+    /* --- Superficies --- */
+    --fondo-app: var(--color-crema-fondo);
+    --fondo-superficie: var(--color-crema-superficie);
+    --fondo-elevado: var(--color-crema-elevado);
+    --fondo-hundido: var(--color-crema-hundido);
+    --borde-default: var(--color-crema-borde);
+    --borde-fuerte: #C7B096;
+    --borde-foco: var(--color-violeta-empresa);
+    --overlay: rgba(10, 46, 54, 0.58);
+
+    /* --- Auth: panel de imagen (login / register) ---
+       Misma API que en modo jugador; el degradado toma la identidad violeta
+       corporativa y el texto sigue siendo claro para convivir con la foto. */
+    --auth-imagen-texto: var(--texto-sobre-oscuro);
+    --auth-imagen-overlay: linear-gradient(165deg,
+            color-mix(in srgb, var(--color-violeta-empresa) 85%, transparent) 0%,
+            color-mix(in srgb, var(--color-violeta-empresa) 40%, transparent) 58%,
+            transparent 100%);
+    --auth-imagen-fondo: var(--fondo-superficie);
+    /* Fondo de login/register en auth-empresa: crema arriba, violeta abajo */
+    --auth-fondo-gradiente: linear-gradient(180deg,
+            var(--color-crema-fondo) 0%,
+            var(--color-violeta-empresa) 100%);
+    --header-auth-fondo: var(--color-violeta-empresa);
+
+    /* --- Sombras Adaptadas (Modo Empresa / Fondo Claro Suave) --- */
+    --sombra-baja: 0 2px 8px rgba(10, 46, 54, 0.08);
+    --sombra-media: 0 8px 20px rgba(10, 46, 54, 0.14);
+    --sombra-alta: 0 16px 36px rgba(10, 46, 54, 0.20);
+    --sombra-brillo-verde: 0 0 20px color-mix(in srgb, var(--color-verde-claro) 25%, transparent);
+
+    /* --- Texto sobre fondo claro --- */
+    --texto-primario: var(--color-teal-profundo);
+    /* #0A2E36: Contraste impecable > 11:1 */
+    --texto-secundario: #3D555A;
+    --texto-apagado: #6B7D81;
+    --texto-sobre-oscuro: #F4FAF6;
+    --texto-sobre-claro: var(--color-teal-profundo);
+    --texto-link: var(--color-violeta-empresa);
+    --texto-link-hover: var(--color-violeta-hover);
+
+    /* --- Interacciones --- */
+    --interactivo-seleccionado: var(--color-violeta-suave);
+    --interactivo-hover: rgba(10, 46, 54, 0.05);
+}

@@ -1,0 +1,66 @@
+/* ==========================================================================
+   Falta Una - Landing publica (Capa 2)
+   Superficies alternadas oscuras/claras de la landing, marca, acentos y la
+   escala fluida (--landing-tipografia-*, --landing-medida-*, espacios).
+   No depende de data-modo, por eso vive en `:root`.
+   Origen: antiguo bloque "LANDING PUBLICA" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   CAPA 2 — TOKENS SEMÁNTICOS · LANDING PÚBLICA
+   La landing alterna bloques oscuros y claros y no depende de `data-modo`:
+   estos tokens viven en `:root` para que su superficie nunca cambie con el
+   tema de la aplicación. Consumen primitivos de la Capa 1 (regla de oro).
+   ========================================================================== */
+:root {
+    /* Bloques oscuros (deportivo / nocturno) */
+    --landing-oscuro-fondo: var(--color-teal-base);
+    --landing-oscuro-superficie: var(--color-teal-superficie);
+    --landing-oscuro-texto: var(--color-blanco-verdoso);
+    --landing-oscuro-tenue: var(--color-gris-teal);
+    --landing-oscuro-borde: var(--color-teal-borde);
+    /* Borde de controles (FAQ) sobre bloque oscuro: crema atenuada */
+    --landing-oscuro-borde-control: color-mix(in srgb, var(--color-crema-borde) 65%, transparent);
+    --landing-gradiente-amarillo-verde: linear-gradient(to bottom,
+            var(--color-amarillo-logo) 0%,
+            var(--color-teal-profundo) 100%);
+    --usuario-gradiente-amarillo-verde: linear-gradient(to bottom,
+            color-mix(in srgb, var(--color-amarillo-logo) 30%, transparent) 0%,
+            color-mix(in srgb, var(--color-amarillo-logo) 15%, transparent) 12%,
+            transparent 50%);
+
+    /* Bloques claros (crema editorial) */
+    --landing-claro-fondo: var(--color-crema-fondo);
+    --landing-claro-superficie: var(--color-crema-superficie);
+    --landing-claro-texto: var(--color-teal-profundo);
+    --landing-claro-borde: var(--color-crema-borde);
+
+    /* Marca y acentos de la landing */
+    --landing-marca: var(--color-verde-jugador);
+    --landing-sobre-marca: var(--color-teal-profundo);
+    --landing-acento: var(--color-amarillo-acento);
+
+    /* Fondo de la franja de marcas (amarillo pálido del imagotipo) */
+    --landing-marcas-fondo: var(--color-amarillo-logo);
+
+    /* Panel orgánico de "¿Quiénes somos?" */
+    --landing-panel: var(--color-verde-lima);
+
+    /* Escala fluida de la landing.
+       Cada clamp está anclado a 1440px y 1920px y su piso replica el valor `md`
+       vigente, de modo que 375px y 768px conservan su tamaño actual. */
+    --landing-tipografia-hero: clamp(1rem, calc(0.125rem + 1.25vw), 1.625rem);
+    --landing-tipografia-titulo: clamp(3rem, calc(-0.25rem + 4.1667vw), 4.75rem);
+    --landing-tipografia-lista: clamp(1rem, 1.25vw, 1.5rem);
+    --landing-tipografia-faq: clamp(0.875rem, calc(0.0625rem + 1.0417vw), 1.3125rem);
+    --landing-tipografia-panel: clamp(1rem, calc(0.125rem + 1.0417vw), 1.375rem);
+    --landing-tipografia-marca: clamp(1.5rem, 2.0833vw, 2.5rem);
+    --landing-tipografia-ui: clamp(1rem, calc(0.375rem + 0.8333vw), 1.375rem);
+
+    --landing-medida-logo: clamp(10rem, calc(1.625rem + 13.75vw), 18.125rem);
+    --landing-medida-cta: clamp(3rem, calc(0.5rem + 3.3333vw), 4.5rem);
+    --landing-medida-sobres: clamp(28rem, calc(0.625rem + 35.4167vw), 43.125rem);
+    --landing-medida-ilustracion: clamp(7rem, 10.4167vw, 12.5rem);
+    --landing-medida-avatar: clamp(3.5rem, 4.1667vw, 5rem);
+    --landing-espacio-columna: clamp(2rem, calc(-2rem + 6.6667vw), 6rem);
+}

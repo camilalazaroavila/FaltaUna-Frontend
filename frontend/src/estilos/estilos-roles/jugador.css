@@ -1,0 +1,80 @@
+/* ==========================================================================
+   Falta Una - Rol Jugador (Capa 2, modo por defecto)
+   Identidad, marca, superficies y bordes, panel de auth, sombras, jerarquia
+   de texto, interacciones y familias tipograficas del modo oscuro deportivo.
+   El selector se mantiene exacto: `:root, [data-modo="jugador"]`.
+   Origen: porcion de identidad del bloque "MODO JUGADOR" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   CAPA 2 — TOKENS SEMÁNTICOS · MODO JUGADOR (Por Defecto)
+   Ambiente nocturno deportivo: fondo teal profundo, acción verde flúor,
+   acentos amarillo crema y textos con legibilidad optimizada.
+   ========================================================================== */
+:root,
+[data-modo="jugador"] {
+    color-scheme: dark;
+
+    /* --- Identidad y Marca --- */
+    --marca-primaria: var(--color-verde-jugador);
+    --marca-primaria-hover: var(--color-verde-jugador-hover);
+    --marca-primaria-activa: var(--color-verde-jugador-activa);
+    --marca-primaria-suave: rgba(59, 217, 114, 0.14);
+    --marca-sobre-primaria: var(--color-teal-profundo);
+    /* Contraste oscuro sobre verde brillante */
+
+    --marca-acento: var(--color-amarillo-acento);
+    --marca-acento-hover: var(--color-amarillo-hover);
+    --marca-acento-activo: var(--color-amarillo-activo);
+    --marca-acento-suave: rgba(242, 238, 174, 0.14);
+    --marca-sobre-acento: var(--color-teal-profundo);
+
+    /* --- Superficies y Capas Visuales --- */
+    --fondo-app: var(--color-teal-base);
+    --fondo-superficie: var(--color-teal-superficie);
+    --fondo-elevado: var(--color-teal-elevado);
+    --fondo-hundido: var(--color-teal-hundido);
+    --borde-default: var(--color-teal-borde);
+    --borde-fuerte: #35676E;
+    --borde-foco: var(--color-amarillo-acento);
+    /* Foco visible con máximo contraste sobre teal */
+    --overlay: rgba(7, 35, 38, 0.82);
+
+    /* --- Auth: panel de imagen (login / register) ---
+       El panel lateral cubre la foto con un degradado del modo para que el
+       texto (o el fallback) se lea sobre la imagen sin depender de la foto. */
+    --auth-imagen-texto: var(--texto-sobre-oscuro);
+    --auth-imagen-overlay: linear-gradient(165deg,
+            color-mix(in srgb, var(--color-teal-profundo) 85%, transparent) 0%,
+            color-mix(in srgb, var(--color-teal-profundo) 40%, transparent) 58%,
+            transparent 100%);
+    --auth-imagen-fondo: var(--fondo-superficie);
+    --header-auth-fondo: var(--color-teal-base);
+
+    /* --- Sombras (Modo Jugador / Oscuro Deportivo) --- */
+    --sombra-baja: 0 2px 8px rgba(0, 0, 0, 0.22);
+    --sombra-media: 0 8px 20px rgba(0, 0, 0, 0.32);
+    --sombra-alta: 0 16px 36px rgba(0, 0, 0, 0.45);
+    --sombra-brillo-verde: 0 0 20px color-mix(in srgb, var(--color-verde-jugador) 35%, transparent);
+
+    /* --- Tipografía y Jerarquía de Texto --- */
+    --texto-primario: #F4FAF6;
+    /* Blanco suave ligeramente verdoso (evita fatiga visual) */
+    --texto-secundario: #B8D3CF;
+    /* Lectura secundaria con ratio > 5.5:1 */
+    --texto-apagado: #7A9F9B;
+    /* Placeholders, metadatos y fechas */
+    --texto-sobre-oscuro: #F4FAF6;
+    --texto-sobre-claro: var(--color-teal-profundo);
+    --texto-link: var(--color-verde-jugador);
+    --texto-link-hover: var(--color-verde-jugador-hover);
+
+    /* --- Interacciones --- */
+    --interactivo-seleccionado: var(--marca-primaria-suave);
+    --interactivo-hover: rgba(244, 250, 246, 0.07);
+
+    /* --- Familias Tipográficas --- */
+    --fuente-titulo: "Russo One", "Rock Salt", cursive, ui-sans-serif, system-ui, sans-serif;
+    --fuente-cuerpo: "Merriweather", Georgia, "Times New Roman", serif;
+    --fuente-interfaz: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}

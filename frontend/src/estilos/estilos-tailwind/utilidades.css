@@ -1,0 +1,94 @@
+/* ==========================================================================
+   Falta Una - Utilidades personalizadas (Capa de puente)
+   La variante `habilitado` y todos los `@utility`: area-tactil, inclinar-menu,
+   desinclinar-menu, contenedor-landing, scrollbar-hide y custom-scrollbar.
+   Origen: bloques "VARIANTES PERSONALIZADAS", "UTILIDADES PERSONALIZADAS" y
+   "UTILIDADES DE SCROLLBAR" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   VARIANTES PERSONALIZADAS
+   `habilitado` permite aplicar estados hover/active solo cuando el control
+   realmente responde. Funciona tanto en <button> (que soporta :disabled)
+   como en <a> (que solo admite aria-disabled), a diferencia de `enabled`.
+   ========================================================================== */
+@custom-variant habilitado (&:where(:not(:disabled):not([aria-disabled='true'])));
+
+/* ==========================================================================
+   UTILIDADES PERSONALIZADAS
+   ========================================================================== */
+
+/* Área táctil mínima de 44x44px (WCAG 2.5.5) sin alterar el tamaño visual.
+   Se aplica sobre controles compactos circulares. */
+@utility area-tactil {
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 44px;
+        min-height: 44px;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+/* Paralelogramo para menús y tabs de selección.
+   El contenedor se inclina y el contenido interior se contra-inclina para
+   que la tipografía display no se deforme. */
+@utility inclinar-menu {
+    transform: skewX(-12deg);
+}
+
+@utility desinclinar-menu {
+    transform: skewX(12deg);
+}
+
+/* Contenedor único de la landing: centra el contenido y aporta el padding
+   lateral responsive. Los fondos de cada sección se mantienen full-bleed. */
+@utility contenedor-landing {
+    width: 100%;
+    max-width: 112rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 5rem);
+}
+
+/* ==========================================================================
+   UTILIDADES DE SCROLLBAR
+   Definidas como @utility para que respondan a variantes Tailwind
+   (hover:custom-scrollbar, lg:scrollbar-hide, etc.).
+   ========================================================================== */
+@utility scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@utility custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--borde-default) transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--borde-default);
+        border-radius: var(--radio-pildora);
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: var(--marca-primaria);
+    }
+}

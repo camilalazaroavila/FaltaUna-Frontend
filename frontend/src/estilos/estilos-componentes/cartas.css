@@ -1,0 +1,54 @@
+/* ==========================================================================
+   Falta Una - Cartas de coleccion (Capa 3)
+   Rarezas (--rareza-*), tokens del componente app-carta (--carta-*), filtros de
+   tinte de los SVG y la vista "Mis cartas" (--fondo-coleccion, --marca-*).
+   Solo modo jugador. Origen: sub-bloque "Cartas de Coleccion" de styles.css.
+   ========================================================================== */
+
+:root,
+[data-modo="jugador"] {
+    /* --- Cartas de Colección y Jugadores --- */
+    --carta-reverso: var(--color-teal-elevado);
+    --carta-desconocida: var(--color-amarillo-acento);
+    --carta-bloqueada: rgba(244, 250, 246, 0.22);
+    --rareza-1: #8FAF9A;
+    /* ★ Bronce / Iniciado */
+    --rareza-2: #48B4BC;
+    /* ★★ Plata / Calificado */
+    --rareza-3: var(--color-amarillo-acento);
+    /* ★★★ Oro / Estrella */
+    --rareza-4: var(--color-verde-jugador);
+    /* ★★★★ Leyenda / Crack */
+
+    /* Componente `app-carta`: acentos propios. El fondo de cada rareza ya
+       trae su color en el SVG, así que acá sólo van la tipografía, los
+       cuadrados de número y el detalle de la legendaria. */
+    --carta-color-nombre: var(--color-amarillo-crema);
+    --carta-color-numero: var(--color-amarillo-crema);
+    --carta-color-estrella: var(--color-amarillo-crema);
+    --carta-color-cuadrado: var(--color-carta-cuadrado);
+    --carta-color-borde-imagen: rgba(255, 243, 160, 0.25);
+    --carta-legendaria-acento: var(--color-legendaria-brillo);
+    --carta-legendaria-halo: rgba(59, 217, 114, 0.45);
+    --carta-opacidad-no-obtenida: 0.55;
+
+    /* Filtros de tinte para los SVG monocromos que se pintan con `<img>`.
+       Los SVG decategoría, la estrella y el cuadrado llegan sin `fill`, así
+       que se renderizan negros: con estos filtros cada uno toma el color del
+       token que le corresponde sin tocar la fuente original. */
+    --carta-filtro-icono: invert(84%) sepia(38%) saturate(2078%) hue-rotate(2deg) brightness(103%) contrast(97%);
+    --carta-filtro-estrella: invert(84%) sepia(38%) saturate(2078%) hue-rotate(2deg) brightness(103%) contrast(97%);
+    --carta-filtro-cuadrado: invert(11%) sepia(19%) saturate(1120%) hue-rotate(112deg) brightness(90%) contrast(88%);
+    /* Cuadrado izquierdo: fondo claro para que el número oscuro se lea. */
+    --carta-filtro-cuadrado-izq: invert(93%) sepia(24%) saturate(658%) hue-rotate(348deg) brightness(103%) contrast(92%);
+
+    /* Vista "Mis cartas" */
+    --fondo-coleccion: var(--color-carta-fondo);
+    --fondo-coleccion-superficie: var(--color-carta-superficie);
+    --borde-coleccion: rgba(244, 250, 246, 0.08);
+    --interactivo-coleccion-hover: rgba(244, 250, 246, 0.06);
+    --marca-coleccion: var(--marca-primaria);
+    --marca-coleccion-sobre: var(--marca-sobre-primaria);
+    --marca-coleccion-fondo: var(--exito-fondo);
+    --marca-coleccion-borde: rgba(59, 217, 114, 0.3);
+}

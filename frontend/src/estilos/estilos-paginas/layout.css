@@ -1,0 +1,57 @@
+/* ==========================================================================
+   Falta Una - Estructura de pagina (Capa 3)
+   .page-container, .page-content, .page-header, .page-title, .page-subtitle y
+   .page-layout con su media query responsive.
+   Origen: antiguo bloque "ESTRUCTURA DE PAGINA" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   ESTRUCTURA DE PÁGINA (Layout)
+   ========================================================================== */
+.page-container {
+    min-height: 100vh;
+    background-color: var(--fondo-app);
+    font-family: var(--fuente-cuerpo);
+}
+
+.page-content {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2rem 1rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.page-title {
+    font-family: var(--fuente-titulo);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    color: var(--texto-primario);
+    margin-bottom: 0.75rem;
+}
+
+.page-subtitle {
+    font-size: 1.125rem;
+    color: var(--texto-secundario);
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.page-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .page-layout {
+        flex-direction: row;
+    }
+}

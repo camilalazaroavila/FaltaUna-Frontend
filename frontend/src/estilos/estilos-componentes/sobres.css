@@ -1,0 +1,31 @@
+/* ==========================================================================
+   Falta Una - Sobres de cartas (Capa 2)
+   Tokens de las dos variantes de sobre (oscura y clara): cuerpo, detalle y
+   sello. No dependen de data-modo, por eso viven en `:root`.
+   Origen: antiguo bloque "SOBRES DE CARTAS" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   CAPA 2 — TOKENS SEMÁNTICOS · SOBRES DE CARTAS
+   El sobre es un elemento de marca, no una superficie de la app: sus dos
+   variantes (oscura y clara) NO cambian con `data-modo`, porque el envoltorio
+   del producto es el mismo en el panel del jugador y en el de la empresa.
+   Por eso viven en `:root` y no en los bloques de tema, igual que los tokens
+   de la landing.
+
+   Cada variante define cuerpo, detalle (las letras) y sello:
+     oscuro → cuerpo verde de cancha, detalle crema, placa blanca en el centro.
+     claro  → cuerpo crema, detalle tinta, placa blanca en el centro.
+   La placa del sello es blanca en las dos variantes a propósito: es el neutro
+   que mejor tolera los logos reales, que llegan en JPG sin canal alfa y se
+   funden con cualquier fondo de color.
+   ========================================================================== */
+:root {
+    --sobre-cuerpo-oscuro: var(--color-sobre-verde);
+    --sobre-detalle-oscuro: var(--color-amarillo-logo);
+    --sobre-sello-oscuro: var(--blanco-puro);
+
+    --sobre-cuerpo-claro: var(--color-amarillo-logo);
+    --sobre-detalle-claro: var(--color-sobre-tinta);
+    --sobre-sello-claro: var(--blanco-puro);
+}

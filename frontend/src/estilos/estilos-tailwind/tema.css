@@ -1,0 +1,220 @@
+/* ==========================================================================
+   Falta Una - Mapeo a Tailwind v4 (Capa de puente)
+   El bloque `@theme inline` COMPLETO: expone los tokens semanticos como
+   utilidades (bg-marca-primaria, text-texto-primario, shadow-alta, etc.).
+   `inline` mantiene la actualizacion en vivo al cambiar data-modo.
+   Origen: antiguo bloque "MAPEO A TAILWIND v4 (@theme inline)" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   MAPEO A TAILWIND v4 (@theme inline)
+   `inline` permite que las utilidades (bg-marca-primaria, text-texto-primario)
+   se actualicen dinámicamente en tiempo real al cambiar el atributo data-modo.
+   ========================================================================== */
+@theme inline {
+    --color-marca-primaria: var(--marca-primaria);
+    --color-marca-primaria-hover: var(--marca-primaria-hover);
+    --color-marca-primaria-activa: var(--marca-primaria-activa);
+    --color-marca-primaria-suave: var(--marca-primaria-suave);
+    --color-marca-sobre-primaria: var(--marca-sobre-primaria);
+
+    --color-marca-acento: var(--marca-acento);
+    --color-marca-acento-hover: var(--marca-acento-hover);
+    --color-marca-acento-activo: var(--marca-acento-activo);
+    --color-marca-acento-suave: var(--marca-acento-suave);
+    --color-marca-sobre-acento: var(--marca-sobre-acento);
+
+    --color-fondo-app: var(--fondo-app);
+    --color-fondo-superficie: var(--fondo-superficie);
+    --color-fondo-elevado: var(--fondo-elevado);
+    --color-fondo-hundido: var(--fondo-hundido);
+    --color-borde-default: var(--borde-default);
+
+    /* Atajos de superficie: los más usados en tarjetas, paneles y campos */
+    --color-superficie: var(--fondo-superficie);
+    --color-elevado: var(--fondo-elevado);
+    --color-hundido: var(--fondo-hundido);
+    --color-borde-fuerte: var(--borde-fuerte);
+    --color-borde-foco: var(--borde-foco);
+
+    /* Auth (login / register): panel de imagen lateral. El degradado va en el
+       namespace `background-image` para que `bg-auth-imagen-overlay` genere
+       `background-image` y no `background-color` (no es un color plano). */
+    --color-auth-imagen-texto: var(--auth-imagen-texto);
+    --color-auth-imagen-fondo: var(--auth-imagen-fondo);
+    --background-image-auth-imagen-overlay: var(--auth-imagen-overlay);
+    --color-header-auth-fondo: var(--header-auth-fondo);
+    --background-image-auth-fondo-gradiente: var(--auth-fondo-gradiente);
+
+    --color-texto-primario: var(--texto-primario);
+    --color-texto-secundario: var(--texto-secundario);
+    --color-texto-apagado: var(--texto-apagado);
+    --color-texto-sobre-oscuro: var(--texto-sobre-oscuro);
+    --color-texto-sobre-claro: var(--texto-sobre-claro);
+    --color-texto-link: var(--texto-link);
+    --color-texto-link-hover: var(--texto-link-hover);
+
+    /* Los cinco tokens por estado. `-sobre` es el texto coloreado que se apoya
+       sobre el color base solido; sin mapeo, `text-{estado}-sobre` no existia
+       y los badges numericos heredaban el color del texto. */
+    --color-exito: var(--exito);
+    --color-exito-fondo: var(--exito-fondo);
+    --color-exito-borde: var(--exito-borde);
+    --color-exito-texto: var(--exito-texto);
+    --color-exito-sobre: var(--exito-sobre);
+
+    --color-error: var(--error);
+    --color-error-fondo: var(--error-fondo);
+    --color-error-borde: var(--error-borde);
+    --color-error-texto: var(--error-texto);
+    --color-error-sobre: var(--error-sobre);
+
+    --color-advertencia: var(--advertencia);
+    --color-advertencia-fondo: var(--advertencia-fondo);
+    --color-advertencia-borde: var(--advertencia-borde);
+    --color-advertencia-texto: var(--advertencia-texto);
+    --color-advertencia-sobre: var(--advertencia-sobre);
+
+    --color-atencion: var(--atencion);
+    --color-atencion-fondo: var(--atencion-fondo);
+    --color-atencion-borde: var(--atencion-borde);
+    --color-atencion-texto: var(--atencion-texto);
+    --color-atencion-sobre: var(--atencion-sobre);
+
+    --color-info: var(--info);
+    --color-info-fondo: var(--info-fondo);
+    --color-info-borde: var(--info-borde);
+    --color-info-texto: var(--info-texto);
+    --color-info-sobre: var(--info-sobre);
+
+    --color-estado-activo-fondo: var(--estado-activo-fondo);
+    --color-estado-activo-texto: var(--estado-activo-texto);
+    --color-estado-pendiente-fondo: var(--estado-pendiente-fondo);
+    --color-estado-pendiente-texto: var(--estado-pendiente-texto);
+    --color-estado-cerrado-fondo: var(--estado-cerrado-fondo);
+    --color-estado-cerrado-texto: var(--estado-cerrado-texto);
+    --color-estado-info-fondo: var(--estado-info-fondo);
+    --color-estado-info-texto: var(--estado-info-texto);
+    --color-estado-neutro-fondo: var(--estado-neutro-fondo);
+    --color-estado-neutro-texto: var(--estado-neutro-texto);
+
+    --color-rareza-1: var(--rareza-1);
+    --color-rareza-2: var(--rareza-2);
+    --color-rareza-3: var(--rareza-3);
+    --color-rareza-4: var(--rareza-4);
+    --color-carta-reverso: var(--carta-reverso);
+    --color-carta-desconocida: var(--carta-desconocida);
+
+    /* Vista "Mis cartas" */
+    --color-fondo-coleccion: var(--fondo-coleccion);
+    --color-fondo-coleccion-superficie: var(--fondo-coleccion-superficie);
+    --color-borde-coleccion: var(--borde-coleccion);
+    --color-borde-coleccion-fuerte: var(--marca-coleccion-borde);
+    --color-marca-coleccion: var(--marca-coleccion);
+    --color-marca-coleccion-sobre: var(--marca-coleccion-sobre);
+    --color-marca-coleccion-fondo: var(--marca-coleccion-fondo);
+
+    /* Sobres de cartas: el componente los baja por cascada a tres variables
+       locales y de ahi los pinta con `fill`, asi que no usa utilidades. El
+       mapeo existe para que queden disponibles en la capa 3 (`bg-sobre-*`,
+       `fill-sobre-*`) y para que la galeria pueda enumerarlos. */
+    --color-sobre-cuerpo-oscuro: var(--sobre-cuerpo-oscuro);
+    --color-sobre-detalle-oscuro: var(--sobre-detalle-oscuro);
+    --color-sobre-sello-oscuro: var(--sobre-sello-oscuro);
+    --color-sobre-cuerpo-claro: var(--sobre-cuerpo-claro);
+    --color-sobre-detalle-claro: var(--sobre-detalle-claro);
+    --color-sobre-sello-claro: var(--sobre-sello-claro);
+
+    /* Botones: expuestos al mapeo de Tailwind para que los componentes usen
+       utilidades bg-, text- y border- en lugar de CSS puro.
+       Cada familia cubre base, hover y estado activo. */
+    --color-btn-primario-bg: var(--btn-primario-bg);
+    --color-btn-primario-texto: var(--btn-primario-texto);
+    --color-btn-primario-hover: var(--btn-primario-hover);
+    --color-btn-primario-activo: var(--btn-primario-activo);
+
+    --color-btn-secundario-bg: var(--btn-secundario-bg);
+    --color-btn-secundario-texto: var(--btn-secundario-texto);
+    --color-btn-secundario-hover: var(--btn-secundario-hover);
+    --color-btn-secundario-activo: var(--btn-secundario-activo);
+
+    --color-btn-terciario-bg: var(--btn-terciario-bg);
+    --color-btn-terciario-texto: var(--btn-terciario-texto);
+    --color-btn-terciario-borde: var(--btn-terciario-borde);
+    --color-btn-terciario-hover: var(--btn-terciario-hover);
+    --color-btn-terciario-activo: var(--btn-terciario-activo);
+
+    --color-btn-fantasma-bg: var(--btn-fantasma-bg);
+    --color-btn-fantasma-texto: var(--btn-fantasma-texto);
+    --color-btn-fantasma-hover: var(--btn-fantasma-hover);
+    --color-btn-fantasma-activo: var(--btn-fantasma-activo);
+
+    --color-btn-peligro-bg: var(--btn-peligro-bg);
+    --color-btn-peligro-texto: var(--btn-peligro-texto);
+    --color-btn-peligro-hover: var(--btn-peligro-hover);
+    --color-btn-peligro-activo: var(--btn-peligro-activo);
+
+    --color-btn-exito-bg: var(--btn-exito-bg);
+    --color-btn-exito-texto: var(--btn-exito-texto);
+    --color-btn-exito-hover: var(--btn-exito-hover);
+    --color-btn-exito-activo: var(--btn-exito-activo);
+
+    /* Boton de opcion de juego */
+    --color-btn-juego-bg: var(--btn-juego-bg);
+    --color-btn-juego-texto: var(--btn-juego-texto);
+    --color-btn-juego-sombra: var(--btn-juego-sombra);
+    --color-btn-juego-foco: var(--btn-juego-foco);
+
+    /* Landing pública: superficies alternadas independientes de data-modo */
+    --color-landing-oscuro-fondo: var(--landing-oscuro-fondo);
+    --color-landing-oscuro-superficie: var(--landing-oscuro-superficie);
+    --color-landing-oscuro-texto: var(--landing-oscuro-texto);
+    --color-landing-oscuro-tenue: var(--landing-oscuro-tenue);
+    --color-landing-oscuro-borde: var(--landing-oscuro-borde);
+    --color-landing-oscuro-borde-control: var(--landing-oscuro-borde-control);
+    --color-landing-claro-fondo: var(--landing-claro-fondo);
+    --color-landing-claro-superficie: var(--landing-claro-superficie);
+    --color-landing-claro-texto: var(--landing-claro-texto);
+    --color-landing-claro-borde: var(--landing-claro-borde);
+    --color-landing-marca: var(--landing-marca);
+    --color-landing-sobre-marca: var(--landing-sobre-marca);
+    --color-landing-acento: var(--landing-acento);
+    --color-landing-marcas-fondo: var(--landing-marcas-fondo);
+    --color-landing-panel: var(--landing-panel);
+
+    /* Escala fluida de la landing expuesta a las utilidades de Tailwind:
+       `--text-*` genera text-*, y `--spacing-*` genera h-/w-/size-/gap-*. */
+    --text-landing-hero: var(--landing-tipografia-hero);
+    --text-landing-titulo: var(--landing-tipografia-titulo);
+    --text-landing-lista: var(--landing-tipografia-lista);
+    --text-landing-faq: var(--landing-tipografia-faq);
+    --text-landing-equipo: var(--landing-tipografia-panel);
+    --text-landing-wordmark: var(--landing-tipografia-marca);
+    --text-landing-ui: var(--landing-tipografia-ui);
+
+    --spacing-landing-logo: var(--landing-medida-logo);
+    --spacing-landing-cta: var(--landing-medida-cta);
+    --spacing-landing-sobres: var(--landing-medida-sobres);
+    --spacing-landing-ilustracion: var(--landing-medida-ilustracion);
+    --spacing-landing-avatar: var(--landing-medida-avatar);
+    --spacing-landing-columna: var(--landing-espacio-columna);
+
+    /* Fondo exterior de la app (namespace --background-image-* -> bg-*) */
+    --background-image-landing-gradiente-amarillo-verde: var(--landing-gradiente-amarillo-verde);
+    --background-image-usuario-gradiente-amarillo-verde: var(--usuario-gradiente-amarillo-verde);
+
+    --font-titulo: var(--fuente-titulo);
+    --font-cuerpo: var(--fuente-cuerpo);
+    --font-interfaz: var(--fuente-interfaz);
+
+    --radius-sm: var(--radio-sm);
+    --radius-md: var(--radio-md);
+    --radius-lg: var(--radio-lg);
+    --radius-pildora: var(--radio-pildora);
+    --radius-circulo: var(--radio-circulo);
+
+    --shadow-baja: var(--sombra-baja);
+    --shadow-media: var(--sombra-media);
+    --shadow-alta: var(--sombra-alta);
+    --shadow-brillo-verde: var(--sombra-brillo-verde);
+}

@@ -1,0 +1,78 @@
+/* ==========================================================================
+   Falta Una - Botones (Capa 3)
+   Todos los tokens --btn-* del modo jugador (primario, secundario, terciario,
+   fantasma, peligro, exito, opcion de juego) y luego los overrides de empresa.
+   Jugador primero, empresa despues (gana la cascada).
+   Origen: sub-bloques "BOTONES" de styles.css.
+   ========================================================================== */
+
+:root,
+[data-modo="jugador"] {
+    /* ----------------------------------------------------------------------
+       CAPA 3 — BOTONES (Modo Jugador)
+       ---------------------------------------------------------------------- */
+    /* Botón Primario: Verde vibrante, llamada a la acción imperdible */
+    --btn-primario-bg: var(--marca-primaria);
+    --btn-primario-texto: var(--marca-sobre-primaria);
+    --btn-primario-hover: var(--marca-primaria-hover);
+    --btn-primario-activo: var(--marca-primaria-activa);
+    --btn-primario-anillo: var(--marca-acento);
+
+    /* Botón Secundario: Acento amarillo crema */
+    --btn-secundario-bg: var(--marca-acento);
+    --btn-secundario-texto: var(--marca-sobre-acento);
+    --btn-secundario-hover: var(--marca-acento-hover);
+    --btn-secundario-activo: var(--marca-acento-activo);
+    --btn-secundario-anillo: var(--marca-primaria);
+
+    /* Botón Terciario: Delineado, acciones auxiliares */
+    --btn-terciario-bg: transparent;
+    --btn-terciario-texto: var(--texto-primario);
+    --btn-terciario-borde: var(--borde-fuerte);
+    --btn-terciario-hover: var(--interactivo-hover);
+    --btn-terciario-activo: rgba(244, 250, 246, 0.12);
+    --btn-terciario-anillo: var(--borde-foco);
+
+    /* Botones de Acción Feedback */
+    --btn-peligro-bg: var(--error);
+    --btn-peligro-texto: var(--error-sobre);
+    --btn-peligro-hover: #FF8585;
+    --btn-peligro-activo: #E65050;
+    --btn-peligro-anillo: var(--error-texto);
+
+    --btn-exito-bg: var(--exito);
+    --btn-exito-texto: var(--exito-sobre);
+    --btn-exito-hover: var(--color-verde-jugador-hover);
+    --btn-exito-activo: var(--color-verde-jugador-activa);
+    --btn-exito-anillo: var(--exito-texto);
+
+    /* Boton de opcion de juego: paralelogramo con sombra solida.
+       Cara y sombra son tokens distintos porque el ::before es fijo y el
+       ::after se desplaza en hover y active. */
+    --btn-juego-bg: var(--color-juego-claro);
+    --btn-juego-texto: var(--color-teal-profundo);
+    --btn-juego-sombra: var(--marca-primaria);
+    --btn-juego-foco: var(--marca-primaria);
+
+    --btn-fantasma-bg: transparent;
+    --btn-fantasma-texto: var(--texto-secundario);
+    --btn-fantasma-hover: var(--interactivo-hover);
+    --btn-fantasma-activo: rgba(244, 250, 246, 0.12);
+    --btn-fantasma-anillo: var(--borde-foco);
+}
+
+[data-modo="empresa"] {
+    /* --- Botones en Modo Empresa --- */
+    --btn-primario-anillo: var(--color-violeta-hover);
+    --btn-secundario-anillo: var(--color-verde-claro);
+    --btn-terciario-borde: var(--color-violeta-empresa);
+    --btn-terciario-texto: var(--color-violeta-empresa);
+    --btn-terciario-hover: var(--color-violeta-suave);
+    --btn-terciario-activo: rgba(103, 86, 121, 0.22);
+    --btn-terciario-anillo: var(--color-violeta-empresa);
+
+    --btn-fantasma-texto: var(--color-violeta-empresa);
+    --btn-fantasma-hover: var(--color-violeta-suave);
+    --btn-fantasma-activo: rgba(103, 86, 121, 0.22);
+    --btn-fantasma-anillo: var(--color-violeta-empresa);
+}

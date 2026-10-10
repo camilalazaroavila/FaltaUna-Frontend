@@ -43,7 +43,7 @@ Tres documentos describen el modelo de negocio de forma distinta y conviven sin 
 
 ### Frontend
 - **Framework:** Angular 20 (Standalone Components, Signals API, `ChangeDetectionStrategy.OnPush`).
-- **Estilos:** Tailwind CSS v4 (vía `@tailwindcss/postcss`), SCSS modular y sistema de diseño en 3 capas en `styles.css`.
+- **Estilos:** Tailwind CSS v4 (vía `@tailwindcss/postcss`), SCSS modular y sistema de diseño en 3 capas dividido por dominio en `src/estilos/` (índice en `styles.css`).
 - **Iconografía:** `@ng-icons/phosphor-icons` y `@ng-icons/heroicons` (registrados centralizadamente en `app.config.ts`), más `@fortawesome/fontawesome-free`.
 - **Notificaciones (Toasts):** `ngx-sonner` (`<ngx-sonner-toaster>`) acoplado a los tokens de feedback.
 - **Animaciones:** GSAP 3.15+ encapsulado en `GsapService`.
@@ -67,7 +67,7 @@ Tres documentos describen el modelo de negocio de forma distinta y conviven sin 
 
 ## 3. Sistema de Diseño (Impeccable Design System)
 
-El diseño está centralizado en `frontend/src/styles.css` e importado en `frontend/src/styles.scss`. Sigue una estricta **arquitectura en 3 capas** auditada con 0 anti-patrones por la herramienta **Impeccable**:
+El diseño está dividido por dominio en `frontend/src/estilos/` y se importa desde `frontend/src/styles.css`, que ahora es solo un **índice** de `@import` (no contiene reglas). `frontend/src/styles.scss` sigue importando `styles.css`, por lo que `angular.json` y los consumidores no cambian. Sigue una estricta **arquitectura en 3 capas** auditada con 0 anti-patrones por la herramienta **Impeccable**:
 
 ```
 Capa 1: Primitivos   → Colores base (#hex crudos)
@@ -75,7 +75,24 @@ Capa 2: Semánticos   → Tokens de rol y función para [data-modo="jugador"] y 
 Capa 3: Componentes  → Clases y utilidades Tailwind que consumen SOLO semánticos
 ```
 
+Estructura de `src/estilos/` (cada archivo agrupa un dominio y conserva sus comentarios):
+
+```
+estilos-fundamentos/  primitivos.css (Capa 1), base.css (ESTILOS BASE + TIPOGRAFÍAS)
+estilos-roles/        jugador.css, empresa.css (Capa 2: identidad, superficies, auth, sombras, texto)
+estilos-feedback/     feedback.css (5 tokens por estado), alertas.css (--estado-*), toast.css (ngx-sonner)
+estilos-componentes/  botones.css (--btn-*), cartas.css (rarezas y --carta-*), sobres.css (--sobre-*)
+estilos-paginas/      landing.css (LANDING PÚBLICA + escala fluida), layout.css (ESTRUCTURA DE PÁGINA)
+estilos-tailwind/     tema.css (@theme inline completo), utilidades.css (@custom-variant habilitado + @utility)
+estilos-animaciones/  animaciones.css (keyframes, .animate-*, reduced-motion)
+```
+
 > ⚠️ **REGLA DE ORO DE DISEÑO:** Los componentes nunca usan valores `#hex` directos. Si se necesita un nuevo color o variante, primero se define el token semántico.
+
+### ¿Dónde agrego un token nuevo?
+Elegí el archivo por **dominio**, no por capa: color de marca/superficie → `estilos-roles/jugador.css` y `estilos-roles/empresa.css`; un estado de feedback → `estilos-feedback/feedback.css`; un badge de estado → `estilos-feedback/alertas.css`; un botón → `estilos-componentes/botones.css`; carta/rareza o vista "Mis cartas" → `estilos-componentes/cartas.css`; sobre → `estilos-componentes/sobres.css`; landing → `estilos-paginas/landing.css`; layout → `estilos-paginas/layout.css`. Si el token es de un modo (jugador/empresa), va en el archivo de su dominio con el bloque de **jugador primero y empresa después**. Después, si debe generar utilidad Tailwind, agregá el mapeo en `estilos-tailwind/tema.css`.
+
+> ⚠️ **REGLA DE ORDEN (jugador → empresa):** `:root, [data-modo="jugador"]` y `[data-modo="empresa"]` tienen la misma especificidad, así que gana el último bloque cargado. Por eso, para cada token, el bloque de empresa va **siempre después** del de jugador: dentro de un mismo archivo de dominio (feedback, alertas, botones) o en un archivo que se importe más tarde (`estilos-roles/empresa.css` se importa después de `estilos-roles/jugador.css`). El orden de los `@import` del índice está definido para respetar esta regla.
 
 ### Modos y Temas (`data-modo`)
 Se alternan cambiando el atributo en el elemento raíz (por ejemplo `<html data-modo="jugador">`):
@@ -128,7 +145,15 @@ FaltaUna-Frontend/
 │   │   │   ├── app.config.ts  → Configuración global (iconos, routing, providers)
 │   │   │   ├── app.html / ts  → Componente raíz
 │   │   │   └── app.routes.ts  → Definición de rutas
-│   │   ├── styles.css         → Sistema de diseño en 3 capas y Tailwind @theme inline
+│   │   ├── estilos/           → Sistema de diseño dividido por dominio (lo importa styles.css)
+│   │   │   ├── estilos-fundamentos/  → primitivos.css, base.css
+│   │   │   ├── estilos-roles/        → jugador.css, empresa.css
+│   │   │   ├── estilos-feedback/     → feedback.css, alertas.css, toast.css
+│   │   │   ├── estilos-componentes/  → botones.css, cartas.css, sobres.css
+│   │   │   ├── estilos-paginas/      → landing.css, layout.css
+│   │   │   ├── estilos-tailwind/     → tema.css, utilidades.css
+│   │   │   └── estilos-animaciones/  → animaciones.css
+│   │   ├── styles.css         → Índice: importa el sistema de diseño de src/estilos/
 │   │   └── styles.scss        → Importador maestro de estilos
 │   ├── angular.json           → Configuración de build y serve (puerto 4300)
 │   ├── package.json           → Dependencias y scripts
