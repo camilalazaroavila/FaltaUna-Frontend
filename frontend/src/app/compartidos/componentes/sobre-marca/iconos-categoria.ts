@@ -13,12 +13,8 @@ export interface IconoCategoria {
   readonly ancho: number;
   readonly alto: number;
   readonly trazos: readonly string[];
-  
 }
-/** Placa del logo con esquinas irregulares (estilo cartoon). Misma zona que ZONA_LOGO. */
-const TRAZO_PLACA =
-  'M36,82 H157 A26,26 0 0 1 183,108 V218 A14,14 0 0 1 169,232 H54 A28,28 0 0 1 26,204 V92 A10,10 0 0 1 36,82 Z';
-  
+
 export const ICONOS_CATEGORIA: Record<CategoriaSobre, IconoCategoria> = {
   tecnologia: {
     ancho: 64.94,
