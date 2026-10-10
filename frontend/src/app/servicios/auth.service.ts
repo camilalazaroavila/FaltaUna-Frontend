@@ -1,7 +1,6 @@
-import { Injectable, signal } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { ApiService, ParametrosConsulta } from './api.service';
 import {
   CrearUsuarioSolicitud,
   DisponibilidadRespuesta,
@@ -19,19 +18,17 @@ const CLAVE_USUARIO = 'faltauna_usuario';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiUrl = environment.apiUrl;
+  private readonly api = inject(ApiService);
 
   /** Señal con el usuario logueado (null si no hay sesión). Se actualiza sola al hacer login/logout. */
   usuarioActual = signal<Usuario | null>(this.leerUsuarioGuardado());
 
-  constructor(private http: HttpClient) { }
-
   registrar(solicitud: CrearUsuarioSolicitud): Observable<UsuarioRespuesta> {
-    return this.http.post<UsuarioRespuesta>(`${this.apiUrl}/Usuarios`, solicitud);
+    return this.api.post<UsuarioRespuesta>('Usuarios', solicitud);
   }
 
   login(solicitud: LoginSolicitud): Observable<LoginRespuesta> {
-    return this.http.post<LoginRespuesta>(`${this.apiUrl}/Auth/login`, solicitud).pipe(
+    return this.api.post<LoginRespuesta>('Auth/login', solicitud).pipe(
       tap((respuesta) => this.guardarSesion(respuesta))
     );
   }
@@ -87,9 +84,9 @@ export class AuthService {
   }
 
   verificarDisponibilidad(params: { nombreUsuario?: string; email?: string }): Observable<DisponibilidadRespuesta> {
-    let consulta = new HttpParams();
-    if (params.nombreUsuario) consulta = consulta.set('nombreUsuario', params.nombreUsuario);
-    if (params.email) consulta = consulta.set('email', params.email);
-    return this.http.get<DisponibilidadRespuesta>(`${this.apiUrl}/Usuarios/disponibilidad`, { params: consulta });
+    const consulta: ParametrosConsulta = {};
+    if (params.nombreUsuario) consulta['nombreUsuario'] = params.nombreUsuario;
+    if (params.email) consulta['email'] = params.email;
+    return this.api.get<DisponibilidadRespuesta>('Usuarios/disponibilidad', { params: consulta });
   }
 }

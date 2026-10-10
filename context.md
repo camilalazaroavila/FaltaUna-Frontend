@@ -170,7 +170,8 @@ FaltaUna-Frontend/
 2. **Angular Signals:** Priorizar el uso de Signals para estado e inputs (`input()`, `input.required()`, `output()`, `computed()`, `signal()`).
 3. **Change Detection:** Aplicar siempre `changeDetection: ChangeDetectionStrategy.OnPush`.
 4. **Separación de Responsabilidades:** Los componentes nunca realizan peticiones HTTP directas ni gestionan lógica de persistencia; delegan siempre en un archivo dentro de `servicios/`.
-5. **Accesibilidad (A11y):**
+5. **Acceso al backend vía `ApiService`:** Todo consumo de la API pasa por `servicios/api.service.ts`, que centraliza `HttpClient` y `environment`. Es el **único** archivo de `servicios/` que inyecta `HttpClient` o importa `environment` para URLs. Los servicios de dominio llaman a `api.get/post/put/patch/delete` con **rutas relativas a `/api`** (por ejemplo `'Pagos/configuracion'`) y no arman URLs absolutas ni construyen `HttpParams` a mano. Para concatenar base y ruta usar la función pura exportada `unirUrl(base, ruta)`.
+6. **Accesibilidad (A11y):**
    - Todo botón o enlace sin texto visual debe incluir `aria-label` o `aria-labelledby`.
    - Mantener el foco visible con `:focus-visible`.
    - Respetar `prefers-reduced-motion` en animaciones.
