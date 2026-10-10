@@ -43,31 +43,23 @@
       </g>
 
       @if (esCategoria() && iconoCategoria(); as icono) {
-        <!-- Sobre de categoria: placa blanca + icono con aire + nombre -->
-        <defs>
-          <clipPath [attr.id]="idPlaca">
-            <rect x="26" y="82" width="157" height="150" rx="16" />
-          </clipPath>
-        </defs>
-
-        <rect class="sobre__placa" x="26" y="82" width="157" height="150" rx="16" />
-
-        <g [attr.clip-path]="'url(#' + idPlaca + ')'">
-          <svg
-            [attr.viewBox]="'0 0 ' + icono.ancho + ' ' + icono.alto"
-            x="46"
-            y="102"
-            width="117"
-            height="110"
-            preserveAspectRatio="xMidYMid meet"
-            aria-hidden="true"
-            focusable="false"
-          >
-            @for (d of icono.trazos; track $index) {
-              <path [attr.d]="d" class="sobre__icono" />
-            }
-          </svg>
-        </g>
+        <!-- Sobre de categoria: el icono va directo sobre el cuerpo amarillo,
+             sin placa ni sombra. La placa punteaguda es exclusiva de marca. -->
+        <svg
+          class="sobre__icono-marco"
+          [attr.viewBox]="'0 0 ' + icono.ancho + ' ' + icono.alto"
+          [attr.x]="cajaCategoria.x"
+          [attr.y]="cajaCategoria.y"
+          [attr.width]="cajaCategoria.ancho"
+          [attr.height]="cajaCategoria.alto"
+          preserveAspectRatio="xMidYMid meet"
+          aria-hidden="true"
+          focusable="false"
+        >
+          @for (d of icono.trazos; track $index) {
+            <path [attr.d]="d" class="sobre__icono" />
+          }
+        </svg>
 
         @if (nombreVisible(); as texto) {
           <text x="104.3" y="262" text-anchor="middle" class="sobre__nombre" font-size="16" letter-spacing="0.04em">
@@ -76,23 +68,21 @@
         }
       } @else if (conLogo()) {
         <!--
-          Recorte de la placa. El id es por instancia (`idPlaca`), asi que varias
-          placas en pantalla no se pisan el `url(#...)`.
+          Placa de marca: la silueta se recorta a la proporcion real del logo y
+          se dibuja como sombra solida (desplazada 9 unidades hacia abajo y a la
+          derecha) mas un borde de tinta del mismo color. El logo recortado vive
+          debajo de ese borde; mientras carga queda oculto por opacidad.
         -->
         <defs>
           <clipPath [attr.id]="idPlaca">
-            <rect x="26" y="82" width="157" height="150" rx="16" />
+            <path [attr.d]="trazoPlaca()" />
           </clipPath>
         </defs>
 
-        <rect
-          class="sobre__placa"
-          [class.sobre__placa--cargando]="cargando()"
-          x="26"
-          y="82"
-          width="157"
-          height="150"
-          rx="16"
+        <path
+          class="sobre__placa-sombra"
+          [attr.d]="trazoPlaca()"
+          transform="translate(9 9)"
         />
 
         <image
@@ -101,13 +91,19 @@
           [class.sobre__logo--oculto]="cargando()"
           [attr.href]="logoUrl()"
           [attr.clip-path]="'url(#' + idPlaca + ')'"
-          x="26"
-          y="82"
-          width="157"
-          height="150"
+          [attr.x]="cajaLogo().x"
+          [attr.y]="cajaLogo().y"
+          [attr.width]="cajaLogo().ancho"
+          [attr.height]="cajaLogo().alto"
           preserveAspectRatio="xMidYMid meet"
           (load)="imagenCargada()"
           (error)="imagenFallida()"
+        />
+
+        <path
+          class="sobre__placa--marca"
+          [class.sobre__placa--cargando]="cargando()"
+          [attr.d]="trazoPlaca()"
         />
 
         @if (nombreVisible(); as texto) {
