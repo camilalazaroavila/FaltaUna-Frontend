@@ -62,11 +62,86 @@ const recortar = (texto: string): string =>
     : texto;
 
 /**
- * Zona maxima donde entra el logo de una marca, en unidades del viewBox del
- * sobre. Es la misma que ocupa la placa de los sobres de categoria, asi los
- * tres tipos de sobre quedan alineados y centrados sobre el pliegue.
+ * Zona maxima donde entra la imagen de una marca, en unidades del viewBox del
+ * sobre. Es la misma que ocupa el icono de las categorias, asi los tres tipos
+ * de sobre quedan alineados y centrados sobre el pliegue.
  */
-const ZONA_LOGO = { ancho: 157, alto: 150, centroX: 104.5, centroY: 157 } as const;
+export const ZONA_LOGO = { ancho: 157, alto: 150, centroX: 104.5, centroY: 157 } as const;
+
+export interface CajaLogo {
+  readonly x: number;
+  readonly y: number;
+  readonly ancho: number;
+  readonly alto: number;
+}
+
+/** La propia ZONA_LOGO como caja: el area donde viven la placa y el icono de categoria. */
+export const CAJA_ZONA_LOGO: CajaLogo = {
+  x: ZONA_LOGO.centroX - ZONA_LOGO.ancho / 2,
+  y: ZONA_LOGO.centroY - ZONA_LOGO.alto / 2,
+  ancho: ZONA_LOGO.ancho,
+  alto: ZONA_LOGO.alto,
+};
+
+/**
+ * Cuanto se corta cada esquina, como fraccion del lado corto de la caja, en
+ * orden [superior-izquierda, superior-derecha, inferior-derecha, inferior-
+ * izquierda]. Radios chicos y desiguales a proposito: dos esquinas casi en
+ * punta (superior-izquierda e inferior-derecha) y dos con corte marcado, como
+ * una etiqueta cartoon.
+ */
+const RADIOS_ESQUINA_PLACA = [0.03, 0.15, 0.025, 0.11] as const;
+
+/**
+ * Rectangulo del logo: respeta su proporcion real, entra en la zona maxima y
+ * queda centrado sobre el pliegue. Hasta medirse el logo, se asume cuadrado.
+ */
+export const calcularCajaLogo = (
+  proporcion: number,
+  zona: typeof ZONA_LOGO = ZONA_LOGO,
+): CajaLogo => {
+  const proporcionValida = Number.isFinite(proporcion) && proporcion > 0 ? proporcion : 1;
+
+  let ancho = zona.ancho;
+  let alto = ancho / proporcionValida;
+  if (alto > zona.alto) {
+    alto = zona.alto;
+    ancho = alto * proporcionValida;
+  }
+
+  return {
+    x: zona.centroX - ancho / 2,
+    y: zona.centroY - alto / 2,
+    ancho,
+    alto,
+  };
+};
+
+const redondear = (valor: number): number => Math.round(valor * 1000) / 1000;
+
+/**
+ * Silueta cartoon de la placa para una caja dada: repite las cuatro esquinas
+ * con radios irregulares, asi la forma acompaña cualquier proporcion del logo
+ * (apaisado, cuadrado o vertical) conservando el corte punteagudo de siempre.
+ */
+export const construirTrazoPlaca = (caja: CajaLogo): string => {
+  const lado = Math.min(caja.ancho, caja.alto);
+  const limite = lado / 2;
+  const [rSI, rSD, rID, rII] = RADIOS_ESQUINA_PLACA.map((factor) => Math.min(lado * factor, limite));
+
+  return [
+    `M ${redondear(caja.x + rSI)} ${redondear(caja.y)}`,
+    `H ${redondear(caja.x + caja.ancho - rSD)}`,
+    `A ${redondear(rSD)} ${redondear(rSD)} 0 0 1 ${redondear(caja.x + caja.ancho)} ${redondear(caja.y + rSD)}`,
+    `V ${redondear(caja.y + caja.alto - rID)}`,
+    `A ${redondear(rID)} ${redondear(rID)} 0 0 1 ${redondear(caja.x + caja.ancho - rID)} ${redondear(caja.y + caja.alto)}`,
+    `H ${redondear(caja.x + rII)}`,
+    `A ${redondear(rII)} ${redondear(rII)} 0 0 1 ${redondear(caja.x)} ${redondear(caja.y + caja.alto - rII)}`,
+    `V ${redondear(caja.y + rSI)}`,
+    `A ${redondear(rSI)} ${redondear(rSI)} 0 0 1 ${redondear(caja.x + rSI)} ${redondear(caja.y)}`,
+    'Z',
+  ].join(' ');
+};
 
 /** Las cuatro caras del sobre (Paquete1 / Paquete2): una sola fuente para el cuerpo y la silueta. */
 const CUERPO_SOBRE: readonly string[] = [
@@ -111,6 +186,7 @@ let instancias = 0;
   host: {
     '[class.sobre-marca--oscuro]': 'variante() === "oscuro"',
     '[class.sobre-marca--claro]': 'variante() === "claro"',
+    '[class.sobre-marca--categoria]': '!!categoria()',
   },
   styles: `
     :host {
@@ -120,13 +196,17 @@ let instancias = 0;
     :host(.sobre-marca--oscuro) {
       --sobre-cuerpo-local: var(--sobre-cuerpo-oscuro);
       --sobre-detalle-local: var(--sobre-detalle-oscuro);
-      --sobre-sello-local: var(--sobre-sello-oscuro);
     }
 
     :host(.sobre-marca--claro) {
       --sobre-cuerpo-local: var(--sobre-cuerpo-claro);
       --sobre-detalle-local: var(--sobre-detalle-claro);
-      --sobre-sello-local: var(--sobre-sello-claro);
+    }
+
+    /* Va DESPUÉS de --oscuro y --claro: misma especificidad, gana el orden. */
+    :host(.sobre-marca--categoria) {
+      --sobre-cuerpo-local: var(--sobre-categoria-cuerpo);
+      --sobre-detalle-local: var(--sobre-categoria-detalle);
     }
 
     .sobre__cuerpo {
@@ -138,12 +218,22 @@ let instancias = 0;
       fill: var(--sobre-detalle-local);
     }
 
-    .sobre__placa {
-      fill: var(--sobre-sello-local);
+    .sobre__icono {
+      fill: var(--sobre-detalle-local);
     }
 
-    .sobre__icono {
-      fill: var(--color-teal-profundo);
+    /* Placa de marca: silueta cartoon recortada a la proporcion del logo.
+       La sombra es una copia solida de la misma silueta desplazada 9 unidades,
+       y el borde de tinta rodea la placa para fundirse con esa sombra. */
+    .sobre__placa--marca {
+      fill: none;
+      stroke: var(--sobre-sombra-placa);
+      stroke-width: 3;
+      stroke-linejoin: round;
+    }
+
+    .sobre__placa-sombra {
+      fill: var(--sobre-sombra-placa);
     }
 
     /* Efecto holografico: solo en sobres clickeables. */
@@ -261,6 +351,9 @@ export class SobreMarca {
 
   protected readonly cuerpo = CUERPO_SOBRE;
 
+  /** Area del icono de categoria: la zona maxima que dejo la placa. */
+  protected readonly cajaCategoria = CAJA_ZONA_LOGO;
+
   /**
    * URL del logo de la marca (PNG/JPG/SVG/WebP).
    */
@@ -309,27 +402,17 @@ export class SobreMarca {
   protected readonly conLogo = computed(() => !!this.logoUrl() && !this.fallo());
 
   /**
-   * Rectangulo del logo: respeta su proporcion, entra en la zona maxima y
-   * queda centrado sobre el pliegue. Hasta medirlo, se asume cuadrado.
+   * Caja del logo: respeta su proporcion real, entra en la zona maxima y
+   * queda centrada sobre el pliegue. Hasta medirse, se asume cuadrada.
    */
   protected readonly cajaLogo = computed(() => {
     const medida = this.medidaLogo();
     const proporcion = medida && medida.url === this.logoUrl() ? medida.proporcion : 1;
-
-    let ancho: number = ZONA_LOGO.ancho;
-    let alto = ancho / proporcion;
-    if (alto > ZONA_LOGO.alto) {
-      alto = ZONA_LOGO.alto;
-      ancho = alto * proporcion;
-    }
-
-    return {
-      x: ZONA_LOGO.centroX - ancho / 2,
-      y: ZONA_LOGO.centroY - alto / 2,
-      ancho,
-      alto,
-    };
+    return calcularCajaLogo(proporcion);
   });
+
+  /** Silueta cartoon de la placa, recortada a la proporcion real del logo. */
+  protected readonly trazoPlaca = computed(() => construirTrazoPlaca(this.cajaLogo()));
 
   protected readonly etiqueta = computed(() => {
     const cat = this.categoria();

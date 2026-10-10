@@ -44,9 +44,10 @@
     --color-teal-borde: #184A50;
     /* Bordes sutiles sobre teal */
     --color-teal-hundido: #072326;
+
+
+
     /* Inputs inactivos, huecos, placeholders */
-
-
 
     --color-verde-jugador: #3BD972;
     /* Verde cancha vibrante, acción principal */
@@ -499,21 +500,28 @@
    Por eso viven en `:root` y no en los bloques de tema, igual que los tokens
    de la landing.
 
-   Cada variante define cuerpo, detalle (las letras) y sello:
-     oscuro → cuerpo verde de cancha, detalle crema, placa blanca en el centro.
-     claro  → cuerpo crema, detalle tinta, placa blanca en el centro.
-   La placa del sello es blanca en las dos variantes a propósito: es el neutro
-   que mejor tolera los logos reales, que llegan en JPG sin canal alfa y se
-   funden con cualquier fondo de color.
+   Cada variante define cuerpo y detalle (las letras):
+     oscuro → cuerpo verde de cancha, detalle crema.
+     claro  → cuerpo crema, detalle tinta.
+   El sobre de categoría ignora la variante: siempre cuerpo amarillo del
+   imagotipo con detalle verde oscuro. La placa del logo de marca dejó de ser
+   un rectángulo blanco: es una silueta cartoon que se recorta a la proporción
+   real del logo, con sombra sólida `--sobre-sombra-placa`.
    ========================================================================== */
 :root {
     --sobre-cuerpo-oscuro: var(--color-sobre-verde);
     --sobre-detalle-oscuro: var(--color-amarillo-logo);
-    --sobre-sello-oscuro: var(--blanco-puro);
 
     --sobre-cuerpo-claro: var(--color-amarillo-logo);
     --sobre-detalle-claro: var(--color-sobre-tinta);
-    --sobre-sello-claro: var(--blanco-puro);
+
+    /* Placa de marca: sombra cartoon desplazada sobre el cuerpo del sobre. */
+    --sobre-sombra-placa: var(--color-sobre-tinta);
+
+    /* Sobres de categoría: cuerpo amarillo + detalle verde oscuro. El verde
+       es `--color-carta-cuadrado`, que da contraste AA/AAA sobre el amarillo. */
+    --sobre-categoria-cuerpo: var(--color-amarillo-logo);
+    --sobre-categoria-detalle: var(--color-carta-cuadrado);
 }
 
 /* ==========================================================================
@@ -683,16 +691,17 @@
     --color-marca-coleccion-sobre: var(--marca-coleccion-sobre);
     --color-marca-coleccion-fondo: var(--marca-coleccion-fondo);
 
-    /* Sobres de cartas: el componente los baja por cascada a tres variables
+    /* Sobres de cartas: el componente los baja por cascada a dos variables
        locales y de ahi los pinta con `fill`, asi que no usa utilidades. El
        mapeo existe para que queden disponibles en la capa 3 (`bg-sobre-*`,
        `fill-sobre-*`) y para que la galeria pueda enumerarlos. */
     --color-sobre-cuerpo-oscuro: var(--sobre-cuerpo-oscuro);
     --color-sobre-detalle-oscuro: var(--sobre-detalle-oscuro);
-    --color-sobre-sello-oscuro: var(--sobre-sello-oscuro);
     --color-sobre-cuerpo-claro: var(--sobre-cuerpo-claro);
     --color-sobre-detalle-claro: var(--sobre-detalle-claro);
-    --color-sobre-sello-claro: var(--sobre-sello-claro);
+    --color-sobre-sombra-placa: var(--sobre-sombra-placa);
+    --color-sobre-categoria-cuerpo: var(--sobre-categoria-cuerpo);
+    --color-sobre-categoria-detalle: var(--sobre-categoria-detalle);
 
     /* Botones: expuestos al mapeo de Tailwind para que los componentes usen
        utilidades bg-, text- y border- en lugar de CSS puro.
