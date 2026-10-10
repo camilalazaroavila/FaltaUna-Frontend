@@ -68,6 +68,26 @@ describe('UsuarioDashboard Component', () => {
     expect(botonAvatar).toBeTruthy();
   });
 
+  it('debe mostrar 3 sobres en el abanico: general, categoría gastronomía y marca Lego', () => {
+    const sobres: HTMLElement[] = Array.from(
+      fixture.nativeElement.querySelectorAll('app-sobre-marca button')
+    );
+    const etiquetas = sobres.map((s) => s.getAttribute('aria-label'));
+
+    expect(sobres.length).toBe(3);
+    expect(etiquetas).toEqual(
+      expect.arrayContaining(['Sobre de Falta Una', 'Sobre de Gastronomía', 'Sobre de Lego'])
+    );
+  });
+
+  it('debe abrir el selector al hacer clic en un sobre del abanico', () => {
+    const sobre = fixture.nativeElement.querySelector('app-sobre-marca button') as HTMLButtonElement;
+    sobre.click();
+    fixture.detectChanges();
+
+    expect(component['selectorSobresAbierto']()).toBe(true);
+  });
+
   it('debe renderizar el dock lateral con los 5 destinos de navegación', () => {
     const aside = fixture.nativeElement.querySelector('aside[aria-label="Navegación principal"]');
     expect(aside).toBeTruthy();
@@ -77,7 +97,7 @@ describe('UsuarioDashboard Component', () => {
   });
 
   it('debe permitir cambiar la sección activa al interactuar con el dock', () => {
-    expect(component['seccionActiva']()).toBe('cartas');
+    expect(component['seccionActiva']()).toBeNull();
 
     component.seleccionarSeccion('album');
     fixture.detectChanges();

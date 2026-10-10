@@ -27,6 +27,7 @@ import urlPaqueteHuh from '../../SVGs/PaqueteHuh.svg';
 import urlCartaComun from '../../SVGs/CartaComunPlaceholder.svg';
 import urlCartaRara from '../../SVGs/CartaRaraPlaceholder.svg';
 import urlEpicarta from '../../SVGs/EpicartaPlaceholder.svg';
+import urlUnicarta from '../../SVGs/UnicartaPlaceholder.svg';
 
 export type FaseApertura = 'cerrado' | 'seleccion' | 'preview' | 'carrusel' | 'corte' | 'revelacion';
 
@@ -67,6 +68,16 @@ export class FlujoAperturaSobres {
   protected readonly urlPaquete2 = urlPaquete2;
   protected readonly urlPaqueteHuh = urlPaqueteHuh;
   protected readonly urlCartaComun = urlCartaComun;
+
+  /** Pool de ilustraciones para cartas que no traen `imagenUrl` desde el backend. */
+  private readonly poolImagenesCarta: readonly string[] = [
+    urlCartaComun,
+    urlCartaRara,
+    urlEpicarta,
+    urlUnicarta,
+  ];
+  /** Imagen asignada a cada carta del sobre actual (misma posición que `cartasObtenidas`). */
+  protected readonly imagenesCartas = signal<string[]>([]);
   protected readonly Math = Math;
 
   // Variables de control de arrastre
@@ -123,6 +134,8 @@ export class FlujoAperturaSobres {
         urlImagen: imagen,
         esDiario: false,
         disponible: true,
+        categoria: s.categoria ?? null,
+        marca: s.marca ?? null,
       });
     }
 
@@ -155,10 +168,13 @@ export class FlujoAperturaSobres {
   // Cálculo de transformación 3D para el carrusel infinito
   obtenerTransformSobre(rel: number): string {
     const absRel = Math.abs(rel);
-    const x = rel * (absRel > 1 ? 85 : 95);
+    // Desplazamiento expresado en "anchos de sobre" (continuo, sin salto en |rel| = 1).
+    // El ancho real lo define la variable CSS --ancho-sobre, que escala con el viewport.
+    const pasos = absRel <= 1 ? absRel * 0.46 : 0.46 + (absRel - 1) * 0.41;
+    const x = (Math.sign(rel) * pasos).toFixed(4);
     const scale = Math.max(0.55, 1.08 - absRel * 0.15);
     const rotY = rel * -16;
-    return `translateX(${x}px) scale(${scale}) rotateY(${rotY}deg)`;
+    return `translateX(calc(${x} * var(--ancho-sobre, 13rem))) scale(${scale}) rotateY(${rotY}deg)`;
   }
 
   obtenerOpacidadSobre(rel: number): number {
@@ -173,6 +189,22 @@ export class FlujoAperturaSobres {
     return Math.round(30 - Math.abs(rel) * 7);
   }
 
+  /** Texto de la preview que describe qué trae el sobre; se adapta al tipo (general, categoría o marca). */
+  descripcionSobre(sobre: SobreItemUI): string {
+    const n = sobre.cantidadCartas;
+    const cartas = n === 1 ? '1 carta aleatoria' : `${n} cartas aleatorias`;
+    const base = `Este sobre contiene ${cartas}`;
+
+    switch (sobre.tipo) {
+      case 'MARCA':
+        return sobre.marca ? `${base} de ${sobre.marca}` : base;
+      case 'CATEGORIA':
+        return sobre.categoria ? `${base} de la categoría ${sobre.categoria}` : base;
+      default:
+        return base;
+    }
+  }
+
   // Manejo de navegación entre fases
   iniciar(): void {
     this.fase.set('seleccion');
@@ -181,6 +213,7 @@ export class FlujoAperturaSobres {
     this.cortando.set(false);
     this.errorApertura.set(null);
     this.cartasObtenidas.set([]);
+    this.imagenesCartas.set([]);
     this.indiceCartaActual.set(0);
     this.indiceCarrusel.set(0);
     this.dragOffset.set(0);
@@ -349,7 +382,7 @@ export class FlujoAperturaSobres {
             ? resp.cartas
             : this.generarCartasRespaldo(sobre);
 
-        this.cartasObtenidas.set([...cartas]);
+        this.asignarCartas(cartas);
         this.indiceCartaActual.set(0);
         this.aperturaRealizada.emit({
           ...resp,
@@ -365,7 +398,7 @@ export class FlujoAperturaSobres {
         // En caso de que el backend falle o no tenga pool cargado, usamos respaldo
         this.cargandoApertura.set(false);
         const cartasFallback = this.generarCartasRespaldo(sobre);
-        this.cartasObtenidas.set([...cartasFallback]);
+        this.asignarCartas(cartasFallback);
         this.indiceCartaActual.set(0);
 
         const aperturaRespaldo: AperturaSobreRespuesta = {
@@ -430,10 +463,22 @@ export class FlujoAperturaSobres {
     this.cerrar.emit();
   }
 
-  obtenerImagenCarta(carta: CartaObtenidaRespuesta): string {
+  /** Guarda las cartas del sobre y sortea una vez la imagen de cada una (sin repetir dentro del sobre mientras alcance el pool). */
+  private asignarCartas(cartas: readonly CartaObtenidaRespuesta[]): void {
+    this.cartasObtenidas.set([...cartas]);
+
+    const mezcladas = [...this.poolImagenesCarta];
+    for (let i = mezcladas.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mezcladas[i], mezcladas[j]] = [mezcladas[j], mezcladas[i]];
+    }
+    this.imagenesCartas.set(cartas.map((_, i) => mezcladas[i % mezcladas.length]));
+  }
+
+  obtenerImagenCarta(carta: CartaObtenidaRespuesta, indice = 0): string {
     if (carta.imagenUrl && carta.imagenUrl.trim() !== '') {
       return carta.imagenUrl;
     }
-    return this.urlCartaComun;
+    return this.imagenesCartas()[indice] ?? this.urlCartaComun;
   }
 }

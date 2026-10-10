@@ -4,6 +4,7 @@ import { AuthService } from '../../servicios/auth.service';
 import { SobresService } from '../../servicios/sobres.service';
 import { BotonNavegacionCircular } from '../../compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
 import { FlujoAperturaSobres } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
+import { SobreMarca } from '../../compartidos/componentes/sobre-marca/sobre-marca';
 import { AperturaSobreRespuesta, SobreRespuesta } from '../../modelos/sobre.model';
 
 import urlLogo from '../../compartidos/SVGs/Imagotipo_claro.svg';
@@ -38,7 +39,7 @@ export interface SobreOpcion {
 @Component({
   selector: 'app-usuario-dashboard',
   standalone: true,
-  imports: [RouterLink, BotonNavegacionCircular, FlujoAperturaSobres],
+  imports: [RouterLink, BotonNavegacionCircular, FlujoAperturaSobres, SobreMarca],
   templateUrl: './usuario-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -91,7 +92,8 @@ export class UsuarioDashboard implements OnInit {
     },
   ];
 
-  protected readonly seccionActiva = signal<string>('cartas');
+  /** Ninguna sección está activa por defecto: el dashboard no es ninguno de los destinos del dock. */
+  protected readonly seccionActiva = signal<string | null>(null);
   protected readonly selectorSobresAbierto = signal<boolean>(false);
   protected readonly menuUsuarioAbierto = signal<boolean>(false);
   protected readonly terminoBusqueda = signal<string>('');
