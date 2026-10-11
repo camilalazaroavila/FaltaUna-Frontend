@@ -39,11 +39,30 @@
     animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Aviso suave de "recompensa lista para reclamar": un halo amarillo que late
+   sin mover el layout. Solo decorativo: la información real va en el texto. */
+@keyframes latidoReclamo {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--marca-acento) 55%, transparent);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px color-mix(in srgb, var(--marca-acento) 0%, transparent);
+    }
+}
+
+.animate-latido-reclamo {
+    animation: latidoReclamo 1.9s ease-out infinite;
+}
+
 /* Respeto por preferencias de movimiento reducido (A11y) */
 @media (prefers-reduced-motion: reduce) {
 
     .animate-fade-in,
-    .animate-slide-up {
+    .animate-slide-up,
+    .animate-latido-reclamo {
         animation: none;
         opacity: 1;
         transform: none;

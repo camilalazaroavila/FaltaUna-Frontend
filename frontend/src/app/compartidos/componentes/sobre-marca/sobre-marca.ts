@@ -21,7 +21,7 @@ export type VarianteSobreMarca = 'oscuro' | 'claro';
  * Anchos en rem, no alturas: el sobre es vertical (viewBox 208.67 x 340.93)
  * y la altura sale de la proporcion intrinseca del SVG, que nunca se deforma.
  */
-export type TamanioSobreMarca = 'sm' | 'md' | 'lg';
+export type TamanioSobreMarca = 'sm' | 'md' | 'lg' | 'xl';
 
 const CLASES_BASE = ['motion-reduce:transition-none motion-reduce:transform-none',].join(' ');
 
@@ -44,6 +44,8 @@ const CLASES_TAMANIO: Record<TamanioSobreMarca, string> = {
   sm: 'w-20',
   md: 'w-28',
   lg: 'w-44',
+  /** Tamaño fluido de la vista de Misiones: ancho por token que crece con el viewport. */
+  xl: 'w-misiones-sobre',
 };
 
 /** Ancho de crecimiento por breakpoint cuando `fluido` está activo. */

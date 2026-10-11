@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 import { toast } from 'ngx-sonner';
 
 import { AuthService } from '../../servicios/auth.service';
 import { MisionesService } from '../../servicios/mision.services';
+import { SobresService } from '../../servicios/sobres.service';
 import { Misiones } from './misiones';
 
 jest.mock('ngx-sonner', () => ({
@@ -21,6 +23,7 @@ describe('Misiones', () => {
       providers: [
         provideRouter([]),
         { provide: AuthService, useValue: { usuarioActual: () => null, logout: jest.fn() } },
+        { provide: SobresService, useValue: { obtenerSobres: jest.fn().mockReturnValue(of([])) } },
       ],
     }).compileComponents();
 
@@ -151,6 +154,26 @@ describe('Misiones', () => {
     fixture.detectChanges();
 
     expect(componente['pityFiltrado']().length).toBe(servicio.pity().length);
+  });
+
+  it('resume las completadas por periodicidad sin contar las no disponibles', () => {
+    expect(componente['resumenDe']('diaria')).toEqual({ completadas: 2, total: 3 });
+    expect(componente['resumenDe']('semanal')).toEqual({ completadas: 0, total: 1 });
+  });
+
+  it('el ícono de la badge "24 h" toma el token fluido de tamaño de badge', () => {
+    const badge = Array.from(
+      fixture.nativeElement.querySelectorAll('#panel-diaria span'),
+    ).find((span) =>
+      (span as HTMLElement).textContent?.includes('Se renueva cada 24 h'),
+    ) as HTMLElement | undefined;
+
+    expect(badge).toBeTruthy();
+    const icono = badge!.querySelector('ng-icon') as HTMLElement | null;
+    expect(icono).not.toBeNull();
+    expect(icono!.style.getPropertyValue('--ng-icon__size')).toBe(
+      'var(--misiones-medida-badge-icono)',
+    );
   });
 
   it('navega entre pestañas con las flechas', () => {

@@ -8,6 +8,7 @@ import {
   input,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -30,6 +31,20 @@ import urlEpicarta from '../../SVGs/EpicartaPlaceholder.svg';
 
 export type FaseApertura = 'cerrado' | 'seleccion' | 'preview' | 'carrusel' | 'corte' | 'revelacion';
 
+/**
+ * Descriptor del sobre con el que abrir el flujo directamente, sin pasar por la
+ * grilla de selección. Lo usan flujos externos (p. ej. el reclamo de una misión)
+ * para llevar al jugador a la animación de apertura de la recompensa.
+ *
+ * `etiqueta` se usa para emparejar un sobre del catálogo (categoría o marca);
+ * si no hay coincidencia, se cae al sobre genérico (diario), nunca "el primero
+ * que aparezca".
+ */
+export interface SobreInicialApertura {
+  readonly tipo: 'GENERAL' | 'CATEGORIA' | 'MARCA';
+  readonly etiqueta?: string;
+}
+
 @Component({
   selector: 'app-flujo-apertura-sobres',
   standalone: true,
@@ -45,6 +60,8 @@ export class FlujoAperturaSobres {
   readonly abierto = input<boolean>(false);
   readonly sobresCatalogo = input<readonly SobreRespuesta[]>([]);
   readonly sobresDiariosDisponibles = input<number>(2);
+  /** Sobre con el que abrir directamente (reclamo de misión). `null` = grilla normal. */
+  readonly sobreInicial = input<SobreInicialApertura | null>(null);
 
   // Outputs
   readonly cerrar = output<void>();
@@ -76,12 +93,43 @@ export class FlujoAperturaSobres {
   private arrastrandoCorte = false;
 
   constructor() {
-    // Al abrir el modal, reiniciar automáticamente a la fase de selección
+    // Al abrir el modal, reiniciar automáticamente a la fase de selección.
+    // Si llega un `sobreInicial` (reclamo de misión), saltamos la grilla y
+    // entramos directo a la vista previa de ese sobre.
     effect(() => {
-      if (this.abierto()) {
+      const abierto = this.abierto();
+      const inicial = this.sobreInicial();
+      if (!abierto) return;
+
+      untracked(() => {
         this.iniciar();
-      }
+        if (inicial) {
+          const sobre = this.resolverSobreInicial(inicial);
+          if (sobre) {
+            this.seleccionarSobre(sobre);
+          }
+        }
+      });
     });
+  }
+
+  /**
+   * Resuelve el sobre de apertura contra la lista UI. Empareja por tipo y
+   * etiqueta cuando se indica; si no hay coincidencia (o el catálogo todavía no
+   * cargó), devuelve el sobre genérico: el diario disponible.
+   */
+  private resolverSobreInicial(descriptor: SobreInicialApertura): SobreItemUI | null {
+    const items = this.listaSobresUI();
+    const buscado = descriptor.etiqueta?.trim().toUpperCase();
+
+    if (buscado) {
+      const porEtiqueta = items.find(
+        (item) => !item.esDiario && item.tipo === descriptor.tipo && item.etiqueta === buscado,
+      );
+      if (porEtiqueta) return porEtiqueta;
+    }
+
+    return items.find((item) => item.esDiario && item.disponible) ?? items.find((item) => item.esDiario) ?? null;
   }
 
   // Lista normalizada de sobres UI para mostrar en el grid

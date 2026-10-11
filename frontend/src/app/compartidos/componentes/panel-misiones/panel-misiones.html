@@ -1,6 +1,6 @@
 <nav
   aria-label="Secciones de Misiones"
-  class="flex flex-row items-center gap-3 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-2 shadow-alta md:sticky md:top-4 md:flex-col md:gap-2.5 md:p-2.5"
+  class="flex flex-row items-center gap-3 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-2 shadow-marca md:sticky md:top-4 md:flex-col md:gap-2.5 md:p-2.5"
 >
   @for (seccion of secciones; track seccion.id) {
     <div class="flex flex-col items-center gap-1">
@@ -12,11 +12,11 @@
         [attr.aria-pressed]="esActiva(seccion.id) ? 'true' : null"
         (click)="cambiar.emit(seccion.id)"
       >
-        <ng-icon [name]="seccion.icono" size="22" aria-hidden="true" />
+        <ng-icon [name]="seccion.icono" size="var(--misiones-medida-panel-icono)" class="shrink-0" aria-hidden="true" />
       </button>
       @if (!colapsado()) {
         <span
-          class="hidden text-[0.65rem] font-bold uppercase tracking-[0.06em] text-texto-secundario md:block"
+          class="hidden text-misiones-panel font-bold uppercase tracking-[0.06em] text-texto-secundario md:block"
         >
           {{ seccion.etiqueta }}
         </span>
@@ -26,15 +26,21 @@
 
   <button
     type="button"
-    class="ml-auto inline-flex size-9 cursor-pointer items-center justify-center rounded-circulo border border-borde-coleccion bg-transparent text-texto-secundario transition-colors hover:bg-white/6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco md:ml-0 md:mt-1 motion-reduce:transition-none"
+    class="group relative ml-auto inline-flex size-9 cursor-pointer items-center justify-center rounded-circulo border border-borde-coleccion bg-transparent text-texto-secundario transition-colors hover:bg-white/6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco md:ml-0 md:mt-1 motion-reduce:transition-none"
     [attr.aria-label]="colapsado() ? 'Expandir panel de secciones' : 'Colapsar panel de secciones'"
     [attr.aria-expanded]="!colapsado()"
     (click)="alternarColapso()"
   >
     <ng-icon
       [name]="colapsado() ? 'phosphorCaretRightFill' : 'phosphorCaretDownFill'"
-      size="18"
+      class="size-misiones-control-icono"
       aria-hidden="true"
     />
+    <span
+      role="tooltip"
+      class="pointer-events-none absolute top-1/2 right-full z-50 mr-2 -translate-y-1/2 rounded-md border border-borde-coleccion bg-fondo-hundido px-2 py-1 text-[0.7rem] font-bold whitespace-nowrap text-texto-primario opacity-0 shadow-alta transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none md:right-auto md:left-full md:mr-0 md:ml-2"
+    >
+      {{ colapsado() ? 'Expandir' : 'Colapsar' }}
+    </span>
   </button>
 </nav>

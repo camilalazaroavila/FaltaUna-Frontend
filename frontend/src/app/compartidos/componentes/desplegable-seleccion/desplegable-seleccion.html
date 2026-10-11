@@ -11,13 +11,13 @@
 >
   <span>
     @if (mostrarEtiqueta()) {
-      <span class="text-texto-apagado">{{ etiqueta() }}:&nbsp;</span>
+      <span class="text-texto-secundario">{{ etiqueta() }}:&nbsp;</span>
     }
     {{ etiquetaSeleccionada() }}
   </span>
   <ng-icon
     name="phosphorCaretDownFill"
-    class="size-3.5 transition-transform"
+    class="size-misiones-control-icono transition-transform"
     [class.rotate-180]="abierto()"
     aria-hidden="true"
   />
@@ -37,7 +37,7 @@
         role="option"
         [attr.aria-selected]="esSeleccionado(item)"
         [class]="
-          'cursor-pointer rounded-sm px-3 py-2 text-xs font-semibold transition-colors ' +
+          'cursor-pointer rounded-sm px-3 py-2 text-misiones-control font-semibold transition-colors ' +
           (i === indiceActivo() ? 'bg-white/10 ' : '') +
           (esSeleccionado(item) ? 'text-marca-coleccion' : 'text-texto-secundario')
         "
