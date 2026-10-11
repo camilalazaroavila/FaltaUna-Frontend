@@ -211,6 +211,24 @@
     --spacing-landing-avatar: var(--landing-medida-avatar);
     --spacing-landing-columna: var(--landing-espacio-columna);
 
+    /* Escala fluida de Misiones expuesta a las utilidades de Tailwind:
+       `--text-*` genera text-*, y `--spacing-*` genera w-/h-/size-/gap-*. */
+    --text-misiones-titulo: var(--misiones-tipografia-titulo);
+    --text-misiones-fila: var(--misiones-tipografia-fila);
+    --text-misiones-texto: var(--misiones-tipografia-texto);
+    --text-misiones-control: var(--misiones-tipografia-control);
+    --text-misiones-panel: var(--misiones-tipografia-panel);
+    --text-misiones-sobre-accion: var(--misiones-tipografia-sobre-accion);
+    --text-misiones-badge: var(--misiones-tipografia-badge);
+
+    --spacing-misiones-indicador: var(--misiones-medida-indicador);
+    --spacing-misiones-indicador-icono: var(--misiones-medida-indicador-icono);
+    --spacing-misiones-panel-boton: var(--misiones-medida-panel-boton);
+    --spacing-misiones-panel-icono: var(--misiones-medida-panel-icono);
+    --spacing-misiones-badge-icono: var(--misiones-medida-badge-icono);
+    --spacing-misiones-control-icono: var(--misiones-medida-control-icono);
+    --spacing-misiones-sobre: var(--misiones-medida-sobre);
+
     /* Fondo exterior de la app (namespace --background-image-* -> bg-*) */
     --background-image-landing-gradiente-amarillo-verde: var(--landing-gradiente-amarillo-verde);
     --background-image-usuario-gradiente-amarillo-verde: var(--usuario-gradiente-amarillo-verde);
@@ -229,4 +247,5 @@
     --shadow-media: var(--sombra-media);
     --shadow-alta: var(--sombra-alta);
     --shadow-brillo-verde: var(--sombra-brillo-verde);
+    --shadow-marca: var(--sombra-marca);
 }

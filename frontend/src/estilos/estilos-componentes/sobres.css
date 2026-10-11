@@ -37,4 +37,9 @@
        amarillo. Ignora la variante: siempre se ve igual. */
     --sobre-categoria-cuerpo: var(--color-amarillo-logo);
     --sobre-categoria-detalle: var(--color-carta-cuadrado);
+
+    /* Sombra de marca: reusa la tinta de la placa del sobre (`--sobre-sombra-placa`)
+       como sombra cartoon dura (offset sólido, sin difuminado) para tarjetas,
+       tabs, píldoras e indicadores. Es el mismo recurso visual del sello. */
+    --sombra-marca: 0.3rem 0.3rem 0 var(--sobre-sombra-placa);
 }

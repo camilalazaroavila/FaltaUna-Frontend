@@ -35,24 +35,48 @@ describe('TarjetaPity', () => {
     expect(el.textContent).toContain('Falta 1 sobre para la legendaria');
   });
 
-  it('nunca muestra faltantes negativos', () => {
+  it('muestra un mensaje acorde cuando ya no falta ningún sobre', () => {
     const el = montar(crearProgreso({ abiertos: 60, umbral: 50 }));
-    expect(el.textContent).toContain('Faltan 0 sobres para la legendaria');
+    expect(el.textContent).toContain('¡Legendaria asegurada!');
+    expect(el.textContent).not.toContain('Faltan 0');
   });
 
-  it('etiqueta el sobre según su tipo', () => {
+  it('nombra la legendaria de la marca cuando la fila ya está completa', () => {
+    const el = montar(
+      crearProgreso({
+        abiertos: 10,
+        umbral: 10,
+        sobre: { tipo: 'marca', nombre: 'Grido', logoUrl: null },
+      }),
+    );
+    expect(el.textContent).toContain('¡Legendaria de Grido asegurada!');
+  });
+
+  it('destaca las filas cercanas a la legendaria con "¡Casi!" y borde de acento', () => {
+    const cercana = montar(crearProgreso({ abiertos: 8, umbral: 10 }));
+    expect(cercana.textContent).toContain('¡Casi!');
+    expect(cercana.querySelector('article')!.className).toContain('border-atencion');
+  });
+
+  it('no destaca las filas lejanas a la legendaria', () => {
+    const lejana = montar(crearProgreso({ abiertos: 30, umbral: 50 }));
+    expect(lejana.textContent).not.toContain('¡Casi!');
+    expect(lejana.querySelector('article')!.className).not.toContain('border-atencion');
+  });
+
+  it('etiqueta el tipo de sobre sin repetir la palabra "sobres"', () => {
     const generico = montar(crearProgreso());
-    expect(generico.textContent).toContain('Sobres generales');
+    expect(generico.querySelector('p')?.textContent).toContain('Generales');
 
     const categoria = montar(
       crearProgreso({ id: 'cat', sobre: { tipo: 'categoria', categoria: 'musica' } }),
     );
-    expect(categoria.textContent).toContain('Sobres de Música');
+    expect(categoria.querySelector('p')?.textContent).toContain('Música');
 
     const marca = montar(
       crearProgreso({ id: 'marca', sobre: { tipo: 'marca', nombre: 'Grido', logoUrl: null } }),
     );
-    expect(marca.textContent).toContain('Sobres de Grido');
+    expect(marca.querySelector('p')?.textContent).toContain('Grido');
   });
 
   it('renderiza el sobre como elemento informativo, sin botón', () => {

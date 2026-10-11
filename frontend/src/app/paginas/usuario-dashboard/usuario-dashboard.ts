@@ -5,7 +5,7 @@ import { BotonNavegacionCircular } from '../../compartidos/componentes/boton-nav
 import { FlujoAperturaSobres } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
 import { Header } from '../../compartidos/componentes/header/header';
 import { SobreMarca } from '../../compartidos/componentes/sobre-marca/sobre-marca';
-import { AperturaSobreRespuesta, SobreRespuesta } from '../../modelos/sobre.model';
+import { SobreRespuesta } from '../../modelos/sobre.model';
 
 import urlSobreIzquierda from '../../compartidos/SVGs/PaqueteHuhDosColores.svg';
 import urlSobreCentro from '../../compartidos/SVGs/Paquete1.svg';
@@ -117,7 +117,7 @@ export class UsuarioDashboard implements OnInit {
     });
   }
 
-  alCompletarApertura(apertura: AperturaSobreRespuesta): void {
+  alCompletarApertura(): void {
     this.sobresDisponibles.update((s) => ({
       ...s,
       actuales: Math.max(0, s.actuales - 1),

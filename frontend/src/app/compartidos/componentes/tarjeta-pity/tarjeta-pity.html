@@ -1,15 +1,27 @@
 <article
-  class="flex flex-wrap items-center gap-4 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-3 sm:p-4"
+  class="flex flex-wrap items-center gap-4 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-3 shadow-marca transition-colors sm:p-4"
+  [class.border-atencion]="casi()"
 >
   <div class="min-w-0 flex-1">
-    <h3 class="font-titulo text-base tracking-[0.02em] text-texto-primario sm:text-lg">
-      {{ etiquetaSobre() }}
-    </h3>
+    <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+      <h3 class="font-titulo text-misiones-fila tracking-[0.02em] text-marca-acento">
+        {{ textoFaltantes() }}
+      </h3>
+      @if (casi()) {
+        <span
+          class="rounded-pildora border border-atencion-borde bg-atencion-fondo px-3 py-1 text-misiones-badge font-bold tracking-[0.06em] text-atencion-texto uppercase"
+        >
+          ¡Casi!
+        </span>
+      }
+    </div>
 
-    <p class="mt-1 text-sm font-bold text-marca-acento">{{ textoFaltantes() }}</p>
+    <p class="mt-0.5 font-interfaz text-misiones-texto text-texto-secundario">
+      {{ nombreSobre() }}
+    </p>
 
     <app-barra-progreso
-      class="mt-1.5 block"
+      class="mt-2 block w-full max-w-md"
       [actual]="progreso().abiertos"
       [objetivo]="progreso().umbral"
       variante="pity"
@@ -20,7 +32,7 @@
 
   <div class="shrink-0">
     <app-sobre-marca
-      tamanio="sm"
+      tamanio="md"
       [categoria]="categoria()"
       [nombre]="nombre()"
       [logoUrl]="logoUrl()"

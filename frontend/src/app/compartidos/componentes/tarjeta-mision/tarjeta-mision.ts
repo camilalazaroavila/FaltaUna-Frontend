@@ -4,16 +4,19 @@ import { NgIcon } from '@ng-icons/core';
 import { BarraProgreso } from '../barra-progreso/barra-progreso';
 import { SobreMarca } from '../sobre-marca/sobre-marca';
 import { ETIQUETAS_CATEGORIA } from '../../../modelos/categoria.model';
-import { ETIQUETAS_PERIODICIDAD, type Mision } from '../../../modelos/misiones.model';
+import type { Mision } from '../../../modelos/misiones.model';
 
 /**
  * Fila de una misión: estado, título, barra de progreso y recompensa.
  *
- * Tres estados visuales bien diferenciados:
- * - `en_curso`: indicador neutro (contorno crema), sobre no clickeable.
- * - `completada`: indicador de atención (amarillo) + sobre clickeable, que
- *   habilita el efecto holográfico de `app-sobre-marca` y el reclamo.
- * - `reclamada`: círculo verde con check, sobre no clickeable.
+ * Cuatro estados visuales, cada uno con un indicador que se entiende sin
+ * depender solo del color (ícono + texto accesible):
+ * - `en_curso`: contorno neutro con reloj de arena (estático, nunca animado).
+ * - `completada`: indicador de atención (amarillo) con ícono de regalo; el
+ *   sobre es clickeable, habilita el holográfico de `app-sobre-marca` y se
+ *   destaca con un halo animado que respeta `prefers-reduced-motion`.
+ * - `reclamada`: círculo verde con check.
+ * - no disponible (`disponible: false`): candado y tarjeta atenuada.
  *
  * El sobre usa el modo `clickeable` de `app-sobre-marca` (con su hover y
  * holográfico) en lugar de envolverlo en un botón propio.
@@ -30,13 +33,6 @@ export class TarjetaMision {
 
   readonly reclamar = output<number>();
 
-  protected readonly etiquetaPeriodicidad = computed(
-    () => ETIQUETAS_PERIODICIDAD[this.mision().periodicidad],
-  );
-
-  /** Las misiones diarias muestran "Se renueva cada 24 h" en vez de "Diaria". */
-  protected readonly esDiaria = computed(() => this.mision().periodicidad === 'diaria');
-
   protected readonly disponible = computed(() => this.mision().disponible);
 
   protected readonly reclamada = computed(() => this.mision().estado === 'reclamada');
@@ -49,10 +45,28 @@ export class TarjetaMision {
   /** Ni reclamada ni lista: sigue en curso (o aún no disponible). */
   protected readonly enCurso = computed(() => !this.reclamada() && !this.listaParaReclamar());
 
+  /** Texto visible que acompaña al título, según el estado. */
   protected readonly textoEstado = computed(() => {
+    if (!this.disponible()) return 'Próximamente';
+    if (this.reclamada()) return 'Reclamada';
+    if (this.listaParaReclamar()) return '¡Reclamá tu sobre!';
+    return 'En curso';
+  });
+
+  /** Descripción accesible del indicador circular (nunca depende solo del color). */
+  protected readonly textoIndicador = computed(() => {
+    if (!this.disponible()) return 'Misión no disponible todavía';
     if (this.reclamada()) return 'Recompensa reclamada';
     if (this.listaParaReclamar()) return 'Recompensa lista para reclamar';
-    return 'Recompensa pendiente';
+    return 'Misión en curso';
+  });
+
+  /** Ícono del indicador de estado: se entiende sin leer el color. */
+  protected readonly iconoEstado = computed(() => {
+    if (!this.disponible()) return 'phosphorLockFill';
+    if (this.reclamada()) return 'phosphorCheckCircleFill';
+    if (this.listaParaReclamar()) return 'phosphorGiftFill';
+    return 'phosphorRadioButtonFill';
   });
 
   protected readonly recompensa = computed(() => this.mision().recompensa);

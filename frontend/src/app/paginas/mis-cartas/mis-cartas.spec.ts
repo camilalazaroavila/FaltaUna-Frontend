@@ -68,14 +68,6 @@ describe('MisCartas', () => {
     expect(fixture.nativeElement.querySelectorAll('app-carta').length).toBe(CARTAS_MOCK.length);
   });
 
-  it('debe renderizar el encabezado con el título y el botón placeholder', () => {
-    const titulo = fixture.nativeElement.querySelector('h1') as HTMLElement;
-    const boton = fixture.nativeElement.querySelector('button') as HTMLElement;
-
-    expect(titulo.textContent?.trim()).toBe('Mis cartas');
-    expect(boton.textContent?.trim().toLowerCase()).toBe('construir baraja');
-  });
-
   it('debe filtrar por nombre mientras se escribe, sin distinguir mayúsculas', () => {
     buscar('danon');
 

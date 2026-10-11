@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
 
 import { DesplegableSeleccion, type OpcionDesplegable } from '../../compartidos/componentes/desplegable-seleccion/desplegable-seleccion';
+import { FlujoAperturaSobres, type SobreInicialApertura } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
 import { PanelMisiones, type SeccionMisiones } from '../../compartidos/componentes/panel-misiones/panel-misiones';
+import { Header } from '../../compartidos/componentes/header/header';
 import { TarjetaMision } from '../../compartidos/componentes/tarjeta-mision/tarjeta-mision';
 import { TarjetaPity } from '../../compartidos/componentes/tarjeta-pity/tarjeta-pity';
 import { CATEGORIAS_SOBRE, ETIQUETAS_CATEGORIA } from '../../modelos/categoria.model';
@@ -15,11 +18,13 @@ import {
   type Mision,
   type Periodicidad,
   type ProgresoPity,
+  type SobreReferencia,
 } from '../../modelos/misiones.model';
-import { AuthService } from '../../servicios/auth.service';
-import { MisionesService } from '../../servicios/mision.services';
+import type { SobreRespuesta } from '../../modelos/sobre.model';
 
-import urlLogo from '../../compartidos/SVGs/Imagotipo_claro.svg';
+import { MisionesService } from '../../servicios/mision.services';
+import { SobresService } from '../../servicios/sobres.service';
+
 
 type CriterioOrdenPity = 'cercania' | 'nombre';
 
@@ -30,24 +35,22 @@ type CriterioOrdenPity = 'cercania' | 'nombre';
  */
 @Component({
   selector: 'app-misiones',
-  imports: [RouterLink, DesplegableSeleccion, PanelMisiones, TarjetaMision, TarjetaPity],
+  imports: [NgIcon, DesplegableSeleccion, PanelMisiones, TarjetaMision, TarjetaPity, Header, FlujoAperturaSobres],
   templateUrl: './misiones.html',
   styleUrl: './misiones.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Misiones {
+export class Misiones implements OnInit {
   private readonly servicio = inject(MisionesService);
-  readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+  private readonly sobresService = inject(SobresService);
 
-  protected readonly urlLogo = urlLogo;
+  private readonly router = inject(Router);
 
   protected readonly periodicidades = PERIODICIDADES;
   protected readonly etiquetasPeriodicidad = ETIQUETAS_PERIODICIDAD;
 
   protected readonly seccionActiva = signal<SeccionMisiones>('misiones');
   protected readonly periodicidadActiva = signal<Periodicidad>('diaria');
-  protected readonly menuUsuarioAbierto = signal(false);
 
   protected readonly categoriaPity = signal<string | null>(null);
   protected readonly marcaPity = signal<string | null>(null);
@@ -61,8 +64,40 @@ export class Misiones {
     { valor: 'nombre', etiqueta: 'Nombre (A-Z)' },
   ];
 
+  /** Catálogo de sobres del backend para el modal de apertura (puede quedar vacío). */
+  protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
+  protected readonly modalAperturaAbierto = signal(false);
+  /** Sobre con el que abrir el modal tras reclamar (lo resuelve el modal contra el catálogo). */
+  protected readonly sobreReclamado = signal<SobreInicialApertura | null>(null);
+
+  ngOnInit(): void {
+    this.cargarSobres();
+  }
+
+  private cargarSobres(): void {
+    this.sobresService.obtenerSobres().subscribe({
+      next: (sobres) => this.sobresCatalogo.set(sobres),
+      error: () => {
+        // Si el backend no responde, el modal cae al sobre genérico.
+      },
+    });
+  }
+
   protected misionesDe(periodicidad: Periodicidad): readonly Mision[] {
     return this.servicio.misionesDe(periodicidad);
+  }
+
+  /**
+   * Resumen "N de M completadas" por pestaña. Cuenta como completada toda
+   * misión en estado `completada` o `reclamada`; las misiones no disponibles
+   * ("Próximamente") no suman ni al numerador ni al total.
+   */
+  protected resumenDe(periodicidad: Periodicidad): { completadas: number; total: number } {
+    const disponibles = this.misionesDe(periodicidad).filter((mision) => mision.disponible);
+    const completadas = disponibles.filter(
+      (mision) => mision.estado === 'completada' || mision.estado === 'reclamada',
+    ).length;
+    return { completadas, total: disponibles.length };
   }
 
   /** Todas las categorías del catálogo (no solo las que tienen fila en el PT). */
@@ -118,19 +153,9 @@ export class Misiones {
 
   protected cambiarSeccion(seccion: SeccionMisiones): void {
     this.seccionActiva.set(seccion);
-    this.cerrarMenuUsuario();
-  }
-
-  protected toggleMenuUsuario(): void {
-    this.menuUsuarioAbierto.update((abierto) => !abierto);
-  }
-
-  protected cerrarMenuUsuario(): void {
-    this.menuUsuarioAbierto.set(false);
   }
 
   protected cerrarSesion(): void {
-    this.authService.logout();
     this.router.navigate(['/login']);
   }
 
@@ -160,15 +185,44 @@ export class Misiones {
     this.reclamando.set(id);
 
     this.servicio.reclamar(id).subscribe({
-      next: () => {
+      next: (mision) => {
         this.reclamando.set(null);
         toast.success('¡Recompensa reclamada! Ya está en tu colección.');
+        this.abrirAperturaDeMision(mision);
       },
       error: (error: Error) => {
         this.reclamando.set(null);
         toast.error(error.message ?? 'No pudimos reclamar la recompensa.');
       },
     });
+  }
+
+  /**
+   * Abre el modal de apertura sobre la recompensa reclamada. `iniciar()` del
+   * modal no toca el backend: solo la animación de corte dispara la apertura.
+   * Si el jugador cierra el modal sin cortar, la misión ya quedó reclamada y el
+   * sobre se pierde (comportamiento aceptado con datos de prueba).
+   */
+  private abrirAperturaDeMision(mision: Mision): void {
+    this.sobreReclamado.set(this.descriptorApertura(mision.recompensa));
+    this.modalAperturaAbierto.set(true);
+  }
+
+  protected cerrarAperturaSobres(): void {
+    this.modalAperturaAbierto.set(false);
+  }
+
+  /** Traduce la recompensa de una misión al descriptor que consume el modal. */
+  private descriptorApertura(recompensa: SobreReferencia | null): SobreInicialApertura | null {
+    if (!recompensa) return null;
+    switch (recompensa.tipo) {
+      case 'categoria':
+        return { tipo: 'CATEGORIA', etiqueta: ETIQUETAS_CATEGORIA[recompensa.categoria] };
+      case 'marca':
+        return { tipo: 'MARCA', etiqueta: recompensa.nombre };
+      default:
+        return { tipo: 'GENERAL' };
+    }
   }
 
   /** Navegación con flechas entre pestañas (patrón tablist). */
