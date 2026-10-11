@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Índice de la galería de componentes.
  *
  * Es la única fuente de verdad del menu de navegacion superior: el shell lo
@@ -62,5 +62,10 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     id: 'sobre-marca',
     titulo: 'app-sobre-marca',
     descripcion: 'Sobre con logo de marca: variantes, tamanos, proporciones y fallback.',
+  },
+  {
+    id: 'carta',
+    titulo: 'app-carta',
+    descripcion: 'Carta coleccionable con rareza, atributos, categoria, imagen y estado obtenida/no obtenida.',
   },
 ] as const;

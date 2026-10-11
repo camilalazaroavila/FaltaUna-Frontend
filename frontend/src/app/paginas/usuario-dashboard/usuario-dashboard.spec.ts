@@ -1,22 +1,28 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
+import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { UsuarioDashboard } from './usuario-dashboard';
 import { AuthService } from '../../servicios/auth.service';
+import { SobresService } from '../../servicios/sobres.service';
 import { Usuario } from '../../modelos/usuario.model';
+import { AperturaSobreRespuesta } from '../../modelos/sobre.model';
 
 describe('UsuarioDashboard Component', () => {
   let component: UsuarioDashboard;
   let fixture: ComponentFixture<UsuarioDashboard>;
   let mockAuthService: Partial<AuthService>;
+  let mockSobresService: Partial<SobresService>;
 
   const usuarioPrueba: Usuario = {
     id: 1,
     nombreUsuario: 'testuser',
-    nombreCompleto: 'Test User',
     email: 'test@example.com',
     rol: 'Usuario',
+    fechaRegistro: '2026-01-01',
+    oro: 100,
+    monedasIntercambio: 50,
   };
 
   beforeEach(async () => {
@@ -25,11 +31,16 @@ describe('UsuarioDashboard Component', () => {
       logout: jest.fn(),
     };
 
+    mockSobresService = {
+      obtenerSobres: jest.fn().mockReturnValue(of([])),
+    };
+
     await TestBed.configureTestingModule({
       imports: [UsuarioDashboard],
       providers: [
         provideRouter([]),
         { provide: AuthService, useValue: mockAuthService },
+        { provide: SobresService, useValue: mockSobresService },
       ],
     }).compileComponents();
 
@@ -76,7 +87,7 @@ describe('UsuarioDashboard Component', () => {
 
   it('debe mostrar el contador de sobres diarios disponibles', () => {
     const textoContador = fixture.nativeElement.textContent;
-    expect(textoContador).toContain('2/2 GRÁTIS');
+    expect(textoContador).toContain('2/2 GRATIS');
   });
 
   it('debe abrir el panel selector de sobres al presionar VER SOBRES', () => {
@@ -92,9 +103,9 @@ describe('UsuarioDashboard Component', () => {
 
     expect(component['selectorSobresAbierto']()).toBe(true);
 
-    const drawer = fixture.nativeElement.querySelector('div[role="dialog"]');
-    expect(drawer).toBeTruthy();
-    expect(drawer.textContent).toContain('Tus Sobres');
+    const flujoEl = fixture.nativeElement.querySelector('app-flujo-apertura-sobres');
+    expect(flujoEl).toBeTruthy();
+    expect(flujoEl.textContent).toContain('Elegí tu sobre');
   });
 
   it('debe cerrar el panel selector de sobres al invocar cerrarSelectorSobres', () => {
@@ -107,11 +118,17 @@ describe('UsuarioDashboard Component', () => {
     expect(component['selectorSobresAbierto']()).toBe(false);
   });
 
-  it('debe descontar sobres disponibles al abrir un sobre gratuito', () => {
-    const sobreDiario = component['opcionesSobres'][0];
+  it('debe descontar sobres disponibles al completar una apertura', () => {
     expect(component['sobresDisponibles']().actuales).toBe(2);
 
-    component.abrirSobre(sobreDiario);
+    const mockApertura: AperturaSobreRespuesta = {
+      id: 1,
+      sobreId: 1,
+      fecha: '2026-10-08T00:00:00Z',
+      cartas: [],
+    };
+
+    component.alCompletarApertura(mockApertura);
     expect(component['sobresDisponibles']().actuales).toBe(1);
   });
 

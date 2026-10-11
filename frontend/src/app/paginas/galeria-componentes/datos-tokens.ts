@@ -47,10 +47,14 @@ export const PALETA_SEMANTICA: readonly MuestraColor[] = [
   color('--borde-default', 'border-borde-default', 'Separadores'),
   color('--borde-fuerte', 'border-borde-fuerte', 'Bordes con presencia'),
   color('--borde-foco', 'outline-borde-foco', 'Anillo de foco'),
+  color('--auth-imagen-texto', 'text-auth-imagen-texto', 'Texto sobre el panel de imagen (login/register)'),
+  color('--auth-imagen-overlay', 'bg-auth-imagen-overlay', 'Degradado sobre el panel de imagen (login/register)'),
+  color('--auth-imagen-fondo', 'bg-auth-imagen-fondo', 'Fondo de respaldo del carrusel de auth'),
+  color('--header-auth-fondo', 'bg-header-auth-fondo', 'Header de las pantallas de auth (login/register)'),
 ] as const;
 
 /**
- * Los seis tokens del sobre de cartas, que consume `app-sobre-marca`.
+ * Los tokens del sobre de cartas, que consume `app-sobre-marca`.
  *
  * No van en `PALETA_SEMANTICA` porque no son superficies de la app: el sobre es
  * un elemento de marca, con su propio juego de color por variante. La seccion
@@ -59,11 +63,12 @@ export const PALETA_SEMANTICA: readonly MuestraColor[] = [
  */
 export const COLORES_SOBRE_MARCA: readonly MuestraColor[] = [
   color('--sobre-cuerpo-oscuro', 'bg-sobre-cuerpo-oscuro', 'Sobre oscuro: frente verde'),
-  color('--sobre-detalle-oscuro', 'bg-sobre-detalle-oscuro', 'Sobre oscuro: grafotipo y anillo'),
-  color('--sobre-sello-oscuro', 'bg-sobre-sello-oscuro', 'Sobre oscuro: placa del logo'),
+  color('--sobre-detalle-oscuro', 'bg-sobre-detalle-oscuro', 'Sobre oscuro: grafotipo'),
   color('--sobre-cuerpo-claro', 'bg-sobre-cuerpo-claro', 'Sobre claro: frente crema'),
-  color('--sobre-detalle-claro', 'bg-sobre-detalle-claro', 'Sobre claro: grafotipo y anillo'),
-  color('--sobre-sello-claro', 'bg-sobre-sello-claro', 'Sobre claro: placa del logo'),
+  color('--sobre-detalle-claro', 'bg-sobre-detalle-claro', 'Sobre claro: grafotipo'),
+  color('--sobre-sombra-placa', 'bg-sobre-sombra-placa', 'Placa de marca: sombra cartoon'),
+  color('--sobre-categoria-cuerpo', 'bg-sobre-categoria-cuerpo', 'Sobre de categoría: frente amarillo'),
+  color('--sobre-categoria-detalle', 'bg-sobre-categoria-detalle', 'Sobre de categoría: icono y nombre'),
 ] as const;
 
 export interface VarianteFeedback {

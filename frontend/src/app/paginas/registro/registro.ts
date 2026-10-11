@@ -1,20 +1,41 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NgxSonnerToaster } from 'ngx-sonner';
 import { Subject, of, debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil } from 'rxjs';
 import { AuthService } from '../../servicios/auth.service';
-import { CrearUsuarioSolicitud, ROLES_REGISTRABLES, Rol } from '../../modelos/usuario.model';
+import { CrearUsuarioSolicitud } from '../../modelos/usuario.model';
+import { AuthLayout } from '../../compartidos/componentes/auth-layout/auth-layout';
+import { injectModoAuth } from '../../compartidos/componentes/auth-layout/auth-modo';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [FormsModule, RouterLink, NgxSonnerToaster],
-  templateUrl: './registro.html'
+  imports: [FormsModule, RouterLink, NgxSonnerToaster, AuthLayout],
+  templateUrl: './registro.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Registro implements OnInit, OnDestroy {
+  protected readonly modo = injectModoAuth();
 
-  roles = ROLES_REGISTRABLES;
+  /** Rol real según el modo: no hay selector de roles, el modo decide la cuenta. */
+  protected readonly rol = computed<CrearUsuarioSolicitud['rol']>(() =>
+    this.modo() === 'empresa' ? 'Empresa' : 'Usuario',
+  );
+
+  protected readonly encabezado = computed(() =>
+    this.modo() === 'empresa'
+      ? {
+          eyebrow: 'Sumá tu marca',
+          titulo: 'Creá tu cuenta de empresa',
+          descripcion: 'Publicá tus colecciones y conseguí la publicidad que buscas.',
+        }
+      : {
+          eyebrow: 'Empezá ahora',
+          titulo: 'Traé tu colección a la realidad',
+          descripcion: 'Canjeá tus colecciones por productos reales.',
+        },
+  );
 
   nuevoUsuario: CrearUsuarioSolicitud = {
     nombreUsuario: '',
@@ -33,11 +54,21 @@ export class Registro implements OnInit, OnDestroy {
   private nombreUsuario$ = new Subject<string>();
   private email$ = new Subject<string>();
   private destruido$ = new Subject<void>();
+  private ultimoModo: string | null = null;
 
   constructor(
     private authService: AuthService,
     private router: Router
-  ) { }
+  ) {
+    // El toggle cambia el modo sin recargar: se conservan los datos, menos la contraseña.
+    effect(() => {
+      const modo = this.modo();
+      if (this.ultimoModo !== null && this.ultimoModo !== modo) {
+        this.nuevoUsuario.password = '';
+      }
+      this.ultimoModo = modo;
+    });
+  }
 
   ngOnInit(): void {
     this.nombreUsuario$.pipe(
@@ -86,10 +117,6 @@ export class Registro implements OnInit, OnDestroy {
     this.destruido$.complete();
   }
 
-  seleccionarRol(rol: Rol): void {
-    this.nuevoUsuario.rol = rol;
-  }
-
   onNombreUsuarioChange(valor: string): void {
     this.nombreUsuarioDisponible.set(null);
     this.nombreUsuario$.next(valor);
@@ -134,12 +161,13 @@ export class Registro implements OnInit, OnDestroy {
 
     this.error = null;
     this.cargando.set(true);
+    this.nuevoUsuario.rol = this.rol();
 
     this.authService.registrar(this.nuevoUsuario).subscribe({
       next: () => {
         this.cargando.set(false);
-        // Se registró, pero todavía no tiene sesión: lo mandamos a loguearse.
-        this.router.navigate(['/login'], { queryParams: { registrado: '1' } });
+        // Se registró, pero todavía no tiene sesión: lo mandamos a loguearse conservando el modo.
+        this.router.navigate(['/login'], { queryParams: { registrado: '1', modo: this.modo() } });
       },
       error: (error) => {
         this.cargando.set(false);

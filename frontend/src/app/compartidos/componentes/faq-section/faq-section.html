@@ -1,0 +1,33 @@
+<section
+  class="relative overflow-hidden bg-landing-oscuro-fondo py-5 text-landing-oscuro-texto md:py-10 lg:py-16"
+  aria-labelledby="faq-empresa-titulo">
+  <div class="contenedor-landing relative">
+    <div class="relative z-10">
+      <h2
+        id="faq-empresa-titulo"
+        class="text-center font-titulo text-2xl text-landing-acento md:text-3xl lg:text-4xl"
+      >
+        Preguntas frecuentes
+      </h2>
+
+      <div class="mt-4 grid w-full grid-cols-2 items-start gap-2 md:gap-3 lg:mt-8 lg:gap-4">
+        @for (item of preguntas(); track item.pregunta; let indice = $index) {
+          <app-faq-item
+            [pregunta]="item.pregunta"
+            [respuesta]="item.respuesta"
+            [abierto]="preguntaAbierta() === indice"
+            (alternar)="alternar(indice)"/>
+        }
+      </div>
+    </div>
+
+    <div
+      class="pointer-events-none absolute -bottom-8 -right-8 z-0 flex"
+      aria-hidden="true"
+    >
+      <img [src]="urlCartaIzquierda" alt="" class="w-20 rotate-12 md:w-32 lg:w-44" />
+      <img [src]="urlCartaCentro" alt="" class="-ml-8 w-24 -rotate-3 md:w-36 lg:w-52" />
+      <img [src]="urlCartaDerecha" alt="" class="-ml-8 w-20 -rotate-[18deg] md:w-32 lg:w-44" />
+    </div>
+  </div>
+</section>

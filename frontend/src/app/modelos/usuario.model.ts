@@ -1,12 +1,5 @@
 export type Rol = 'Usuario' | 'Empleado' | 'Empresa' | 'Admin';
 
-/** Roles que se pueden elegir al registrarse. Admin nunca se ofrece acá. */
-export const ROLES_REGISTRABLES: { valor: Rol; etiqueta: string }[] = [
-  { valor: 'Usuario', etiqueta: 'Usuario' },
-  { valor: 'Empleado', etiqueta: 'Empleado' },
-  { valor: 'Empresa', etiqueta: 'Empresa' }
-];
-
 export interface Usuario {
   id: number;
   nombreUsuario: string;

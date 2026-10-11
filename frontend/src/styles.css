@@ -44,6 +44,9 @@
     --color-teal-borde: #184A50;
     /* Bordes sutiles sobre teal */
     --color-teal-hundido: #072326;
+
+
+
     /* Inputs inactivos, huecos, placeholders */
 
     --color-verde-jugador: #3BD972;
@@ -87,6 +90,9 @@
     --color-violeta-activo: #433552;
     --color-violeta-suave: rgba(103, 86, 121, 0.12);
 
+    /* Fondo del header en pantallas de auth modo empresa (marrón cálido) */
+    --color-marron-empresa: #413333;
+
     --color-crema-fondo: #FCEFE0;
     /* Fondo crema cálido y acogedor */
     --color-crema-superficie: #FFFFFF;
@@ -100,6 +106,9 @@
 
     --color-teal-profundo: #0A2E36;
     /* Texto primario en empresa y contraste AAA */
+
+    --color-azul-empresa: #1A3A5D;
+    /* Azul corporativo de la landing empresarial (etiquetas de planes) */
 
     /* --- Sobres de cartas (Paquete1 / Paquete2) --- */
     --color-sobre-verde: #709176;
@@ -127,6 +136,14 @@
     --radio-lg: 1.25rem;
     --radio-pildora: 9999px;
     --radio-circulo: 50%;
+
+    --sobre-holo-a: hsl(2 100% 73%);
+    --sobre-holo-b: hsl(53 100% 69%);
+    --sobre-holo-c: hsl(93 100% 69%);
+    --sobre-holo-d: hsl(176 100% 76%);
+    --sobre-holo-e: hsl(228 100% 74%);
+    --sobre-reflejo: hsl(0 0% 100% / 0.55);
+    --sobre-brillo-intensidad: 0.5;
 }
 
 /* ==========================================================================
@@ -162,6 +179,17 @@
     --borde-foco: var(--color-amarillo-acento);
     /* Foco visible con máximo contraste sobre teal */
     --overlay: rgba(7, 35, 38, 0.82);
+
+    /* --- Auth: panel de imagen (login / register) ---
+       El panel lateral cubre la foto con un degradado del modo para que el
+       texto (o el fallback) se lea sobre la imagen sin depender de la foto. */
+    --auth-imagen-texto: var(--texto-sobre-oscuro);
+    --auth-imagen-overlay: linear-gradient(165deg,
+            color-mix(in srgb, var(--color-teal-profundo) 85%, transparent) 0%,
+            color-mix(in srgb, var(--color-teal-profundo) 40%, transparent) 58%,
+            transparent 100%);
+    --auth-imagen-fondo: var(--fondo-superficie);
+    --header-auth-fondo: var(--color-teal-base);
 
     /* --- Sombras (Modo Jugador / Oscuro Deportivo) --- */
     --sombra-baja: 0 2px 8px rgba(0, 0, 0, 0.22);
@@ -243,7 +271,7 @@
     --estado-neutro-fondo: rgba(244, 250, 246, 0.08);
     --estado-neutro-texto: var(--texto-secundario);
 
-/* --- Cartas de Colección y Jugadores --- */
+    /* --- Cartas de Colección y Jugadores --- */
     --carta-reverso: var(--color-teal-elevado);
     --carta-desconocida: var(--color-amarillo-acento);
     --carta-bloqueada: rgba(244, 250, 246, 0.22);
@@ -379,6 +407,21 @@
     --borde-foco: var(--color-violeta-empresa);
     --overlay: rgba(10, 46, 54, 0.58);
 
+    /* --- Auth: panel de imagen (login / register) ---
+       Misma API que en modo jugador; el degradado toma la identidad violeta
+       corporativa y el texto sigue siendo claro para convivir con la foto. */
+    --auth-imagen-texto: var(--texto-sobre-oscuro);
+    --auth-imagen-overlay: linear-gradient(165deg,
+            color-mix(in srgb, var(--color-violeta-empresa) 85%, transparent) 0%,
+            color-mix(in srgb, var(--color-violeta-empresa) 40%, transparent) 58%,
+            transparent 100%);
+    --auth-imagen-fondo: var(--fondo-superficie);
+    /* Fondo de login/register en auth-empresa: crema arriba, violeta abajo */
+    --auth-fondo-gradiente: linear-gradient(180deg,
+            var(--color-crema-fondo) 0%,
+            var(--color-violeta-empresa) 100%);
+    --header-auth-fondo: var(--color-violeta-empresa);
+
     /* --- Sombras Adaptadas (Modo Empresa / Fondo Claro Suave) --- */
     --sombra-baja: 0 2px 8px rgba(10, 46, 54, 0.08);
     --sombra-media: 0 8px 20px rgba(10, 46, 54, 0.14);
@@ -457,21 +500,28 @@
    Por eso viven en `:root` y no en los bloques de tema, igual que los tokens
    de la landing.
 
-   Cada variante define cuerpo, detalle (las letras) y sello:
-     oscuro → cuerpo verde de cancha, detalle crema, placa blanca en el centro.
-     claro  → cuerpo crema, detalle tinta, placa blanca en el centro.
-   La placa del sello es blanca en las dos variantes a propósito: es el neutro
-   que mejor tolera los logos reales, que llegan en JPG sin canal alfa y se
-   funden con cualquier fondo de color.
+   Cada variante define cuerpo y detalle (las letras):
+     oscuro → cuerpo verde de cancha, detalle crema.
+     claro  → cuerpo crema, detalle tinta.
+   El sobre de categoría ignora la variante: siempre cuerpo amarillo del
+   imagotipo con detalle verde oscuro. La placa del logo de marca dejó de ser
+   un rectángulo blanco: es una silueta cartoon que se recorta a la proporción
+   real del logo, con sombra sólida `--sobre-sombra-placa`.
    ========================================================================== */
 :root {
     --sobre-cuerpo-oscuro: var(--color-sobre-verde);
     --sobre-detalle-oscuro: var(--color-amarillo-logo);
-    --sobre-sello-oscuro: var(--blanco-puro);
 
     --sobre-cuerpo-claro: var(--color-amarillo-logo);
     --sobre-detalle-claro: var(--color-sobre-tinta);
-    --sobre-sello-claro: var(--blanco-puro);
+
+    /* Placa de marca: sombra cartoon desplazada sobre el cuerpo del sobre. */
+    --sobre-sombra-placa: var(--color-sobre-tinta);
+
+    /* Sobres de categoría: cuerpo amarillo + detalle verde oscuro. El verde
+       es `--color-carta-cuadrado`, que da contraste AA/AAA sobre el amarillo. */
+    --sobre-categoria-cuerpo: var(--color-amarillo-logo);
+    --sobre-categoria-detalle: var(--color-carta-cuadrado);
 }
 
 /* ==========================================================================
@@ -489,17 +539,13 @@
     --landing-oscuro-borde: var(--color-teal-borde);
     /* Borde de controles (FAQ) sobre bloque oscuro: crema atenuada */
     --landing-oscuro-borde-control: color-mix(in srgb, var(--color-crema-borde) 65%, transparent);
-    --landing-gradiente-amarillo-verde: linear-gradient(
-        to bottom,
-        var(--color-amarillo-logo) 0%,
-        var(--color-teal-profundo) 100%
-    );
-    --usuario-gradiente-amarillo-verde: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-amarillo-logo) 30%, transparent) 0%,
-    color-mix(in srgb, var(--color-amarillo-logo) 15%, transparent) 12%,
-    transparent 50%
-);
+    --landing-gradiente-amarillo-verde: linear-gradient(to bottom,
+            var(--color-amarillo-logo) 0%,
+            var(--color-teal-profundo) 100%);
+    --usuario-gradiente-amarillo-verde: linear-gradient(to bottom,
+            color-mix(in srgb, var(--color-amarillo-logo) 30%, transparent) 0%,
+            color-mix(in srgb, var(--color-amarillo-logo) 15%, transparent) 12%,
+            transparent 50%);
 
     /* Bloques claros (crema editorial) */
     --landing-claro-fondo: var(--color-crema-fondo);
@@ -567,6 +613,15 @@
     --color-hundido: var(--fondo-hundido);
     --color-borde-fuerte: var(--borde-fuerte);
     --color-borde-foco: var(--borde-foco);
+
+    /* Auth (login / register): panel de imagen lateral. El degradado va en el
+       namespace `background-image` para que `bg-auth-imagen-overlay` genere
+       `background-image` y no `background-color` (no es un color plano). */
+    --color-auth-imagen-texto: var(--auth-imagen-texto);
+    --color-auth-imagen-fondo: var(--auth-imagen-fondo);
+    --background-image-auth-imagen-overlay: var(--auth-imagen-overlay);
+    --color-header-auth-fondo: var(--header-auth-fondo);
+    --background-image-auth-fondo-gradiente: var(--auth-fondo-gradiente);
 
     --color-texto-primario: var(--texto-primario);
     --color-texto-secundario: var(--texto-secundario);
@@ -636,16 +691,17 @@
     --color-marca-coleccion-sobre: var(--marca-coleccion-sobre);
     --color-marca-coleccion-fondo: var(--marca-coleccion-fondo);
 
-    /* Sobres de cartas: el componente los baja por cascada a tres variables
+    /* Sobres de cartas: el componente los baja por cascada a dos variables
        locales y de ahi los pinta con `fill`, asi que no usa utilidades. El
        mapeo existe para que queden disponibles en la capa 3 (`bg-sobre-*`,
        `fill-sobre-*`) y para que la galeria pueda enumerarlos. */
     --color-sobre-cuerpo-oscuro: var(--sobre-cuerpo-oscuro);
     --color-sobre-detalle-oscuro: var(--sobre-detalle-oscuro);
-    --color-sobre-sello-oscuro: var(--sobre-sello-oscuro);
     --color-sobre-cuerpo-claro: var(--sobre-cuerpo-claro);
     --color-sobre-detalle-claro: var(--sobre-detalle-claro);
-    --color-sobre-sello-claro: var(--sobre-sello-claro);
+    --color-sobre-sombra-placa: var(--sobre-sombra-placa);
+    --color-sobre-categoria-cuerpo: var(--sobre-categoria-cuerpo);
+    --color-sobre-categoria-detalle: var(--sobre-categoria-detalle);
 
     /* Botones: expuestos al mapeo de Tailwind para que los componentes usen
        utilidades bg-, text- y border- en lugar de CSS puro.

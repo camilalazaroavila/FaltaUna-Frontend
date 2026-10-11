@@ -1,0 +1,24 @@
+<section
+  class="faq-seccion-empresa"
+  aria-labelledby="faq-empresa-titulo"
+>
+  <div class="contenedor-landing">
+    <h2
+      id="faq-empresa-titulo"
+      class="faq-seccion-empresa__titulo"
+    >
+      Preguntas frecuentes
+    </h2>
+
+    <div class="faq-seccion-empresa__grilla">
+      @for (item of preguntas(); track item.pregunta; let indice = $index) {
+        <app-faq-item-empresa
+          [pregunta]="item.pregunta"
+          [respuesta]="item.respuesta"
+          [abierto]="preguntaAbierta() === indice"
+          (alternar)="alternar(indice)"
+        />
+      }
+    </div>
+  </div>
+</section>

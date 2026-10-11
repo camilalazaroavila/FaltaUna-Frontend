@@ -1,0 +1,55 @@
+<section
+  class="bg-landing-claro-fondo py-5 text-landing-claro-texto md:py-10 lg:py-16"
+  aria-labelledby="equipo-titulo"
+>
+  <div class="contenedor-landing">
+    <h2
+      id="equipo-titulo"
+      class="font-titulo text-3xl leading-[0.9] md:text-4xl lg:text-5xl"
+    >
+      ¿Quiénes somos?
+    </h2>
+
+    <div class="mt-4 flex items-start gap-4 md:mt-8 md:items-stretch md:gap-8 lg:gap-12">
+      <div
+        class="grid w-[45%] min-w-0 grid-cols-4 gap-x-1.5 gap-y-3 md:gap-x-2 md:gap-y-4 lg:w-1/2 lg:gap-x-3 lg:gap-y-6"
+      >
+        @for (integrante of integrantes(); track integrante.nombre) {
+          <div class="flex min-w-0 flex-col items-center gap-1 text-center">
+            @if (integrante.avatarUrl) {
+              <img
+                [src]="integrante.avatarUrl"
+                [alt]="integrante.nombre"
+                class="size-8 rounded-circulo border-2 border-landing-claro-texto object-cover md:size-14 lg:size-landing-avatar"
+              />
+            } @else {
+              <span
+                class="grid size-8 place-items-center rounded-circulo border-2 border-landing-claro-texto bg-landing-panel font-interfaz text-[10px] font-bold md:size-14 md:text-base lg:size-landing-avatar lg:text-lg"
+              >
+                {{ iniciales(integrante.nombre) }}
+              </span>
+            }
+            <span class="w-full whitespace-nowrap text-[9px] leading-none md:text-xs lg:text-sm">
+              {{ integrante.nombre }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <div
+        class="w-[45%] rounded-[2rem_1rem_2.5rem_1.25rem] bg-fondo-elevado p-3 text-[11px] leading-snug md:w-1/2 md:p-6 md:text-base lg:p-8 lg:text-landing-equipo"
+      >
+        <p>
+          Somos un grupo de desarrolladores apasionados por el coleccionismo, con
+          una idea clara: crear una experiencia que vaya más allá de coleccionar,
+          divertirse y jugar.
+        </p>
+        <p class="mt-2 md:mt-3">
+          Queremos conectar empresas y usuarios en un espacio donde todos ganen,
+          ofreciendo beneficios reales, recompensas y un progreso que se sienta en
+          cada colección.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,43 @@
+<div class="relative flex min-h-dvh flex-col bg-landing-gradiente-amarillo-verde">
+  <!-- Gradiente de auth-empresa: se cruza con el de landing vía opacidad -->
+  <div
+    class="pointer-events-none absolute inset-0 bg-auth-fondo-gradiente transition-opacity duration-300 motion-reduce:transition-none"
+    [class.opacity-0]="modo() !== 'empresa'"
+    aria-hidden="true"
+  ></div>
+
+  <app-header [enAuth]="true" class="relative" [attr.data-modo-auth]="modo()" />
+
+  <div
+    class="relative grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+    [attr.data-modo-auth]="modo()"
+  >
+    <main class="flex items-center justify-center px-6 py-2 sm:px-8 [@media(min-height:1000px)]:py-6 lg:px-10">
+      <div class="w-full max-w-xl rounded-lg bg-superficie p-6 shadow-alta [@media(min-height:1000px)]:sm:p-8">
+        <app-auth-modo-toggle class="mb-4 block [@media(min-height:1000px)]:mb-6" [modo]="modo()" />
+        <ng-content />
+      </div>
+    </main>
+
+    <aside class="hidden min-h-0 p-4 pt-0 lg:block xl:p-5 xl:pt-0">
+      <figure class="relative h-full overflow-hidden rounded-lg bg-auth-imagen-fondo shadow-alta">
+        <img
+          [src]="imagen()"
+          alt=""
+          (load)="marcarCargada()"
+          (error)="marcarError()"
+          [class.opacity-0]="!imagenCargada()"
+          class="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 motion-reduce:transition-none"
+        />
+
+        @if (imagenCargada()) {
+          <div class="absolute inset-0 bg-auth-imagen-overlay" aria-hidden="true"></div>
+          <figcaption class="absolute inset-x-8 bottom-8 text-auth-imagen-texto">
+            <h2 class="text-3xl xl:text-4xl">{{ texto().titulo }}</h2>
+            <p class="mt-2 max-w-sm text-base leading-relaxed">{{ texto().subtitulo }}</p>
+          </figcaption>
+        }
+      </figure>
+    </aside>
+  </div>
+</div>
