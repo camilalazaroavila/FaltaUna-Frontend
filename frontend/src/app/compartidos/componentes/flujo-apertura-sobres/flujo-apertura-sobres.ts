@@ -85,6 +85,9 @@ export class FlujoAperturaSobres {
   private dragInicioX = 0;
   private corteInicioX = 0;
   private arrastrandoCorte = false;
+  private readonly escena = viewChild<ElementRef<HTMLElement>>('escena');
+  /** Evita que el click residual posterior a un arrastre elija un sobre. */
+  private ignorarClic = false;
 
   constructor() {
     // Al abrir el modal, reiniciar automáticamente a la fase de selección
@@ -148,7 +151,7 @@ export class FlujoAperturaSobres {
     if (!sel) return [];
 
     // Centro continuo considerando el arrastre en píxeles
-    const center = this.indiceCarrusel() - this.dragOffset() / 150;
+    const center = this.indiceCarrusel() - this.dragOffset() / this.pxPorSobre();
 
     return [0, 1, 2, 3, 4, 5, 6, 7].map((k) => {
       let rel = (k - center) % 8;
@@ -246,7 +249,7 @@ export class FlujoAperturaSobres {
   // Manejador explícito de clic sobre un sobre (robusto en desktop y mobile)
   alHacerClicSobre(rel: number, event?: Event): void {
     event?.stopPropagation();
-    if (this.enArrastre) return;
+    if (this.enArrastre || this.ignorarClic) return;
     this.elegirSobreDelCarrusel(rel);
   }
 
@@ -292,7 +295,7 @@ export class FlujoAperturaSobres {
       this.enArrastre = true;
       try {
         (event.currentTarget as HTMLElement)?.setPointerCapture?.(event.pointerId);
-      } catch {}
+      } catch { }
       this.dragOffset.set(delta);
     }
   }
@@ -301,24 +304,32 @@ export class FlujoAperturaSobres {
     if (!this.punteroPresionado) return;
     this.punteroPresionado = false;
 
-    if (this.enArrastre) {
-      try {
-        (event.currentTarget as HTMLElement)?.releasePointerCapture?.(event.pointerId);
-      } catch {}
+    if (!this.enArrastre) return;
 
-      const delta = event.clientX - this.dragInicioX;
-      if (delta > 30) {
-        this.cambiarSobreCarrusel(-1);
-      } else if (delta < -30) {
-        this.cambiarSobreCarrusel(1);
-      }
+    try {
+      (event.currentTarget as HTMLElement)?.releasePointerCapture?.(event.pointerId);
+    } catch { }
+
+    const delta = event.clientX - this.dragInicioX;
+    const indice = this.indiceCarrusel();
+
+    // Sobre más cercano al centro en el momento de soltar
+    let destino = Math.round(indice - delta / this.pxPorSobre());
+
+    // Un deslizamiento corto pero intencional (flick) avanza al menos un sobre
+    if (destino === indice && Math.abs(delta) > 30) {
+      destino = indice + (delta < 0 ? 1 : -1);
     }
 
-    // Pequeño retardo para no procesar clicks residuales tras arrastre
-    setTimeout(() => {
-      this.enArrastre = false;
-      this.dragOffset.set(0);
-    }, 50);
+    // Todo en el mismo tick y con transiciones activas: el carrusel se acomoda
+    // suavemente desde donde lo soltaste hasta el sobre elegido.
+    this.enArrastre = false;
+    this.dragOffset.set(0);
+    this.indiceCarrusel.set(destino);
+
+    // Descarta el click que algunos navegadores disparan tras soltar
+    this.ignorarClic = true;
+    setTimeout(() => (this.ignorarClic = false), 50);
   }
 
   onPointerCancelCarrusel(): void {
@@ -333,7 +344,7 @@ export class FlujoAperturaSobres {
     this.arrastrandoCorte = true;
     try {
       (event.currentTarget as HTMLElement)?.setPointerCapture?.(event.pointerId);
-    } catch {}
+    } catch { }
   }
 
   onPointerMoveCorte(event: PointerEvent): void {
@@ -480,5 +491,12 @@ export class FlujoAperturaSobres {
       return carta.imagenUrl;
     }
     return this.imagenesCartas()[indice] ?? this.urlCartaComun;
+  }
+
+  /** Píxeles de arrastre que equivalen a desplazar un sobre (según el tamaño real en pantalla). */
+  private pxPorSobre(): number {
+    const sobre = this.escena()?.nativeElement.firstElementChild?.firstElementChild as HTMLElement | null;
+    const ancho = sobre?.offsetWidth ?? 0;
+    return ancho > 0 ? ancho * 0.43 : 150;
   }
 }
