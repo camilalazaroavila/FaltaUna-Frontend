@@ -6,10 +6,10 @@ import { toast } from 'ngx-sonner';
 import { AlbumBorrador } from '../../servicios/album-borrador.service';
 import { AlbumesService } from '../../servicios/albumes.service';
 import { SuscripcionEstado } from '../../servicios/suscripcion-estado.service';
-import { CATEGORIAS_MARCA, REDES_SOCIALES } from '../../modelos/album.model';
+import { CATEGORIAS_RESPALDO, CategoriaApi, REDES_SOCIALES } from '../../modelos/album.model';
 import { Boton } from '../../compartidos/componentes/boton/boton';
 import { CalendarioMensual } from '../../compartidos/componentes/calendario-mensual/calendario-mensual';
-import { CampoSelect } from '../../compartidos/componentes/campo-select/campo-select';
+import { CampoSelect, OpcionSelect } from '../../compartidos/componentes/campo-select/campo-select';
 import { CampoTexto } from '../../compartidos/componentes/campo-texto/campo-texto';
 import { EncabezadoPaso } from '../../compartidos/componentes/encabezado-paso/encabezado-paso';
 import { EtiquetaCampo } from '../../compartidos/componentes/etiqueta-campo/etiqueta-campo';
@@ -37,17 +37,27 @@ export class EmpresaAlbumIdentidad {
   private readonly router = inject(Router);
 
   protected readonly redes = REDES_SOCIALES;
-  protected readonly categorias = CATEGORIAS_MARCA;
+  protected readonly categorias = signal<OpcionSelect[]>([]);
   protected readonly hoy = aIso(new Date());
 
   protected readonly intentado = signal(false);
   protected readonly enviando = signal(false);
 
   constructor() {
+    this.albumes.obtenerCategorias().subscribe({
+      next: (lista) => this.mostrarCategorias(lista),
+      // Backend sin el endpoint de categorías: se usa la lista de respaldo.
+      error: () => this.mostrarCategorias(CATEGORIAS_RESPALDO),
+    });
+
     // Si recargó la página se pierden los archivos del paso 3: volver a empezar ahí.
     if (!this.borrador.marcaCompleta()) {
       this.router.navigate(['/empresa/album/crear/marca']);
     }
+  }
+
+  private mostrarCategorias(lista: CategoriaApi[]): void {
+    this.categorias.set(lista.map((c) => ({ valor: String(c.id), etiqueta: c.nombre })));
   }
 
   protected errores(): Errores {
@@ -94,19 +104,37 @@ export class EmpresaAlbumIdentidad {
         redSocial: b.redSocial(),
         usuarioRedSocial: b.usuarioRedSocial().trim(),
         emailContacto: b.emailContacto().trim(),
-        categoria: b.categoria(),
+        categoriaId: Number(b.categoria()),
         fechaInicio: b.fechaInicio(),
         fechaFin: b.fechaFin(),
       })
       .subscribe({
         next: () => {
           b.limpiar();
+          // El pago quedó consumido (un pago = un álbum): se descarta para no volver a usarlo.
+          this.estado.ultimoPago.set(null);
           this.router.navigate(['/empresa/album/crear/listo']);
         },
         error: (err) => {
           this.enviando.set(false);
-          toast.error(err?.error?.message || 'No se pudo crear el álbum. Intentá de nuevo.');
+          toast.error(this.motivoDelError(err));
         },
       });
+  }
+
+  /**
+   * Arma el mensaje a partir de lo que devuelve el backend:
+   *  - errores de negocio: `{ mensaje }` (ManejadorErroresMiddleware)
+   *  - errores de validación del modelo (400): `{ errors: { Campo: ["texto"] } }`
+   */
+  private motivoDelError(err: unknown): string {
+    const cuerpo = (err as { error?: { mensaje?: string; message?: string; errors?: Record<string, string[]> } })?.error;
+    if (cuerpo?.mensaje) return cuerpo.mensaje;
+    if (cuerpo?.message) return cuerpo.message;
+    if (cuerpo?.errors) {
+      const textos = Object.values(cuerpo.errors).flat();
+      if (textos.length > 0) return textos.slice(0, 3).join(' ');
+    }
+    return 'No se pudo crear el álbum. Intentá de nuevo.';
   }
 }
