@@ -56,6 +56,15 @@ export const routes: Routes = [
   },
 
   {
+    path: 'usuario/misiones',
+    title: 'Misiones · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/misiones/misiones').then((m) => m.Misiones),
+  },
+
+  {
     path: 'empleado',
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Empleado'] },

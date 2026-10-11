@@ -49,6 +49,7 @@
 @import "./estilos/estilos-componentes/botones.css";
 @import "./estilos/estilos-componentes/cartas.css";
 @import "./estilos/estilos-componentes/sobres.css";
+@import "./estilos/estilos-componentes/barra-progreso.css";
 @import "./estilos/estilos-paginas/landing.css";
 @import "./estilos/estilos-paginas/layout.css";
 @import "./estilos/estilos-tailwind/tema.css";

@@ -68,12 +68,17 @@ describe('UsuarioDashboard Component', () => {
     expect(botonAvatar).toBeTruthy();
   });
 
-  it('debe renderizar el dock lateral con los 5 destinos de navegación', () => {
+  it('debe renderizar el dock lateral con los 6 destinos de navegación', () => {
     const aside = fixture.nativeElement.querySelector('aside[aria-label="Navegación principal"]');
     expect(aside).toBeTruthy();
 
     const botonesNav = aside.querySelectorAll('app-boton-navegacion-circular');
-    expect(botonesNav.length).toBe(5);
+    expect(botonesNav.length).toBe(6);
+
+    const botonMisiones = Array.from(botonesNav).find(
+      (b) => b.querySelector('button')?.getAttribute('aria-label') === 'Misiones',
+    );
+    expect(botonMisiones).toBeTruthy();
   });
 
   it('debe permitir cambiar la sección activa al interactuar con el dock', () => {

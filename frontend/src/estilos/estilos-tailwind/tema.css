@@ -128,6 +128,15 @@
     --color-sobre-categoria-cuerpo: var(--sobre-categoria-cuerpo);
     --color-sobre-categoria-detalle: var(--sobre-categoria-detalle);
 
+    /* Barras de progreso (misiones y PT System): el componente usa utilidades
+       `bg-barra-*`, `border-barra-*` y `text-barra-texto` en lugar de CSS puro. */
+    --color-barra-mision-relleno: var(--barra-mision-relleno);
+    --color-barra-pity-relleno: var(--barra-pity-relleno);
+    --color-barra-fondo: var(--barra-fondo);
+    --color-barra-borde: var(--barra-borde);
+    --color-barra-sombra: var(--barra-sombra);
+    --color-barra-texto: var(--barra-texto);
+
     /* Botones: expuestos al mapeo de Tailwind para que los componentes usen
        utilidades bg-, text- y border- en lugar de CSS puro.
        Cada familia cubre base, hover y estado activo. */
