@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
 import { AlbumBorrador } from '../../servicios/album-borrador.service';
-import { CARTAS_POR_ALBUM, MAX_KB_IMAGEN } from '../../modelos/album.model';
+import { CARTAS_POR_ALBUM, MAX_KB_IMAGEN, MINIMO_IMAGENES } from '../../modelos/album.model';
 import { Boton } from '../../compartidos/componentes/boton/boton';
 import { CampoTexto } from '../../compartidos/componentes/campo-texto/campo-texto';
 import { EncabezadoPaso } from '../../compartidos/componentes/encabezado-paso/encabezado-paso';
@@ -25,6 +25,7 @@ export class EmpresaAlbumMarca {
   private readonly router = inject(Router);
 
   protected readonly cantidad = CARTAS_POR_ALBUM;
+  protected readonly minimo = MINIMO_IMAGENES;
   protected readonly maxKb = MAX_KB_IMAGEN;
   protected readonly intentado = signal(false);
 
@@ -57,9 +58,9 @@ export class EmpresaAlbumMarca {
       toast.error('Subí el logo de tu marca.');
       return;
     }
-    if (this.borrador.cantidadImagenes() < this.cantidad) {
+    if (this.borrador.cantidadImagenes() < this.minimo) {
       toast.error(
-        `Subí las ${this.cantidad} imágenes de tu álbum (${this.borrador.cantidadImagenes()}/${this.cantidad}).`,
+        `Subí al menos ${this.minimo} imágenes para tu álbum (podés subir hasta ${this.cantidad}).`,
       );
       return;
     }

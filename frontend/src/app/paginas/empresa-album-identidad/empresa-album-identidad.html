@@ -55,7 +55,7 @@
         [requerido]="true"
         ayuda="Nos ayuda a mostrar tu álbum a quienes les interesa."
         placeholder="Elegí una categoría"
-        [opciones]="categorias"
+        [opciones]="categorias()"
         [error]="errores().categoria ?? null"
         [ngModel]="borrador.categoria()"
         (ngModelChange)="borrador.categoria.set($event)"
