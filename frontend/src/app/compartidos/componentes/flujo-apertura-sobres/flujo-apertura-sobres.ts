@@ -28,6 +28,7 @@ import urlPaqueteHuh from '../../SVGs/PaqueteHuh.svg';
 import urlCartaComun from '../../SVGs/CartaComunPlaceholder.svg';
 import urlCartaRara from '../../SVGs/CartaRaraPlaceholder.svg';
 import urlEpicarta from '../../SVGs/EpicartaPlaceholder.svg';
+import urlUnicarta from '../../SVGs/UnicartaPlaceholder.svg';
 
 export type FaseApertura = 'cerrado' | 'seleccion' | 'preview' | 'carrusel' | 'corte' | 'revelacion';
 
@@ -84,6 +85,16 @@ export class FlujoAperturaSobres {
   protected readonly urlPaquete2 = urlPaquete2;
   protected readonly urlPaqueteHuh = urlPaqueteHuh;
   protected readonly urlCartaComun = urlCartaComun;
+
+  /** Pool de ilustraciones para cartas que no traen `imagenUrl` desde el backend. */
+  private readonly poolImagenesCarta: readonly string[] = [
+    urlCartaComun,
+    urlCartaRara,
+    urlEpicarta,
+    urlUnicarta,
+  ];
+  /** Imagen asignada a cada carta del sobre actual (misma posición que `cartasObtenidas`). */
+  protected readonly imagenesCartas = signal<string[]>([]);
   protected readonly Math = Math;
 
   // Variables de control de arrastre
@@ -91,6 +102,9 @@ export class FlujoAperturaSobres {
   private dragInicioX = 0;
   private corteInicioX = 0;
   private arrastrandoCorte = false;
+  private readonly escena = viewChild<ElementRef<HTMLElement>>('escena');
+  /** Evita que el click residual posterior a un arrastre elija un sobre. */
+  private ignorarClic = false;
 
   constructor() {
     // Al abrir el modal, reiniciar automáticamente a la fase de selección.
@@ -171,6 +185,8 @@ export class FlujoAperturaSobres {
         urlImagen: imagen,
         esDiario: false,
         disponible: true,
+        categoria: s.categoria ?? null,
+        marca: s.marca ?? null,
       });
     }
 
@@ -183,7 +199,7 @@ export class FlujoAperturaSobres {
     if (!sel) return [];
 
     // Centro continuo considerando el arrastre en píxeles
-    const center = this.indiceCarrusel() - this.dragOffset() / 150;
+    const center = this.indiceCarrusel() - this.dragOffset() / this.pxPorSobre();
 
     return [0, 1, 2, 3, 4, 5, 6, 7].map((k) => {
       let rel = (k - center) % 8;
@@ -203,10 +219,13 @@ export class FlujoAperturaSobres {
   // Cálculo de transformación 3D para el carrusel infinito
   obtenerTransformSobre(rel: number): string {
     const absRel = Math.abs(rel);
-    const x = rel * (absRel > 1 ? 85 : 95);
+    // Desplazamiento expresado en "anchos de sobre" (continuo, sin salto en |rel| = 1).
+    // El ancho real lo define la variable CSS --ancho-sobre, que escala con el viewport.
+    const pasos = absRel <= 1 ? absRel * 0.46 : 0.46 + (absRel - 1) * 0.41;
+    const x = (Math.sign(rel) * pasos).toFixed(4);
     const scale = Math.max(0.55, 1.08 - absRel * 0.15);
     const rotY = rel * -16;
-    return `translateX(${x}px) scale(${scale}) rotateY(${rotY}deg)`;
+    return `translateX(calc(${x} * var(--ancho-sobre, 13rem))) scale(${scale}) rotateY(${rotY}deg)`;
   }
 
   obtenerOpacidadSobre(rel: number): number {
@@ -221,6 +240,22 @@ export class FlujoAperturaSobres {
     return Math.round(30 - Math.abs(rel) * 7);
   }
 
+  /** Texto de la preview que describe qué trae el sobre; se adapta al tipo (general, categoría o marca). */
+  descripcionSobre(sobre: SobreItemUI): string {
+    const n = sobre.cantidadCartas;
+    const cartas = n === 1 ? '1 carta aleatoria' : `${n} cartas aleatorias`;
+    const base = `Este sobre contiene ${cartas}`;
+
+    switch (sobre.tipo) {
+      case 'MARCA':
+        return sobre.marca ? `${base} de ${sobre.marca}` : base;
+      case 'CATEGORIA':
+        return sobre.categoria ? `${base} de la categoría ${sobre.categoria}` : base;
+      default:
+        return base;
+    }
+  }
+
   // Manejo de navegación entre fases
   iniciar(): void {
     this.fase.set('seleccion');
@@ -229,6 +264,7 @@ export class FlujoAperturaSobres {
     this.cortando.set(false);
     this.errorApertura.set(null);
     this.cartasObtenidas.set([]);
+    this.imagenesCartas.set([]);
     this.indiceCartaActual.set(0);
     this.indiceCarrusel.set(0);
     this.dragOffset.set(0);
@@ -261,7 +297,7 @@ export class FlujoAperturaSobres {
   // Manejador explícito de clic sobre un sobre (robusto en desktop y mobile)
   alHacerClicSobre(rel: number, event?: Event): void {
     event?.stopPropagation();
-    if (this.enArrastre) return;
+    if (this.enArrastre || this.ignorarClic) return;
     this.elegirSobreDelCarrusel(rel);
   }
 
@@ -307,7 +343,7 @@ export class FlujoAperturaSobres {
       this.enArrastre = true;
       try {
         (event.currentTarget as HTMLElement)?.setPointerCapture?.(event.pointerId);
-      } catch {}
+      } catch { }
       this.dragOffset.set(delta);
     }
   }
@@ -316,24 +352,32 @@ export class FlujoAperturaSobres {
     if (!this.punteroPresionado) return;
     this.punteroPresionado = false;
 
-    if (this.enArrastre) {
-      try {
-        (event.currentTarget as HTMLElement)?.releasePointerCapture?.(event.pointerId);
-      } catch {}
+    if (!this.enArrastre) return;
 
-      const delta = event.clientX - this.dragInicioX;
-      if (delta > 30) {
-        this.cambiarSobreCarrusel(-1);
-      } else if (delta < -30) {
-        this.cambiarSobreCarrusel(1);
-      }
+    try {
+      (event.currentTarget as HTMLElement)?.releasePointerCapture?.(event.pointerId);
+    } catch { }
+
+    const delta = event.clientX - this.dragInicioX;
+    const indice = this.indiceCarrusel();
+
+    // Sobre más cercano al centro en el momento de soltar
+    let destino = Math.round(indice - delta / this.pxPorSobre());
+
+    // Un deslizamiento corto pero intencional (flick) avanza al menos un sobre
+    if (destino === indice && Math.abs(delta) > 30) {
+      destino = indice + (delta < 0 ? 1 : -1);
     }
 
-    // Pequeño retardo para no procesar clicks residuales tras arrastre
-    setTimeout(() => {
-      this.enArrastre = false;
-      this.dragOffset.set(0);
-    }, 50);
+    // Todo en el mismo tick y con transiciones activas: el carrusel se acomoda
+    // suavemente desde donde lo soltaste hasta el sobre elegido.
+    this.enArrastre = false;
+    this.dragOffset.set(0);
+    this.indiceCarrusel.set(destino);
+
+    // Descarta el click que algunos navegadores disparan tras soltar
+    this.ignorarClic = true;
+    setTimeout(() => (this.ignorarClic = false), 50);
   }
 
   onPointerCancelCarrusel(): void {
@@ -348,7 +392,7 @@ export class FlujoAperturaSobres {
     this.arrastrandoCorte = true;
     try {
       (event.currentTarget as HTMLElement)?.setPointerCapture?.(event.pointerId);
-    } catch {}
+    } catch { }
   }
 
   onPointerMoveCorte(event: PointerEvent): void {
@@ -397,7 +441,7 @@ export class FlujoAperturaSobres {
             ? resp.cartas
             : this.generarCartasRespaldo(sobre);
 
-        this.cartasObtenidas.set([...cartas]);
+        this.asignarCartas(cartas);
         this.indiceCartaActual.set(0);
         this.aperturaRealizada.emit({
           ...resp,
@@ -413,7 +457,7 @@ export class FlujoAperturaSobres {
         // En caso de que el backend falle o no tenga pool cargado, usamos respaldo
         this.cargandoApertura.set(false);
         const cartasFallback = this.generarCartasRespaldo(sobre);
-        this.cartasObtenidas.set([...cartasFallback]);
+        this.asignarCartas(cartasFallback);
         this.indiceCartaActual.set(0);
 
         const aperturaRespaldo: AperturaSobreRespuesta = {
@@ -478,10 +522,29 @@ export class FlujoAperturaSobres {
     this.cerrar.emit();
   }
 
-  obtenerImagenCarta(carta: CartaObtenidaRespuesta): string {
+  /** Guarda las cartas del sobre y sortea una vez la imagen de cada una (sin repetir dentro del sobre mientras alcance el pool). */
+  private asignarCartas(cartas: readonly CartaObtenidaRespuesta[]): void {
+    this.cartasObtenidas.set([...cartas]);
+
+    const mezcladas = [...this.poolImagenesCarta];
+    for (let i = mezcladas.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mezcladas[i], mezcladas[j]] = [mezcladas[j], mezcladas[i]];
+    }
+    this.imagenesCartas.set(cartas.map((_, i) => mezcladas[i % mezcladas.length]));
+  }
+
+  obtenerImagenCarta(carta: CartaObtenidaRespuesta, indice = 0): string {
     if (carta.imagenUrl && carta.imagenUrl.trim() !== '') {
       return carta.imagenUrl;
     }
-    return this.urlCartaComun;
+    return this.imagenesCartas()[indice] ?? this.urlCartaComun;
+  }
+
+  /** Píxeles de arrastre que equivalen a desplazar un sobre (según el tamaño real en pantalla). */
+  private pxPorSobre(): number {
+    const sobre = this.escena()?.nativeElement.firstElementChild?.firstElementChild as HTMLElement | null;
+    const ancho = sobre?.offsetWidth ?? 0;
+    return ancho > 0 ? ancho * 0.43 : 150;
   }
 }

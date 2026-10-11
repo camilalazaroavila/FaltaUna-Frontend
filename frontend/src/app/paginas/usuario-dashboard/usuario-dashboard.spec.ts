@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
@@ -53,41 +53,84 @@ describe('UsuarioDashboard Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('debe renderizar el logo, buscador y avatar en el encabezado', () => {
-    const encabezado = fixture.nativeElement.querySelector('header');
+  it('debe renderizar el header compartido con logo y avatar, sin buscador', () => {
+    const header = fixture.nativeElement.querySelector('app-header');
+    expect(header).toBeTruthy();
+
+    const encabezado = header.querySelector('header');
     expect(encabezado).toBeTruthy();
 
     const logo = encabezado.querySelector('img[alt="Falta Una"]');
     expect(logo).toBeTruthy();
 
-    const buscador = encabezado.querySelector('input[type="search"]');
-    expect(buscador).toBeTruthy();
-    expect(buscador.getAttribute('placeholder')).toBe('Buscá tu campaña preferida...');
+    expect(encabezado.querySelector('input[type="search"]')).toBeFalsy();
 
     const botonAvatar = encabezado.querySelector('button[aria-label="Menú de perfil"]');
     expect(botonAvatar).toBeTruthy();
   });
 
-  it('debe renderizar el dock lateral con los 6 destinos de navegación', () => {
+  it('debe mostrar 3 sobres en el abanico: general, categoría gastronomía y marca Lego', () => {
+    const sobres: HTMLElement[] = Array.from(
+      fixture.nativeElement.querySelectorAll('app-sobre-marca button')
+    );
+    const etiquetas = sobres.map((s) => s.getAttribute('aria-label'));
+
+    expect(sobres.length).toBe(3);
+    expect(etiquetas).toEqual(
+      expect.arrayContaining(['Sobre de Falta Una', 'Sobre de Gastronomía', 'Sobre de Lego'])
+    );
+  });
+
+  it('debe abrir el selector al hacer clic en un sobre del abanico', () => {
+    const sobre = fixture.nativeElement.querySelector('app-sobre-marca button') as HTMLButtonElement;
+    sobre.click();
+    fixture.detectChanges();
+
+    expect(component['selectorSobresAbierto']()).toBe(true);
+  });
+
+  it('debe renderizar el dock de navegación con los 6 destinos', () => {
     const aside = fixture.nativeElement.querySelector('aside[aria-label="Navegación principal"]');
     expect(aside).toBeTruthy();
 
     const botonesNav = aside.querySelectorAll('app-boton-navegacion-circular');
     expect(botonesNav.length).toBe(6);
 
-    const botonMisiones = Array.from(botonesNav).find(
-      (b) => b.querySelector('button')?.getAttribute('aria-label') === 'Misiones',
+    const botonMisiones = Array.from(
+      botonesNav as NodeListOf<HTMLElement>
+    ).find(
+      (b) =>
+        b.querySelector('button')?.getAttribute('aria-label') === 'Misiones'
     );
     expect(botonMisiones).toBeTruthy();
   });
 
   it('debe permitir cambiar la sección activa al interactuar con el dock', () => {
-    expect(component['seccionActiva']()).toBe('cartas');
+    expect(component['seccionActiva']()).toBeNull();
 
     component.seleccionarSeccion('album');
     fixture.detectChanges();
 
     expect(component['seccionActiva']()).toBe('album');
+  });
+
+  it('debe navegar a Mis cartas al seleccionar el primer destino del dock', () => {
+    const router = TestBed.inject(Router);
+    const navegar = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+    component.seleccionarSeccion('cartas');
+
+    expect(component['seccionActiva']()).toBe('cartas');
+    expect(navegar).toHaveBeenCalledWith('/usuario/mis-cartas');
+  });
+
+  it('debe navegar a Cupones al seleccionar su destino del dock', () => {
+    const router = TestBed.inject(Router);
+    const navegar = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+    component.seleccionarSeccion('cupones');
+
+    expect(navegar).toHaveBeenCalledWith('/usuario/cupones');
   });
 
   it('debe mostrar el contador de sobres diarios disponibles', () => {
@@ -137,17 +180,28 @@ describe('UsuarioDashboard Component', () => {
     expect(component['sobresDisponibles']().actuales).toBe(1);
   });
 
-  it('debe desplegar el menú de usuario y permitir cerrar sesión', () => {
-    expect(component['menuUsuarioAbierto']()).toBe(false);
+  it('no debe mostrar el icono de jugar mientras el juego esté deshabilitado (MVP)', () => {
+    expect(component['juegoHabilitado']).toBe(false);
+    expect(fixture.nativeElement.querySelector('img[alt="Abrir sobre"]')).toBeFalsy();
+  });
 
-    component.toggleMenuUsuario();
+  it('debe desplegar el menú de usuario del header y permitir cerrar sesión', () => {
+    const router = TestBed.inject(Router);
+    jest.spyOn(router, 'navigate').mockResolvedValue(true);
+
+    const avatar = fixture.nativeElement.querySelector(
+      'app-header button[aria-label="Menú de perfil"]'
+    ) as HTMLButtonElement;
+    avatar.click();
     fixture.detectChanges();
-    expect(component['menuUsuarioAbierto']()).toBe(true);
 
-    const textoMenu = fixture.nativeElement.textContent;
-    expect(textoMenu).toContain('testuser');
+    expect(fixture.nativeElement.textContent).toContain('testuser');
 
-    component.cerrarSesion();
+    const botonCerrar = (
+      Array.from(fixture.nativeElement.querySelectorAll('app-header button')) as HTMLButtonElement[]
+    ).find((b) => b.textContent?.trim() === 'Cerrar sesión');
+    botonCerrar?.click();
+
     expect(mockAuthService.logout).toHaveBeenCalled();
   });
 });

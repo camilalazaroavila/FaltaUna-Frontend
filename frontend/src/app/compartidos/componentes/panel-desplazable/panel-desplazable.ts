@@ -2,7 +2,9 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
+  inject,
   input,
   signal,
   viewChild,
@@ -16,25 +18,34 @@ import {
   },
   template: `
     <div class="relative flex w-full h-full min-h-0 select-none overflow-hidden">
-      <!-- CONTENEDOR CON SCROLL NATIVO -->
+      <!-- CONTENEDOR CON SCROLL NATIVO (la barra del navegador se oculta) -->
       <div
         #scrollContainer
         (scroll)="onScroll()"
         class="panel-desplazable flex-1 h-full overflow-y-auto overflow-x-hidden pr-2 sm:pr-3"
         [class]="clasesExtra()"
       >
-        <ng-content />
+        <div #contenido>
+          <ng-content />
+        </div>
       </div>
 
-      <!-- BARRA DE SCROLL LATERAL VISIBLE PERMANENTE (ESTILO MAQUETA IMAGEN 1) -->
-      <div class="w-3 sm:w-3.5 h-full shrink-0 flex items-center justify-center py-2 pl-1 select-none">
-        <div class="relative w-full h-full rounded-full bg-black/50 border border-white/15 p-0.5 flex flex-col justify-start">
-          <!-- Tirador / Thumb redondeado crema (#eaf9a6) permanente -->
-          <div
-            class="w-full rounded-full bg-[#eaf9a6] shadow-sm transition-transform duration-75"
-            [style.height.%]="alturaThumb()"
-            [style.transform]="'translateY(' + posicionThumb() + 'px)'"
-          ></div>
+      <!-- BARRA PERSONALIZADA: carril amarillo ancho + tirador verde fino y centrado.
+           Es siempre visible: sin nada que desplazar, el tirador ocupa todo el carril. -->
+      <div
+        class="w-8 sm:w-10 2xl:w-12 h-full shrink-0 py-2 pl-1 select-none"
+        aria-hidden="true"
+      >
+        <div class="h-full w-full rounded-xl bg-[#f9f9b2] shadow-md px-1 py-2 2xl:py-3">
+          <!-- Área útil: el tirador se posiciona en % dentro de este espacio -->
+          <div class="relative h-full w-full">
+            <div
+              data-thumb
+              class="absolute left-1/2 w-[36%] -translate-x-1/2 rounded-full bg-[#0d3b40] transition-[height] duration-200"
+              [style.height.%]="alturaThumb()"
+              [style.top.%]="posicionThumb()"
+            ></div>
+          </div>
         </div>
       </div>
     </div>
@@ -54,37 +65,48 @@ import {
 export class PanelDesplazable implements AfterViewInit {
   readonly clasesExtra = input<string>('');
 
+  private readonly destroyRef = inject(DestroyRef);
   private readonly scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
+  private readonly contenido = viewChild<ElementRef<HTMLDivElement>>('contenido');
 
-  // Estado del thumb visual permanente
-  protected readonly alturaThumb = signal<number>(32);
+  /** Alto del tirador en % del carril. 100 = no hay nada que desplazar. */
+  protected readonly alturaThumb = signal<number>(100);
+  /** Distancia desde arriba en % del carril. */
   protected readonly posicionThumb = signal<number>(0);
 
   ngAfterViewInit(): void {
     this.onScroll();
+
+    // Recalcula cuando cambia el tamaño del panel o del contenido (p. ej. al cargar el catálogo).
+    if (typeof ResizeObserver === 'undefined') return;
+
+    const observador = new ResizeObserver(() => this.onScroll());
+    const contenedor = this.scrollContainer()?.nativeElement;
+    const interior = this.contenido()?.nativeElement;
+    if (contenedor) observador.observe(contenedor);
+    if (interior) observador.observe(interior);
+    this.destroyRef.onDestroy(() => observador.disconnect());
   }
 
   onScroll(): void {
     const el = this.scrollContainer()?.nativeElement;
     if (!el) return;
 
-    const scrollHeight = el.scrollHeight;
-    const clientHeight = el.clientHeight;
-    const scrollTop = el.scrollTop;
+    const { scrollHeight, clientHeight, scrollTop } = el;
 
+    // Sin scroll posible: el tirador ocupa todo el carril (con el margen del propio carril).
     if (scrollHeight <= clientHeight || clientHeight === 0) {
-      this.alturaThumb.set(32);
+      this.alturaThumb.set(100);
       this.posicionThumb.set(0);
       return;
     }
 
-    const ratio = clientHeight / scrollHeight;
-    const thumbPercent = Math.max(20, Math.min(60, ratio * 100));
-    this.alturaThumb.set(thumbPercent);
-
-    const trackHeight = clientHeight - (clientHeight * (thumbPercent / 100));
+    const alto = Math.max(15, (clientHeight / scrollHeight) * 100);
     const scrollMax = scrollHeight - clientHeight;
-    const pos = (scrollTop / scrollMax) * trackHeight;
-    this.posicionThumb.set(Math.max(0, pos));
+    const recorrido = 100 - alto;
+    const top = Math.min(recorrido, Math.max(0, (scrollTop / scrollMax) * recorrido));
+
+    this.alturaThumb.set(alto);
+    this.posicionThumb.set(top);
   }
 }

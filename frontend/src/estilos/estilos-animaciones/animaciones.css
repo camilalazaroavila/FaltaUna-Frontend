@@ -86,3 +86,101 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
 }
+
+/* =========================================
+   ABANICO DE SOBRES: CICLO COORDINADO
+   ========================================= */
+
+.abanico-sobres {
+  --abanico-izquierda: 24%;
+  --abanico-centro: 50%;
+  --abanico-derecha: 76%;
+}
+
+.abanico-sobres .sobre-carrusel {
+  position: absolute;
+  top: 50%;
+  height: 88%;
+  width: auto;
+  aspect-ratio: 208.67 / 340.93;
+
+  transform-origin: center center;
+  filter: drop-shadow(0 10px 10px rgb(0 0 0 / 20%));
+  will-change: left, transform;
+
+  animation: sobre-ciclo-coordinado 12s ease-in-out infinite;
+}
+
+/* Categoría: empieza a la izquierda */
+.abanico-sobres .sobre-carrusel--gastronomia {
+  animation-delay: 0s;
+}
+
+/* Marca: empieza a la derecha */
+.abanico-sobres .sobre-carrusel--lego {
+  animation-delay: -8s;
+}
+
+/* General: empieza en el centro */
+.abanico-sobres .sobre-carrusel--general {
+  animation-delay: -4s;
+}
+
+/*
+  Cada posición tiene la misma pausa.
+  Los desplazamientos ocupan aproximadamente 0,4 segundos.
+  El ciclo completo dura 12 segundos.
+*/
+@keyframes sobre-ciclo-coordinado {
+  /* Izquierda: pausa */
+  0%, 30% {
+    left: var(--abanico-izquierda);
+    z-index: 10;
+    transform: translate(-50%, -50%) rotate(-12deg) scale(.86);
+  }
+
+  /* Transición rápida hacia el centro */
+  33.333%, 63.333% {
+    left: var(--abanico-centro);
+    z-index: 20;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1.17);
+  }
+
+  /* Transición rápida hacia la derecha */
+  66.666%, 96.666% {
+    left: var(--abanico-derecha);
+    z-index: 10;
+    transform: translate(-50%, -50%) rotate(12deg) scale(.86);
+  }
+
+  /* Regreso a la izquierda */
+  100% {
+    left: var(--abanico-izquierda);
+    z-index: 10;
+    transform: translate(-50%, -50%) rotate(-12deg) scale(.86);
+  }
+}
+
+/* Pantallas medianas y grandes */
+@media (min-width: 640px) {
+  .abanico-sobres {
+    --abanico-izquierda: 28%;
+    --abanico-centro: 50%;
+    --abanico-derecha: 72%;
+  }
+}
+
+/* Pausar al pasar el cursor */
+@media (hover: hover) {
+  .abanico-sobres:hover .sobre-carrusel {
+    animation-play-state: paused;
+  }
+}
+
+/* Respetar preferencias de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .abanico-sobres .sobre-carrusel {
+    animation: none;
+    will-change: auto;
+  }
+}

@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../servicios/auth.service';
+import { Router } from '@angular/router';
 import { SobresService } from '../../servicios/sobres.service';
 import { BotonNavegacionCircular } from '../../compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
 import { FlujoAperturaSobres } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
+import { Header } from '../../compartidos/componentes/header/header';
+import { SobreMarca } from '../../compartidos/componentes/sobre-marca/sobre-marca';
 import { AperturaSobreRespuesta, SobreRespuesta } from '../../modelos/sobre.model';
 
-import urlLogo from '../../compartidos/SVGs/Imagotipo_claro.svg';
 import urlSobreIzquierda from '../../compartidos/SVGs/PaqueteHuhDosColores.svg';
 import urlSobreCentro from '../../compartidos/SVGs/Paquete1.svg';
 import urlSobreDerecha from '../../compartidos/SVGs/Paquete2.svg';
@@ -39,20 +39,21 @@ export interface SobreOpcion {
 @Component({
   selector: 'app-usuario-dashboard',
   standalone: true,
-  imports: [RouterLink, BotonNavegacionCircular, FlujoAperturaSobres],
+  imports: [Header, BotonNavegacionCircular, FlujoAperturaSobres, SobreMarca],
   templateUrl: './usuario-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuarioDashboard implements OnInit {
-  readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly sobresService = inject(SobresService);
   protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
-  protected readonly urlLogo = urlLogo;
   protected readonly urlSobreIzquierda = urlSobreIzquierda;
   protected readonly urlSobreCentro = urlSobreCentro;
   protected readonly urlSobreDerecha = urlSobreDerecha;
   protected readonly urlIconPelea = urlIconPelea;
+
+  /** pal mvp2 puse inhabilitado el jugar, para que aparezca nomas se pone en true, o se saca esta linea y el if del html q encierra el icono */
+  protected readonly juegoHabilitado = false;
 
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
@@ -60,7 +61,7 @@ export class UsuarioDashboard implements OnInit {
     { id: 'album', nombre: 'Álbumes', urlIcono: urlIconoAlbum },
     { id: 'intercambios', nombre: 'Intercambio', urlIcono: urlIconoIntercambios },
     { id: 'qr', nombre: 'Canje', urlIcono: urlIconoQr },
-    { id: 'cupones', nombre: 'Mis cupones', urlIcono: urlIconoDescuento },
+    { id: 'cupones', nombre: 'Mis cupones', ruta: '/usuario/cupones', urlIcono: urlIconoDescuento },
   ];
 
   protected readonly opcionesSobres: readonly SobreOpcion[] = [
@@ -93,10 +94,9 @@ export class UsuarioDashboard implements OnInit {
     },
   ];
 
-  protected readonly seccionActiva = signal<string>('cartas');
+  /** Ninguna sección está activa por defecto: el dashboard no es ninguno de los destinos del dock. */
+  protected readonly seccionActiva = signal<string | null>(null);
   protected readonly selectorSobresAbierto = signal<boolean>(false);
-  protected readonly menuUsuarioAbierto = signal<boolean>(false);
-  protected readonly terminoBusqueda = signal<string>('');
   protected readonly sobresDisponibles = signal<{ actuales: number; maximo: number }>({
     actuales: 2,
     maximo: 2,
@@ -140,22 +140,6 @@ export class UsuarioDashboard implements OnInit {
     this.selectorSobresAbierto.set(false);
   }
 
-  toggleMenuUsuario(): void {
-    this.menuUsuarioAbierto.update((v) => !v);
-  }
-
-  cerrarMenuUsuario(): void {
-    this.menuUsuarioAbierto.set(false);
-  }
-
-  buscarCampania(evento: Event): void {
-    evento.preventDefault();
-    const termino = this.terminoBusqueda().trim();
-    if (termino) {
-      this.abrirSelectorSobres();
-    }
-  }
-
   abrirSobre(opcion: SobreOpcion): void {
     if (!opcion.disponible) return;
     // Si quedan sobres disponibles se descuenta 1
@@ -164,10 +148,5 @@ export class UsuarioDashboard implements OnInit {
       actuales: Math.max(0, s.actuales - 1),
     }));
     this.cerrarSelectorSobres();
-  }
-
-  cerrarSesion(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }
