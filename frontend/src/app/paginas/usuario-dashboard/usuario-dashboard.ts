@@ -124,11 +124,14 @@ export class UsuarioDashboard implements OnInit {
 
   seleccionarSeccion(id: string): void {
     this.seccionActiva.set(id);
+    if (id === 'cupones') {
+      this.router.navigate(['/usuario/cupones']);
     const destino = this.destinos.find((d) => d.id === id);
     if (destino?.ruta) {
       this.router.navigateByUrl(destino.ruta);
     }
   }
+}
 
   abrirSelectorSobres(): void {
     this.selectorSobresAbierto.set(true);
