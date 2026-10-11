@@ -1,0 +1,69 @@
+/* ==========================================================================
+   Falta Una - Animaciones (Capa 3)
+   Keyframes (fadeIn, slideUp), clases .animate-*, el respeto por
+   prefers-reduced-motion y el bloque [data-movimiento-reducido] de la galeria.
+   Origen: bloques "ANIMACIONES MICRO-INTERACTIVAS" y "SIMULACION DE MOVIMIENTO
+   REDUCIDO" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   ANIMACIONES MICRO-INTERACTIVAS
+   ========================================================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Respeto por preferencias de movimiento reducido (A11y) */
+@media (prefers-reduced-motion: reduce) {
+
+    .animate-fade-in,
+    .animate-slide-up {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ==========================================================================
+   SIMULACION DE MOVIMIENTO REDUCIDO
+   La galería de componentes (`/componentes`) replica la media query
+   `prefers-reduced-motion` con este atributo, porque esa consulta no se puede
+   forzar desde el DOM.
+
+   Solo neutraliza la mitad CSS: `motion-reduce:` de Tailwind y las
+   transiciones. NO afecta a GSAP, que lee `matchMedia` desde `GsapService`.
+   ========================================================================== */
+[data-movimiento='reducido'] *,
+[data-movimiento='reducido'] *::before,
+[data-movimiento='reducido'] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}

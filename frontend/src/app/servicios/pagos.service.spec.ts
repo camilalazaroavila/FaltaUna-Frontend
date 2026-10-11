@@ -5,7 +5,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { PagosService } from './pagos.service';
-import { environment } from '../../environments/environment';
+import { ApiService } from './api.service';
 import {
   ConfiguracionPagoRespuesta,
   IniciarPagoRespuesta,
@@ -14,6 +14,7 @@ import {
 
 describe('PagosService', () => {
   let service: PagosService;
+  let api: ApiService;
   let httpTesting: HttpTestingController;
 
   beforeEach(() => {
@@ -26,6 +27,7 @@ describe('PagosService', () => {
     });
 
     service = TestBed.inject(PagosService);
+    api = TestBed.inject(ApiService);
     httpTesting = TestBed.inject(HttpTestingController);
   });
 
@@ -47,7 +49,7 @@ describe('PagosService', () => {
       expect(res.publicKey).toBe('APP_USR-test-public-key');
     });
 
-    const req = httpTesting.expectOne(`${environment.apiUrl}/Pagos/configuracion`);
+    const req = httpTesting.expectOne(`${api.urlBase}/Pagos/configuracion`);
     expect(req.request.method).toBe('GET');
     req.flush(respuestaMock);
   });
@@ -80,7 +82,7 @@ describe('PagosService', () => {
       expect(res.pago.referenciaExterna).toBe('PAG-123');
     });
 
-    const req = httpTesting.expectOne(`${environment.apiUrl}/Pagos`);
+    const req = httpTesting.expectOne(`${api.urlBase}/Pagos`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ planId: 1 });
     req.flush(mockRespuesta);
@@ -112,7 +114,7 @@ describe('PagosService', () => {
       expect(res.puedePersonalizar).toBe(true);
     });
 
-    const req = httpTesting.expectOne(`${environment.apiUrl}/Pagos/PAG-XYZ`);
+    const req = httpTesting.expectOne(`${api.urlBase}/Pagos/PAG-XYZ`);
     expect(req.request.method).toBe('GET');
     req.flush(mockPago);
   });
@@ -142,7 +144,7 @@ describe('PagosService', () => {
     });
 
     const req = httpTesting.expectOne(
-      `${environment.apiUrl}/Pagos/PAG-456/confirmar`,
+      `${api.urlBase}/Pagos/PAG-456/confirmar`,
     );
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ pagoMercadoPagoId: '987654321' });

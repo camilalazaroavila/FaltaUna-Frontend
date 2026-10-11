@@ -22,7 +22,8 @@ export interface DestinoNavegacion {
   readonly id: string;
   readonly nombre: string;
   readonly ruta?: string;
-  readonly urlIcono: string;
+  readonly urlIcono?: string;
+  readonly icono?: string;
 }
 
 export interface SobreOpcion {
@@ -55,6 +56,7 @@ export class UsuarioDashboard implements OnInit {
 
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
+    { id: 'misiones', nombre: 'Misiones', ruta: '/usuario/misiones', icono: 'phosphorTrophyFill' },
     { id: 'album', nombre: 'Álbumes', urlIcono: urlIconoAlbum },
     { id: 'intercambios', nombre: 'Intercambio', urlIcono: urlIconoIntercambios },
     { id: 'qr', nombre: 'Canje', urlIcono: urlIconoQr },
