@@ -4,6 +4,7 @@ import { CartaComponent } from '../../compartidos/componentes/carta/carta';
 import { CARTAS_MOCK } from '../../modelos/cartas.mock';
 import type { Carta, CategoriaCarta, RarezaCarta } from '../../modelos/carta.model';
 import { ETIQUETA_CATEGORIA } from '../../modelos/carta.model';
+import { Header } from '../../compartidos/componentes/header/header';
 
 import urlGastro from '../../compartidos/SVGs/Icon_GastroInv.svg';
 import urlCosme from '../../compartidos/SVGs/Icon_CosmeInv.svg';
@@ -52,7 +53,7 @@ const COLECCION: Carta[] = CARTAS_MOCK;
 @Component({
   selector: 'app-mis-cartas',
   standalone: true,
-  imports: [RouterLink, CartaComponent],
+  imports: [RouterLink, CartaComponent, Header],
   templateUrl: './mis-cartas.html',
   styleUrl: './mis-cartas.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
