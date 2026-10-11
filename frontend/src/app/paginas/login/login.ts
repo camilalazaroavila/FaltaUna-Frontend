@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, effect } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../servicios/auth.service';
@@ -15,6 +15,7 @@ import { injectModoAuth } from '../../compartidos/componentes/auth-layout/auth-m
 })
 export class Login implements OnInit {
   protected readonly modo = injectModoAuth();
+  private readonly cdr = inject(ChangeDetectorRef);
 
   protected readonly encabezado = computed(() =>
     this.modo() === 'empresa'
@@ -35,8 +36,8 @@ export class Login implements OnInit {
     password: ''
   };
 
-  cargando = false;
-  error: string | null = null;
+  readonly cargando = signal(false);
+  readonly error = signal<string | null>(null);
   recienRegistrado = false;
 
   private ultimoModo: string | null = null;
@@ -46,11 +47,12 @@ export class Login implements OnInit {
     private router: Router,
     private ruta: ActivatedRoute
   ) {
-    // El toggle cambia el modo sin recargar: se conservan los datos, menos la contraseña.
+    // El toggle cambia el modo sin recargar: se conservan los datos, menos la contraseña y error previo.
     effect(() => {
       const modo = this.modo();
       if (this.ultimoModo !== null && this.ultimoModo !== modo) {
         this.credenciales.password = '';
+        this.error.set(null);
       }
       this.ultimoModo = modo;
     });
@@ -61,8 +63,8 @@ export class Login implements OnInit {
   }
 
   iniciarSesion(): void {
-    this.error = null;
-    this.cargando = true;
+    this.error.set(null);
+    this.cargando.set(true);
 
     const rolEsperado: Rol = this.modo() === 'empresa' ? 'Empresa' : 'Usuario';
 
@@ -74,12 +76,14 @@ export class Login implements OnInit {
 
     this.authService.login(solicitud).subscribe({
       next: (respuesta) => {
-        this.cargando = false;
+        this.cargando.set(false);
+        this.cdr.markForCheck();
         this.router.navigate([this.authService.rutaSegunRol(respuesta.usuario.rol)]);
       },
       error: (error) => {
-        this.cargando = false;
-        this.error = error?.error?.mensaje ?? 'Usuario o contraseña incorrectos.';
+        this.cargando.set(false);
+        this.error.set(error?.error?.mensaje ?? 'Usuario o contraseña incorrectos.');
+        this.cdr.markForCheck();
       }
     });
   }
