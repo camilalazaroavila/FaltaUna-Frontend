@@ -2,13 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { SobresService } from './sobres.service';
-import { environment } from '../../environments/environment';
+import { ApiService } from './api.service';
 import { AperturaSobreRespuesta, SobreRespuesta } from '../modelos/sobre.model';
 
 describe('SobresService', () => {
   let service: SobresService;
   let httpTesting: HttpTestingController;
-  const baseUrl = `${environment.apiUrl}/Sobres`;
+  let baseUrl: string;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -21,6 +21,7 @@ describe('SobresService', () => {
 
     service = TestBed.inject(SobresService);
     httpTesting = TestBed.inject(HttpTestingController);
+    baseUrl = `${TestBed.inject(ApiService).urlBase}/Sobres`;
   });
 
   afterEach(() => {

@@ -1,0 +1,63 @@
+/* ==========================================================================
+   Falta Una - Estilos Base (Capa 3 / fundamentos)
+   Normalizacion tipografica del documento: body, titulares, parrafos, controles
+   de formulario, foco visible y seleccion de texto. Mas el comentario de
+   TIPOGRAFIAS del sistema (familias y su uso).
+   Origen: antiguo bloque "ESTILOS BASE" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   TIPOGRAFÍAS
+   - Titulares (Headings): 'Rock Salt' / 'Russo One' como alternativa libre a Rockstone
+     (estilo display rústico, enérgico, de impacto deportivo y urbano).
+   - Textos / Lectura: 'Merriweather' (serifa de altísima legibilidad y fuerte
+     contraste visual con los títulos).
+   - UI / Interfaz: Sistema de fuentes sans-serif moderno para badges y tablas.
+   ========================================================================== */
+
+/* ==========================================================================
+   ESTILOS BASE
+   ========================================================================== */
+body {
+    background-color: var(--fondo-app);
+    color: var(--texto-primario);
+    font-family: var(--fuente-cuerpo);
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--fuente-titulo);
+    letter-spacing: 0.02em;
+}
+
+p {
+    font-family: var(--fuente-cuerpo);
+}
+
+button,
+input,
+select,
+textarea,
+.chip {
+    font-family: var(--fuente-interfaz);
+}
+
+/* Foco accesible para teclado en cualquier tema */
+:focus-visible {
+    outline: 2px solid var(--borde-foco);
+    outline-offset: 2px;
+}
+
+/* Selección de texto estilizada */
+::selection {
+    background: var(--marca-primaria);
+    color: var(--marca-sobre-primaria);
+}

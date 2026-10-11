@@ -1,0 +1,26 @@
+/* ==========================================================================
+   Falta Una - Barra de progreso (Capa 2)
+   Tokens de las dos variantes de barra: `mision` (verde, progreso de una
+   misión) y `pity` (amarillo, progreso hacia la legendaria del PT System).
+   No dependen de data-modo, por eso viven en `:root`.
+   ========================================================================== */
+
+/* ==========================================================================
+   CAPA 2 — TOKENS SEMÁNTICOS · BARRAS DE PROGRESO
+   La barra es una pastilla cartoon: fondo claro, borde de tinta, sombra
+   sólida y el relleno pintado por variante. Igual que los sobres y la landing,
+   su aspecto es el mismo en el panel del jugador y en el de la empresa, así
+   que vive en `:root` en lugar de los bloques de tema.
+
+   El relleno NO se define por tinte de data-modo: sale de la paleta primitiva
+   de marca (verde cancha y amarillo cálido) para que ambas variantes se
+   distingan por significado y no por tema.
+   ========================================================================== */
+:root {
+    --barra-mision-relleno: var(--color-verde-jugador);
+    --barra-pity-relleno: var(--color-amarillo-acento);
+    --barra-fondo: var(--blanco-puro);
+    --barra-borde: var(--color-teal-hundido);
+    --barra-sombra: var(--color-teal-hundido);
+    --barra-texto: var(--color-teal-profundo);
+}

@@ -1,0 +1,50 @@
+/* ==========================================================================
+   Falta Una - Toasts ngx-sonner (Capa 3)
+   Notificaciones conectadas a la escala de feedback (success/error/warning/
+   info/loading).
+   Origen: antiguo bloque "TOASTS (ngx-sonner)" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   TOASTS (ngx-sonner)
+   Notificaciones conectadas directamente a la escala de feedback.
+   ========================================================================== */
+[data-sonner-toaster] {
+    font-family: var(--fuente-interfaz);
+}
+
+[data-sonner-toast] {
+    border-radius: 0.75rem;
+    padding: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+[data-sonner-toast][data-type="success"] {
+    background-color: var(--exito-fondo) !important;
+    border: 1px solid var(--exito-borde) !important;
+    color: var(--exito-texto) !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+    background-color: var(--error-fondo) !important;
+    border: 1px solid var(--error-borde) !important;
+    color: var(--error-texto) !important;
+}
+
+[data-sonner-toast][data-type="warning"] {
+    background-color: var(--advertencia-fondo) !important;
+    border: 1px solid var(--advertencia-borde) !important;
+    color: var(--advertencia-texto) !important;
+}
+
+[data-sonner-toast][data-type="info"] {
+    background-color: var(--info-fondo) !important;
+    border: 1px solid var(--info-borde) !important;
+    color: var(--info-texto) !important;
+}
+
+[data-sonner-toast][data-type="loading"] {
+    background-color: var(--fondo-elevado) !important;
+    border: 1px solid var(--borde-default) !important;
+    color: var(--texto-secundario) !important;
+}

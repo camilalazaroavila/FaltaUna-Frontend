@@ -1,7 +1,6 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { ApiService } from './api.service';
 import { UsuarioRespuesta } from '../modelos/usuario.model';
 
 
@@ -10,12 +9,10 @@ import { UsuarioRespuesta } from '../modelos/usuario.model';
 })
 export class UsuariosService {
 
-  private readonly apiUrl = environment.apiUrl + '/Usuarios';
-
-  constructor(private http: HttpClient) { }
+  private readonly api = inject(ApiService);
 
   obtenerUsuarios(): Observable<UsuarioRespuesta[]> {
-    return this.http.get<UsuarioRespuesta[]>(this.apiUrl);
+    return this.api.get<UsuarioRespuesta[]>('Usuarios');
   }
 
 }

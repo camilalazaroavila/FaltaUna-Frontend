@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { ApiService } from './api.service';
 import {
   ConfiguracionPagoRespuesta,
   ConfirmarPagoSolicitud,
@@ -14,16 +13,13 @@ import {
   providedIn: 'root',
 })
 export class PagosService {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = environment.apiUrl;
+  private readonly api = inject(ApiService);
 
   /**
    * Obtiene la clave pública de Mercado Pago configurada en el backend.
    */
   obtenerConfiguracion(): Observable<ConfiguracionPagoRespuesta> {
-    return this.http.get<ConfiguracionPagoRespuesta>(
-      `${this.apiUrl}/Pagos/configuracion`,
-    );
+    return this.api.get<ConfiguracionPagoRespuesta>('Pagos/configuracion');
   }
 
   /**
@@ -32,19 +28,14 @@ export class PagosService {
    */
   iniciarPago(planId: number): Observable<IniciarPagoRespuesta> {
     const solicitud: IniciarPagoSolicitud = { planId };
-    return this.http.post<IniciarPagoRespuesta>(
-      `${this.apiUrl}/Pagos`,
-      solicitud,
-    );
+    return this.api.post<IniciarPagoRespuesta>('Pagos', solicitud);
   }
 
   /**
    * Consulta el estado de un pago según su referencia externa.
    */
   obtenerPago(referenciaExterna: string): Observable<PagoRespuesta> {
-    return this.http.get<PagoRespuesta>(
-      `${this.apiUrl}/Pagos/${encodeURIComponent(referenciaExterna)}`,
-    );
+    return this.api.get<PagoRespuesta>(`Pagos/${encodeURIComponent(referenciaExterna)}`);
   }
 
   /**
@@ -56,8 +47,8 @@ export class PagosService {
     pagoMercadoPagoId: string,
   ): Observable<PagoRespuesta> {
     const solicitud: ConfirmarPagoSolicitud = { pagoMercadoPagoId };
-    return this.http.post<PagoRespuesta>(
-      `${this.apiUrl}/Pagos/${encodeURIComponent(referenciaExterna)}/confirmar`,
+    return this.api.post<PagoRespuesta>(
+      `Pagos/${encodeURIComponent(referenciaExterna)}/confirmar`,
       solicitud,
     );
   }

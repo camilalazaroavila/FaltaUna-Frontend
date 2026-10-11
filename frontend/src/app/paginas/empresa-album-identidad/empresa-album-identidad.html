@@ -1,0 +1,110 @@
+<main class="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-8">
+  <app-encabezado-paso
+    titulo="¿Qué te identifica?"
+    [paso]="4"
+    rutaVolver="/empresa/album/crear/marca"
+  />
+
+  <form class="mt-10 grid gap-10 lg:grid-cols-2" (ngSubmit)="finalizar()" novalidate>
+    <div class="space-y-6">
+      <app-campo-texto
+        etiqueta="Descripción de tu marca"
+        [requerido]="true"
+        ayuda="Contá en pocas palabras qué hace tu marca."
+        [multilinea]="true"
+        [maxLength]="300"
+        [error]="errores().descripcion ?? null"
+        [ngModel]="borrador.descripcion()"
+        (ngModelChange)="borrador.descripcion.set($event)"
+        name="descripcion"
+      />
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <app-campo-select
+          etiqueta="Compartinos tus redes sociales"
+          [opciones]="redes"
+          [ngModel]="borrador.redSocial()"
+          (ngModelChange)="borrador.redSocial.set($event)"
+          name="redSocial"
+        />
+        <app-campo-texto
+          etiqueta="Usuario o link"
+          [requerido]="true"
+          placeholder="@tumarca"
+          [error]="errores().usuarioRedSocial ?? null"
+          [ngModel]="borrador.usuarioRedSocial()"
+          (ngModelChange)="borrador.usuarioRedSocial.set($event)"
+          name="usuarioRedSocial"
+        />
+      </div>
+
+      <app-campo-texto
+        etiqueta="Compartinos un mail de contacto"
+        tipo="email"
+        [requerido]="true"
+        ayuda="Es el mail que van a ver los usuarios para contactarte."
+        autocompletar="email"
+        [error]="errores().emailContacto ?? null"
+        [ngModel]="borrador.emailContacto()"
+        (ngModelChange)="borrador.emailContacto.set($event)"
+        name="emailContacto"
+      />
+
+      <app-campo-select
+        etiqueta="¿A qué categoría pertenece tu marca?"
+        [requerido]="true"
+        ayuda="Nos ayuda a mostrar tu álbum a quienes les interesa."
+        placeholder="Elegí una categoría"
+        [opciones]="categorias"
+        [error]="errores().categoria ?? null"
+        [ngModel]="borrador.categoria()"
+        (ngModelChange)="borrador.categoria.set($event)"
+        name="categoria"
+      />
+    </div>
+
+    <fieldset>
+      <legend class="sr-only">Fechas del álbum</legend>
+      <app-etiqueta-campo
+        texto="Fecha de inicio/fin de tu álbum"
+        [requerido]="true"
+        ayuda="Elegí desde cuándo hasta cuándo está disponible tu álbum."
+      />
+      <div class="flex flex-wrap gap-4">
+        <div>
+          <p class="mb-1 font-interfaz text-xs font-bold uppercase text-texto-secundario">Inicio</p>
+          <app-calendario-mensual
+            etiquetaAccesible="Fecha de inicio"
+            [min]="hoy"
+            [(valor)]="borrador.fechaInicio"
+          />
+          @if (errores().fechaInicio) {
+            <p class="mt-1 max-w-56 font-interfaz text-xs font-bold text-error" role="alert">
+              {{ errores().fechaInicio }}
+            </p>
+          }
+        </div>
+        <div>
+          <p class="mb-1 font-interfaz text-xs font-bold uppercase text-texto-secundario">Fin</p>
+          <app-calendario-mensual
+            etiquetaAccesible="Fecha de fin"
+            [min]="borrador.fechaInicio() || hoy"
+            [(valor)]="borrador.fechaFin"
+          />
+          @if (errores().fechaFin) {
+            <p class="mt-1 max-w-56 font-interfaz text-xs font-bold text-error" role="alert">
+              {{ errores().fechaFin }}
+            </p>
+          }
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="flex justify-end lg:col-span-2">
+      <button app-boton type="submit" variante="secundario" tamanio="lg" [cargando]="enviando()">
+        Finalizar
+        <ng-icon name="phosphorArrowRightFill" aria-hidden="true" />
+      </button>
+    </div>
+  </form>
+</main>

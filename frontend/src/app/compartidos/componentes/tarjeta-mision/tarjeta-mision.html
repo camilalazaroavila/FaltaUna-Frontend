@@ -1,0 +1,76 @@
+<article
+  class="flex flex-wrap items-center gap-4 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-4 sm:gap-5 sm:p-5 md:p-6"
+>
+  <span
+    class="flex size-8 shrink-0 items-center justify-center rounded-circulo border-2 sm:size-9"
+    [class.border-exito]="reclamada()"
+    [class.bg-exito]="reclamada()"
+    [class.text-exito-sobre]="reclamada()"
+    [class.border-atencion]="listaParaReclamar()"
+    [class.bg-atencion]="listaParaReclamar()"
+    [class.text-atencion-sobre]="listaParaReclamar()"
+    [class.border-barra-borde]="enCurso()"
+  >
+    @if (reclamada()) {
+      <ng-icon name="phosphorCheckFill" class="size-5" aria-hidden="true" />
+    } @else if (listaParaReclamar()) {
+      <ng-icon name="phosphorGiftFill" class="size-5" aria-hidden="true" />
+    }
+    <span class="sr-only">{{ textoEstado() }}</span>
+  </span>
+
+  <div class="min-w-0 flex-1">
+    <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+      <h3 class="font-titulo text-lg tracking-[0.02em] text-texto-primario sm:text-xl">
+        {{ mision().titulo }}
+      </h3>
+      @if (esDiaria()) {
+        <span
+          class="rounded-pildora border border-atencion-borde bg-atencion-fondo px-2.5 py-0.5 text-[0.68rem] font-bold tracking-[0.04em] text-atencion-texto"
+        >
+          Se renueva cada 24 h
+        </span>
+      } @else {
+        <span
+          class="rounded-pildora border border-borde-coleccion px-2.5 py-0.5 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-texto-apagado"
+        >
+          {{ etiquetaPeriodicidad() }}
+        </span>
+      }
+    </div>
+
+    @if (!disponible()) {
+      <p class="mt-2 text-sm text-texto-apagado">Próximamente</p>
+    } @else {
+      <app-barra-progreso
+        class="mt-2 block"
+        [actual]="mision().actual"
+        [objetivo]="mision().objetivo"
+        variante="mision"
+        [etiqueta]="mision().titulo"
+      />
+    }
+  </div>
+
+  @if (disponible() && recompensa()) {
+    <div class="flex shrink-0 flex-col items-center gap-1.5">
+      <app-sobre-marca
+        tamanio="sm"
+        [fluido]="true"
+        [clickeable]="listaParaReclamar()"
+        [categoria]="recompensaCategoria()"
+        [nombre]="recompensaNombre()"
+        [logoUrl]="recompensaLogo()"
+        (accion)="reclamarRecompensa()"
+      />
+      @if (listaParaReclamar()) {
+        <span
+          class="text-center text-[0.68rem] font-bold tracking-[0.06em] text-atencion uppercase"
+        >
+          Reclamar
+        </span>
+        <span class="sr-only">Tocá el sobre para reclamar {{ descripcionRecompensa() }}</span>
+      }
+    </div>
+  }
+</article>

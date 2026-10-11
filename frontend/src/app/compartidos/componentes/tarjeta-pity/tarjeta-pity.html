@@ -1,0 +1,29 @@
+<article
+  class="flex flex-wrap items-center gap-4 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-3 sm:p-4"
+>
+  <div class="min-w-0 flex-1">
+    <h3 class="font-titulo text-base tracking-[0.02em] text-texto-primario sm:text-lg">
+      {{ etiquetaSobre() }}
+    </h3>
+
+    <p class="mt-1 text-sm font-bold text-marca-acento">{{ textoFaltantes() }}</p>
+
+    <app-barra-progreso
+      class="mt-1.5 block"
+      [actual]="progreso().abiertos"
+      [objetivo]="progreso().umbral"
+      variante="pity"
+      [etiqueta]="etiquetaSobre()"
+      [texto]="textoBarra()"
+    />
+  </div>
+
+  <div class="shrink-0">
+    <app-sobre-marca
+      tamanio="sm"
+      [categoria]="categoria()"
+      [nombre]="nombre()"
+      [logoUrl]="logoUrl()"
+    />
+  </div>
+</article>

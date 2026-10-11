@@ -1,0 +1,27 @@
+/* ==========================================================================
+   Falta Una - Alertas y Badges (Capa 2)
+   Tokens --estado-* (activo, pendiente, cerrado, info, neutro) derivados de la
+   escala de feedback, para AMBOS modos. Jugador primero, empresa despues.
+   Origen: sub-bloques "Estados y Badges" de styles.css.
+   ========================================================================== */
+
+:root,
+[data-modo="jugador"] {
+    /* --- Estados y Badges --- */
+    --estado-activo-fondo: var(--exito-fondo);
+    --estado-activo-texto: var(--exito-texto);
+    --estado-pendiente-fondo: var(--advertencia-fondo);
+    --estado-pendiente-texto: var(--advertencia-texto);
+    --estado-cerrado-fondo: var(--error-fondo);
+    --estado-cerrado-texto: var(--error-texto);
+    --estado-info-fondo: var(--info-fondo);
+    --estado-info-texto: var(--info-texto);
+    --estado-neutro-fondo: rgba(244, 250, 246, 0.08);
+    --estado-neutro-texto: var(--texto-secundario);
+}
+
+[data-modo="empresa"] {
+    /* --- Estados y Badges en Modo Empresa --- */
+    --estado-neutro-fondo: rgba(10, 46, 54, 0.07);
+    --estado-neutro-texto: var(--texto-secundario);
+}

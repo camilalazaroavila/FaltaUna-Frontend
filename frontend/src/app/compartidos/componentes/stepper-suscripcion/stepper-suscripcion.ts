@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-/** Indicador de pasos 1 a 5 del alta de campaña. El paso actual va resaltado. */
+/** Indicador de pasos 1 a 5 del alta de campaña: completados en violeta, actual en amarillo, pendientes en oscuro. */
 @Component({
   selector: 'app-stepper-suscripcion',
   standalone: true,
@@ -10,11 +10,13 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       @for (etiqueta of etiquetas(); track etiqueta; let i = $index; let ultimo = $last) {
         <li class="flex items-center" [attr.aria-current]="i + 1 === pasoActual() ? 'step' : null">
           <span
-            class="flex size-8 items-center justify-center rounded-circulo border-2 border-texto-primario font-titulo text-sm sm:size-9 sm:text-base"
+            class="flex size-8 items-center justify-center rounded-circulo border-2 font-titulo text-sm sm:size-9 sm:text-base"
             [class]="
               i + 1 === pasoActual()
-                ? 'bg-[var(--color-amarillo-acento)] text-texto-primario'
-                : 'bg-texto-primario text-texto-sobre-oscuro'
+                ? 'border-texto-primario bg-[var(--color-amarillo-acento)] text-texto-primario'
+                : i + 1 < pasoActual()
+                  ? 'border-marca-primaria bg-marca-primaria text-marca-sobre-primaria'
+                  : 'border-texto-primario bg-texto-primario text-texto-sobre-oscuro'
             "
           >
             {{ i + 1 }}
@@ -30,5 +32,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 })
 export class StepperSuscripcion {
   readonly pasoActual = input(1);
-  readonly etiquetas = input<string[]>(['Plan', 'Marca', 'Pago', 'Colección', 'Listo']);
+  readonly etiquetas = input<string[]>(['Plan', 'Pago', 'Marca', 'Identidad', 'Listo']);
 }

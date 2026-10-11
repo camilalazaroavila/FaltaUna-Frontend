@@ -46,6 +46,9 @@ const CLASES_TAMANIO: Record<TamanioSobreMarca, string> = {
   lg: 'w-44',
 };
 
+/** Ancho de crecimiento por breakpoint cuando `fluido` está activo. */
+const CLASES_FLUIDO = 'sm:w-24 md:w-28';
+
 /** Texto por defecto del `aria-label` cuando la marca no pasa nombre. */
 export const ETIQUETA_SOBRE_POR_DEFECTO = 'Sobre de Falta Una';
 
@@ -372,6 +375,13 @@ export class SobreMarca {
   readonly variante = input<VarianteSobreMarca>('oscuro');
   readonly tamanio = input<TamanioSobreMarca>('md');
 
+  /**
+   * Ancho fluido: además del ancho base del `tamanio`, crece por breakpoint
+   * (`sm:w-24 md:w-28`). Se usa donde el sobre es protagonista y debe escalar
+   * con el viewport. Por defecto conserva el ancho fijo del `tamanio`.
+   */
+  readonly fluido = input<boolean, unknown>(false, { transform: booleanAttribute });
+
   readonly clickeable = input<boolean, unknown>(false, { transform: booleanAttribute });
 
   readonly accion = output<void>();
@@ -434,6 +444,10 @@ export class SobreMarca {
 
   protected readonly clases = computed(() => {
     const clases = [CLASES_BASE, CLASES_TAMANIO[this.tamanio()]];
+
+    if (this.fluido()) {
+      clases.push(CLASES_FLUIDO);
+    }
 
     if (this.clickeable()) {
       clases.push(CLASES_INTERACTIVAS);

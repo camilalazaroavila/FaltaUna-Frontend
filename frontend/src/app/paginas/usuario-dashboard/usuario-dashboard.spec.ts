@@ -93,7 +93,12 @@ describe('UsuarioDashboard Component', () => {
     expect(aside).toBeTruthy();
 
     const botonesNav = aside.querySelectorAll('app-boton-navegacion-circular');
-    expect(botonesNav.length).toBe(5);
+    expect(botonesNav.length).toBe(6);
+
+    const botonMisiones = Array.from(botonesNav).find(
+      (b) => b.querySelector('button')?.getAttribute('aria-label') === 'Misiones',
+    );
+    expect(botonMisiones).toBeTruthy();
   });
 
   it('debe permitir cambiar la sección activa al interactuar con el dock', () => {
