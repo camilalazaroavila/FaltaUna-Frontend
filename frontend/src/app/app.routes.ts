@@ -48,6 +48,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./paginas/usuario-cupones/usuario-cupones').then((m) => m.UsuarioCupones),
   },
+  {
+    path: 'usuario/mis-cartas',
+    title: 'Mis cartas · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/mis-cartas/mis-cartas').then((m) => m.MisCartas),
+  },
 
   {
     path: 'empleado',

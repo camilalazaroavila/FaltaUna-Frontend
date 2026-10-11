@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.estrella-rareza {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(44%) sepia(34%)
+    saturate(229%) hue-rotate(19deg) brightness(173%) contrast(129%);
+}

@@ -1,0 +1,153 @@
+<div class="min-h-dvh bg-fondo-coleccion font-interfaz text-texto-primario">
+  <div class="mx-auto w-full max-w-screen-2xl px-5 pb-12 pt-4">
+    <header class="flex flex-wrap items-center gap-4 border-b border-borde-coleccion pb-3">
+      <a routerLink="/usuario" class="flex shrink-0 items-center" aria-label="Volver a Mi cuenta">
+        <img [src]="urlLogo" alt="Falta Una" class="h-9 w-auto object-contain" />
+      </a>
+
+      <h1
+        class="order-none flex-1 font-titulo text-2xl tracking-[0.04em] text-marca-acento sm:text-3xl">
+        Mis cartas
+      </h1>
+
+      <button
+        type="button"
+        class="shrink-0 cursor-pointer rounded-pildora border-2 border-marca-coleccion bg-transparent px-6 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-marca-coleccion transition-colors hover:bg-marca-coleccion hover:text-marca-coleccion-sobre"
+        aria-label="Construir baraja (próximamente)">
+        Construir baraja
+      </button>
+    </header>
+
+    <div class="flex flex-wrap items-center gap-3 py-4">
+      <div class="relative min-w-0 flex-1 basis-56">
+        <svg
+          class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-texto-apagado"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <circle cx="10.5" cy="10.5" r="6.5" />
+          <path d="M15.5 15.5 21 21" />
+        </svg>
+        <label class="sr-only" for="buscar-carta">Buscar carta por nombre</label>
+        <input
+          id="buscar-carta"
+          type="search"
+          autocomplete="off"
+          placeholder="Buscar carta..."
+          class="w-full rounded-pildora border border-borde-coleccion bg-fondo-coleccion-superficie py-2 pr-3 pl-9 text-sm text-texto-primario outline-none transition-colors placeholder:text-texto-apagado focus-visible:border-borde-foco"
+          [value]="busqueda()"
+          (input)="actualizarBusqueda($event)"/>
+      </div>
+
+      <div
+        class="flex overflow-hidden rounded-pildora border border-borde-coleccion"
+        role="group"
+        aria-label="Filtrar por estado de obtención">
+        @for (opcion of opcionesObtencion; track opcion.valor) {
+          <button
+            type="button"
+            class="cursor-pointer px-3.5 py-2 text-xs font-semibold whitespace-nowrap transition-colors not-first:border-l not-first:border-borde-coleccion hover:bg-white/6"
+            [class.bg-marca-coleccion]="filtroObtencion() === opcion.valor"
+            [class.text-marca-coleccion-sobre]="filtroObtencion() === opcion.valor"
+            [class.bg-fondo-coleccion-superficie]="filtroObtencion() !== opcion.valor"
+            [class.text-texto-secundario]="filtroObtencion() !== opcion.valor"
+            [attr.aria-pressed]="filtroObtencion() === opcion.valor"
+            (click)="cambiarFiltroObtencion(opcion.valor)"
+          >
+            {{ opcion.etiqueta }}
+          </button>
+        }
+      </div>
+
+      <div>
+        <label class="sr-only" for="orden-cartas">Ordenar cartas</label>
+        <select
+          id="orden-cartas"
+          class="cursor-pointer rounded-pildora border border-borde-coleccion bg-fondo-coleccion-superficie px-3.5 py-2 text-xs font-semibold text-texto-primario outline-none transition-colors focus-visible:border-borde-foco"
+          [value]="criterioOrden()"
+          (change)="cambiarOrden($event)">
+          <option value="nombre-asc">Nombre (A-Z)</option>
+          <option value="nombre-desc">Nombre (Z-A)</option>
+          <option value="rareza">Rareza</option>
+          <option value="categoria">Categoría</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="coleccion__layout">
+      <aside
+        class="coleccion__aside"
+        aria-label="Filtrar por categoría">
+        <h2 class="mb-2 font-titulo text-xs tracking-[0.14em] text-texto-apagado uppercase">
+          Categorías
+        </h2>
+
+        <div class="flex flex-col gap-1.5 max-md:flex-row max-md:flex-wrap">
+          @for (cat of categoriasDisponibles; track cat.categoria) {
+            <button
+              type="button"
+              class="flex w-full cursor-pointer items-center gap-2.5 rounded-md border border-transparent bg-transparent py-2 pr-2.5 pl-2.5 text-left text-xs font-semibold transition-colors max-md:w-auto max-md:rounded-pildora"
+              [class.border-borde-coleccion-fuerte]="categoriaActiva() === cat.categoria"
+              [class.bg-marca-coleccion-fondo]="categoriaActiva() === cat.categoria"
+              [class.text-marca-coleccion]="categoriaActiva() === cat.categoria"
+              [class.text-texto-secundario]="categoriaActiva() !== cat.categoria"
+              [class.hover:bg-white/6]="categoriaActiva() !== cat.categoria"
+              [attr.aria-pressed]="categoriaActiva() === cat.categoria"
+              (click)="toggleCategoria(cat.categoria)">
+              <img
+                class="size-6 shrink-0 object-contain"
+                [src]="cat.urlIcono"
+                alt=""
+                aria-hidden="true"
+                style="filter: brightness(0) saturate(100%) invert(44%) sepia(34%) saturate(229%) hue-rotate(19deg) brightness(173%) contrast(129%)"/>
+              <span class="truncate">{{ cat.etiqueta }}</span>
+            </button>
+          }
+        </div>
+      </aside>
+
+        <main class="coleccion__contenido">
+          <p class="mb-3.5 text-xs text-texto-apagado" aria-live="polite">
+            <strong class="text-marca-coleccion">{{ resumen().obtenidas }}</strong>
+            de {{ resumen().total }} cartas obtenidas
+          </p>
+
+        @if (sinResultados()) {
+          <div class="flex flex-col items-center justify-center gap-1.5 px-8 py-16 text-center">
+            <img
+              [src]="urlLogo"
+              alt=""
+              class="mb-3 h-10 w-auto object-contain opacity-35"
+              aria-hidden="true"
+            />
+            <p class="font-titulo text-lg text-texto-secundario">
+              No se encontraron cartas con esos filtros.
+            </p>
+            <p class="text-sm text-texto-apagado">
+              Probá cambiando la búsqueda, el estado o la categoría seleccionada.
+            </p>
+            <button
+              type="button"
+              class="mt-4 cursor-pointer rounded-pildora border border-marca-coleccion bg-transparent px-5 py-2 text-xs font-bold tracking-[0.06em] text-marca-coleccion uppercase transition-colors hover:bg-marca-coleccion hover:text-marca-coleccion-sobre"
+              (click)="limpiarFiltros()"
+            >
+              Limpiar filtros
+            </button>
+          </div>
+        } @else {
+          <div class="coleccion__grilla">
+            @for (carta of cartasFiltradas(); track carta.id) {
+              <app-carta [carta]="carta" />
+            }
+          </div>
+        }
+      </main>
+    </div>
+  </div>
+</div>
