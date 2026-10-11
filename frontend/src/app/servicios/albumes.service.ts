@@ -29,7 +29,7 @@ export class AlbumesService {
     form.append('FechaInicio', solicitud.fechaInicio);
     form.append('FechaFin', solicitud.fechaFin);
     form.append('Logo', solicitud.logo);
-    solicitud.imagenes.forEach((imagen, i) => form.append(`ImagenesCartas[${i}].Archivo`, imagen));
+    solicitud.imagenes.forEach(imagen => form.append('ImagenesCartas', imagen));
     return this.http.post<AlbumRespuesta>(`${this.apiUrl}/Colecciones`, form);
   }
 }
