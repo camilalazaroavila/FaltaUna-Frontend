@@ -1,196 +1,85 @@
 <div
-  class="relative flex min-h-[100dvh] min-h-screen flex-col justify-between overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white"
->
+  class="relative flex min-h-dvh flex-col justify-between overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white">
 
-  <header class="relative z-40 w-full">
-    <div
-      class="m-3 flex items-center justify-between gap-2 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:m-5 sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
-    >
-      <a routerLink="/" class="flex shrink-0 items-center" aria-label="Ir al inicio de Falta Una">
-        <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto object-contain sm:h-9 lg:h-[75px]" />
-      </a>
-
-      <form
-        role="search"
-        class="relative min-w-0 flex-1 md:w-64 md:flex-none lg:w-[320px]"
-        (submit)="buscarCampania($event)"
-      >
-        <label for="buscador-campanias" class="sr-only">Buscá tu álbum preferido</label>
-        <svg
-          class="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-landing-claro-texto/60"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="10.5" cy="10.5" r="6.5" />
-          <path d="M15.5 15.5 21 21" />
-        </svg>
-        <input
-          id="buscador-campanias"
-          type="search"
-          autocomplete="off"
-          placeholder="Buscá tu campaña preferida..."
-          [value]="terminoBusqueda()"
-          (input)="terminoBusqueda.set($any($event.target).value)"
-          class="h-9 w-full rounded-pildora border border-transparent bg-landing-claro-fondo py-1.5 pl-8 pr-3 font-interfaz text-[11px] text-landing-claro-texto outline-none placeholder:text-landing-claro-texto/55 focus-visible:border-landing-marca md:h-10 md:text-sm"
-        />
-      </form>
-
-      <div class="relative shrink-0 md:ml-auto">
-        <button
-          type="button"
-          (click)="toggleMenuUsuario()"
-          class="flex size-9 cursor-pointer items-center justify-center rounded-circulo border border-black/10 bg-marca-acento text-marca-sobre-acento shadow-sm transition hover:brightness-105 sm:size-10"
-          aria-label="Menú de perfil"
-          [attr.aria-expanded]="menuUsuarioAbierto()"
-        >
-          <svg
-            class="size-5 text-[#0d3b40] sm:size-6"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-
-        @if (menuUsuarioAbierto()) {
-          <div
-            class="absolute right-0 top-full mt-2 w-56 rounded-xl border border-white/10 bg-[#072428] p-3 shadow-alta backdrop-blur-md z-50"
-          >
-            <div class="border-b border-white/10 pb-2 mb-2">
-              <p class="font-interfaz text-xs uppercase tracking-wide text-texto-apagado">Sesión activa</p>
-              <p class="font-titulo text-sm text-marca-acento truncate">
-                {{ authService.usuarioActual()?.nombreUsuario || 'Usuario' }}
-              </p>
-            </div>
-            <button
-              type="button"
-              (click)="cerrarSesion()"
-              class="w-full rounded-lg bg-white/10 px-3 py-2 text-left font-interfaz text-xs font-bold text-white transition hover:bg-error/30 hover:text-white cursor-pointer"
-            >
-              Cerrar sesión
-            </button>
-          </div>
-        }
-      </div>
-    </div>
-  </header>
+  <app-header [logueado]="true" />
 
   <!-- MENÚ LATERAL -->
-  <aside
-    aria-label="Navegación principal"
-    class="fixed left-2 sm:left-3 md:left-5 lg:left-7 xl:left-8 top-[calc(50%+24px)] -translate-y-1/2 z-30 max-h-[calc(100dvh-130px)]"
-  >
+  <aside aria-label="Navegación principal"
+    class="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pointer-events-auto md:inset-x-auto md:bottom-auto md:justify-start md:p-0 md:left-5 lg:left-7 xl:left-8 2xl:left-12 md:top-[calc(50%+24px)] md:-translate-y-1/2 md:max-h-[calc(100dvh-130px)]">
     <nav
-      class="flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-[#072428]/95 p-1.5 shadow-alta backdrop-blur-md sm:gap-2.5 sm:p-2 md:gap-2.5 md:rounded-3xl md:p-2.5 lg:gap-3 lg:p-3 xl:gap-3.5 xl:p-3.5 overflow-visible md:scale-100 lg:scale-105 xl:scale-115 origin-left transition-transform"
-    >
+      class="pointer-events-auto flex flex-row md:flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-[#072428]/95 p-1.5 shadow-alta backdrop-blur-md sm:gap-2.5 sm:p-2 md:rounded-3xl md:p-2.5 lg:gap-3 lg:p-3 xl:gap-3.5 xl:p-3.5 overflow-visible origin-bottom md:origin-left transition-transform lg:scale-105 2xl:scale-125 min-[2200px]:scale-150">
       @for (destino of destinos; track destino.id) {
-        <app-boton-navegacion-circular
-          [urlIcono]="destino.urlIcono ?? null"
-          [icono]="destino.icono ?? null"
-          [etiquetaAria]="destino.nombre"
-          [activo]="seccionActiva() === destino.id"
-          [expandible]="true"
-          [fondoBlanco]="true"
-          tamanio="md"
-          (accion)="seleccionarSeccion(destino.id)"
-        />
+      <app-boton-navegacion-circular [urlIcono]="destino.urlIcono ?? null" [icono]="destino.icono ?? null"
+        [etiquetaAria]="destino.nombre" [activo]="seccionActiva() === destino.id" [expandible]="true"
+        [fondoBlanco]="true" tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
       }
     </nav>
   </aside>
 
   <!-- ZONA CENTRAL -->
-  <main class="relative z-10 flex flex-1 flex-col items-center justify-center pl-14 pr-3 py-3 sm:pl-16 sm:px-4 sm:py-6 md:pl-24 md:py-8 lg:pl-32 xl:pl-40 min-h-0">
+  <main
+    class="relative z-10 mx-auto flex w-full max-w-[120rem] min-h-0 flex-1 flex-col items-center justify-center px-4 pt-3 pb-24 sm:px-6 sm:pt-4 md:px-24 md:py-8 lg:px-32 xl:px-40 2xl:px-52 2xl:py-12 min-[2200px]:px-64 [--alto-abanico:min(clamp(9.5rem,46vh,46rem),64vw)] md:[--alto-abanico:min(clamp(9.5rem,46vh,46rem),52vw)]">
+
     <!-- Contador de sobres disponibles -->
     <div
-      class="mb-2 sm:mb-4 md:mb-6 flex select-none items-center gap-2 font-titulo text-base sm:text-xl md:text-2xl lg:text-3xl tracking-wider text-marca-acento shrink-0"
-    >
-      <span class="inline-block size-2 rounded-circulo bg-marca-acento sm:size-2.5 md:size-3"></span>
+      class="mb-5 sm:mb-2 md:mb-3 2xl:mb-6 flex select-none items-center gap-1.5 2xl:gap-3 font-titulo text-sm sm:text-base md:text-lg lg:text-xl 2xl:text-3xl tracking-wider text-marca-acento/90 shrink-0">
+      <span class="inline-block size-1.5 rounded-circulo bg-marca-acento sm:size-2 md:size-2.5 2xl:size-3.5"></span>
       <span>{{ sobresDisponibles().actuales }}/{{ sobresDisponibles().maximo }} GRATIS</span>
     </div>
 
-    <!-- Abanico de Sobres -->
+
+    <!-- Abanico de Sobres: el alto fluye con el viewport y el ancho sale de la proporción -->
     <div
-      class="relative flex items-center justify-center shrink-0 my-auto h-40 sm:h-52 md:h-64 lg:h-72 xl:h-80 max-h-[34vh] aspect-[16/10] w-auto max-w-[90vw]"
-    >
-      <!-- Sobre Izquierdo -->
+      class="abanico-sobres relative flex items-center justify-center shrink-0 md:my-auto h-[var(--alto-abanico)] aspect-[16/10] w-auto">
+
+      <!-- Halo de luz detrás del abanico 
       <div
-        class="absolute left-[24%] sm:left-[28%] top-1/2 -translate-x-1/2 -translate-y-1/2 h-[82%] w-auto -rotate-[12deg] z-10 cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30"
-        (click)="abrirSelectorSobres()"
-        title="Sobre misterioso"
-      >
-        <img
-          [src]="urlSobreIzquierda"
-          alt="Sobre misterioso"
-          class="pointer-events-none h-full w-auto object-contain select-none drop-shadow-xl"
-        />
+        class="pointer-events-none absolute -inset-[18%] -z-0 rounded-full bg-radial from-white/30 via-white/10 to-transparent blur-2xl"
+        aria-hidden="true"
+      ></div> -->
+
+      <!-- Sombra de apoyo -->
+      <div
+        class="pointer-events-none absolute bottom-[-2%] left-1/2 h-[7%] w-[62%] -translate-x-1/2 rounded-full bg-black/25 blur-xl"
+        aria-hidden="true"></div>
+
+      <!-- Sobre de Gastronomía -->
+      <div class="sobre-carrusel sobre-carrusel--gastronomia">
+        <app-sobre-marca class="w-full [&>*]:w-full!" categoria="gastronomia" tamanio="lg" clickeable
+          (accion)="abrirSelectorSobres()" />
       </div>
 
-      <!-- Sobre Derecho -->
-      <div
-        class="absolute left-[76%] sm:left-[72%] top-1/2 -translate-x-1/2 -translate-y-1/2 h-[82%] w-auto rotate-[12deg] z-10 cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30"
-        (click)="abrirSelectorSobres()"
-        title="Sobre temático de marcas"
-      >
-        <img
-          [src]="urlSobreDerecha"
-          alt="Sobre temático"
-          class="pointer-events-none h-full w-auto object-contain select-none drop-shadow-xl"
-        />
+      <!-- Sobre de Lego -->
+      <div class="sobre-carrusel sobre-carrusel--lego">
+        <app-sobre-marca class="w-full [&>*]:w-full!" variante="claro" logoUrl="imagenes/lego.png" nombre="Lego"
+          tamanio="lg" clickeable (accion)="abrirSelectorSobres()" />
       </div>
 
-      <!-- Sobre Central -->
-      <div
-        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[96%] w-auto z-20 cursor-pointer transition-transform duration-200 hover:scale-105 hover:z-30"
-        (click)="abrirSelectorSobres()"
-        title="Sobre diario principal"
-      >
-        <img
-          [src]="urlSobreCentro"
-          alt="Sobre principal"
-          class="pointer-events-none h-full w-auto object-contain select-none drop-shadow-2xl"
-        />
+      <!-- Sobre genérico -->
+      <div class="sobre-carrusel sobre-carrusel--general">
+        <app-sobre-marca class="w-full [&>*]:w-full!" tamanio="lg" clickeable (accion)="abrirSelectorSobres()" />
       </div>
     </div>
 
     <!-- Botón Principal "VER SOBRES" -->
-    <button
-      id="btn-ver-sobres"
-      type="button"
-      (click)="abrirSelectorSobres()"
-      class="mt-3 sm:mt-5 md:mt-8 shrink-0 cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2.5 sm:px-8 sm:py-3 font-interfaz text-xs sm:text-sm font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:shadow-brillo-verde active:scale-[0.98] md:px-12 md:py-3.5 md:text-base"
-    >
+    <button id="btn-ver-sobres" type="button" (click)="abrirSelectorSobres()"
+      class="mt-10 sm:mt-4 md:mt-8 2xl:mt-14 shrink-0 cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2.5 sm:px-8 sm:py-3 font-interfaz text-xs sm:text-sm font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:shadow-brillo-verde active:scale-[0.98] md:px-12 md:py-3.5 md:text-base 2xl:px-20 2xl:py-5 2xl:text-2xl">
       VER SOBRES
     </button>
   </main>
 
   <!-- ICONO FLOTANTE DE JUGAR -->
-  <aside
-    class="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6 lg:bottom-8 lg:right-8 xl:bottom-10 xl:right-10 z-20 cursor-pointer transition-transform hover:scale-110 active:scale-95"
-    (click)="abrirSelectorSobres()"
-    title="Abrir sobres y jugar"
-  >
-    <img
-      [src]="urlIconPelea"
-      alt="Abrir sobre"
-      class="pointer-events-none size-12 sm:size-16 md:size-20 lg:size-24 xl:size-32 select-none drop-shadow-xl"
-    />
-  </aside>
 
-  <app-flujo-apertura-sobres
-    [abierto]="selectorSobresAbierto()"
-    [sobresCatalogo]="sobresCatalogo()"
-    [sobresDiariosDisponibles]="sobresDisponibles().actuales"
-    (cerrar)="cerrarSelectorSobres()"
-    (aperturaRealizada)="alCompletarApertura($event)"
-  />
+  @if (juegoHabilitado) {
+  <aside
+    class="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6 lg:bottom-8 lg:right-8 xl:bottom-10 xl:right-10 2xl:bottom-14 2xl:right-14 z-20 cursor-pointer transition-transform hover:scale-110 active:scale-95"
+    (click)="abrirSelectorSobres()" title="Abrir sobres y jugar">
+    <img [src]="urlIconPelea" alt="Abrir sobre"
+      class="pointer-events-none size-12 sm:size-16 md:size-20 lg:size-24 xl:size-32 2xl:size-40 select-none drop-shadow-xl" />
+  </aside>
+  }
+
+  <app-flujo-apertura-sobres [abierto]="selectorSobresAbierto()" [sobresCatalogo]="sobresCatalogo()"
+    [sobresDiariosDisponibles]="sobresDisponibles().actuales" (cerrar)="cerrarSelectorSobres()"
+    (aperturaRealizada)="alCompletarApertura($event)" />
 </div>

@@ -39,4 +39,6 @@ export interface SobreItemUI {
   readonly urlImagen: string;
   readonly esDiario: boolean;
   readonly disponible: boolean;
+  readonly categoria?: string | null;
+  readonly marca?: string | null;
 }
