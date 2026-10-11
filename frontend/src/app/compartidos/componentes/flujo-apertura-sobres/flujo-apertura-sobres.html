@@ -238,8 +238,8 @@
   }
 
   <!-- FASE 5: CONSEGUISTE (solo la carta, sin recuadro, con brillo amarillo) -->
-  @if (fase() === 'revelacion' && cartasObtenidas().length > 0) {
-  @let carta = cartasObtenidas()[indiceCartaActual()];
+  @if (fase() === 'revelacion' && cartaActual()) {
+  @let carta = cartaActual()!;
   <div (click)="avanzarOFinalizar()"
     class="pointer-events-auto fixed inset-0 flex flex-col items-center justify-center px-4 py-4 sm:py-6 select-none cursor-pointer overflow-hidden animate-fade-in [--carta-h:clamp(12rem,50vh,50rem)]">
     <!-- Título -->
@@ -255,6 +255,14 @@
         class="pointer-events-none absolute -inset-[30%] rounded-full bg-radial from-[#f9f9b2]/45 via-[#f9f9b2]/15 to-transparent blur-2xl"
         aria-hidden="true"></div>
 
+      <!-- Aviso de carta repetida -->
+      @if (esRepetida()) {
+      <div
+        class="absolute -top-5 left-1/2 z-30 -translate-x-1/2 rounded-pildora border-2 border-teal-950 bg-[#f9f9b2] px-4 py-1 font-titulo text-sm sm:text-lg 2xl:text-3xl font-black uppercase tracking-wider text-teal-950 shadow-alta whitespace-nowrap">
+        ¡Repetida!
+      </div>
+      }
+
       <!-- Estrellitas decorativas (tamaño relativo a la carta) si quiero que giren pegá esto al final : animate-spin duration-1000 -->
       <div class="absolute -top-4 -left-6 sm:-left-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">
         ★</div>
@@ -269,9 +277,11 @@
       <div class="absolute -bottom-5 -right-5 sm:-right-8 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.09)]">★
       </div>
 
-      <!-- Carta: solo la ilustración, levemente inclinada a la derecha -->
-      <img [src]="obtenerImagenCarta(carta, indiceCartaActual())" [alt]="carta.nombre" draggable="false"
-        class="relative h-[var(--carta-h)] w-auto max-w-[80vw] object-contain rotate-[5deg] drop-shadow-[0_0_28px_rgba(249,249,178,0.65)] transition-transform duration-300 hover:scale-105" />
+      <!-- Carta: ancho derivado de la altura (proporción 5/7), levemente inclinada -->
+      <div
+        class="relative w-[calc(var(--carta-h)*5/7)] max-w-[60vw] rotate-[5deg] drop-shadow-[0_0_28px_rgba(249,249,178,0.65)]">
+        <app-carta [carta]="carta" />
+      </div>
     </div>
 
     <!-- Mensaje para continuar -->
