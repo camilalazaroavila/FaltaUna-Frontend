@@ -9,23 +9,27 @@ export class AlbumesService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
+  /** Categorías de marca para el desplegable del paso 4. */
   obtenerCategorias(): Observable<CategoriaApi[]> {
     return this.http.get<CategoriaApi[]>(`${this.apiUrl}/Categorias`);
   }
 
+  /**
+   * Crea el álbum (colección + marca) de la empresa. `POST /api/Colecciones`, multipart/form-data.
+   * Los nombres de campo coinciden con `CrearColeccionSolicitud` del backend.
+   */
   crear(solicitud: CrearAlbumSolicitud): Observable<AlbumRespuesta> {
     const form = new FormData();
-    form.append('referenciaPago', solicitud.referenciaPago);
-    form.append('nombreMarca', solicitud.nombreMarca);
-    form.append('logo', solicitud.logo);
-    solicitud.imagenes.forEach((img) => form.append('imagenes', img));
-    form.append('descripcion', solicitud.descripcion);
-    form.append('redSocial', solicitud.redSocial);
-    form.append('usuarioRedSocial', solicitud.usuarioRedSocial);
-    form.append('emailContacto', solicitud.emailContacto);
-    form.append('categoriaId', String(solicitud.categoriaId));
-    form.append('fechaInicio', solicitud.fechaInicio);
-    form.append('fechaFin', solicitud.fechaFin);
+    form.append('ReferenciaPago', solicitud.referenciaPago);
+    form.append('NombreMarca', solicitud.nombreMarca);
+    form.append('DescripcionMarca', solicitud.descripcion);
+    form.append('EmailContacto', solicitud.emailContacto);
+    form.append('RedesSociales', `${solicitud.redSocial}: ${solicitud.usuarioRedSocial}`);
+    form.append('CategoriaId', String(solicitud.categoriaId));
+    form.append('FechaInicio', solicitud.fechaInicio);
+    form.append('FechaFin', solicitud.fechaFin);
+    form.append('Logo', solicitud.logo);
+    solicitud.imagenes.forEach((imagen, i) => form.append(`ImagenesCartas[${i}].Archivo`, imagen));
     return this.http.post<AlbumRespuesta>(`${this.apiUrl}/Colecciones`, form);
   }
-}
+}
