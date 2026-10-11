@@ -1,13 +1,7 @@
 <div
   class="flow-root min-h-dvh bg-fondo-app bg-usuario-gradiente-amarillo-verde font-interfaz text-texto-primario"
 >
-  <app-header
-    [enSesion]="true"
-    tamanio="grande"
-    enlaceLogo="/usuario"
-    [nombreUsuario]="authService.usuarioActual()?.nombreUsuario ?? ''"
-    (cerrarSesion)="cerrarSesion()"
-  />
+  <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario" />
 
   <div class="w-full px-5 pt-6 pb-12 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
     <h1 class="font-titulo text-misiones-titulo tracking-[0.04em] text-marca-acento">

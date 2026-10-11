@@ -1,186 +1,132 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { of } from 'rxjs';
-import { toast } from 'ngx-sonner';
 
-import { AuthService } from '../../servicios/auth.service';
-import { MisionesService } from '../../servicios/mision.services';
-import { SobresService } from '../../servicios/sobres.service';
-import { Misiones } from './misiones';
+import type { Mision } from '../../modelos/misiones.model';
+import { TarjetaMision } from '../../compartidos/componentes/tarjeta-mision/tarjeta-mision';
 
-jest.mock('ngx-sonner', () => ({
-  toast: { success: jest.fn(), error: jest.fn() },
-}));
+const crearMision = (parcial: Partial<Mision> = {}): Mision => ({
+  id: 1,
+  titulo: 'Abrí 2 sobres',
+  tipo: 'sobres_abiertos',
+  periodicidad: 'diaria',
+  actual: 1,
+  objetivo: 2,
+  estado: 'en_curso',
+  recompensa: { tipo: 'generico' },
+  disponible: true,
+  ...parcial,
+});
 
-describe('Misiones', () => {
-  let fixture: ComponentFixture<Misiones>;
-  let componente: Misiones;
-  let servicio: MisionesService;
+describe('TarjetaMision', () => {
+  let fixture: ComponentFixture<TarjetaMision>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [Misiones],
-      providers: [
-        provideRouter([]),
-        { provide: AuthService, useValue: { usuarioActual: () => null, logout: jest.fn() } },
-        { provide: SobresService, useValue: { obtenerSobres: jest.fn().mockReturnValue(of([])) } },
-      ],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(Misiones);
-    componente = fixture.componentInstance;
-    servicio = TestBed.inject(MisionesService);
+  const montar = (mision: Mision): HTMLElement => {
+    fixture.componentRef.setInput('mision', mision);
     fixture.detectChanges();
-    jest.clearAllMocks();
+    return fixture.nativeElement as HTMLElement;
+  };
+
+  /** Escucha las emisiones de `reclamar` y las acumula. */
+  const escucharReclamos = (): number[] => {
+    const emitidos: number[] = [];
+    fixture.componentInstance.reclamar.subscribe((id) => emitidos.push(id));
+    return emitidos;
+  };
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ imports: [TarjetaMision] });
+    fixture = TestBed.createComponent(TarjetaMision);
   });
 
-  afterEach(() => {
-    fixture.destroy();
-  });
-
-  it('renderiza el encabezado con el título', () => {
-    const titulo = fixture.nativeElement.querySelector('h1') as HTMLElement;
-    expect(titulo.textContent?.trim()).toBe('Misiones');
-  });
-
-  it('muestra una pestaña por periodicidad', () => {
-    const pestanas = fixture.nativeElement.querySelectorAll('[role="tab"]');
-    expect(pestanas.length).toBe(3);
-    expect(pestanas[0].textContent).toContain('Diaria');
-  });
-
-  it('arranca en la pestaña Diaria seleccionada', () => {
-    const pestanas = fixture.nativeElement.querySelectorAll('[role="tab"]');
-    expect(pestanas[0].getAttribute('aria-selected')).toBe('true');
-    expect(pestanas[1].getAttribute('aria-selected')).toBe('false');
-  });
-
-  it('lista las misiones de la periodicidad activa y oculta las otras pestañas', () => {
-    const panelDiaria = fixture.nativeElement.querySelector('#panel-diaria') as HTMLElement;
-    const panelSemanal = fixture.nativeElement.querySelector('#panel-semanal') as HTMLElement;
-
-    expect(panelDiaria.querySelectorAll('app-tarjeta-mision').length).toBe(
-      servicio.misionesDe('diaria').length,
-    );
-    expect(panelDiaria.hasAttribute('hidden')).toBe(false);
-    expect(panelSemanal.hasAttribute('hidden')).toBe(true);
-  });
-
-  it('cambia de sección a PT System y muestra filtros y filas', () => {
-    componente.cambiarSeccion('pity');
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.querySelectorAll('app-desplegable-seleccion').length).toBe(3);
-    expect(fixture.nativeElement.querySelectorAll('app-tarjeta-pity').length).toBe(
-      servicio.pity().length,
-    );
-  });
-
-  it('reclama una misión completada y avisa con un toast de éxito', () => {
-    const completada = servicio.misiones().find((m) => m.estado === 'completada')!;
-
-    componente.reclamarMision(completada.id);
-    fixture.detectChanges();
-
-    expect(toast.success).toHaveBeenCalledTimes(1);
-    expect(servicio.misiones().find((m) => m.id === completada.id)?.estado).toBe('reclamada');
-  });
-
-  it('avisa con un toast de error al reclamar una misión en curso', () => {
-    componente.reclamarMision(3);
-    fixture.detectChanges();
-
-    expect(toast.error).toHaveBeenCalledTimes(1);
-    expect(toast.success).not.toHaveBeenCalled();
-  });
-
-  it('filtra el PT System por categoría', () => {
-    componente.cambiarSeccion('pity');
-    componente.cambiarCategoria('musica');
-    fixture.detectChanges();
-
-    const filas = componente['pityFiltrado']();
-    expect(filas.length).toBeGreaterThan(0);
-    expect(filas.every((p) => p.sobre.tipo === 'categoria' && p.sobre.categoria === 'musica')).toBe(
-      true,
-    );
-  });
-
-  it('la categoría incluye también las marcas que le pertenecen', () => {
-    componente.cambiarSeccion('pity');
-    componente.cambiarCategoria('gastronomia');
-    fixture.detectChanges();
-
-    const filas = componente['pityFiltrado']();
-    const tieneMarca = filas.some((p) => p.sobre.tipo === 'marca');
-    const tieneCategoria = filas.some(
-      (p) => p.sobre.tipo === 'categoria' && p.sobre.categoria === 'gastronomia',
-    );
-
-    expect(tieneCategoria).toBe(true);
-    expect(tieneMarca).toBe(true);
-  });
-
-  it('ofrece las seis categorías del catálogo en el filtro', () => {
-    componente.cambiarSeccion('pity');
-    fixture.detectChanges();
-
-    expect(componente['opcionesCategoria'].length).toBe(6);
-  });
-
-  it('ordena el PT System por nombre cuando corresponde', () => {
-    componente.cambiarSeccion('pity');
-    componente.cambiarOrden('nombre');
-    fixture.detectChanges();
-
-    const etiquetas = componente['pityFiltrado']().map((p) => {
-      if (p.sobre.tipo === 'categoria') return p.sobre.categoria;
-      if (p.sobre.tipo === 'marca') return p.sobre.nombre;
-      return 'Sobres generales';
+  describe('contenido según estado', () => {
+    it('muestra el título y el estado "En curso" en una misión en progreso', () => {
+      const el = montar(crearMision());
+      expect(el.textContent).toContain('Abrí 2 sobres');
+      expect(el.textContent).toContain('En curso');
+      expect(el.textContent).toContain('Misión en curso');
     });
-    expect(etiquetas).toEqual([...etiquetas].sort((a, b) => a.localeCompare(b, 'es')));
+
+    it('renderiza la barra de progreso cuando la misión está disponible', () => {
+      const el = montar(crearMision());
+      expect(el.querySelector('app-barra-progreso')).not.toBeNull();
+    });
+
+    it('no muestra la barra ni la recompensa cuando no está disponible', () => {
+      const el = montar(
+        crearMision({ disponible: false, tipo: 'partidas_jugadas', recompensa: null }),
+      );
+      expect(el.textContent).toContain('Próximamente');
+      expect(el.textContent).toContain('Misión no disponible todavía');
+      expect(el.querySelector('app-barra-progreso')).toBeNull();
+      expect(el.querySelector('app-sobre-marca')).toBeNull();
+    });
+
+    it('en una misión completada el sobre es clickeable y la recompensa está lista', () => {
+      const el = montar(
+        crearMision({
+          estado: 'completada',
+          recompensa: { tipo: 'categoria', categoria: 'gastronomia' },
+        }),
+      );
+      const boton = el.querySelector('app-sobre-marca button')!;
+      expect(boton.getAttribute('aria-label')).toBe('Sobre de Gastronomía');
+      expect(el.textContent).toContain('Reclamar');
+      expect(el.textContent).toContain('¡Reclamá tu sobre!');
+    });
+
+    it('no permite reclamar una misión en curso (el sobre no es clickeable)', () => {
+      const el = montar(crearMision({ estado: 'en_curso' }));
+      expect(el.querySelector('app-sobre-marca button')).toBeNull();
+      expect(el.textContent).toContain('En curso');
+    });
+
+    it('marca visualmente una misión reclamada', () => {
+      const el = montar(crearMision({ estado: 'reclamada' }));
+      expect(el.textContent).toContain('Recompensa reclamada');
+      expect(el.textContent).toContain('Reclamada');
+      expect(el.querySelector('app-sobre-marca button')).toBeNull();
+    });
+
+    it('el indicador de una misión reclamada es un círculo verde', () => {
+      const el = montar(crearMision({ estado: 'reclamada' }));
+      const indicador = el.querySelector('article > span')!;
+      expect(indicador.className).toContain('rounded-circulo');
+      expect(indicador.className).toContain('bg-exito');
+    });
+
+    it('destaca una misión reclamable con el halo animado y el estado visible', () => {
+      const el = montar(crearMision({ estado: 'completada' }));
+
+      const articulo = el.querySelector('article')!;
+      expect(articulo.className).toContain('animate-latido-reclamo');
+      expect(el.textContent).toContain('¡Reclamá tu sobre!');
+    });
   });
 
-  it('limpia los filtros del PT System desde el estado vacío', () => {
-    componente.cambiarSeccion('pity');
-    componente.cambiarCategoria('musica');
-    componente.cambiarMarca('Grido');
-    fixture.detectChanges();
+  describe('reclamo', () => {
+    it('emite el id una sola vez al clickear el sobre', () => {
+      const emitidos = escucharReclamos();
+      const el = montar(crearMision({ id: 7, estado: 'completada' }));
 
-    expect(componente['pityFiltrado']().length).toBe(0);
-    expect(fixture.nativeElement.textContent).toContain('No hay sobres que coincidan');
+      (el.querySelector('app-sobre-marca button') as HTMLButtonElement).click();
 
-    componente.limpiarFiltrosPity();
-    fixture.detectChanges();
+      expect(emitidos).toEqual([7]);
+    });
 
-    expect(componente['pityFiltrado']().length).toBe(servicio.pity().length);
-  });
 
-  it('resume las completadas por periodicidad sin contar las no disponibles', () => {
-    expect(componente['resumenDe']('diaria')).toEqual({ completadas: 2, total: 3 });
-    expect(componente['resumenDe']('semanal')).toEqual({ completadas: 0, total: 1 });
-  });
+  describe('íconos', () => {
+    it.each<[string, Partial<Mision>]>([
+      ['en curso', { estado: 'en_curso', disponible: true }],
+      ['lista para reclamar', { estado: 'completada', disponible: true }],
+      ['reclamada', { estado: 'reclamada', disponible: true }],
+      ['no disponible', { disponible: false }],
+    ])('el ícono del indicador (%s) toma el token fluido de tamaño', (_estado, parcial) => {
+      const el = montar(crearMision(parcial));
 
-  it('el ícono de la badge "24 h" toma el token fluido de tamaño de badge', () => {
-    const badge = Array.from(
-      fixture.nativeElement.querySelectorAll('#panel-diaria span'),
-    ).find((span) =>
-      (span as HTMLElement).textContent?.includes('Se renueva cada 24 h'),
-    ) as HTMLElement | undefined;
-
-    expect(badge).toBeTruthy();
-    const icono = badge!.querySelector('ng-icon') as HTMLElement | null;
-    expect(icono).not.toBeNull();
-    expect(icono!.style.getPropertyValue('--ng-icon__size')).toBe(
-      'var(--misiones-medida-badge-icono)',
-    );
-  });
-
-  it('navega entre pestañas con las flechas', () => {
-    const evento = new KeyboardEvent('keydown', { key: 'ArrowRight' });
-    componente.alTecladoPestanas(evento, 0);
-    fixture.detectChanges();
-
-    expect(componente['periodicidadActiva']()).toBe('semanal');
+      const icono = el.querySelector('ng-icon') as HTMLElement | null;
+      expect(icono).not.toBeNull();
+      expect(icono!.style.getPropertyValue('--ng-icon__size')).toBe(
+        'var(--misiones-medida-indicador-icono)',
+      );
+    });
   });
 });

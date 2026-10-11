@@ -21,7 +21,7 @@ import {
   type SobreReferencia,
 } from '../../modelos/misiones.model';
 import type { SobreRespuesta } from '../../modelos/sobre.model';
-import { AuthService } from '../../servicios/auth.service';
+
 import { MisionesService } from '../../servicios/mision.services';
 import { SobresService } from '../../servicios/sobres.service';
 
@@ -42,7 +42,7 @@ type CriterioOrdenPity = 'cercania' | 'nombre';
 export class Misiones implements OnInit {
   private readonly servicio = inject(MisionesService);
   private readonly sobresService = inject(SobresService);
-  readonly authService = inject(AuthService);
+
   private readonly router = inject(Router);
 
   protected readonly periodicidades = PERIODICIDADES;
@@ -155,7 +155,6 @@ export class Misiones implements OnInit {
   }
 
   protected cerrarSesion(): void {
-    this.authService.logout();
     this.router.navigate(['/login']);
   }
 

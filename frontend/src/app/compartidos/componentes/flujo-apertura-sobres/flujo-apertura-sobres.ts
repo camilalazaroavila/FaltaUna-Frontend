@@ -453,7 +453,7 @@ export class FlujoAperturaSobres {
           this.fase.set('revelacion');
         }, 400);
       },
-      error: (err) => {
+      error: () => {
         // En caso de que el backend falle o no tenga pool cargado, usamos respaldo
         this.cargandoApertura.set(false);
         const cartasFallback = this.generarCartasRespaldo(sobre);
