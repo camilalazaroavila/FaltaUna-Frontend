@@ -38,7 +38,7 @@
       <app-etiqueta-campo
         texto="Subí las imágenes que van a formar parte de tu álbum de marca"
         [contador]="borrador.cantidadImagenes() + '/' + cantidad"
-        [ayuda]="'La imagen no puede pesar más de ' + maxKb + 'kb.'"
+        [ayuda]="'Subí entre ' + minimo + ' y ' + cantidad + ' imágenes. Cada una puede pesar hasta ' + maxKb + 'kb.'"
       />
       <app-grilla-imagenes
         [cantidad]="cantidad"

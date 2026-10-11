@@ -1,7 +1,9 @@
 import { OpcionSelect } from '../compartidos/componentes/campo-select/campo-select';
 
-/** Cantidad de cartas (imágenes) que forman el álbum de marca. Debe coincidir con el backend (CrearColeccion). */
-export const CARTAS_POR_ALBUM = 2;
+/** Casillas de imagen que se muestran en el álbum de marca (máximo permitido). */
+export const CARTAS_POR_ALBUM = 12;
+/** Mínimo de imágenes que hay que cargar para poder continuar. Debe coincidir con el backend (CrearColeccion). */
+export const MINIMO_IMAGENES = 2;
 /** Peso máximo por imagen, en kb. */
 export const MAX_KB_IMAGEN = 200;
 
