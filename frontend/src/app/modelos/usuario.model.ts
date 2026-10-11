@@ -37,6 +37,7 @@ export interface DisponibilidadRespuesta {
 export interface LoginSolicitud {
   identificador: string;
   password: string;
+  rol?: Rol;
 }
 
 export interface LoginRespuesta {

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, effect } from '@a
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../servicios/auth.service';
-import { LoginSolicitud } from '../../modelos/usuario.model';
+import { LoginSolicitud, Rol } from '../../modelos/usuario.model';
 import { AuthLayout } from '../../compartidos/componentes/auth-layout/auth-layout';
 import { injectModoAuth } from '../../compartidos/componentes/auth-layout/auth-modo';
 
@@ -64,7 +64,15 @@ export class Login implements OnInit {
     this.error = null;
     this.cargando = true;
 
-    this.authService.login(this.credenciales).subscribe({
+    const rolEsperado: Rol = this.modo() === 'empresa' ? 'Empresa' : 'Usuario';
+
+    const solicitud: LoginSolicitud = {
+      identificador: this.credenciales.identificador,
+      password: this.credenciales.password,
+      rol: rolEsperado,
+    };
+
+    this.authService.login(solicitud).subscribe({
       next: (respuesta) => {
         this.cargando = false;
         this.router.navigate([this.authService.rutaSegunRol(respuesta.usuario.rol)]);
