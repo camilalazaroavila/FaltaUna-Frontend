@@ -9,11 +9,7 @@ export class AlbumesService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  /**
-   * Crea el álbum de la marca (multipart/form-data por los archivos).
-   * ⚠️ El endpoint `POST /Albumes` y los nombres de campo son una suposición:
-   * ajustarlos al contrato real del backend.
-   */
+
   crear(solicitud: CrearAlbumSolicitud): Observable<AlbumRespuesta> {
     const form = new FormData();
     form.append('referenciaPago', solicitud.referenciaPago);
@@ -27,6 +23,6 @@ export class AlbumesService {
     form.append('categoria', solicitud.categoria);
     form.append('fechaInicio', solicitud.fechaInicio);
     form.append('fechaFin', solicitud.fechaFin);
-    return this.http.post<AlbumRespuesta>(`${this.apiUrl}/Albumes`, form);
+    return this.http.post<AlbumRespuesta>(`${this.apiUrl}/Colecciones`, form);
   }
 }
