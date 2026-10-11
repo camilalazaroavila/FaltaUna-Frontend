@@ -11,6 +11,7 @@ import { SeccionBotonFlotante } from './secciones/boton-flotante/seccion-boton-f
 import { SeccionBotonIcono } from './secciones/boton-icono/seccion-boton-icono';
 import { SeccionSobreMarca } from './secciones/sobre-marca/seccion-sobre-marca';
 import { SeccionCarta } from './secciones/carta/seccion-carta';
+import { SeccionAreaEmpresa } from './secciones/area-empresa/seccion-area-empresa';
 
 export type ModoGaleria = 'jugador' | 'empresa';
 
@@ -28,6 +29,7 @@ export type ModoGaleria = 'jugador' | 'empresa';
     SeccionBotonIcono,
     SeccionSobreMarca,
     SeccionCarta,
+    SeccionAreaEmpresa,
   ],
   templateUrl: './galeria-componentes.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

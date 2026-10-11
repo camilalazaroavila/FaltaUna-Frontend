@@ -1,0 +1,33 @@
+<article
+  class="relative flex h-full flex-col gap-1 overflow-hidden rounded-md border-2 border-texto-primario bg-fondo-superficie py-4 pr-4 pl-5 shadow-[4px_4px_0_var(--texto-primario)]"
+>
+  <span
+    class="absolute inset-y-0 left-0 w-1.5"
+    [style.background]="acento().fuerte"
+    aria-hidden="true"
+  ></span>
+
+  <div class="flex items-center gap-3">
+    @if (icono(); as nombreIcono) {
+      <span
+        class="flex size-9 shrink-0 items-center justify-center rounded-sm"
+        [style.background]="acento().suave"
+        [style.color]="acento().fuerte"
+        aria-hidden="true"
+      >
+        <ng-icon [name]="nombreIcono" size="20" />
+      </span>
+    }
+    <p class="font-titulo text-3xl leading-none text-texto-primario">{{ valor() }}</p>
+  </div>
+
+  <p
+    class="mt-1 font-interfaz text-[0.7rem] font-bold tracking-[0.08em] text-texto-secundario uppercase"
+  >
+    {{ etiqueta() }}
+  </p>
+
+  @if (detalle(); as texto) {
+    <p class="font-interfaz text-xs text-texto-apagado">{{ texto }}</p>
+  }
+</article>

@@ -1,0 +1,49 @@
+<article class="ticket" [class.ticket--finalizado]="album().estado === 'finalizado'">
+  <div class="ticket__banda" [style.background]="acento().fuerte" [style.color]="acento().sobre">
+    <span class="ticket__textura" aria-hidden="true"></span>
+
+    <div class="ticket__cabecera">
+      <span class="ticket__chip">Temporada {{ album().temporada }}</span>
+      <span class="ticket__estado">{{ estado() }}</span>
+    </div>
+
+    <h2 class="ticket__nombre">{{ album().nombre }}</h2>
+  </div>
+
+  <div class="ticket__cuerpo">
+    <p class="ticket__descripcion">{{ album().descripcion }}</p>
+
+    <app-tarjeta-recompensa [recompensa]="album().recompensa" [tono]="album().tono" />
+
+    <dl class="ticket__metricas">
+      <div class="ticket__metrica">
+        <dt>Cartas</dt>
+        <dd>{{ resumen().totalCartas }}</dd>
+      </div>
+      <div class="ticket__metrica">
+        <dt>Completaron</dt>
+        <dd>{{ completado() }}</dd>
+      </div>
+      <div class="ticket__metrica">
+        <dt>Favoritos</dt>
+        <dd>{{ favoritos() }}</dd>
+      </div>
+    </dl>
+
+    <app-barra-rareza
+      [reparto]="resumen().reparto"
+      [etiqueta]="'Reparto de rarezas de ' + album().nombre"
+    />
+
+    <button
+      type="button"
+      class="ticket__cta"
+      [style.background]="acento().fuerte"
+      [style.color]="acento().sobre"
+      (click)="seleccionar.emit(album().id)"
+    >
+      Ver cartas
+      <ng-icon name="phosphorArrowRightFill" size="14" aria-hidden="true" />
+    </button>
+  </div>
+</article>

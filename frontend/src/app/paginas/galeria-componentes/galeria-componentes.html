@@ -9,9 +9,7 @@
 <header
   class="sticky top-0 z-30 border-b border-borde-default bg-fondo-app/95 backdrop-blur supports-backdrop-blur:bg-fondo-app/80"
 >
-  <div
-    class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6"
-  >
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
     <h1 class="font-titulo text-lg text-texto-primario">Galería</h1>
 
     <!-- Selector de modo: usa radios nativos para heredar el recorrido con flechas del teclado -->
@@ -38,7 +36,9 @@
     </fieldset>
 
     <!-- Simulación de prefers-reduced-motion -->
-    <label class="flex cursor-pointer items-center gap-2 font-interfaz text-xs text-texto-secundario">
+    <label
+      class="flex cursor-pointer items-center gap-2 font-interfaz text-xs text-texto-secundario"
+    >
       <input
         type="checkbox"
         class="size-4 accent-marca-primaria"
@@ -58,9 +58,7 @@
 
   <!-- Índice -->
   <nav aria-label="Índice de secciones" class="border-t border-borde-default">
-    <ul
-      class="custom-scrollbar mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 sm:px-6"
-    >
+    <ul class="custom-scrollbar mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 sm:px-6">
       @for (seccion of secciones; track seccion.id) {
         <li>
           <a
@@ -85,11 +83,12 @@
   <app-seccion-tokens id="tokens" />
   <app-seccion-boton id="boton" />
   <app-seccion-badge id="badge" />
-<app-seccion-navegacion-circular id="navegacion-circular" />
-    <app-seccion-boton-opcion-juego id="boton-opcion-juego" />
-    <app-seccion-boton-jugar id="boton-jugar" />
+  <app-seccion-navegacion-circular id="navegacion-circular" />
+  <app-seccion-boton-opcion-juego id="boton-opcion-juego" />
+  <app-seccion-boton-jugar id="boton-jugar" />
   <app-seccion-boton-flotante id="boton-flotante" />
   <app-seccion-boton-icono id="boton-icono" />
   <app-seccion-sobre-marca id="sobre-marca" />
   <app-seccion-carta id="carta" />
+  <app-seccion-area-empresa id="area-empresa" />
 </main>

@@ -1,0 +1,339 @@
+<section>
+  @if (albumActual(); as album) {
+    <!-- ===================== DETALLE DEL ÁLBUM ===================== -->
+    <button
+      type="button"
+      (click)="volverAAlbumes()"
+      class="mb-4 inline-flex cursor-pointer items-center gap-1.5 font-interfaz text-xs font-bold tracking-[0.08em] text-marca-secundaria uppercase transition-colors hover:text-marca-secundaria-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+    >
+      <ng-icon name="phosphorArrowLeftFill" size="14" aria-hidden="true" />
+      Volver a álbumes
+    </button>
+
+    <header class="mb-6">
+      <p class="font-interfaz text-xs font-bold tracking-[0.18em] text-marca-secundaria uppercase">
+        Álbum de {{ empresa.nombre }}
+      </p>
+      <div class="mt-1 flex flex-wrap items-center gap-3">
+        <h1 class="font-titulo text-4xl text-texto-primario sm:text-5xl">{{ album.nombre }}</h1>
+        <span
+          class="rounded-pildora px-3 py-1 font-interfaz text-xs font-bold tracking-wide uppercase"
+          [class]="
+            album.estado === 'activo'
+              ? 'bg-exito-fondo text-exito-texto'
+              : 'bg-fondo-hundido text-texto-secundario'
+          "
+        >
+          {{ etiquetaEstado(album.estado) }}
+        </span>
+        <span
+          class="rounded-pildora bg-marca-secundaria-suave px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-secundaria uppercase"
+        >
+          Temporada {{ album.temporada }}
+        </span>
+      </div>
+      <p class="mt-2 max-w-3xl font-interfaz text-sm text-texto-secundario">
+        {{ album.descripcion }}
+      </p>
+    </header>
+
+    <!-- Recompensa al completar -->
+    <app-tarjeta-recompensa
+      class="mb-6 block"
+      [recompensa]="album.recompensa"
+      [tono]="album.tono"
+    />
+
+    <!-- KPIs del álbum -->
+    <div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      @for (kpi of kpisAlbum(); track kpi.etiqueta) {
+        <app-tarjeta-kpi
+          [etiqueta]="kpi.etiqueta"
+          [valor]="kpi.valor"
+          [detalle]="kpi.detalle"
+          [icono]="kpi.icono"
+          [tono]="album.tono"
+        />
+      }
+    </div>
+
+    <!-- Reparto por rareza -->
+    <article
+      class="mb-6 rounded-md border-2 border-texto-primario bg-fondo-superficie p-5 shadow-[4px_4px_0_var(--texto-primario)]"
+    >
+      <div class="mb-3 flex items-center gap-2.5">
+        <span class="text-marca-primaria" aria-hidden="true">
+          <ng-icon name="phosphorChartDonutFill" size="20" />
+        </span>
+        <div>
+          <h2 class="font-titulo text-lg text-texto-primario">Reparto por rareza</h2>
+          <p class="font-interfaz text-xs text-texto-apagado">
+            Cómo se compone la colección según la rareza de sus cartas.
+          </p>
+        </div>
+      </div>
+
+      <app-barra-rareza
+        [reparto]="album.resumen.reparto"
+        [etiqueta]="'Reparto por rareza de ' + album.nombre"
+      />
+    </article>
+
+    <!-- Barra de filtros -->
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="relative min-w-0 flex-1 basis-56">
+        <svg
+          class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-texto-apagado"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <circle cx="10.5" cy="10.5" r="6.5" />
+          <path d="M15.5 15.5 21 21" />
+        </svg>
+        <label class="sr-only" for="buscar-carta-empresa">Buscar carta por nombre</label>
+        <input
+          id="buscar-carta-empresa"
+          type="search"
+          autocomplete="off"
+          placeholder="Buscar carta..."
+          class="w-full rounded-pildora border border-borde-default bg-fondo-superficie py-2 pr-3 pl-9 text-sm text-texto-primario outline-none transition-colors placeholder:text-texto-apagado focus-visible:border-borde-foco"
+          [value]="busqueda()"
+          (input)="actualizarBusqueda($event)"
+        />
+      </div>
+
+      <div>
+        <label class="sr-only" for="orden-cartas-empresa">Ordenar cartas</label>
+        <select
+          id="orden-cartas-empresa"
+          class="cursor-pointer rounded-pildora border border-borde-default bg-fondo-superficie px-3.5 py-2 text-xs font-semibold text-texto-primario outline-none transition-colors focus-visible:border-borde-foco"
+          [value]="criterioOrden()"
+          (change)="cambiarOrden($event)"
+        >
+          <option value="nombre-asc">Nombre (A-Z)</option>
+          <option value="nombre-desc">Nombre (Z-A)</option>
+          <option value="rareza">Rareza</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-3 flex flex-wrap gap-2">
+      @for (rareza of rarezasDelAlbum(); track rareza.rareza) {
+        <button
+          type="button"
+          class="cursor-pointer rounded-pildora border px-3.5 py-1.5 font-interfaz text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+          [class]="
+            rarezaActiva() === rareza.rareza
+              ? 'border-marca-secundaria bg-marca-secundaria-suave text-marca-secundaria'
+              : 'border-borde-default bg-fondo-superficie text-texto-secundario hover:bg-fondo-elevado'
+          "
+          [attr.aria-pressed]="rarezaActiva() === rareza.rareza"
+          (click)="toggleRareza(rareza.rareza)"
+        >
+          {{ rareza.etiqueta }}
+        </button>
+      }
+    </div>
+
+    <p class="mt-4 font-interfaz text-xs text-texto-apagado" aria-live="polite">
+      <strong class="text-marca-secundaria">{{ cartasFiltradas().length }}</strong>
+      de {{ cartasDelAlbum().length }} cartas
+    </p>
+
+    @if (sinResultados()) {
+      <div class="flex flex-col items-center justify-center gap-1.5 px-8 py-16 text-center">
+        <p class="font-titulo text-lg text-texto-secundario">
+          No se encontraron cartas con esos filtros.
+        </p>
+        <p class="font-interfaz text-sm text-texto-apagado">
+          Probá cambiando la búsqueda o la rareza seleccionada.
+        </p>
+        <button
+          type="button"
+          class="mt-4 cursor-pointer rounded-pildora border border-marca-primaria bg-transparent px-5 py-2 font-interfaz text-xs font-bold tracking-[0.06em] text-marca-primaria uppercase transition-colors hover:bg-marca-primaria hover:text-marca-sobre-primaria"
+          (click)="limpiarFiltros()"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+    } @else {
+      <div class="album__grilla mt-4">
+        @for (carta of cartasFiltradas(); track carta.id) {
+          <div
+            class="relative transition-transform duration-200 hover:-translate-y-1 motion-reduce:transition-none"
+          >
+            <app-carta [carta]="carta" />
+            <button
+              type="button"
+              class="absolute inset-0 cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+              [attr.aria-label]="'Ver estadísticas de ' + carta.nombre"
+              (click)="abrirCarta(carta)"
+            ></button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Modal con las estadísticas de la carta -->
+    @if (cartaSeleccionada(); as carta) {
+      <div
+        class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+        (click)="cerrarCarta()"
+        aria-hidden="true"
+      ></div>
+
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-carta-empresa"
+        class="fixed top-1/2 left-1/2 z-50 max-h-[92dvh] w-[min(92vw,34rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border-2 border-texto-primario bg-fondo-superficie p-6 text-texto-primario shadow-alta"
+      >
+        <button
+          type="button"
+          (click)="cerrarCarta()"
+          aria-label="Cerrar estadísticas de la carta"
+          class="absolute top-3 right-3 flex size-8 cursor-pointer items-center justify-center rounded-circulo bg-marca-secundaria font-bold text-marca-sobre-secundaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+        >
+          ✕
+        </button>
+
+        <div class="flex flex-col gap-5 sm:flex-row">
+          <div class="mx-auto w-32 shrink-0 sm:mx-0">
+            <app-carta [carta]="carta" />
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <h2 id="titulo-carta-empresa" class="font-titulo text-2xl text-marca-primaria">
+              {{ carta.nombre }}
+            </h2>
+            <p
+              class="mt-1 font-interfaz text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase"
+            >
+              {{ etiquetaRareza[carta.rareza] }} · {{ album.nombre }}
+            </p>
+
+            <p class="mt-4 font-interfaz text-sm text-texto-secundario">
+              La tienen
+              <strong class="font-bold text-texto-primario">
+                {{ estadisticasSeleccionada()?.usuariosQueLaTienen }}
+              </strong>
+              jugadores ({{ estadisticasSeleccionada()?.porcentajeUsuarios }}% del total).
+            </p>
+          </div>
+        </div>
+
+        <dl class="mt-6 grid grid-cols-2 gap-3">
+          <div class="rounded-sm bg-fondo-app p-3">
+            <dt class="flex items-center gap-1.5 font-interfaz text-xs text-texto-apagado">
+              <ng-icon
+                name="phosphorHeartFill"
+                size="14"
+                class="text-marca-secundaria"
+                aria-hidden="true"
+              />
+              Favoritos
+            </dt>
+            <dd class="mt-1 font-titulo text-2xl text-texto-primario">
+              {{ estadisticasSeleccionada()?.favoritos }}
+            </dd>
+          </div>
+
+          <div class="rounded-sm bg-fondo-app p-3">
+            <dt class="flex items-center gap-1.5 font-interfaz text-xs text-texto-apagado">
+              <ng-icon
+                name="phosphorArrowsLeftRightFill"
+                size="14"
+                class="text-marca-secundaria"
+                aria-hidden="true"
+              />
+              Intercambios
+            </dt>
+            <dd class="mt-1 font-titulo text-2xl text-texto-primario">
+              {{ estadisticasSeleccionada()?.intercambios }}
+            </dd>
+          </div>
+
+          <div class="rounded-sm bg-fondo-app p-3">
+            <dt class="flex items-center gap-1.5 font-interfaz text-xs text-texto-apagado">
+              <ng-icon
+                name="phosphorPlayFill"
+                size="14"
+                class="text-marca-secundaria"
+                aria-hidden="true"
+              />
+              Partidas
+            </dt>
+            <dd class="mt-1 font-titulo text-2xl text-texto-primario">
+              {{ estadisticasSeleccionada()?.partidas }}
+            </dd>
+          </div>
+
+          <div class="rounded-sm bg-fondo-app p-3">
+            <dt class="flex items-center gap-1.5 font-interfaz text-xs text-texto-apagado">
+              <ng-icon
+                name="phosphorUserFill"
+                size="14"
+                class="text-marca-secundaria"
+                aria-hidden="true"
+              />
+              Jugadores
+            </dt>
+            <dd class="mt-1 font-titulo text-2xl text-texto-primario">
+              {{ estadisticasSeleccionada()?.porcentajeUsuarios }}%
+            </dd>
+          </div>
+        </dl>
+      </div>
+    }
+  } @else {
+    <!-- ===================== GRILLA DE ÁLBUMES ===================== -->
+    <a
+      routerLink="/empresa/panel/estadisticas"
+      class="mb-4 inline-flex items-center gap-1.5 font-interfaz text-xs font-bold tracking-[0.08em] text-marca-secundaria uppercase transition-colors hover:text-marca-secundaria-hover"
+    >
+      <ng-icon name="phosphorArrowLeftFill" size="14" aria-hidden="true" />
+      Volver a estadísticas
+    </a>
+
+    <header class="mb-8">
+      <p class="font-interfaz text-xs font-bold tracking-[0.18em] text-marca-secundaria uppercase">
+        Panel de empresa
+      </p>
+      <div class="mt-1 flex flex-wrap items-center gap-3">
+        <h1 class="font-titulo text-4xl text-texto-primario sm:text-5xl">Álbumes</h1>
+        <span
+          class="rounded-pildora bg-marca-primaria px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-sobre-primaria uppercase"
+        >
+          {{ empresa.nombre }}
+        </span>
+        <span
+          class="rounded-pildora bg-marca-secundaria-suave px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-secundaria uppercase"
+        >
+          {{ empresa.categoriaEtiqueta }}
+        </span>
+      </div>
+      <p class="mt-2 max-w-2xl font-interfaz text-sm text-texto-secundario">
+        Estas son las colecciones que publicaste. Cada álbum reúne cartas de tus productos y
+        desbloquea una recompensa para los
+        <strong class="font-bold text-texto-primario">{{ totalUsuarios }}</strong> jugadores que lo
+        completen.
+      </p>
+    </header>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      @for (album of albumes; track album.id) {
+        <app-tarjeta-album
+          [album]="album"
+          [resumen]="album.resumen"
+          (seleccionar)="seleccionarAlbum($event)"
+        />
+      }
+    </div>
+  }
+</section>

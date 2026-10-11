@@ -85,6 +85,9 @@
 
     --color-azul-empresa: #1A3A5D;
     /* Azul corporativo de la landing empresarial (etiquetas de planes) */
+    --color-azul-empresa-hover: #142E4A;
+    --color-azul-empresa-activo: #0E2338;
+    --color-azul-empresa-suave: rgba(26, 58, 93, 0.10);
 
     /* --- Sobres de cartas (Paquete1 / Paquete2) --- */
     --color-sobre-verde: #709176;

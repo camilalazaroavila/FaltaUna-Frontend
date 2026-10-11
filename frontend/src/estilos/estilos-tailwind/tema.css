@@ -24,6 +24,12 @@
     --color-marca-acento-suave: var(--marca-acento-suave);
     --color-marca-sobre-acento: var(--marca-sobre-acento);
 
+    --color-marca-secundaria: var(--marca-secundaria);
+    --color-marca-secundaria-hover: var(--marca-secundaria-hover);
+    --color-marca-secundaria-activa: var(--marca-secundaria-activa);
+    --color-marca-secundaria-suave: var(--marca-secundaria-suave);
+    --color-marca-sobre-secundaria: var(--marca-sobre-secundaria);
+
     --color-fondo-app: var(--fondo-app);
     --color-fondo-superficie: var(--fondo-superficie);
     --color-fondo-elevado: var(--fondo-elevado);
