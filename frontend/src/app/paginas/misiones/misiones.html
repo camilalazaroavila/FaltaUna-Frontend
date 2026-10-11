@@ -1,72 +1,17 @@
 <div
-  class="min-h-dvh bg-fondo-coleccion bg-usuario-gradiente-amarillo-verde font-interfaz text-texto-primario"
+  class="flow-root min-h-dvh bg-fondo-app bg-usuario-gradiente-amarillo-verde font-interfaz text-texto-primario"
 >
-  <header class="relative z-40 w-full">
-    <div
-      class="m-3 flex items-center justify-between gap-3 rounded-md bg-landing-oscuro-fondo px-4 py-3 text-landing-oscuro-texto shadow-md sm:m-5 sm:px-6 lg:rounded-2xl lg:px-8 lg:py-4"
-    >
-      <a
-        routerLink="/usuario"
-        class="flex shrink-0 items-center"
-        aria-label="Volver a Mi cuenta"
-      >
-        <img
-          [src]="urlLogo"
-          alt="Falta Una"
-          class="h-8 w-auto object-contain sm:h-9 lg:h-12"
-        />
-      </a>
+  <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario" />
 
-      <h1
-        class="min-w-0 flex-1 text-center font-titulo text-2xl tracking-[0.04em] text-marca-acento sm:text-3xl lg:text-4xl"
-      >
-        Misiones
-      </h1>
+  <div class="w-full px-5 pt-6 pb-12 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
+    <h1 class="font-titulo text-misiones-titulo tracking-[0.04em] text-marca-acento">
+      Misiones
+    </h1>
+    <p class="mt-1 max-w-2xl font-interfaz text-misiones-texto text-texto-secundario">
+      Completá misiones, reclamá tus sobres y seguí tu progreso hacia la legendaria.
+    </p>
 
-      <div class="relative shrink-0">
-        <button
-          type="button"
-          class="flex size-9 cursor-pointer items-center justify-center rounded-circulo border border-black/10 bg-marca-acento text-marca-sobre-acento shadow-sm transition hover:brightness-105 sm:size-10"
-          aria-label="Menú de perfil"
-          [attr.aria-expanded]="menuUsuarioAbierto()"
-          (click)="toggleMenuUsuario()"
-        >
-          <svg class="size-5 sm:size-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path
-              fill-rule="evenodd"
-              d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-
-        @if (menuUsuarioAbierto()) {
-          <div
-            class="absolute top-full right-0 z-50 mt-2 w-56 rounded-xl border border-white/10 bg-fondo-hundido p-3 shadow-alta backdrop-blur-md"
-          >
-            <div class="mb-2 border-b border-white/10 pb-2">
-              <p class="font-interfaz text-xs tracking-wide text-texto-apagado uppercase">
-                Sesión activa
-              </p>
-              <p class="truncate font-titulo text-sm text-marca-acento">
-                {{ authService.usuarioActual()?.nombreUsuario || 'Usuario' }}
-              </p>
-            </div>
-            <button
-              type="button"
-              class="w-full cursor-pointer rounded-lg bg-white/10 px-3 py-2 text-left font-interfaz text-xs font-bold text-white transition hover:bg-error/30 hover:text-white"
-              (click)="cerrarSesion()"
-            >
-              Cerrar sesión
-            </button>
-          </div>
-        }
-      </div>
-    </div>
-  </header>
-
-  <div class="mx-auto w-full max-w-screen-2xl px-5 pb-12">
-    <div class="flex flex-col gap-6 md:flex-row md:items-start">
+    <div class="mt-6 flex flex-col gap-6 md:flex-row md:items-start">
       <app-panel-misiones
         class="shrink-0"
         [seccionActiva]="seccionActiva()"
@@ -88,9 +33,11 @@
                 [attr.aria-selected]="periodicidadActiva() === periodicidad"
                 [attr.aria-controls]="'panel-' + periodicidad"
                 [attr.tabindex]="periodicidadActiva() === periodicidad ? 0 : -1"
-                class="cursor-pointer px-5 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-borde-foco not-first:border-l not-first:border-borde-coleccion hover:bg-white/6"
-                [class.bg-marca-coleccion]="periodicidadActiva() === periodicidad"
-                [class.text-marca-coleccion-sobre]="periodicidadActiva() === periodicidad"
+                class="cursor-pointer px-4 py-2.5 font-titulo text-misiones-control tracking-[0.04em] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-borde-foco not-first:border-l not-first:border-borde-coleccion sm:px-6 sm:py-3"
+                [class.bg-marca-acento]="periodicidadActiva() === periodicidad"
+                [class.hover:bg-marca-acento-activo]="periodicidadActiva() === periodicidad"
+                [class.hover:bg-white/6]="periodicidadActiva() !== periodicidad"
+                [class.text-marca-sobre-acento]="periodicidadActiva() === periodicidad"
                 [class.text-texto-secundario]="periodicidadActiva() !== periodicidad"
                 (click)="cambiarPeriodicidad(periodicidad)"
                 (keydown)="alTecladoPestanas($event, i)"
@@ -101,6 +48,7 @@
           </div>
 
           @for (periodicidad of periodicidades; track periodicidad) {
+            @let resumen = resumenDe(periodicidad);
             <div
               role="tabpanel"
               [id]="'panel-' + periodicidad"
@@ -111,14 +59,35 @@
             >
               @if (misionesDe(periodicidad).length === 0) {
                 <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center">
-                  <p class="font-titulo text-lg text-texto-secundario">
+                  <p class="font-titulo text-misiones-fila text-texto-secundario">
                     No hay misiones {{ etiquetasPeriodicidad[periodicidad].toLowerCase() }}s ahora.
                   </p>
-                  <p class="text-sm text-texto-apagado">
+                  <p class="text-misiones-texto text-texto-apagado">
                     Volvé más tarde: las misiones se renuevan según su periodicidad.
                   </p>
                 </div>
               } @else {
+                <div class="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+                  <p class="font-interfaz text-sm text-texto-secundario">
+                    <span class="font-titulo text-base text-texto-primario">
+                      {{ resumen.completadas }}
+                    </span>
+                    de {{ resumen.total }} completadas
+                  </p>
+                  @if (periodicidad === 'diaria') {
+                    <span
+                      class="inline-flex items-center gap-1.5 rounded-pildora border border-atencion-borde bg-atencion-fondo px-3 py-1 text-misiones-badge font-bold text-atencion-texto"
+                    >
+                      <ng-icon
+                        name="phosphorSpinnerGapFill"
+                        size="var(--misiones-medida-badge-icono)"
+                        aria-hidden="true"
+                      />
+                      Se renueva cada 24 h
+                    </span>
+                  }
+                </div>
+
                 <ul class="misiones__lista">
                   @for (mision of misionesDe(periodicidad); track mision.id) {
                     <li>
@@ -130,7 +99,14 @@
             </div>
           }
         } @else {
-          <div class="flex flex-wrap items-end gap-3">
+          <p
+            class="mb-6 rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie p-3 font-interfaz text-misiones-texto text-texto-secundario"
+          >
+            El PT System cuenta los sobres que abrís de cada tipo. Al completar el total, te
+            asegurás una carta legendaria: la más rara del álbum.
+          </p>
+
+          <div class="mb-6 flex flex-wrap items-end gap-3">
             <app-desplegable-seleccion
               etiqueta="Categoría"
               marcador="Todas"
@@ -148,7 +124,6 @@
               (valorCambiar)="cambiarMarca($event)"
             />
             <app-desplegable-seleccion
-              variante="verde"
               etiqueta="Ordenar por"
               [mostrarEtiqueta]="true"
               [permitirLimpiar]="false"
@@ -160,10 +135,10 @@
 
           @if (pityFiltrado().length === 0) {
             <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center">
-              <p class="font-titulo text-lg text-texto-secundario">
+              <p class="font-titulo text-misiones-fila text-texto-secundario">
                 No hay sobres que coincidan con esos filtros.
               </p>
-              <p class="text-sm text-texto-apagado">
+              <p class="text-misiones-texto text-texto-apagado">
                 Probá con otra categoría o marca para ver tu progreso hacia la legendaria.
               </p>
               @if (hayFiltrosPity()) {
@@ -177,7 +152,7 @@
               }
             </div>
           } @else {
-            <ul class="misiones__lista mt-6">
+            <ul class="misiones__lista">
               @for (progreso of pityFiltrado(); track progreso.id) {
                 <li>
                   <app-tarjeta-pity [progreso]="progreso" />
@@ -189,4 +164,11 @@
       </main>
     </div>
   </div>
+
+  <app-flujo-apertura-sobres
+    [abierto]="modalAperturaAbierto()"
+    [sobresCatalogo]="sobresCatalogo()"
+    [sobreInicial]="sobreReclamado()"
+    (cerrar)="cerrarAperturaSobres()"
+  />
 </div>

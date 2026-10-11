@@ -22,8 +22,6 @@ interface ItemDesplegable {
   readonly etiqueta: string;
 }
 
-export type VarianteDesplegable = 'neutro' | 'verde';
-
 let instancias = 0;
 
 /**
@@ -51,7 +49,6 @@ export class DesplegableSeleccion implements OnDestroy {
   /** Texto del disparador cuando no hay selección; también la opción de limpiar. */
   readonly marcador = input<string>('Todas');
   readonly permitirLimpiar = input<boolean, unknown>(true, { transform: booleanAttribute });
-  readonly variante = input<VarianteDesplegable>('neutro');
   /**
    * Muestra `etiqueta: valor` dentro del disparador (p. ej. "Categoría: Todas").
    * Apagado por defecto: el disparador solo muestra el valor seleccionado.
@@ -77,23 +74,14 @@ export class DesplegableSeleccion implements OnDestroy {
     return this.opciones().find((o) => o.valor === valor)?.etiqueta ?? this.marcador();
   });
 
-  protected readonly clasesDisparador = computed(() => {
-    const base = [
-      'inline-flex cursor-pointer items-center gap-2 rounded-pildora px-3.5 py-2',
-      'font-interfaz text-xs font-semibold whitespace-nowrap',
+  protected readonly clasesDisparador = computed(() =>
+    [
+      'inline-flex cursor-pointer items-center gap-2 rounded-pildora px-4 py-2.5',
+      'font-interfaz text-misiones-control font-semibold whitespace-nowrap shadow-marca',
+      'border border-borde-coleccion bg-fondo-coleccion-superficie text-texto-primario hover:bg-white/6',
       'transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco',
-    ];
-
-    return this.variante() === 'verde'
-      ? [
-          ...base,
-          'border border-transparent bg-marca-primaria text-marca-sobre-primaria shadow-baja hover:brightness-105',
-        ].join(' ')
-      : [
-          ...base,
-          'border border-borde-coleccion bg-fondo-coleccion-superficie text-texto-primario hover:bg-white/6',
-        ].join(' ');
-  });
+    ].join(' '),
+  );
 
   protected readonly idOpcion = (indice: number): string => `${this.idLista}-opcion-${indice}`;
 

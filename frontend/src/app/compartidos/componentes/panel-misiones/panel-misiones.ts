@@ -12,12 +12,14 @@ interface BotonSeccion {
 
 /**
  * Navegación lateral de la vista de Misiones: dos botones circulares de icono
- * (Misiones en verde, PT System en amarillo) y un botón dedicado para
- * colapsar/expandir las etiquetas. En escritorio es una pastilla vertical; en
- * móvil, una fila horizontal.
+ * (Misiones y PT System) y un botón dedicado para colapsar/expandir las
+ * etiquetas. En escritorio es una pastilla vertical; en móvil, una fila
+ * horizontal.
  *
- * Los botones son propios (no `app-boton`) porque el color por sección es parte
- * del significado y `app-boton` fija su paleta por variante, no por instancia.
+ * Los botones son propios (no `app-boton`) porque el estado activo se marca con
+ * el acento crema en lugar de la paleta de variantes de `app-boton`, y el verde
+ * saturado queda reservado para el relleno de las barras y las acciones
+ * principales.
  */
 @Component({
   selector: 'app-panel-misiones',
@@ -35,35 +37,31 @@ export class PanelMisiones {
 
   protected readonly secciones: readonly BotonSeccion[] = [
     { id: 'misiones', etiqueta: 'Misiones', icono: 'phosphorTrophyFill' },
-    { id: 'pity', etiqueta: 'PT System', icono: 'phosphorSparkleFill' },
+    { id: 'pity', etiqueta: 'PT System', icono: 'phosphorSealCheckFill' },
   ];
 
   protected esActiva(id: SeccionMisiones): boolean {
     return this.seccionActiva() === id;
   }
 
+  /**
+   * El estado activo usa el acento crema (no el verde saturado, reservado para
+   * el relleno de las barras y las acciones principales). La sección se
+   * identifica por su ícono y su etiqueta, no por el color de fondo.
+   */
   protected clasesSeccion(id: SeccionMisiones): string {
     const base = [
-      'inline-flex size-11 cursor-pointer items-center justify-center rounded-circulo border-2',
+      'inline-flex size-misiones-panel-boton cursor-pointer items-center justify-center rounded-circulo border-2',
       'transition-[background-color,border-color,color,box-shadow,transform] duration-200',
       'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco',
       'motion-reduce:transition-none hover:scale-110 active:scale-100',
     ];
 
-    if (id === 'misiones') {
-      return [
-        ...base,
-        this.esActiva(id)
-          ? 'border-transparent bg-marca-primaria text-marca-sobre-primaria shadow-baja'
-          : 'border-marca-primaria bg-transparent text-marca-primaria hover:bg-marca-primaria hover:text-marca-sobre-primaria',
-      ].join(' ');
-    }
-
     return [
       ...base,
       this.esActiva(id)
-        ? 'border-transparent bg-marca-acento text-marca-sobre-acento shadow-baja'
-        : 'border-marca-acento bg-transparent text-marca-acento hover:bg-marca-acento hover:text-marca-sobre-acento',
+        ? 'scale-105 border-marca-acento bg-marca-acento text-marca-sobre-acento shadow-marca'
+        : 'border-borde-coleccion bg-transparent text-texto-secundario hover:border-marca-acento hover:text-marca-acento',
     ].join(' ');
   }
 
