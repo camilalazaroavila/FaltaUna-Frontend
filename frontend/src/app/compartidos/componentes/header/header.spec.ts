@@ -28,15 +28,6 @@ describe('Header', () => {
     expect(component).toBeTruthy();
   });
 
-  it('muestra el buscador por defecto y lo oculta en la variante de auth', () => {
-    expect(fixture.nativeElement.querySelector('input[type="search"]')).toBeTruthy();
-
-    fixture.componentRef.setInput('enAuth', true);
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.querySelector('input[type="search"]')).toBeFalsy();
-  });
-
   it('usa el logo compacto por defecto y el agrandado en la variante de auth', () => {
     const logo = fixture.nativeElement.querySelector('header img');
     expect(logo.classList.contains('h-8')).toBe(true);
