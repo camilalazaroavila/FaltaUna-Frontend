@@ -65,6 +65,14 @@ export const routes: Routes = [
   },
 
   {
+    path: 'usuario/mi-baraja',
+    title: 'Mi baraja · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () => import('./paginas/mi-baraja/mi-baraja').then((m) => m.MiBaraja),
+  },
+
+  {
     path: 'usuario/misiones',
     title: 'Misiones · Falta Una',
     canActivate: [rolGuard],
