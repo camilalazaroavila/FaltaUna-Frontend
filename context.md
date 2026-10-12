@@ -29,11 +29,10 @@
 
 ### Documentos de contexto: desalineación conocida (sin resolver)
 
-Tres documentos describen el modelo de negocio de forma distinta y conviven sin reconciliar:
+Dos documentos describen el modelo de negocio de forma distinta y conviven sin reconciliar:
 
 1. `context.md` (este archivo): fútbol amateur + cartas (igual que la landing).
 2. `Reglas de negocio_ TCG de marcas.md`: TCG puro con pilares de cartas/sobres/misiones.
-3. `FaltaUna-auth/context.md`: versión detallada alineada al modelo TCG.
 
 **Decisión:** queda solo documentada; no se unificó a propósito (pendiente de decisión de los equipos).
 
