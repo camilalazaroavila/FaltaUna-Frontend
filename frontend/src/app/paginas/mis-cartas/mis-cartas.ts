@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CartaComponent } from '@compartidos/componentes/carta/carta';
-import { CartaPopupComponent } from '@compartidos/componentes/carta-popup/carta-popup';
+import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup/carta-popup';
 import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';

@@ -13,7 +13,7 @@ import urlFondoLegendaria from '@svgs/FondoCartaLegendaria.svg';
 import urlCuadradoNumero from '@svgs/CuadradoNumero.svg';
 
 import { IconoCategoriaComponent } from '@compartidos/componentes/icono-categoria/icono-categoria.component';
-import { EstrellaRarezaComponent } from '@compartidos/componentes/estrella-rareza/estrella-rareza.component';
+import { EstrellaRarezaComponent } from '@compartidos/componentes/cartas/estrella-rareza/estrella-rareza.component';
 
 const FONDO_POR_RAREZA: Record<RarezaCarta, string> = {
   comun: urlFondoComun,

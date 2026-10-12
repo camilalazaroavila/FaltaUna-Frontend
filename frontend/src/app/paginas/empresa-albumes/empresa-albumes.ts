@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, HostListener, computed, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
-import { BarraRareza } from '@compartidos/componentes/barra-rareza/barra-rareza';
-import { CartaComponent } from '@compartidos/componentes/carta/carta';
+import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
+import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { TarjetaAlbum } from '@compartidos/componentes/tarjeta-album/tarjeta-album';
 import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';

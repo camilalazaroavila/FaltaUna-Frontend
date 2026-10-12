@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { BarraRareza } from '@compartidos/componentes/barra-rareza/barra-rareza';
+import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
 import { HeaderEmpresa } from '@compartidos/componentes/layout/header-empresa/header-empresa';
 import { TarjetaAlbum } from '@compartidos/componentes/tarjeta-album/tarjeta-album';
 import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';

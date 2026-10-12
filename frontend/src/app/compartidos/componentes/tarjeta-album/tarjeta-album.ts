@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { TONO_EMPRESA, type AlbumEmpresa, type ResumenAlbum } from '@modelos/empresa.mock';
-import { BarraRareza } from '@compartidos/componentes/barra-rareza/barra-rareza';
+import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 
 /**

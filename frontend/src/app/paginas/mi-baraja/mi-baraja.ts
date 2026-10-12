@@ -9,9 +9,9 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Header } from '@compartidos/componentes/layout/header/header';
-import { CartaComponent } from '@compartidos/componentes/carta/carta';
-import { CartaSeleccionableComponent } from '@compartidos/componentes/carta-seleccionable/carta-seleccionable';
-import { CartaPopupComponent } from '@compartidos/componentes/carta-popup/carta-popup';
+import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { CartaSeleccionableComponent } from '@compartidos/componentes/cartas/carta-seleccionable/carta-seleccionable';
+import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup/carta-popup';
 import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
 import { BarajaService } from '@servicios/baraja.service';
 import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';

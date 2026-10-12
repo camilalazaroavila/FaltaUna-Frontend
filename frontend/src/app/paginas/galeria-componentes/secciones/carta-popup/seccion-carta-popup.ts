@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { CartaComponent } from '@compartidos/componentes/carta/carta';
-import { CartaPopupComponent } from '@compartidos/componentes/carta-popup/carta-popup';
+import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup/carta-popup';
 import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
 import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 import type { Carta } from '@modelos/carta.model';
