@@ -3,7 +3,7 @@ import { NgIcon } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
 import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
-import { TarjetaAlbum } from '@compartidos/componentes/tarjeta-album/tarjeta-album';
+import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarjeta-album';
 import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';

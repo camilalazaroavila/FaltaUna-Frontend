@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { Router } from '@angular/router';
 import { SobresService } from '@servicios/sobres.service';
 import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
-import { FlujoAperturaSobres } from '@compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
+import { FlujoAperturaSobres } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
 import { Header } from '@compartidos/componentes/layout/header/header';
-import { SobreMarca } from '@compartidos/componentes/sobre-marca/sobre-marca';
+import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
 import { SobreRespuesta } from '@modelos/sobre.model';
 
 import urlSobreIzquierda from '@svgs/PaqueteHuhDosColores.svg';

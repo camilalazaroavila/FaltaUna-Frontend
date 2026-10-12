@@ -4,7 +4,7 @@ import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
 
 import { DesplegableSeleccion, type OpcionDesplegable } from '@compartidos/componentes/controles/desplegable-seleccion/desplegable-seleccion';
-import { FlujoAperturaSobres, type SobreInicialApertura } from '@compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
+import { FlujoAperturaSobres, type SobreInicialApertura } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
 import { PanelMisiones, type SeccionMisiones } from '@compartidos/componentes/usuario/panel-misiones/panel-misiones';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { TarjetaMision } from '@compartidos/componentes/usuario/tarjeta-mision/tarjeta-mision';
