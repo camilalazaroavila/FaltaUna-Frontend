@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { AcordeonPregunta } from '@compartidos/componentes/acordeon-preguntas/acordeon-preguntas';
 import { CarruselMarcas, MarcaCarrusel } from '@compartidos/componentes/carousel-marcas/carousel-marcas';
-import { Header } from '@compartidos/componentes/header/header';
+import { Header } from '@compartidos/componentes/layout/header/header';
 import { Boton } from '@compartidos/componentes/boton/boton';
 import { IlustracionTienda } from '@compartidos/ilustraciones/ilustracion-tienda/ilustracion-tienda';
 import urlCartaRara from '@svgs/CartaRara.svg';

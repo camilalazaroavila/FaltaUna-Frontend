@@ -3,8 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@servicios/auth.service';
 import { LoginSolicitud, Rol } from '@modelos/usuario.model';
-import { AuthLayout } from '@compartidos/componentes/auth-layout/auth-layout';
-import { injectModoAuth } from '@compartidos/componentes/auth-layout/auth-modo';
+import { AuthLayout } from '@compartidos/componentes/layout/auth-layout/auth-layout';
+import { injectModoAuth } from '@compartidos/componentes/layout/auth-layout/auth-modo';
 
 @Component({
   selector: 'app-login',

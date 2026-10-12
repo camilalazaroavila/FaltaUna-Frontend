@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { SobresService } from '@servicios/sobres.service';
 import { BotonNavegacionCircular } from '@compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
 import { FlujoAperturaSobres } from '@compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
-import { Header } from '@compartidos/componentes/header/header';
+import { Header } from '@compartidos/componentes/layout/header/header';
 import { SobreMarca } from '@compartidos/componentes/sobre-marca/sobre-marca';
 import { SobreRespuesta } from '@modelos/sobre.model';
 

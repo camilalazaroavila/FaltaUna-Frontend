@@ -6,7 +6,7 @@ import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
 import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
-import { Header } from '@compartidos/componentes/header/header';
+import { Header } from '@compartidos/componentes/layout/header/header';
 
 import urlGastro from '@svgs/Icon_GastroInv.svg';
 import urlCosme from '@svgs/Icon_CosmeInv.svg';

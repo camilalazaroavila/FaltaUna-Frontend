@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Header } from '@compartidos/componentes/header/header';
+import { Header } from '@compartidos/componentes/layout/header/header';
 import { CartaComponent } from '@compartidos/componentes/carta/carta';
 import { CartaSeleccionableComponent } from '@compartidos/componentes/carta-seleccionable/carta-seleccionable';
 import { CartaPopupComponent } from '@compartidos/componentes/carta-popup/carta-popup';
