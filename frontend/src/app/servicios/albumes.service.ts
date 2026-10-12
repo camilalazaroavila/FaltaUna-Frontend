@@ -1,8 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AlbumRespuesta, CategoriaApi, CrearAlbumSolicitud } from '../modelos/album.model';
+import {AlbumConProgreso} from '../modelos/album-progreso';
+import { ALBUMES_MOCK } from '../modelos/album.mock';
 
 @Injectable({ providedIn: 'root' })
 export class AlbumesService {
@@ -32,4 +34,8 @@ export class AlbumesService {
     solicitud.imagenes.forEach(imagen => form.append('ImagenesCartas', imagen));
     return this.http.post<AlbumRespuesta>(`${this.apiUrl}/Colecciones`, form);
   }
+
+  obtenerAlbumesConProgreso(): Observable<AlbumConProgreso[]> {
+  return of(ALBUMES_MOCK);
+}
 }
