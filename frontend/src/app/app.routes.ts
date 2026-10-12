@@ -144,10 +144,29 @@ export const routes: Routes = [
         ],
       },
       {
+        // Panel de empresa: shell con dock lateral y las vistas internas.
+        // `/empresa/panel` redirige a Estadísticas para no romper enlaces viejos.
         path: 'panel',
         title: 'Panel de empresa · Falta Una',
         loadComponent: () =>
-          import('./paginas/empresa-dashboard/empresa-dashboard').then((m) => m.EmpresaDashboard),
+          import('./paginas/empresa-panel/empresa-panel').then((m) => m.EmpresaPanel),
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'estadisticas' },
+          {
+            path: 'estadisticas',
+            title: 'Estadísticas · Falta Una',
+            loadComponent: () =>
+              import('./paginas/empresa-estadisticas/empresa-estadisticas').then(
+                (m) => m.EmpresaEstadisticas,
+              ),
+          },
+          {
+            path: 'albumes',
+            title: 'Álbumes · Falta Una',
+            loadComponent: () =>
+              import('./paginas/empresa-albumes/empresa-albumes').then((m) => m.EmpresaAlbumes),
+          },
+        ],
       },
     ],
   },
