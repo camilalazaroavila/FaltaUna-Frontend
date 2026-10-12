@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FaqSectionEmpresa } from '@compartidos/componentes/faq-section-empresa/faq-section-empresa';
-import { Hero } from '@compartidos/componentes/hero/hero';
+import { Hero } from '@compartidos/componentes/landing/hero/hero';
 import { Navbar } from '@compartidos/componentes/layout/navbar/navbar';
 import { PlansSection } from '@compartidos/componentes/plans-section/plans-section';
-import { TeamSection } from '@compartidos/componentes/team-section/team-section';
+import { TeamSection } from '@compartidos/componentes/landing/team-section/team-section';
 import {
   INTEGRANTES_EQUIPO_EMPRESA,
   PLANES_EMPRESA,

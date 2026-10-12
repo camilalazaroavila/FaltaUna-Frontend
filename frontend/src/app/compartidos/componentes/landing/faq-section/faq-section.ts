@@ -3,7 +3,7 @@ import { PreguntaFrecuente } from '@modelos/landing-empresa.model';
 import urlCartaRara from '@svgs/CartaRara.svg';
 import urlEpicarta from '@svgs/Epicarta.svg';
 import urlUnicarta from '@svgs/Unicarta.svg';
-import { FaqItem } from '@compartidos/componentes/faq-item/faq-item';
+import { FaqItem } from '@compartidos/componentes/landing/faq-item/faq-item';
 
 @Component({
   selector: 'app-faq-section',
