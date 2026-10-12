@@ -148,11 +148,27 @@
         } @else {
           <div class="coleccion__grilla">
             @for (carta of cartasFiltradas(); track carta.id) {
-              <app-carta [carta]="carta" />
+              <button
+                type="button"
+                class="coleccion__disparador"
+                appPulsacionCarta
+                [attr.aria-label]="
+                  carta.obtenida
+                    ? 'Ver detalle de ' + carta.nombre
+                    : 'Ver detalle de carta no obtenida'
+                "
+                (pulsacion)="abrirPopup(carta)"
+              >
+                <app-carta [carta]="carta" />
+              </button>
             }
           </div>
         }
       </main>
     </div>
   </div>
+
+  @if (cartaPopup(); as carta) {
+    <app-carta-popup [carta]="carta" (cerrar)="cerrarPopup()" />
+  }
 </div>

@@ -11,6 +11,8 @@ import { RouterLink } from '@angular/router';
 import { Header } from '../../compartidos/componentes/header/header';
 import { CartaComponent } from '../../compartidos/componentes/carta/carta';
 import { CartaSeleccionableComponent } from '../../compartidos/componentes/carta-seleccionable/carta-seleccionable';
+import { CartaPopupComponent } from '../../compartidos/componentes/carta-popup/carta-popup';
+import { PulsacionCartaDirective } from '../../compartidos/directivas/pulsacion-carta.directive';
 import { BarajaService } from '../../servicios/baraja.service';
 import type { Carta, CategoriaCarta, RarezaCarta } from '../../modelos/carta.model';
 import { ETIQUETA_CATEGORIA, ETIQUETA_RAREZA } from '../../modelos/carta.model';
@@ -46,7 +48,14 @@ interface OpcionOrden {
 @Component({
   selector: 'app-mi-baraja',
   standalone: true,
-  imports: [RouterLink, Header, CartaComponent, CartaSeleccionableComponent],
+  imports: [
+    RouterLink,
+    Header,
+    CartaComponent,
+    CartaSeleccionableComponent,
+    CartaPopupComponent,
+    PulsacionCartaDirective,
+  ],
   templateUrl: './mi-baraja.html',
   styleUrl: './mi-baraja.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,6 +74,9 @@ export class MiBaraja {
   // Datos
   protected readonly coleccion = signal<Carta[]>([]);
   protected readonly seleccion = signal<Carta[]>([]);
+
+  // Detalle de carta
+  protected readonly cartaPopup = signal<Carta | null>(null);
 
   // Filtros del catálogo
   protected readonly busqueda = signal('');
@@ -263,5 +275,13 @@ export class MiBaraja {
           this.aviso.set('No se pudo guardar la baraja. Intentá de nuevo.');
         },
       });
+  }
+
+  protected abrirPopup(carta: Carta): void {
+    this.cartaPopup.set(carta);
+  }
+
+  protected cerrarPopup(): void {
+    this.cartaPopup.set(null);
   }
 }
