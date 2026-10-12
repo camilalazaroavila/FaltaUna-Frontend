@@ -1,0 +1,36 @@
+@if (mostrarAside()) {
+  <!-- Dock lateral: fijo a la izquierda en escritorio, fila fija abajo en móvil -->
+  <aside
+    aria-label="Navegación del panel de empresa"
+    class="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pointer-events-auto md:inset-x-auto md:bottom-auto md:justify-start md:p-0 md:left-5 lg:left-7 xl:left-8 2xl:left-12 md:top-[calc(50%+24px)] md:-translate-y-1/2 md:max-h-[calc(100dvh-130px)]"
+  >
+    <nav
+      class="pointer-events-auto flex flex-row items-center justify-center gap-1.5 overflow-visible rounded-2xl border border-borde-default bg-fondo-elevado/95 p-1.5 shadow-alta backdrop-blur-md origin-bottom transition-transform sm:gap-2.5 sm:p-2 md:origin-left md:flex-col md:rounded-3xl md:p-2.5 lg:scale-105 lg:gap-3 lg:p-3 xl:gap-3.5 xl:p-3.5 2xl:scale-125 min-[2200px]:scale-150"
+    >
+      @for (destino of destinos; track destino.id) {
+        <app-boton-navegacion-circular
+          [icono]="destino.icono ?? null"
+          [urlIcono]="destino.urlIcono ?? null"
+          [etiquetaAria]="destino.nombre"
+          [activo]="esActivo(destino)"
+          [deshabilitado]="destino.deshabilitado ?? false"
+          [expandible]="true"
+          [fondoBlanco]="true"
+          tamanio="md"
+          (accion)="seleccionar(destino)"
+        />
+      }
+    </nav>
+  </aside>
+}
+
+<main
+  class="mx-auto w-full max-w-screen-2xl px-5 pt-6 sm:px-6"
+  [class]="
+    mostrarAside()
+      ? 'pb-28 md:px-24 md:pb-12 lg:px-28 xl:px-36 2xl:px-44'
+      : 'pb-16 md:px-10 lg:px-16'
+  "
+>
+  <router-outlet />
+</main>

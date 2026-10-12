@@ -1,0 +1,96 @@
+<div class="space-y-8">
+  <p
+    class="rounded-md border-l-2 border-advertencia bg-advertencia-fondo px-3 py-2 font-interfaz text-xs text-advertencia-texto"
+  >
+    Estos componentes usan los tokens del <strong>modo empresa</strong> (violeta de marca + azul
+    corporativo). Cambiá el selector de <strong>Modo</strong> a <strong>empresa</strong> (arriba)
+    para verlos con su paleta real.
+  </p>
+
+  <!-- Header -->
+  <app-tarjeta-muestra
+    titulo="app-header-empresa"
+    descripcion="Barra superior del área de empresa: imagotipo blanco sobre violeta y menú de sesión desplegable."
+  >
+    <app-header-empresa />
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        En la app vive dentro del layout de empresa, que fija <code>data-modo="empresa"</code>; acá
+        en la galería hereda el modo que elijas arriba. El menú de cuenta se abre con el botón azul
+        de la derecha.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Tarjeta de álbum -->
+  <app-tarjeta-muestra
+    titulo="app-tarjeta-album"
+    descripcion="Tarjeta de álbum con estética de cupón: banda del color del álbum, cupón de recompensa, métricas y medidor de rareza. El botón «Ver cartas» emite el id del álbum."
+  >
+    <div class="grid gap-6 lg:grid-cols-2">
+      @for (muestra of muestras; track muestra.album.id) {
+        <app-tarjeta-album
+          [album]="muestra.album"
+          [resumen]="muestra.resumen"
+          (seleccionar)="seleccionado.set($event)"
+        />
+      }
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        Último álbum elegido: <code>{{ seleccionado() ?? '—' }}</code>
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- KPI -->
+  <app-tarjeta-muestra
+    titulo="app-tarjeta-kpi"
+    descripcion="Indicador con acento lateral y valor tipográfico. Admite ícono opcional y detalle, y toma el color de su tono."
+  >
+    <div class="grid gap-4 sm:grid-cols-3">
+      @for (tono of tonos; track tono) {
+        <app-tarjeta-kpi
+          etiqueta="Completaron"
+          [valor]="kpis[1].valor"
+          [detalle]="'tono ' + tono"
+          icono="phosphorTrophyFill"
+          [tono]="tono"
+        />
+      }
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Medidor de rareza -->
+  <app-tarjeta-muestra
+    titulo="app-barra-rareza"
+    descripcion="Barra segmentada con un tramo por rareza (ancho proporcional) y leyenda opcional."
+  >
+    <div class="space-y-6">
+      <app-barra-rareza
+        [reparto]="muestras[0].resumen.reparto"
+        [etiqueta]="'Reparto de rarezas de ' + muestras[0].album.nombre"
+      />
+
+      <app-barra-rareza
+        [reparto]="muestras[1].resumen.reparto"
+        [mostrarLeyenda]="false"
+        etiqueta="Barra sin leyenda"
+      />
+    </div>
+  </app-tarjeta-muestra>
+
+  <!-- Cupón de recompensa -->
+  <app-tarjeta-muestra
+    titulo="app-tarjeta-recompensa"
+    descripcion="Cupón de premio: se usa suelto o dentro de la tarjeta de álbum. Cambia de color según el tono recibido."
+  >
+    <div class="grid gap-4 lg:grid-cols-3">
+      @for (tono of tonos; track tono) {
+        <app-tarjeta-recompensa [recompensa]="muestras[0].album.recompensa" [tono]="tono" />
+      }
+    </div>
+  </app-tarjeta-muestra>
+</div>

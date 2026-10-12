@@ -46,6 +46,10 @@ import {
   phosphorHourglassMediumFill,
   phosphorRadioButtonFill,
   phosphorCheckCircleFill,
+  phosphorChartBarFill,
+  phosphorChartDonutFill,
+  phosphorTrendUpFill,
+  phosphorTagFill,
 } from '@ng-icons/phosphor-icons/fill';
 import {
   heroPlusSolid,
@@ -116,6 +120,10 @@ export const appConfig: ApplicationConfig = {
   phosphorHourglassMediumFill,
       phosphorRadioButtonFill,
       phosphorCheckCircleFill,
+      phosphorChartBarFill,
+      phosphorChartDonutFill,
+      phosphorTrendUpFill,
+      phosphorTagFill,
       heroPlusSolid,
       heroCheckSolid,
       heroXMarkSolid,

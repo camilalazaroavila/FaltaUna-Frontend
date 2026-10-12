@@ -28,6 +28,13 @@
     --marca-acento-suave: rgba(4, 134, 43, 0.13);
     --marca-sobre-acento: var(--blanco-puro);
 
+    /* Acento secundario: azul corporativo para datos, gráficos y jerarquía
+       extra sobre el violeta de marca (evita la paleta de solo dos colores). */
+    --marca-secundaria: var(--color-azul-empresa);
+    --marca-secundaria-hover: var(--color-azul-empresa-hover);
+    --marca-secundaria-activa: var(--color-azul-empresa-activo);
+    --marca-secundaria-suave: var(--color-azul-empresa-suave);
+    --marca-sobre-secundaria: var(--blanco-puro);
 
     /* --- Superficies --- */
     --fondo-app: var(--color-crema-fondo);
