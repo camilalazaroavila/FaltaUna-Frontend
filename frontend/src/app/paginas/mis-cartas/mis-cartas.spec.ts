@@ -193,4 +193,13 @@ describe('MisCartas', () => {
     expect(segmentos[1].classList.contains('bg-marca-coleccion')).toBe(true);
     expect(segmentos[0].getAttribute('aria-pressed')).toBe('false');
   });
+
+  it('debe ofrecer el acceso a "Mi baraja"', () => {
+    const enlace = fixture.nativeElement.querySelector(
+      'a[href="/usuario/mi-baraja"]',
+    ) as HTMLAnchorElement | null;
+
+    expect(enlace).not.toBeNull();
+    expect(enlace?.textContent?.toLowerCase()).toContain('construir baraja');
+  });
 });
