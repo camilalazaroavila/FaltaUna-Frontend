@@ -10,7 +10,7 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { Boton } from '@compartidos/componentes/boton/boton';
-import { StepperSuscripcion } from '@compartidos/componentes/stepper-suscripcion/stepper-suscripcion';
+import { StepperSuscripcion } from '@compartidos/componentes/empresa/stepper-suscripcion/stepper-suscripcion';
 import { PagosService } from '@servicios/pagos.service';
 import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
 import { PagoRespuesta, ResultadoUrlPago } from '@modelos/pago.model';

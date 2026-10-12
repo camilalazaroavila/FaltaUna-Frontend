@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { BarraRareza } from '@compartidos/componentes/barra-rareza/barra-rareza';
 import { CartaComponent } from '@compartidos/componentes/carta/carta';
 import { TarjetaAlbum } from '@compartidos/componentes/tarjeta-album/tarjeta-album';
-import { TarjetaKpi } from '@compartidos/componentes/tarjeta-kpi/tarjeta-kpi';
+import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import { ETIQUETA_RAREZA } from '@modelos/carta.model';
