@@ -4,9 +4,9 @@ import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angul
 import { of } from 'rxjs';
 
 import { Header } from './header';
-import { AuthService } from '../../../servicios/auth.service';
-import logoClaro from '../../SVGs/Imagotipo_claro.svg';
-import logoOscuro from '../../SVGs/Imagotipo_Alt.svg';
+import { AuthService } from '@servicios/auth.service';
+import logoClaro from '@svgs/Imagotipo_claro.svg';
+import logoOscuro from '@svgs/Imagotipo_Alt.svg';
 
 describe('Header', () => {
   let component: Header;

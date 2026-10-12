@@ -10,9 +10,9 @@ import {
   output,
   viewChild,
 } from '@angular/core';
-import { CartaComponent } from '../carta/carta';
-import type { Carta } from '../../../modelos/carta.model';
-import { ETIQUETA_CATEGORIA, ETIQUETA_RAREZA } from '../../../modelos/carta.model';
+import { CartaComponent } from '@compartidos/componentes/carta/carta';
+import type { Carta } from '@modelos/carta.model';
+import { ETIQUETA_CATEGORIA, ETIQUETA_RAREZA } from '@modelos/carta.model';
 
 /** Id del título del diálogo (usado por `aria-labelledby`). */
 const ID_TITULO = 'carta-popup-titulo';

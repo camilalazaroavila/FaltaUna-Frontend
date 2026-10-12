@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
-import { TONO_EMPRESA, type TonoAlbum } from '../../../modelos/empresa.mock';
+import { TONO_EMPRESA, type TonoAlbum } from '@modelos/empresa.mock';
 
 /**
  * Tarjeta de indicador del panel de empresa: valor grande, etiqueta y un acento

@@ -1,19 +1,19 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
-import { AcordeonPregunta } from '../../compartidos/componentes/acordeon-preguntas/acordeon-preguntas';
-import { CarruselMarcas, MarcaCarrusel } from '../../compartidos/componentes/carousel-marcas/carousel-marcas';
-import { Header } from '../../compartidos/componentes/header/header';
-import { Boton } from '../../compartidos/componentes/boton/boton';
-import { IlustracionTienda } from '../../compartidos/ilustraciones/ilustracion-tienda/ilustracion-tienda';
-import urlCartaRara from '../../compartidos/SVGs/CartaRara.svg';
-import urlEpicarta from '../../compartidos/SVGs/Epicarta.svg';
-import urlUnicarta from '../../compartidos/SVGs/Unicarta.svg';
-import urlLogo from '../../compartidos/SVGs/Imagotipo_Alt.svg';
-import urlSobre from '../../compartidos/SVGs/PaqueteHuh.svg';
-import urlSobreCentro from '../../compartidos/SVGs/Paquete1.svg';
-import urlSobreDerecha from '../../compartidos/SVGs/Paquete2.svg';
-import urlSobreIzquierda from '../../compartidos/SVGs/PaqueteHuh.svg';
+import { AcordeonPregunta } from '@compartidos/componentes/acordeon-preguntas/acordeon-preguntas';
+import { CarruselMarcas, MarcaCarrusel } from '@compartidos/componentes/carousel-marcas/carousel-marcas';
+import { Header } from '@compartidos/componentes/header/header';
+import { Boton } from '@compartidos/componentes/boton/boton';
+import { IlustracionTienda } from '@compartidos/ilustraciones/ilustracion-tienda/ilustracion-tienda';
+import urlCartaRara from '@svgs/CartaRara.svg';
+import urlEpicarta from '@svgs/Epicarta.svg';
+import urlUnicarta from '@svgs/Unicarta.svg';
+import urlLogo from '@svgs/Imagotipo_Alt.svg';
+import urlSobre from '@svgs/PaqueteHuh.svg';
+import urlSobreCentro from '@svgs/Paquete1.svg';
+import urlSobreDerecha from '@svgs/Paquete2.svg';
+import urlSobreIzquierda from '@svgs/PaqueteHuh.svg';
 
 interface PreguntaFrecuente {
   pregunta: string;

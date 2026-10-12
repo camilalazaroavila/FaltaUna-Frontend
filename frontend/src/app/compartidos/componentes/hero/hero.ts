@@ -8,15 +8,15 @@ import {
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
-import { Boton } from '../boton/boton';
-import urlLogo from '../../SVGs/Imagotipo_Alt.svg';
-import urlLogoEmpresa from '../../SVGs/Imagotipo_Empresa.svg';
-import urlCosme from '../../SVGs/Icon_CosmeInv.svg';
-import urlEntretenimiento from '../../SVGs/Icon_EntretenimientoInv.svg';
-import urlGastro from '../../SVGs/Icon_GastroInv.svg';
-import urlIndumentaria from '../../SVGs/Icon_IndumentariaInv.svg';
-import urlMusica from '../../SVGs/Icon_MusicaINV.svg';
-import urlTecno from '../../SVGs/Icon_TecnoInv.svg';
+import { Boton } from '@compartidos/componentes/boton/boton';
+import urlLogo from '@svgs/Imagotipo_Alt.svg';
+import urlLogoEmpresa from '@svgs/Imagotipo_Empresa.svg';
+import urlCosme from '@svgs/Icon_CosmeInv.svg';
+import urlEntretenimiento from '@svgs/Icon_EntretenimientoInv.svg';
+import urlGastro from '@svgs/Icon_GastroInv.svg';
+import urlIndumentaria from '@svgs/Icon_IndumentariaInv.svg';
+import urlMusica from '@svgs/Icon_MusicaINV.svg';
+import urlTecno from '@svgs/Icon_TecnoInv.svg';
 
 /** Envuelve un asset en `url(...)` para reutilizarlo como máscara CSS. */
 const comoMascara = (url: string): string => `url("${url}")`;

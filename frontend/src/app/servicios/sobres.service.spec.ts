@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { SobresService } from './sobres.service';
 import { ApiService } from './api.service';
-import { AperturaSobreRespuesta, SobreRespuesta } from '../modelos/sobre.model';
+import { AperturaSobreRespuesta, SobreRespuesta } from '@modelos/sobre.model';
 
 describe('SobresService', () => {
   let service: SobresService;

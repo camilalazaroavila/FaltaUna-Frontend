@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, HostListener, computed, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
-import { BarraRareza } from '../../compartidos/componentes/barra-rareza/barra-rareza';
-import { CartaComponent } from '../../compartidos/componentes/carta/carta';
-import { TarjetaAlbum } from '../../compartidos/componentes/tarjeta-album/tarjeta-album';
-import { TarjetaKpi } from '../../compartidos/componentes/tarjeta-kpi/tarjeta-kpi';
-import { TarjetaRecompensa } from '../../compartidos/componentes/tarjeta-recompensa/tarjeta-recompensa';
-import type { Carta, RarezaCarta } from '../../modelos/carta.model';
-import { ETIQUETA_RAREZA } from '../../modelos/carta.model';
+import { BarraRareza } from '@compartidos/componentes/barra-rareza/barra-rareza';
+import { CartaComponent } from '@compartidos/componentes/carta/carta';
+import { TarjetaAlbum } from '@compartidos/componentes/tarjeta-album/tarjeta-album';
+import { TarjetaKpi } from '@compartidos/componentes/tarjeta-kpi/tarjeta-kpi';
+import { TarjetaRecompensa } from '@compartidos/componentes/tarjeta-recompensa/tarjeta-recompensa';
+import type { Carta, RarezaCarta } from '@modelos/carta.model';
+import { ETIQUETA_RAREZA } from '@modelos/carta.model';
 import {
   ALBUMES_EMPRESA,
   CARTAS_EMPRESA,
@@ -21,7 +21,7 @@ import {
   type EstadoAlbum,
   type EstadisticasCartaEmpresa,
   type ResumenAlbum,
-} from '../../modelos/empresa.mock';
+} from '@modelos/empresa.mock';
 
 export type CriterioOrdenAlbum = 'nombre-asc' | 'nombre-desc' | 'rareza';
 

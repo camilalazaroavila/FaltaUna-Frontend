@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../servicios/auth.service';
-import { Rol } from '../modelos/usuario.model';
+import { AuthService } from '@servicios/auth.service';
+import { Rol } from '@modelos/usuario.model';
 
 /**
  * Restringe una ruta a los roles indicados en `data.rolesPermitidos`.

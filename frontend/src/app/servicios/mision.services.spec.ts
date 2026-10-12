@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { faltantesPity } from '../modelos/misiones.model';
+import { faltantesPity } from '@modelos/misiones.model';
 import { MisionesService } from './mision.services';
 
 describe('MisionesService', () => {

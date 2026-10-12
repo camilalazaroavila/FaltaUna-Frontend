@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import { CARTAS_MOCK } from '../modelos/cartas.mock';
+import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import { BarajaService } from './baraja.service';
 
 describe('BarajaService', () => {

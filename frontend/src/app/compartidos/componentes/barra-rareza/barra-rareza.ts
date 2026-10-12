@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import type { RepartoRareza } from '../../../modelos/empresa.mock';
+import type { RepartoRareza } from '@modelos/empresa.mock';
 
 /**
  * Medidor del reparto de cartas por rareza de un álbum: una barra segmentada

@@ -9,9 +9,9 @@ import {
   signal,
 } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { injectModoAuth } from '../auth-layout/auth-modo';
-import { AuthService } from '../../../servicios/auth.service';
-import urlLogoClaro from '../../SVGs/Imagotipo_claro.svg';
+import { injectModoAuth } from '@compartidos/componentes/auth-layout/auth-modo';
+import { AuthService } from '@servicios/auth.service';
+import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
 
 @Component({
   selector: 'app-header',

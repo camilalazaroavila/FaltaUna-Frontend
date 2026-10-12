@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { porcentaje } from '../../../modelos/misiones.model';
+import { porcentaje } from '@modelos/misiones.model';
 
 /** `mision` = verde, `pity` = amarillo (progreso hacia la legendaria). */
 export type VarianteBarra = 'mision' | 'pity';

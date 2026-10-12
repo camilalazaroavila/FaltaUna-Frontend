@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { IntegranteEquipo } from '../../../modelos/landing-empresa.model';
+import { IntegranteEquipo } from '@modelos/landing-empresa.model';
 
 @Component({
   selector: 'app-team-section',

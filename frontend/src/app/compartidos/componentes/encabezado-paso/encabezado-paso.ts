@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
-import { StepperSuscripcion } from '../stepper-suscripcion/stepper-suscripcion';
+import { StepperSuscripcion } from '@compartidos/componentes/stepper-suscripcion/stepper-suscripcion';
 
 /**
  * Cabecera de cada paso del alta de campaña/álbum:

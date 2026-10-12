@@ -4,10 +4,10 @@ import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { UsuarioDashboard } from './usuario-dashboard';
-import { AuthService } from '../../servicios/auth.service';
-import { SobresService } from '../../servicios/sobres.service';
-import { Usuario } from '../../modelos/usuario.model';
-import { AperturaSobreRespuesta } from '../../modelos/sobre.model';
+import { AuthService } from '@servicios/auth.service';
+import { SobresService } from '@servicios/sobres.service';
+import { Usuario } from '@modelos/usuario.model';
+import { AperturaSobreRespuesta } from '@modelos/sobre.model';
 
 describe('UsuarioDashboard Component', () => {
   let component: UsuarioDashboard;

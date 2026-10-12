@@ -2,7 +2,7 @@ import {
   IntegranteEquipo,
   PlanEmpresa,
   PreguntaFrecuente,
-} from '../modelos/landing-empresa.model';
+} from '@modelos/landing-empresa.model';
 
 export const PLANES_EMPRESA: PlanEmpresa[] = [
   {

@@ -4,15 +4,15 @@
   computed,
   input,
 } from '@angular/core';
-import { CategoriaCarta } from '../../../modelos/carta.model';
+import { CategoriaCarta } from '@modelos/carta.model';
 
-import iconCosme from '../../SVGs/Icon_CosmeInv.svg';
-import iconDeco from '../../SVGs/Icon_DecoInv.svg';
-import iconEntretenimiento from '../../SVGs/Icon_EntretenimientoInv.svg';
-import iconGastro from '../../SVGs/Icon_GastroInv.svg';
-import iconIndumentaria from '../../SVGs/Icon_IndumentariaInv.svg';
-import iconMusica from '../../SVGs/Icon_MusicaINV.svg';
-import iconTecno from '../../SVGs/Icon_TecnoInv.svg';
+import iconCosme from '@svgs/Icon_CosmeInv.svg';
+import iconDeco from '@svgs/Icon_DecoInv.svg';
+import iconEntretenimiento from '@svgs/Icon_EntretenimientoInv.svg';
+import iconGastro from '@svgs/Icon_GastroInv.svg';
+import iconIndumentaria from '@svgs/Icon_IndumentariaInv.svg';
+import iconMusica from '@svgs/Icon_MusicaINV.svg';
+import iconTecno from '@svgs/Icon_TecnoInv.svg';
 
 @Component({
   selector: 'app-icono-categoria',

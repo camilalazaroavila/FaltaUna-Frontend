@@ -3,13 +3,13 @@ import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
 
-import { DesplegableSeleccion, type OpcionDesplegable } from '../../compartidos/componentes/desplegable-seleccion/desplegable-seleccion';
-import { FlujoAperturaSobres, type SobreInicialApertura } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
-import { PanelMisiones, type SeccionMisiones } from '../../compartidos/componentes/panel-misiones/panel-misiones';
-import { Header } from '../../compartidos/componentes/header/header';
-import { TarjetaMision } from '../../compartidos/componentes/tarjeta-mision/tarjeta-mision';
-import { TarjetaPity } from '../../compartidos/componentes/tarjeta-pity/tarjeta-pity';
-import { CATEGORIAS_SOBRE, ETIQUETAS_CATEGORIA } from '../../modelos/categoria.model';
+import { DesplegableSeleccion, type OpcionDesplegable } from '@compartidos/componentes/desplegable-seleccion/desplegable-seleccion';
+import { FlujoAperturaSobres, type SobreInicialApertura } from '@compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
+import { PanelMisiones, type SeccionMisiones } from '@compartidos/componentes/panel-misiones/panel-misiones';
+import { Header } from '@compartidos/componentes/header/header';
+import { TarjetaMision } from '@compartidos/componentes/tarjeta-mision/tarjeta-mision';
+import { TarjetaPity } from '@compartidos/componentes/tarjeta-pity/tarjeta-pity';
+import { CATEGORIAS_SOBRE, ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
 import {
   ETIQUETAS_PERIODICIDAD,
   PERIODICIDADES,
@@ -19,11 +19,11 @@ import {
   type Periodicidad,
   type ProgresoPity,
   type SobreReferencia,
-} from '../../modelos/misiones.model';
-import type { SobreRespuesta } from '../../modelos/sobre.model';
+} from '@modelos/misiones.model';
+import type { SobreRespuesta } from '@modelos/sobre.model';
 
-import { MisionesService } from '../../servicios/mision.services';
-import { SobresService } from '../../servicios/sobres.service';
+import { MisionesService } from '@servicios/mision.services';
+import { SobresService } from '@servicios/sobres.service';
 
 
 type CriterioOrdenPity = 'cercania' | 'nombre';

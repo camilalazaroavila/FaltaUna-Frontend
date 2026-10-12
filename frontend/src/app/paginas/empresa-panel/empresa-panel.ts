@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
-import { BotonNavegacionCircular } from '../../compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
-import urlIconoAlbum from '../../compartidos/SVGs/Icon_Album.svg';
+import { BotonNavegacionCircular } from '@compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
+import urlIconoAlbum from '@svgs/Icon_Album.svg';
 
 /** Destino del dock lateral del panel de empresa. */
 interface DestinoPanel {

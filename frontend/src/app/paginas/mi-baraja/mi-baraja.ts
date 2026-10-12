@@ -8,29 +8,29 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Header } from '../../compartidos/componentes/header/header';
-import { CartaComponent } from '../../compartidos/componentes/carta/carta';
-import { CartaSeleccionableComponent } from '../../compartidos/componentes/carta-seleccionable/carta-seleccionable';
-import { CartaPopupComponent } from '../../compartidos/componentes/carta-popup/carta-popup';
-import { PulsacionCartaDirective } from '../../compartidos/directivas/pulsacion-carta.directive';
-import { BarajaService } from '../../servicios/baraja.service';
-import type { Carta, CategoriaCarta, RarezaCarta } from '../../modelos/carta.model';
-import { ETIQUETA_CATEGORIA, ETIQUETA_RAREZA } from '../../modelos/carta.model';
+import { Header } from '@compartidos/componentes/header/header';
+import { CartaComponent } from '@compartidos/componentes/carta/carta';
+import { CartaSeleccionableComponent } from '@compartidos/componentes/carta-seleccionable/carta-seleccionable';
+import { CartaPopupComponent } from '@compartidos/componentes/carta-popup/carta-popup';
+import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
+import { BarajaService } from '@servicios/baraja.service';
+import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
+import { ETIQUETA_CATEGORIA, ETIQUETA_RAREZA } from '@modelos/carta.model';
 import {
   RAREZAS_BARAJA,
   TAMANIO_BARAJA,
   calcularEstadoBaraja,
   puedeSeleccionar,
-} from '../../modelos/baraja.model';
+} from '@modelos/baraja.model';
 
-import urlGastro from '../../compartidos/SVGs/Icon_GastroInv.svg';
-import urlCosme from '../../compartidos/SVGs/Icon_CosmeInv.svg';
-import urlDeco from '../../compartidos/SVGs/Icon_DecoInv.svg';
-import urlIndumentaria from '../../compartidos/SVGs/Icon_IndumentariaInv.svg';
-import urlEntretenimiento from '../../compartidos/SVGs/Icon_EntretenimientoInv.svg';
-import urlMusica from '../../compartidos/SVGs/Icon_MusicaINV.svg';
-import urlTecno from '../../compartidos/SVGs/Icon_TecnoInv.svg';
-import urlLogo from '../../compartidos/SVGs/Imagotipo_claro.svg';
+import urlGastro from '@svgs/Icon_GastroInv.svg';
+import urlCosme from '@svgs/Icon_CosmeInv.svg';
+import urlDeco from '@svgs/Icon_DecoInv.svg';
+import urlIndumentaria from '@svgs/Icon_IndumentariaInv.svg';
+import urlEntretenimiento from '@svgs/Icon_EntretenimientoInv.svg';
+import urlMusica from '@svgs/Icon_MusicaINV.svg';
+import urlTecno from '@svgs/Icon_TecnoInv.svg';
+import urlLogo from '@svgs/Imagotipo_claro.svg';
 
 interface BotonCategoria {
   readonly categoria: CategoriaCarta;

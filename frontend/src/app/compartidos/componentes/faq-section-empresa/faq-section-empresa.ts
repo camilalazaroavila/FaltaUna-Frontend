@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
-import { PreguntaFrecuente } from '../../../modelos/landing-empresa.model';
-import { FaqItemEmpresa } from '../faq-item-empresa/faq-item-empresa';
+import { PreguntaFrecuente } from '@modelos/landing-empresa.model';
+import { FaqItemEmpresa } from '@compartidos/componentes/faq-item-empresa/faq-item-empresa';
 
 @Component({
   selector: 'app-faq-section-empresa',

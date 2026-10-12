@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
-import { SubidaImagen } from '../subida-imagen/subida-imagen';
+import { SubidaImagen } from '@compartidos/componentes/subida-imagen/subida-imagen';
 
 /**
  * Grilla de `cantidad` casillas de subida de imagen. El valor es un arreglo

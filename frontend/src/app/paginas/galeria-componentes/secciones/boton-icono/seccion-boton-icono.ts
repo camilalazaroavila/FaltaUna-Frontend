@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { BotonIcono } from '../../../../compartidos/componentes/boton-icono/boton-icono';
+import { BotonIcono } from '@compartidos/componentes/boton-icono/boton-icono';
 import type {
   TamanioBotonIcono,
   VarianteBotonIcono,
-} from '../../../../compartidos/componentes/boton-icono/boton-icono';
-import { TarjetaMuestra } from '../../tarjeta-muestra/tarjeta-muestra';
-import { RegistroEventos } from '../../registro-eventos/registro-eventos';
-import { crearRegistroEventos } from '../../registro-eventos';
+} from '@compartidos/componentes/boton-icono/boton-icono';
+import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
+import { RegistroEventos } from '@paginas/galeria-componentes/registro-eventos/registro-eventos';
+import { crearRegistroEventos } from '@paginas/galeria-componentes/registro-eventos';
 
 @Component({
   selector: 'app-seccion-boton-icono',

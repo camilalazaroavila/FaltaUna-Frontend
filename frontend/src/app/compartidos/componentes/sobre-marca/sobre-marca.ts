@@ -10,8 +10,8 @@ import {
   signal,
 } from '@angular/core';
 
-import type { CategoriaSobre } from '../../../modelos/categoria.model';
-import { ETIQUETAS_CATEGORIA } from '../../../modelos/categoria.model';
+import type { CategoriaSobre } from '@modelos/categoria.model';
+import { ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
 import { ICONOS_CATEGORIA } from './iconos-categoria';
 
 /** oscuro es el sobre verde de cancha (Paquete1), claro el crema (Paquete2). */

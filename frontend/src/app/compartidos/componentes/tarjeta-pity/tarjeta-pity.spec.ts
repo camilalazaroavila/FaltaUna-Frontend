@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import type { ProgresoPity } from '../../../modelos/misiones.model';
+import type { ProgresoPity } from '@modelos/misiones.model';
 import { TarjetaPity } from './tarjeta-pity';
 
 const crearProgreso = (parcial: Partial<ProgresoPity> = {}): ProgresoPity => ({

@@ -12,23 +12,23 @@ import {
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SobresService } from '../../../servicios/sobres.service';
-import { AuthService } from '../../../servicios/auth.service';
-import { PanelDesplazable } from '../panel-desplazable/panel-desplazable';
+import { SobresService } from '@servicios/sobres.service';
+import { AuthService } from '@servicios/auth.service';
+import { PanelDesplazable } from '@compartidos/componentes/panel-desplazable/panel-desplazable';
 import {
   AperturaSobreRespuesta,
   CartaObtenidaRespuesta,
   SobreItemUI,
   SobreRespuesta,
-} from '../../../modelos/sobre.model';
+} from '@modelos/sobre.model';
 
-import urlPaquete1 from '../../SVGs/Paquete1.svg';
-import urlPaquete2 from '../../SVGs/Paquete2.svg';
-import urlPaqueteHuh from '../../SVGs/PaqueteHuh.svg';
-import urlCartaComun from '../../SVGs/CartaComunPlaceholder.svg';
-import urlCartaRara from '../../SVGs/CartaRaraPlaceholder.svg';
-import urlEpicarta from '../../SVGs/EpicartaPlaceholder.svg';
-import urlUnicarta from '../../SVGs/UnicartaPlaceholder.svg';
+import urlPaquete1 from '@svgs/Paquete1.svg';
+import urlPaquete2 from '@svgs/Paquete2.svg';
+import urlPaqueteHuh from '@svgs/PaqueteHuh.svg';
+import urlCartaComun from '@svgs/CartaComunPlaceholder.svg';
+import urlCartaRara from '@svgs/CartaRaraPlaceholder.svg';
+import urlEpicarta from '@svgs/EpicartaPlaceholder.svg';
+import urlUnicarta from '@svgs/UnicartaPlaceholder.svg';
 
 export type FaseApertura = 'cerrado' | 'seleccion' | 'preview' | 'carrusel' | 'corte' | 'revelacion';
 

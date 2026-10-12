@@ -11,7 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
-import { GsapService } from '../../../servicios/gsap.service';
+import { GsapService } from '@servicios/gsap.service';
 
 /**
  * CTA hero: la accion de mayor peso visual de la aplicacion.

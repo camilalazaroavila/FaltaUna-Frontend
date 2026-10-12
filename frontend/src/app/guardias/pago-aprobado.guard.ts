@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { Observable, catchError, map, of } from 'rxjs';
-import { PagosService } from '../servicios/pagos.service';
-import { SuscripcionEstado } from '../servicios/suscripcion-estado.service';
+import { PagosService } from '@servicios/pagos.service';
+import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
 
 /**
  * Deja entrar a la creación del álbum solo si hay un pago Aprobado.

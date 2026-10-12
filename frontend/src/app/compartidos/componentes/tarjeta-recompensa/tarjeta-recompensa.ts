@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
-import { TONO_EMPRESA, type TonoAlbum } from '../../../modelos/empresa.mock';
+import { TONO_EMPRESA, type TonoAlbum } from '@modelos/empresa.mock';
 
 /**
  * Cupón de recompensa de un álbum: qué gana el jugador cuando completa la

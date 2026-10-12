@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { CartaComponent } from '../../../../compartidos/componentes/carta/carta';
-import { CartaPopupComponent } from '../../../../compartidos/componentes/carta-popup/carta-popup';
-import { PulsacionCartaDirective } from '../../../../compartidos/directivas/pulsacion-carta.directive';
-import { TarjetaMuestra } from '../../tarjeta-muestra/tarjeta-muestra';
-import type { Carta } from '../../../../modelos/carta.model';
+import { CartaComponent } from '@compartidos/componentes/carta/carta';
+import { CartaPopupComponent } from '@compartidos/componentes/carta-popup/carta-popup';
+import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
+import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
+import type { Carta } from '@modelos/carta.model';
 
 const CARTAS_MUESTRA: readonly Carta[] = [
   {

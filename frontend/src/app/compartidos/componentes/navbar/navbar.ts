@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import urlLogo from '../../SVGs/ImagotipoBlanco.svg';
+import urlLogo from '@svgs/ImagotipoBlanco.svg';
 
 @Component({
   selector: 'app-navbar',

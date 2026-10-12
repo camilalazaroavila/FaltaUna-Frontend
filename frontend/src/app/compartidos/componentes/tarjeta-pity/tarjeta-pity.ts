@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { BarraProgreso } from '../barra-progreso/barra-progreso';
-import { SobreMarca } from '../sobre-marca/sobre-marca';
-import { ETIQUETAS_CATEGORIA } from '../../../modelos/categoria.model';
-import { faltantesPity, UMBRAL_CASI_PITY, type ProgresoPity } from '../../../modelos/misiones.model';
+import { BarraProgreso } from '@compartidos/componentes/barra-progreso/barra-progreso';
+import { SobreMarca } from '@compartidos/componentes/sobre-marca/sobre-marca';
+import { ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
+import { faltantesPity, UMBRAL_CASI_PITY, type ProgresoPity } from '@modelos/misiones.model';
 
 /**
  * Fila del PT System: sobres abiertos de un tipo desde la última legendaria.

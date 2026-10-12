@@ -7,8 +7,8 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../servicios/auth.service';
-import urlLogoBlanco from '../../SVGs/ImagotipoBlanco.svg';
+import { AuthService } from '@servicios/auth.service';
+import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
 
 /**
  * Barra superior del área de empresa: mismo formato que el header de usuario

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import type { Mision } from '../../modelos/misiones.model';
-import { TarjetaMision } from '../../compartidos/componentes/tarjeta-mision/tarjeta-mision';
+import type { Mision } from '@modelos/misiones.model';
+import { TarjetaMision } from '@compartidos/componentes/tarjeta-mision/tarjeta-mision';
 
 const crearMision = (parcial: Partial<Mision> = {}): Mision => ({
   id: 1,

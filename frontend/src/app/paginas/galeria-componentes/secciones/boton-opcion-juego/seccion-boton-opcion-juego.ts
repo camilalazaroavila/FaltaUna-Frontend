@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BotonOpcionJuego } from '../../../../compartidos/componentes/boton-opcion-juego/boton-opcion-juego';
-import { TarjetaMuestra } from '../../tarjeta-muestra/tarjeta-muestra';
-import { RegistroEventos } from '../../registro-eventos/registro-eventos';
-import { crearRegistroEventos } from '../../registro-eventos';
+import { BotonOpcionJuego } from '@compartidos/componentes/boton-opcion-juego/boton-opcion-juego';
+import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
+import { RegistroEventos } from '@paginas/galeria-componentes/registro-eventos/registro-eventos';
+import { crearRegistroEventos } from '@paginas/galeria-componentes/registro-eventos';
 
 @Component({
   selector: 'app-seccion-boton-opcion-juego',

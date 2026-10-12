@@ -11,7 +11,7 @@ import {
   BeneficioPlan,
   IconoBeneficio,
   PlanEmpresa,
-} from '../../../modelos/landing-empresa.model';
+} from '@modelos/landing-empresa.model';
 
 const ICONOS_BENEFICIO: Record<IconoBeneficio, string> = {
   megafono: 'phosphorMegaphoneFill',

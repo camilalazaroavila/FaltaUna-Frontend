@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
-import { PreguntaFrecuente } from '../../../modelos/landing-empresa.model';
-import urlCartaRara from '../../SVGs/CartaRara.svg';
-import urlEpicarta from '../../SVGs/Epicarta.svg';
-import urlUnicarta from '../../SVGs/Unicarta.svg';
-import { FaqItem } from '../faq-item/faq-item';
+import { PreguntaFrecuente } from '@modelos/landing-empresa.model';
+import urlCartaRara from '@svgs/CartaRara.svg';
+import urlEpicarta from '@svgs/Epicarta.svg';
+import urlUnicarta from '@svgs/Unicarta.svg';
+import { FaqItem } from '@compartidos/componentes/faq-item/faq-item';
 
 @Component({
   selector: 'app-faq-section',

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import type { Carta } from '../../../modelos/carta.model';
+import type { Carta } from '@modelos/carta.model';
 import { CartaPopupComponent } from './carta-popup';
 
 const cartaObtenida: Carta = {

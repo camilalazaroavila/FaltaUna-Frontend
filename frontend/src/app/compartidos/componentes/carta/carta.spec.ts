@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import type { Carta, CategoriaCarta, RarezaCarta } from '../../../modelos/carta.model';
-import { ESTRELLAS_POR_RAREZA } from '../../../modelos/carta.model';
+import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
+import { ESTRELLAS_POR_RAREZA } from '@modelos/carta.model';
 import { CartaComponent } from './carta';
 
 const cartaComun: Carta = {

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PlanEmpresa } from '../../../modelos/landing-empresa.model';
-import { Boton } from '../boton/boton';
-import { PlanCard } from '../plan-card/plan-card';
+import { PlanEmpresa } from '@modelos/landing-empresa.model';
+import { Boton } from '@compartidos/componentes/boton/boton';
+import { PlanCard } from '@compartidos/componentes/plan-card/plan-card';
 
 @Component({
   selector: 'app-plans-section',

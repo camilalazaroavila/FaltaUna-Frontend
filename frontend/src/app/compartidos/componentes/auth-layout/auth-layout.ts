@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
-import { Header } from '../header/header';
+import { Header } from '@compartidos/componentes/header/header';
 import { AuthModoToggle } from './auth-modo-toggle';
 import { ModoAuth, injectModoAuth } from './auth-modo';
 

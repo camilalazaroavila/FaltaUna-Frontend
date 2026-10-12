@@ -1,19 +1,19 @@
 ﻿import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import type { Carta, RarezaCarta } from '../../../modelos/carta.model';
+import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import {
   ESTRELLAS_POR_RAREZA,
   ETIQUETA_RAREZA,
   ETIQUETA_CATEGORIA,
-} from '../../../modelos/carta.model';
+} from '@modelos/carta.model';
 
-import urlFondoComun from '../../SVGs/FondoCartaComun.svg';
-import urlFondoRara from '../../SVGs/FondoCartaRara.svg';
-import urlFondoEpicarta from '../../SVGs/FondoCartaEpicarta.svg';
-import urlFondoLegendaria from '../../SVGs/FondoCartaLegendaria.svg';
-import urlCuadradoNumero from '../../SVGs/CuadradoNumero.svg';
+import urlFondoComun from '@svgs/FondoCartaComun.svg';
+import urlFondoRara from '@svgs/FondoCartaRara.svg';
+import urlFondoEpicarta from '@svgs/FondoCartaEpicarta.svg';
+import urlFondoLegendaria from '@svgs/FondoCartaLegendaria.svg';
+import urlCuadradoNumero from '@svgs/CuadradoNumero.svg';
 
-import { IconoCategoriaComponent } from '../icono-categoria/icono-categoria.component';
-import { EstrellaRarezaComponent } from '../estrella-rareza/estrella-rareza.component';
+import { IconoCategoriaComponent } from '@compartidos/componentes/icono-categoria/icono-categoria.component';
+import { EstrellaRarezaComponent } from '@compartidos/componentes/estrella-rareza/estrella-rareza.component';
 
 const FONDO_POR_RAREZA: Record<RarezaCarta, string> = {
   comun: urlFondoComun,

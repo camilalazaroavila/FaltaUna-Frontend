@@ -3,9 +3,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { FlujoAperturaSobres } from './flujo-apertura-sobres';
-import { SobresService } from '../../../servicios/sobres.service';
-import { AuthService } from '../../../servicios/auth.service';
-import { AperturaSobreRespuesta, SobreRespuesta } from '../../../modelos/sobre.model';
+import { SobresService } from '@servicios/sobres.service';
+import { AuthService } from '@servicios/auth.service';
+import { AperturaSobreRespuesta, SobreRespuesta } from '@modelos/sobre.model';
 
 describe('FlujoAperturaSobres Component', () => {
   let component: FlujoAperturaSobres;

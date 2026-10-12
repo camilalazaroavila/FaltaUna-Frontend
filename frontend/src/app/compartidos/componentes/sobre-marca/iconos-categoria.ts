@@ -1,4 +1,4 @@
-import type { CategoriaSobre } from '../../../modelos/categoria.model';
+import type { CategoriaSobre } from '@modelos/categoria.model';
 
 export const ORIGEN_ICONO_CATEGORIA: Record<CategoriaSobre, string> = {
   tecnologia: 'Icon_TecnoInv.svg',

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, model, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
-import { aIso, desdeIso } from '../../utilidades/fechas';
+import { aIso, desdeIso } from '@compartidos/utilidades/fechas';
 
 const DIAS_SEMANA = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 

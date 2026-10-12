@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
-import { Boton } from '../../compartidos/componentes/boton/boton';
-import { EncabezadoPaso } from '../../compartidos/componentes/encabezado-paso/encabezado-paso';
+import { Boton } from '@compartidos/componentes/boton/boton';
+import { EncabezadoPaso } from '@compartidos/componentes/encabezado-paso/encabezado-paso';
 
 /** Paso 5 del alta: confirmación de álbum creado. */
 @Component({

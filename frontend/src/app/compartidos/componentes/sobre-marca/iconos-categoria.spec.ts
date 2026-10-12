@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { CategoriaSobre } from '../../../modelos/categoria.model';
-import { CATEGORIAS_SOBRE } from '../../../modelos/categoria.model';
+import type { CategoriaSobre } from '@modelos/categoria.model';
+import { CATEGORIAS_SOBRE } from '@modelos/categoria.model';
 import { ICONOS_CATEGORIA, ORIGEN_ICONO_CATEGORIA } from './iconos-categoria';
 
 describe('ICONOS_CATEGORIA vs SVG originales', () => {

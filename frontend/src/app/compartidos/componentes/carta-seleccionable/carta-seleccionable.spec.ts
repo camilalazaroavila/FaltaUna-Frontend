@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import type { Carta } from '../../../modelos/carta.model';
+import type { Carta } from '@modelos/carta.model';
 import { CartaSeleccionableComponent } from './carta-seleccionable';
 
 const cartaComun: Carta = {

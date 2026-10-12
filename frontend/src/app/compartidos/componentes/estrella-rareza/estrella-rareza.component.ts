@@ -1,5 +1,5 @@
 ﻿import { ChangeDetectionStrategy, Component } from '@angular/core';
-import estrellaRareza from '../../SVGs/EstrellaRareza.svg';
+import estrellaRareza from '@svgs/EstrellaRareza.svg';
 
 @Component({
   selector: 'app-estrella-rareza',

@@ -6,8 +6,8 @@ import {
   output,
 } from '@angular/core';
 
-import { Plan, PlanId } from '../../../modelos/plan.model';
-import { Boton } from '../boton/boton';
+import { Plan, PlanId } from '@modelos/plan.model';
+import { Boton } from '@compartidos/componentes/boton/boton';
 
 const FONDO_TITULO: Record<PlanId, string> = {
   basico: 'bg-marca-acento',

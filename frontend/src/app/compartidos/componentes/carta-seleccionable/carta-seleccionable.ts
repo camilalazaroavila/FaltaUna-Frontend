@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { CartaComponent } from '../carta/carta';
-import type { Carta } from '../../../modelos/carta.model';
-import { ETIQUETA_RAREZA } from '../../../modelos/carta.model';
+import { CartaComponent } from '@compartidos/componentes/carta/carta';
+import type { Carta } from '@modelos/carta.model';
+import { ETIQUETA_RAREZA } from '@modelos/carta.model';
 
 /**
  * Envuelve `app-carta` en un botón que permite seleccionar/deseleccionar la

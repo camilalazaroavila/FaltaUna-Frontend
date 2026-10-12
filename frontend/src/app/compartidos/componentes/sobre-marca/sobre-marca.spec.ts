@@ -8,8 +8,8 @@ import {
   calcularCajaLogo,
   construirTrazoPlaca,
 } from './sobre-marca';
-import { ETIQUETAS_CATEGORIA } from '../../../modelos/categoria.model';
-import type { CategoriaSobre } from '../../../modelos/categoria.model';
+import { ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
+import type { CategoriaSobre } from '@modelos/categoria.model';
 
 interface MarcaDePrueba {
   readonly nombre: string;

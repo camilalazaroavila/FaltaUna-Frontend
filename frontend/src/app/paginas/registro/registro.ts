@@ -3,10 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NgxSonnerToaster } from 'ngx-sonner';
 import { Subject, of, debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil } from 'rxjs';
-import { AuthService } from '../../servicios/auth.service';
-import { CrearUsuarioSolicitud } from '../../modelos/usuario.model';
-import { AuthLayout } from '../../compartidos/componentes/auth-layout/auth-layout';
-import { injectModoAuth } from '../../compartidos/componentes/auth-layout/auth-modo';
+import { AuthService } from '@servicios/auth.service';
+import { CrearUsuarioSolicitud } from '@modelos/usuario.model';
+import { AuthLayout } from '@compartidos/componentes/auth-layout/auth-layout';
+import { injectModoAuth } from '@compartidos/componentes/auth-layout/auth-modo';
 
 @Component({
   selector: 'app-registro',

@@ -13,8 +13,8 @@ import {
 } from '@ng-icons/phosphor-icons/fill';
 import { of } from 'rxjs';
 import { EmpresaPagoResultado } from './empresa-pago-resultado';
-import { PagosService } from '../../servicios/pagos.service';
-import { PagoRespuesta } from '../../modelos/pago.model';
+import { PagosService } from '@servicios/pagos.service';
+import { PagoRespuesta } from '@modelos/pago.model';
 
 describe('EmpresaPagoResultado', () => {
   const mockPagoAprobado: PagoRespuesta = {
