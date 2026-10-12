@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { BotonFlotante } from '@compartidos/componentes/boton-flotante/boton-flotante';
+import { BotonFlotante } from '@compartidos/componentes/controles/boton-flotante/boton-flotante';
 import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 import { RegistroEventos } from '@paginas/galeria-componentes/registro-eventos/registro-eventos';
 import { crearRegistroEventos } from '@paginas/galeria-componentes/registro-eventos';

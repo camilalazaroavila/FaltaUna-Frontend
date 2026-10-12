@@ -4,7 +4,7 @@ import { NgIcon } from '@ng-icons/core';
 import { AcordeonPregunta } from '@compartidos/componentes/landing/acordeon-preguntas/acordeon-preguntas';
 import { CarruselMarcas, MarcaCarrusel } from '@compartidos/componentes/landing/carousel-marcas/carousel-marcas';
 import { Header } from '@compartidos/componentes/layout/header/header';
-import { Boton } from '@compartidos/componentes/boton/boton';
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { IlustracionTienda } from '@compartidos/ilustraciones/ilustracion-tienda/ilustracion-tienda';
 import urlCartaRara from '@svgs/CartaRara.svg';
 import urlEpicarta from '@svgs/Epicarta.svg';

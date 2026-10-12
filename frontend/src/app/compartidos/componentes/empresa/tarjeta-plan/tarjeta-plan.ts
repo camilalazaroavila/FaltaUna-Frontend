@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 
 import { Plan, PlanId } from '@modelos/plan.model';
-import { Boton } from '@compartidos/componentes/boton/boton';
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
 
 const FONDO_TITULO: Record<PlanId, string> = {
   basico: 'bg-marca-acento',

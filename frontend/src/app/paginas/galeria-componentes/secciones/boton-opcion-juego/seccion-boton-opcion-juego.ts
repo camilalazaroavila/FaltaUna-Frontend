@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BotonOpcionJuego } from '@compartidos/componentes/boton-opcion-juego/boton-opcion-juego';
+import { BotonOpcionJuego } from '@compartidos/componentes/controles/boton-opcion-juego/boton-opcion-juego';
 import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 import { RegistroEventos } from '@paginas/galeria-componentes/registro-eventos/registro-eventos';
 import { crearRegistroEventos } from '@paginas/galeria-componentes/registro-eventos';

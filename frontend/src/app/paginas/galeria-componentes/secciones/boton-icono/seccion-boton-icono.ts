@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { BotonIcono } from '@compartidos/componentes/boton-icono/boton-icono';
+import { BotonIcono } from '@compartidos/componentes/controles/boton-icono/boton-icono';
 import type {
   TamanioBotonIcono,
   VarianteBotonIcono,
-} from '@compartidos/componentes/boton-icono/boton-icono';
+} from '@compartidos/componentes/controles/boton-icono/boton-icono';
 import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 import { RegistroEventos } from '@paginas/galeria-componentes/registro-eventos/registro-eventos';
 import { crearRegistroEventos } from '@paginas/galeria-componentes/registro-eventos';

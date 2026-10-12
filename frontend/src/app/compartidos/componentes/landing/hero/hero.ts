@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
-import { Boton } from '@compartidos/componentes/boton/boton';
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import urlLogo from '@svgs/Imagotipo_Alt.svg';
 import urlLogoEmpresa from '@svgs/Imagotipo_Empresa.svg';
 import urlCosme from '@svgs/Icon_CosmeInv.svg';

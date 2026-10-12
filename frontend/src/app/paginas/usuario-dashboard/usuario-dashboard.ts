@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SobresService } from '@servicios/sobres.service';
-import { BotonNavegacionCircular } from '@compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
+import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
 import { FlujoAperturaSobres } from '@compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { SobreMarca } from '@compartidos/componentes/sobre-marca/sobre-marca';

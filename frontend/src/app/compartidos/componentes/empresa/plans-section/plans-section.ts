@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PlanEmpresa } from '@modelos/landing-empresa.model';
-import { Boton } from '@compartidos/componentes/boton/boton';
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { PlanCard } from '@compartidos/componentes/empresa/plan-card/plan-card';
 
 @Component({

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { BotonNavegacionCircular } from '@compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
-import type { TamanioBotonNavegacion } from '@compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
+import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
+import type { TamanioBotonNavegacion } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
 import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 import { RegistroEventos } from '@paginas/galeria-componentes/registro-eventos/registro-eventos';
 import { crearRegistroEventos } from '@paginas/galeria-componentes/registro-eventos';
