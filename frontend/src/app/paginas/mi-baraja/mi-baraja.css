@@ -1,0 +1,201 @@
+/* Layout: mobile apilado; desde 640px, tablero de la baraja (izq) + catálogo (der).
+   El panel se muestra completo (sin scroll interno) para no cortar la baraja 3x4. */
+.baraja__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.baraja__catalogo {
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .baraja__layout {
+    grid-template-columns: 22rem minmax(0, 1fr);
+  }
+}
+
+/* Panel de la baraja */
+.baraja__panel {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--borde-coleccion);
+  border-radius: var(--radio-lg);
+  background: var(--fondo-coleccion);
+}
+
+.baraja__progreso {
+  height: 0.5rem;
+  margin: 0.75rem 0;
+  overflow: hidden;
+  border-radius: var(--radio-pildora);
+  background: rgba(244, 250, 246, 0.12);
+}
+
+.baraja__progreso-relleno {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--marca-coleccion);
+  transition: width 0.25s ease;
+}
+
+.baraja__conteos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.baraja__conteo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--texto-secundario, rgba(244, 250, 246, 0.72));
+}
+
+.baraja__rareza-punto {
+  width: 0.6rem;
+  height: 0.6rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.baraja__rareza-punto[data-rareza='comun'] {
+  background: var(--rareza-1);
+}
+
+.baraja__rareza-punto[data-rareza='rara'] {
+  background: var(--rareza-2);
+}
+
+.baraja__rareza-punto[data-rareza='epicarta'] {
+  background: var(--rareza-3);
+}
+
+.baraja__rareza-punto[data-rareza='legendaria'] {
+  background: var(--rareza-4);
+}
+
+.baraja__conteo-valor {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--texto-apagado, rgba(244, 250, 246, 0.5));
+}
+
+.baraja__conteo-valor--tope {
+  color: var(--color-amarillo-acento, #ffd27a);
+}
+
+/* Casilleros: 3 columnas (3x4) para que las cartas de la baraja se vean más grandes. */
+.baraja__slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.baraja__slot {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.baraja__slot--lleno {
+  cursor: pointer;
+  border-radius: var(--radio-md);
+}
+
+.baraja__slot--lleno:focus-visible {
+  outline: 3px solid var(--marca-coleccion);
+  outline-offset: 3px;
+}
+
+.baraja__slot--vacio {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 5 / 7;
+  border: 1px dashed var(--borde-coleccion);
+  border-radius: var(--radio-md);
+  color: rgba(244, 250, 246, 0.28);
+}
+
+.baraja__slot--vacio svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.baraja__aviso {
+  min-height: 1.1em;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-amarillo-acento, #ffd27a);
+}
+
+.baraja__guardar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--marca-coleccion);
+  color: var(--marca-coleccion-sobre);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    filter 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.baraja__guardar:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.baraja__guardar:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Grilla del catálogo (cartas un poco más chicas que en "Mis cartas"). */
+.baraja__grilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 480px) {
+  .baraja__grilla {
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .baraja__grilla {
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .baraja__progreso-relleno,
+  .baraja__guardar {
+    transition: none;
+  }
+}

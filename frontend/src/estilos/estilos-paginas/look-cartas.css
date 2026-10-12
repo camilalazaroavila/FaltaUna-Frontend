@@ -1,0 +1,55 @@
+/* ==========================================================================
+   Falta Una - Look "Mis cartas" / "Mi baraja" (Capa 3, alcance acotado)
+   Tipografía sans serif + esquinas apenas más rectas en contenedores.
+   Los controles interactivos (botones, campos y enlaces-botón) mantienen las
+   esquinas redondeadas del resto de la web, para no quedar inconsistentes.
+   Se activa agregando la clase `.look-cartas` al contenedor de contenido de
+   cada página, de modo que el resto de la app no se ve afectada.
+
+   Nota sobre tokens: con `@theme inline`, las utilidades Tailwind `rounded-*`
+   compilan a `border-radius: var(--radio-*)` (visto en el CSS final), y los
+   componentes leen `--radio-*` directo. Igual se redefinen también las formas
+   `--radius-*` por si alguna utilidad las referencia.
+   ========================================================================== */
+
+.look-cartas {
+    /* Contenedores: esquinas apenas más rectas que el resto de la web. */
+    --radio-sm: 0.125rem;
+    --radio-md: 0.25rem;
+    --radio-lg: 0.5rem;
+    --radio-pildora: 0.25rem;
+
+    --radius-sm: var(--radio-sm);
+    --radius-md: var(--radio-md);
+    --radius-lg: var(--radio-lg);
+    --radius-pildora: var(--radio-pildora);
+
+    /* Texto sans serif (los títulos ya usan Russo One, también sans). */
+    font-family: var(--fuente-interfaz);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Botones, campos y enlaces-botón: vuelven a los radios originales (redondeados
+   / píldora) igual que en el resto de la web. También cubre el control
+   segmentado, cuyo redondeo vive en un contenedor con role="group". */
+.look-cartas :where(button, input, select, textarea, a, [role='group']) {
+    --radio-sm: 0.375rem;
+    --radio-md: 0.75rem;
+    --radio-lg: 1.25rem;
+    --radio-pildora: 9999px;
+
+    --radius-sm: var(--radio-sm);
+    --radius-md: var(--radio-md);
+    --radius-lg: var(--radio-lg);
+    --radius-pildora: var(--radio-pildora);
+}
+
+/* base.css fija `p` y los campos en fuentes concretas: acá heredan la sans
+   del contenedor para que "todo" quede en sans serif. */
+.look-cartas :where(p, input, select, textarea, button) {
+    font-family: inherit;
+}
+
+.look-cartas :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--fuente-titulo);
+}
