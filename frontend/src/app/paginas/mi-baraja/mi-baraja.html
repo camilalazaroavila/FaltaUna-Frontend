@@ -246,9 +246,12 @@
           <div class="baraja__grilla">
             @for (carta of cartasFiltradas(); track carta.id) {
               <app-carta-seleccionable
+                appPulsacionCarta
+                [clicRaton]="false"
                 [carta]="carta"
                 [seleccionada]="idsSeleccionados().has(carta.id)"
                 [bloqueada]="idsBloqueados().has(carta.id)"
+                (pulsacion)="abrirPopup(carta)"
                 (alternar)="alternar($event)"
               />
             }
@@ -257,4 +260,8 @@
       </main>
     </div>
   </div>
+
+  @if (cartaPopup(); as carta) {
+    <app-carta-popup [carta]="carta" (cerrar)="cerrarPopup()" />
+  }
 </div>

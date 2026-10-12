@@ -178,4 +178,28 @@ describe('MiBaraja', () => {
     const nombres = componente['cartasFiltradas']().map((carta) => carta.nombre);
     expect(nombres).toEqual([...nombres].sort((a, b) => a.localeCompare(b, 'es')));
   });
+
+  it('selecciona con el clic de la carta sin abrir el detalle', () => {
+    const boton = fixture.nativeElement.querySelector(
+      'app-carta-seleccionable button',
+    ) as HTMLButtonElement;
+
+    boton.click();
+    fixture.detectChanges();
+
+    expect(seleccion().length).toBe(1);
+    expect(componente['cartaPopup']()).toBeNull();
+  });
+
+  it('abre y cierra el popup de detalle', () => {
+    componente['abrirPopup'](comunes()[0]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('app-carta-popup')).not.toBeNull();
+
+    componente['cerrarPopup']();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('app-carta-popup')).toBeNull();
+  });
 });

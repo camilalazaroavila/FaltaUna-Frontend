@@ -202,4 +202,23 @@ describe('MisCartas', () => {
     expect(enlace).not.toBeNull();
     expect(enlace?.textContent?.toLowerCase()).toContain('construir baraja');
   });
+
+  it('debe abrir el detalle de una carta al activarla y cerrarlo desde el popup', () => {
+    const disparador = fixture.nativeElement.querySelector(
+      '.coleccion__disparador',
+    ) as HTMLButtonElement;
+
+    disparador.click();
+    fixture.detectChanges();
+
+    expect(componente['cartaPopup']()).not.toBeNull();
+    const popup = fixture.nativeElement.querySelector('app-carta-popup') as HTMLElement;
+    expect(popup).not.toBeNull();
+
+    (popup.querySelector('.carta-popup__cerrar') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(componente['cartaPopup']()).toBeNull();
+    expect(fixture.nativeElement.querySelector('app-carta-popup')).toBeNull();
+  });
 });
