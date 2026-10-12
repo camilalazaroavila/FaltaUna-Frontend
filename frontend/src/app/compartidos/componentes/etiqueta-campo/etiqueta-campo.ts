@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { InfoTooltip } from '@compartidos/componentes/info-tooltip/info-tooltip';
+import { InfoTooltip } from '@compartidos/componentes/feedback/info-tooltip/info-tooltip';
 
 /**
  * Etiqueta de un campo de formulario: texto, asterisco de obligatorio,

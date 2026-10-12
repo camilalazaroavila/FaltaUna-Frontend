@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 
-import { BarraProgreso } from '@compartidos/componentes/barra-progreso/barra-progreso';
+import { BarraProgreso } from '@compartidos/componentes/feedback/barra-progreso/barra-progreso';
 import { SobreMarca } from '@compartidos/componentes/sobre-marca/sobre-marca';
 import { ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
 import type { Mision } from '@modelos/misiones.model';

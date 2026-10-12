@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Badge } from '@compartidos/componentes/badge/badge';
+import { Badge } from '@compartidos/componentes/feedback/badge/badge';
 import type {
   TamanioBadge,
   VarianteBadge,
-} from '@compartidos/componentes/badge/badge';
+} from '@compartidos/componentes/feedback/badge/badge';
 import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 import { RegistroEventos } from '@paginas/galeria-componentes/registro-eventos/registro-eventos';
 import { crearRegistroEventos } from '@paginas/galeria-componentes/registro-eventos';
