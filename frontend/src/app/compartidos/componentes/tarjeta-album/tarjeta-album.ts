@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { NgIcon } from '@ng-icons/core';
 import { TONO_EMPRESA, type AlbumEmpresa, type ResumenAlbum } from '@modelos/empresa.mock';
 import { BarraRareza } from '@compartidos/componentes/barra-rareza/barra-rareza';
-import { TarjetaRecompensa } from '@compartidos/componentes/tarjeta-recompensa/tarjeta-recompensa';
+import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 
 /**
  * Tarjeta de álbum de empresa con estética de cupón: banda del color del álbum

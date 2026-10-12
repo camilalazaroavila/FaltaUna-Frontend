@@ -5,10 +5,10 @@ import { toast } from 'ngx-sonner';
 
 import { DesplegableSeleccion, type OpcionDesplegable } from '@compartidos/componentes/desplegable-seleccion/desplegable-seleccion';
 import { FlujoAperturaSobres, type SobreInicialApertura } from '@compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
-import { PanelMisiones, type SeccionMisiones } from '@compartidos/componentes/panel-misiones/panel-misiones';
+import { PanelMisiones, type SeccionMisiones } from '@compartidos/componentes/usuario/panel-misiones/panel-misiones';
 import { Header } from '@compartidos/componentes/layout/header/header';
-import { TarjetaMision } from '@compartidos/componentes/tarjeta-mision/tarjeta-mision';
-import { TarjetaPity } from '@compartidos/componentes/tarjeta-pity/tarjeta-pity';
+import { TarjetaMision } from '@compartidos/componentes/usuario/tarjeta-mision/tarjeta-mision';
+import { TarjetaPity } from '@compartidos/componentes/usuario/tarjeta-pity/tarjeta-pity';
 import { CATEGORIAS_SOBRE, ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
 import {
   ETIQUETAS_PERIODICIDAD,

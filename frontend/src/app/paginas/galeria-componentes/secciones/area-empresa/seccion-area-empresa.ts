@@ -3,7 +3,7 @@ import { BarraRareza } from '@compartidos/componentes/barra-rareza/barra-rareza'
 import { HeaderEmpresa } from '@compartidos/componentes/layout/header-empresa/header-empresa';
 import { TarjetaAlbum } from '@compartidos/componentes/tarjeta-album/tarjeta-album';
 import { TarjetaKpi } from '@compartidos/componentes/tarjeta-kpi/tarjeta-kpi';
-import { TarjetaRecompensa } from '@compartidos/componentes/tarjeta-recompensa/tarjeta-recompensa';
+import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import {
   ALBUMES_EMPRESA,
   calcularResumenAlbum,
