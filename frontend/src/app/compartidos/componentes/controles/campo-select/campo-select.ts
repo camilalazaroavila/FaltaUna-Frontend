@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, forwardRef, input, signal
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgIcon } from '@ng-icons/core';
 import { CLASES_CAMPO } from '@compartidos/componentes/controles/campo-texto/campo-texto';
-import { EtiquetaCampo } from '@compartidos/componentes/etiqueta-campo/etiqueta-campo';
+import { EtiquetaCampo } from '@compartidos/componentes/controles/etiqueta-campo/etiqueta-campo';
 
 let contador = 0;
 

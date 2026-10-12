@@ -8,11 +8,11 @@ import { AlbumesService } from '@servicios/albumes.service';
 import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
 import { CATEGORIAS_RESPALDO, CategoriaApi, REDES_SOCIALES } from '@modelos/album.model';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
-import { CalendarioMensual } from '@compartidos/componentes/calendario-mensual/calendario-mensual';
+import { CalendarioMensual } from '@compartidos/componentes/controles/calendario-mensual/calendario-mensual';
 import { CampoSelect, OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
 import { CampoTexto } from '@compartidos/componentes/controles/campo-texto/campo-texto';
-import { EncabezadoPaso } from '@compartidos/componentes/encabezado-paso/encabezado-paso';
-import { EtiquetaCampo } from '@compartidos/componentes/etiqueta-campo/etiqueta-campo';
+import { EncabezadoPaso } from '@compartidos/componentes/controles/encabezado-paso/encabezado-paso';
+import { EtiquetaCampo } from '@compartidos/componentes/controles/etiqueta-campo/etiqueta-campo';
 import { aIso } from '@compartidos/utilidades/fechas';
 
 type Errores = Partial<Record<

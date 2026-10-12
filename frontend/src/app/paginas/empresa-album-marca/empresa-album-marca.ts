@@ -7,10 +7,10 @@ import { AlbumBorrador } from '@servicios/album-borrador.service';
 import { CARTAS_POR_ALBUM, MAX_KB_IMAGEN, MINIMO_IMAGENES } from '@modelos/album.model';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { CampoTexto } from '@compartidos/componentes/controles/campo-texto/campo-texto';
-import { EncabezadoPaso } from '@compartidos/componentes/encabezado-paso/encabezado-paso';
-import { EtiquetaCampo } from '@compartidos/componentes/etiqueta-campo/etiqueta-campo';
-import { GrillaImagenes } from '@compartidos/componentes/grilla-imagenes/grilla-imagenes';
-import { SubidaImagen } from '@compartidos/componentes/subida-imagen/subida-imagen';
+import { EncabezadoPaso } from '@compartidos/componentes/controles/encabezado-paso/encabezado-paso';
+import { EtiquetaCampo } from '@compartidos/componentes/controles/etiqueta-campo/etiqueta-campo';
+import { GrillaImagenes } from '@compartidos/componentes/controles/grilla-imagenes/grilla-imagenes';
+import { SubidaImagen } from '@compartidos/componentes/controles/subida-imagen/subida-imagen';
 
 /** Paso 3 del alta: nombre de la marca, logo y las imágenes del álbum. */
 @Component({

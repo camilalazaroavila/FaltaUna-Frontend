@@ -14,7 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { SobresService } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
-import { PanelDesplazable } from '@compartidos/componentes/panel-desplazable/panel-desplazable';
+import { PanelDesplazable } from '@compartidos/componentes/controles/panel-desplazable/panel-desplazable';
 import {
   AperturaSobreRespuesta,
   CartaObtenidaRespuesta,
