@@ -300,7 +300,7 @@ export const CARTAS_MOCK: Carta[] = [
   /** agrego mas cartas solo para la demo de abrir sobres */
 
   {
-    id: 'c-015',
+    id: 'c-028',
     nombre: 'Batman',
     imagenUrl: 'imagenes/batman.png',
     rareza: 'legendaria',
@@ -310,7 +310,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-016',
+    id: 'c-029',
     nombre: 'Spiderman',
     imagenUrl: 'imagenes/spiderman.jpg',
     rareza: 'rara',
@@ -320,7 +320,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-017',
+    id: 'c-030',
     nombre: 'Darth Vader',
     imagenUrl: 'imagenes/darthvader.jpg',
     rareza: 'epicarta',
@@ -330,7 +330,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-018',
+    id: 'c-031',
     nombre: 'Indiana Jones',
     imagenUrl: 'imagenes/indiana.jpg',
     rareza: 'comun',
@@ -340,7 +340,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-019',
+    id: 'c-032',
     nombre: 'Chuck 70',
     imagenUrl: 'imagenes/chuck70.jpg',
     rareza: 'rara',
@@ -350,7 +350,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-020',
+    id: 'c-033',
     nombre: 'La 10',
     imagenUrl: 'imagenes/la10.jpg',
     rareza: 'legendaria',
@@ -360,7 +360,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-021',
+    id: 'c-034',
     nombre: 'Adidas CNY',
     imagenUrl: 'imagenes/chineseNewYear.jpg',
     rareza: 'rara',
@@ -370,7 +370,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-022',
+    id: 'c-035',
     nombre: 'sibari S',
     imagenUrl: 'imagenes/sibaris.jpg',
     rareza: 'comun',
@@ -380,7 +380,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-023',
+    id: 'c-036',
     nombre: 'Queen II',
     imagenUrl: 'imagenes/queen.jpg',
     rareza: 'epicarta',
@@ -390,7 +390,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-024',
+    id: 'c-037',
     nombre: 'Short n Sweet',
     imagenUrl: 'imagenes/sabrina.jpg',
     rareza: 'rara',
@@ -400,7 +400,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-025',
+    id: 'c-038',
     nombre: 'PS5',
     imagenUrl: 'imagenes/ps5.jpg',
     rareza: 'rara',
@@ -410,7 +410,7 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-026',
+    id: 'c-039',
     nombre: 'Switch 2',
     imagenUrl: 'imagenes/switch2.jpg',
     rareza: 'epicarta',

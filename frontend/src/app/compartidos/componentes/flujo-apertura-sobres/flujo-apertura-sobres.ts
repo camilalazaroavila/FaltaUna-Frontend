@@ -39,15 +39,20 @@ export interface PropsSobre {
   readonly logoUrl: string | null;
 }
 
+export interface SobreInicialApertura {
+  readonly tipo: 'GENERAL' | 'CATEGORIA' | 'MARCA';
+  readonly etiqueta?: string;
+}
+
 /** Cuántas cartas trae el sobre gratuito (general). Coincide con `Sobre General` en la base. */
 const CARTAS_SOBRE_DIARIO = 5;
 
 /**
- * Cartas del mock que usa ESTE flujo: las de id c-015 a c-025 (ambos incluidos).
+ * Cartas del mock que usa ESTE flujo
  * Cambiá estos dos números para usar otro rango; el resto del mock no se toca.
  */
-const ID_MOCK_DESDE = 15;
-const ID_MOCK_HASTA = 26;
+const ID_MOCK_DESDE = 28;
+const ID_MOCK_HASTA = 39;
 
 const numeroDeId = (id: string): number => Number(id.replace(/\D/g, ''));
 
@@ -166,6 +171,7 @@ export class FlujoAperturaSobres {
   private ignorarClic = false;
 
   constructor() {
+    // Al abrir el modal, reiniciar automáticamente a la fase de selección
     // Al abrir el modal, reiniciar automáticamente a la fase de selección.
     // Si llega un `sobreInicial` (reclamo de misión), saltamos la grilla y
     // entramos directo a la vista previa de ese sobre.
@@ -176,8 +182,33 @@ export class FlujoAperturaSobres {
 
       untracked(() => {
         this.iniciar();
-      }
+        if (inicial) {
+          const sobre = this.resolverSobreInicial(inicial);
+          if (sobre) {
+            this.seleccionarSobre(sobre);
+          }
+        }
+      });
     });
+  }
+
+  /**
+   * Resuelve el sobre de apertura contra la lista UI. Empareja por tipo y
+   * etiqueta cuando se indica; si no hay coincidencia (o el catálogo todavía no
+   * cargó), devuelve el sobre genérico: el diario disponible.
+   */
+  private resolverSobreInicial(descriptor: SobreInicialApertura): SobreItemUI | null {
+    const items = this.listaSobresUI();
+    const buscado = descriptor.etiqueta?.trim().toUpperCase();
+
+    if (buscado) {
+      const porEtiqueta = items.find(
+        (item) => !item.esDiario && item.tipo === descriptor.tipo && item.etiqueta === buscado,
+      );
+      if (porEtiqueta) return porEtiqueta;
+    }
+
+    return items.find((item) => item.esDiario && item.disponible) ?? items.find((item) => item.esDiario) ?? null;
   }
 
   /**
@@ -597,7 +628,7 @@ export class FlujoAperturaSobres {
   private guardarCartasVistas(vistas: Set<string>): void {
     try {
       localStorage.setItem(this.claveCartasVistas(), JSON.stringify([...vistas]));
-    } catch {}
+    } catch { }
   }
 
   /**

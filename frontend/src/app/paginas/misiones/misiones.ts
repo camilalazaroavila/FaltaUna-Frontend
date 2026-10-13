@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
-
+import { RouterLink } from '@angular/router';
 import { DesplegableSeleccion, type OpcionDesplegable } from '../../compartidos/componentes/desplegable-seleccion/desplegable-seleccion';
 import { FlujoAperturaSobres, type SobreInicialApertura } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
 import { PanelMisiones, type SeccionMisiones } from '../../compartidos/componentes/panel-misiones/panel-misiones';
@@ -35,7 +35,7 @@ type CriterioOrdenPity = 'cercania' | 'nombre';
  */
 @Component({
   selector: 'app-misiones',
-  imports: [NgIcon, DesplegableSeleccion, PanelMisiones, TarjetaMision, TarjetaPity, Header, FlujoAperturaSobres],
+  imports: [NgIcon, DesplegableSeleccion, PanelMisiones, TarjetaMision, TarjetaPity, Header, FlujoAperturaSobres, RouterLink],
   templateUrl: './misiones.html',
   styleUrl: './misiones.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

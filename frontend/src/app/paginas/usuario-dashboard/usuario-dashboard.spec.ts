@@ -7,7 +7,6 @@ import { UsuarioDashboard } from './usuario-dashboard';
 import { AuthService } from '../../servicios/auth.service';
 import { SobresService } from '../../servicios/sobres.service';
 import { Usuario } from '../../modelos/usuario.model';
-import { AperturaSobreRespuesta } from '../../modelos/sobre.model';
 
 describe('UsuarioDashboard Component', () => {
   let component: UsuarioDashboard;
@@ -169,14 +168,8 @@ describe('UsuarioDashboard Component', () => {
   it('debe descontar sobres disponibles al completar una apertura', () => {
     expect(component['sobresDisponibles']().actuales).toBe(2);
 
-    const mockApertura: AperturaSobreRespuesta = {
-      id: 1,
-      sobreId: 1,
-      fecha: '2026-10-08T00:00:00Z',
-      cartas: [],
-    };
+    component.alCompletarApertura();
 
-    component.alCompletarApertura(mockApertura);
     expect(component['sobresDisponibles']().actuales).toBe(1);
   });
 
