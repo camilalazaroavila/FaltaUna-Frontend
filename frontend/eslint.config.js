@@ -7,7 +7,8 @@ module.exports = [
       'dist/**',
       'node_modules/**',
       'build/**',
-      '**/*.spec.ts',
+      // TODO: quitar este ignore cuando se corrija el error de sintaxis (TS1005) de misiones.spec.ts
+      'src/app/paginas/misiones/misiones.spec.ts',
       'src/test/**',
       '**/*.html',
     ],
@@ -28,6 +29,18 @@ module.exports = [
       semi: ['error', 'always'],
       quotes: ['error', 'single'],
       '@typescript-eslint/no-unused-vars': ['warn'],
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['../*', '../../*', '../../../*', '../../../../*'],
+              message:
+                "Usá los path aliases (@app, @compartidos, @modelos, @servicios, @paginas, @svgs, @environments) en lugar de imports relativos '../'. Ver context.md, sección 5.",
+            },
+          ],
+        },
+      ],
     },
   },
   {
