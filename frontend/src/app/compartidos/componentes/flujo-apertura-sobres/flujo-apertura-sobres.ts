@@ -143,6 +143,9 @@ export class FlujoAperturaSobres {
   protected readonly cartasObtenidas = signal<CartaObtenidaRespuesta[]>([]);
   protected readonly indiceCartaActual = signal<number>(0);
 
+  /** Controla la animación de entrada de cada carta revelada. */
+  protected readonly animarCarta = signal(true);
+
   /** Las mismas cartas, convertidas al modelo `Carta` que consume `app-carta`. */
   protected readonly cartasUI = signal<Carta[]>([]);
   /** Carta que se muestra en la revelación (o null si no hay). */
@@ -572,8 +575,15 @@ export class FlujoAperturaSobres {
   avanzarOFinalizar(): void {
     const actual = this.indiceCartaActual();
     const total = this.cartasObtenidas().length;
+
     if (actual < total - 1) {
-      this.indiceCartaActual.set(actual + 1);
+      // Reiniciamos la animación para la siguiente carta.
+      this.animarCarta.set(false);
+      this.indiceCartaActual.update((indice) => indice + 1);
+
+      setTimeout(() => {
+        this.animarCarta.set(true);
+      }, 30);
     } else {
       this.cerrarFlujo();
     }

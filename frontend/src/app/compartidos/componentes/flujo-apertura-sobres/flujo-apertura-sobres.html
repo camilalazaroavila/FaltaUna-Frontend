@@ -142,15 +142,13 @@
       class="relative w-full max-w-[min(100%,90rem)] h-[calc(var(--ancho-sobre)*1.64+2.5rem)] flex items-center justify-center [--ancho-sobre:clamp(7rem,min(24vw,27vh),24rem)] perspective-[calc(var(--ancho-sobre)*5)]">
       @for (sobre of sobresCarrusel(); track sobre.k) {
       @let p = propsDeSobre(sobre.item);
-      <div class="absolute"
-        [class.pointer-events-none]="Math.abs(sobre.rel) > 2.5" [class.transition-all]="!enArrastre"
+      <div class="absolute" [class.pointer-events-none]="Math.abs(sobre.rel) > 2.5" [class.transition-all]="!enArrastre"
         [class.duration-300]="!enArrastre" [class.ease-out]="!enArrastre" [class.transition-none]="enArrastre"
         [style.transform]="obtenerTransformSobre(sobre.rel)" [style.opacity]="obtenerOpacidadSobre(sobre.rel)"
         [style.zIndex]="obtenerZIndexSobre(sobre.rel)">
         <div class="w-[var(--ancho-sobre)] aspect-[208.67/340.93] filter drop-shadow-2xl">
           <app-sobre-marca class="w-full [&>*]:w-full!" tamanio="lg" clickeable [categoria]="p.categoria"
-            [variante]="p.variante" [nombre]="p.nombre" [logoUrl]="p.logoUrl"
-            (accion)="alHacerClicSobre(sobre.rel)" />
+            [variante]="p.variante" [nombre]="p.nombre" [logoUrl]="p.logoUrl" (accion)="alHacerClicSobre(sobre.rel)" />
         </div>
       </div>
       }
@@ -272,10 +270,11 @@
     </h1>
 
     <!-- Escena central: carta con estrellas y brillo -->
-    <div class="relative flex items-center justify-center">
+    <div class="escena-revelacion relative flex items-center justify-center"
+      [class.animacion-revelacion]="animarCarta()">
       <!-- Halo amarillo detrás de la carta -->
       <div
-        class="pointer-events-none absolute -inset-[30%] rounded-full bg-radial from-[#f9f9b2]/45 via-[#f9f9b2]/15 to-transparent blur-2xl"
+        class="halo-revelacion pointer-events-none absolute -inset-[30%] rounded-full bg-radial from-[#f9f9b2]/45 via-[#f9f9b2]/15 to-transparent blur-2xl"
         aria-hidden="true"></div>
 
       <!-- Aviso de carta repetida -->
@@ -287,22 +286,16 @@
       }
 
       <!-- Estrellitas decorativas (tamaño relativo a la carta) -->
-      <div class="absolute -top-4 -left-6 sm:-left-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">
-        ★</div>
-      <div class="absolute top-10 -left-8 sm:-left-12 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★
-      </div>
-      <div class="absolute -top-3 -right-6 sm:-right-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">★
-      </div>
-      <div class="absolute top-1/2 -right-8 sm:-right-12 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★
-      </div>
-      <div class="absolute -bottom-3 -left-5 sm:-left-8 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★
-      </div>
-      <div class="absolute -bottom-5 -right-5 sm:-right-8 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.09)]">★
-      </div>
+      <div class="brillo-estrella estrella-1 absolute -top-4 -left-6 sm:-left-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">★</div>
+      <div class="brillo-estrella estrella-2 absolute top-10 -left-8 sm:-left-12 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★</div>
+      <div class="brillo-estrella estrella-3 absolute -top-3 -right-6 sm:-right-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">★</div>
+      <div class="brillo-estrella estrella-4 absolute top-1/2 -right-8 sm:-right-12 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★</div>
+      <div class="brillo-estrella estrella-5 absolute -bottom-3 -left-5 sm:-left-8 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★</div>
+      <div class="brillo-estrella estrella-6 absolute -bottom-5 -right-5 sm:-right-8 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.09)]">★</div>
 
       <!-- Carta: ancho derivado de la altura (proporción 5/7), levemente inclinada -->
       <div
-        class="relative w-[calc(var(--carta-h)*5/7)] max-w-[60vw] rotate-[5deg] drop-shadow-[0_0_28px_rgba(249,249,178,0.65)]">
+        class="carta-revelada relative w-[calc(var(--carta-h)*5/7)] max-w-[60vw] rotate-[5deg] drop-shadow-[0_0_28px_rgba(249,249,178,0.65)]">
         <app-carta [carta]="carta" />
       </div>
     </div>
