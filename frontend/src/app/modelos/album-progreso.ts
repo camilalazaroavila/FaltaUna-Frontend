@@ -1,6 +1,9 @@
-import { Carta } from "./carta.model";
+import { Carta } from './carta.model';
 
-export interface CartaDeAlbum extends Carta{}
+export interface CartaDeAlbum extends Carta
+{
+   esFavorita: boolean;
+}
 
 export interface AlbumConProgreso
 {
@@ -14,6 +17,9 @@ export interface AlbumConProgreso
    readonly cartas: readonly CartaDeAlbum[];
 }
 
+/*
+ `cantidad` es siempre 1 en este endpoint: no indica tenencia, solo se usa `cartaId`.
+ */
 export interface CartaObtenidaRespuesta
 {
    readonly cartaId: number;

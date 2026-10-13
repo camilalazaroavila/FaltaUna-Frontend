@@ -1,25 +1,29 @@
-import { AlbumConProgreso } from "./album-progreso";
-import { CARTAS_MOCK } from "./cartas.mock";
+import { AlbumConProgreso, CartaDeAlbum } from './album-progreso';
+import { Carta } from './carta.model';
+import { CARTAS_MOCK } from './cartas.mock';
+
+const comoCartaDeAlbum = (carta: Carta): CartaDeAlbum => ({ ...carta, esFavorita: false });
+
 
 export const ALBUMES_MOCK: AlbumConProgreso[] = [
     {
         id: 1,
-        nombre: 'Album 1',
-        marcaNombre: 'Marca 1',
+        nombre: 'Grido',
+         marcaNombre: 'Grido',
         imagenUrl: 'imagenes/grido.jpg',
-        descripcion: 'Descripcion 1',
-        categoria: 'Categoria 1',
+        descripcion: 'Ejemplo de album de Grido',
+        categoria: 'gastronomia',
         esActivo: true,
-        cartas: CARTAS_MOCK,
+        cartas: CARTAS_MOCK.filter((c) => c.categoria === 'gastronomia').map(comoCartaDeAlbum),
     },
     {
         id: 2,
-        nombre: 'Album 2',
-        marcaNombre: 'Marca 2',
-        imagenUrl: 'imagenes/grido.jpg',
-        descripcion: 'Descripcion 2',
-        categoria: 'Categoria 2',
+        nombre: 'Zara',
+        marcaNombre: 'Zara',
+        imagenUrl: 'imagenes/zara.png',
+        descripcion: 'Ejemplo de album de Zara',
+        categoria: 'indumentaria',
         esActivo: false,
-        cartas: CARTAS_MOCK,
+        cartas: CARTAS_MOCK.filter((c) => c.categoria === 'indumentaria').map(comoCartaDeAlbum),
     },
 ];
