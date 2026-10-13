@@ -1,0 +1,21 @@
+<header class="flex flex-wrap items-center gap-4">
+  <img
+    class="size-16 rounded-md object-cover"
+    [src]="album().logoUrl"
+    [alt]="'Logo de ' + album().marcaNombre"
+  />
+
+  <div class="min-w-0 flex-1 basis-64">
+    <h2 class="font-titulo text-3xl text-texto-primario sm:text-4xl">{{ album().nombre }}</h2>
+    <p class="max-w-prose text-sm text-texto-secundario">{{ album().descripcion }}</p>
+  </div>
+
+  <div class="flex w-full flex-col gap-2 sm:w-72">
+    <app-barra-progreso
+      [actual]="obtenidas()"
+      [objetivo]="total()"
+      [etiqueta]="'Progreso del álbum ' + album().nombre"
+    />
+    <p class="text-right font-titulo text-3xl text-texto-primario">{{ obtenidas() }}/{{ total() }}</p>
+  </div>
+</header>

@@ -14,6 +14,8 @@ export interface AlbumConProgreso
    readonly descripcion: string;
    readonly categoria: string;
    readonly esActivo: boolean;
+   readonly cartasObtenidas: number;
+   readonly totalDeCartas: number;
    readonly cartas: readonly CartaDeAlbum[];
 }
 
