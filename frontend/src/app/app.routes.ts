@@ -170,4 +170,13 @@ export const routes: Routes = [
   },
 
   { path: '**', redirectTo: 'login' },
+
+  {
+    path: 'usuario/albumes',
+    title: 'Albumes - Falta Una',
+    canActivate: [rolGuard],
+    data: {rolesPermitidos: ['Usuario']},
+    loadComponent: () =>
+      import('./paginas/usuario-albumes/usuario-albumes').then((m) => m.UsuarioAlbumes),
+  },
 ];
