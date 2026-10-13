@@ -60,6 +60,13 @@ export const faltantesPity = (p: Pick<ProgresoPity, 'abiertos' | 'umbral'>): num
   Math.max(0, p.umbral - p.abiertos);
 
 /**
+ * Umbral de "¡Casi!" del PT System: una fila se destaca cuando le faltan estos
+ * sobres o menos para la legendaria. Vive en una constante para no hardcodearlo
+ * en la plantilla y para poder ajustarlo en un solo lugar.
+ */
+export const UMBRAL_CASI_PITY = 2;
+
+/**
  * Categoría a la que pertenece un sobre: la propia (tipo `categoria`) o la de su
  * marca. Los sobres genéricos no tienen categoría (`null`).
  */

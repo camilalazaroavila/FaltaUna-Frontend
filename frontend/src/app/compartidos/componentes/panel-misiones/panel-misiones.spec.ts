@@ -53,4 +53,19 @@ describe('PanelMisiones', () => {
     expect(el.textContent).not.toContain('PT System');
     expect(botonPorEtiqueta(el, 'Expandir panel de secciones')).toBeTruthy();
   });
+
+  it('anuncia el estado y muestra la etiqueta de acción del control de colapso', () => {
+    const el = montar();
+
+    const control = botonPorEtiqueta(el, 'Colapsar panel de secciones');
+    expect(control.getAttribute('aria-expanded')).toBe('true');
+    expect(control.textContent).toContain('Colapsar');
+
+    control.click();
+    fixture.detectChanges();
+
+    const expandir = botonPorEtiqueta(el, 'Expandir panel de secciones');
+    expect(expandir.getAttribute('aria-expanded')).toBe('false');
+    expect(expandir.textContent).toContain('Expandir');
+  });
 });

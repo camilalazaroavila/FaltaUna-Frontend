@@ -1,0 +1,94 @@
+:host {
+  display: block;
+}
+
+/* Cada rareza define el acento que usa la selección (borde + tilde). */
+:host(.carta-seleccionable--comun) {
+  --seleccion-acento: var(--rareza-1);
+}
+
+:host(.carta-seleccionable--rara) {
+  --seleccion-acento: var(--rareza-2);
+}
+
+:host(.carta-seleccionable--epicarta) {
+  --seleccion-acento: var(--rareza-3);
+}
+
+:host(.carta-seleccionable--legendaria) {
+  --seleccion-acento: var(--rareza-4);
+}
+
+.carta-seleccionable__boton {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.carta-seleccionable__boton:focus-visible {
+  outline: 3px solid var(--seleccion-acento, var(--marca-coleccion));
+  outline-offset: 4px;
+}
+
+.carta-seleccionable__carta {
+  position: relative;
+  display: block;
+}
+
+/* Anillo sobre la carta elegida, en el color de su rareza. */
+:host(.carta-seleccionable--seleccionada) .carta-seleccionable__carta::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  z-index: 3;
+  border: 3px solid var(--seleccion-acento, var(--marca-coleccion));
+  border-radius: calc(var(--radio-md) + 2px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    0 0 14px var(--seleccion-acento, var(--marca-coleccion));
+  pointer-events: none;
+}
+
+.carta-seleccionable__marca {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radio-pildora);
+  background: var(--seleccion-acento, var(--marca-coleccion));
+  color: #06110c;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.carta-seleccionable__marca svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Estado bloqueado: la carta no puede sumarse (tope de rareza o baraja llena). */
+:host(.carta-seleccionable--bloqueada) .carta-seleccionable__boton {
+  cursor: not-allowed;
+}
+
+:host(.carta-seleccionable--bloqueada) .carta-seleccionable__carta {
+  opacity: 0.4;
+  filter: saturate(0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carta-seleccionable__carta {
+    transition: none;
+  }
+}

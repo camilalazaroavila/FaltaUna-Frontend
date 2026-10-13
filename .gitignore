@@ -141,3 +141,6 @@ logs/
 .impeccable
 .impeccable/
 
+# ─── Worktrees / clones accidentales ───────────────────────────────────────────
+/FaltaUna-auth/
+

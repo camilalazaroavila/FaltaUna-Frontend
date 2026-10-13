@@ -18,8 +18,9 @@
           type="button"
           app-boton
           tamanio="sm"
-          class="inline-flex items-center gap-2 !bg-[var(--color-azul-empresa)] !text-white hover:!bg-[color-mix(in_srgb,var(--color-azul-empresa)_86%,#ffffff)] md:h-12 md:px-8 md:text-base lg:h-landing-cta lg:text-landing-ui"
-          (click)="irAPlanes()">
+          class="inline-flex items-center gap-2 !bg-[var(--color-azul-empresa)] !text-white hover:!bg-[color-mix(in_srgb,var(--color-azul-empresa)_86%,#ffffff)] habilitado:hover:!shadow-[var(--sombra-media),0_0_16px_color-mix(in_srgb,var(--color-azul-empresa)_45%,transparent)] habilitado:active:!bg-[color-mix(in_srgb,var(--color-azul-empresa)_80%,#000000)] focus-visible:!outline-[var(--color-azul-empresa)] md:h-12 md:px-8 md:text-base lg:h-landing-cta lg:text-landing-ui"
+          (click)="irAPlanes()"
+        >
           Ver los planes
           <ng-icon name="phosphorCaretDownFill" class="shrink-0" aria-hidden="true" />
         </button>
@@ -27,24 +28,21 @@
     </div>
 
     <div
-      class="relative aspect-[7/5] w-[42%] max-w-[190px] shrink-0 md:w-[46%] md:max-w-none lg:w-landing-sobres"
+      class="categorias-fan relative aspect-[7/5] w-[42%] max-w-[190px] shrink-0 md:w-[46%] md:max-w-none lg:w-landing-sobres"
       aria-hidden="true"
     >
-      <img
-        [src]="urlGastro"
-        alt=""
-        class="absolute left-[24%] top-1/2 w-[36%] -translate-x-1/2 -translate-y-1/2 -rotate-[10deg] brightness-0 saturate-100 hue-rotate-[240deg]"
-      />
-      <img
-        [src]="urlIndumentaria"
-        alt=""
-        class="absolute left-[76%] top-1/2 w-[36%] -translate-x-1/2 -translate-y-1/2 rotate-[10deg] brightness-0 saturate-100 hue-rotate-[240deg]"
-      />
-      <img
-        [src]="urlMusica"
-        alt=""
-        class="absolute left-1/2 top-1/2 z-10 w-[40%] -translate-x-1/2 -translate-y-1/2 brightness-0 saturate-100 hue-rotate-[240deg]"
-      />
+      <span></span>
+      @for (slot of slots(); track slot.clase) {
+        <span [class]="'categorias-fan__slot ' + slot.clase">
+          @for (categoria of categorias; track categoria; let i = $index) {
+            <span
+              class="categorias-fan__icono"
+              [class.categorias-fan__icono--activo]="i === slot.categoriaActiva"
+              [style.--mascara]="categoria"
+            ></span>
+          }
+        </span>
+      }
     </div>
   </div>
 </section>

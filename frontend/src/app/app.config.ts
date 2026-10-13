@@ -1,3 +1,4 @@
+
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -42,6 +43,13 @@ import {
   phosphorSpinnerGapFill,
   phosphorWarningCircleFill,
   phosphorArrowLeftFill,
+  phosphorHourglassMediumFill,
+  phosphorRadioButtonFill,
+  phosphorCheckCircleFill,
+  phosphorChartBarFill,
+  phosphorChartDonutFill,
+  phosphorTrendUpFill,
+  phosphorTagFill,
 } from '@ng-icons/phosphor-icons/fill';
 import {
   heroPlusSolid,
@@ -109,6 +117,13 @@ export const appConfig: ApplicationConfig = {
       phosphorSpinnerGapFill,
       phosphorWarningCircleFill,
       phosphorArrowLeftFill,
+  phosphorHourglassMediumFill,
+      phosphorRadioButtonFill,
+      phosphorCheckCircleFill,
+      phosphorChartBarFill,
+      phosphorChartDonutFill,
+      phosphorTrendUpFill,
+      phosphorTagFill,
       heroPlusSolid,
       heroCheckSolid,
       heroXMarkSolid,

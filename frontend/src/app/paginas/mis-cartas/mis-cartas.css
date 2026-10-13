@@ -46,3 +46,23 @@
     gap: 1.5rem;
   }
 }
+
+/* Cada carta es un botón que abre su detalle: clic en el mouse y mantener
+   presionado en touch (ver directiva `appPulsacionCarta`). */
+.coleccion__disparador {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.coleccion__disparador:focus-visible {
+  outline: 3px solid var(--borde-foco);
+  outline-offset: 4px;
+}

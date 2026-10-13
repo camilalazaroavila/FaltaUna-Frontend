@@ -29,6 +29,13 @@
     --marca-acento-suave: rgba(242, 238, 174, 0.14);
     --marca-sobre-acento: var(--color-teal-profundo);
 
+    /* Acento secundario: en jugador reutiliza el acento cálido del logo. */
+    --marca-secundaria: var(--color-amarillo-acento);
+    --marca-secundaria-hover: var(--color-amarillo-hover);
+    --marca-secundaria-activa: var(--color-amarillo-activo);
+    --marca-secundaria-suave: rgba(242, 238, 174, 0.14);
+    --marca-sobre-secundaria: var(--color-teal-profundo);
+
     /* --- Superficies y Capas Visuales --- */
     --fondo-app: var(--color-teal-base);
     --fondo-superficie: var(--color-teal-superficie);

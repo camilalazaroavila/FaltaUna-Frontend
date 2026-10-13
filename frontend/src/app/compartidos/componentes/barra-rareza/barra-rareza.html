@@ -1,0 +1,32 @@
+<div>
+  <div
+    class="flex h-3 overflow-hidden rounded-sm border border-texto-primario/40 bg-fondo-hundido"
+    role="img"
+    [attr.aria-label]="etiqueta()"
+  >
+    @for (tramo of reparto(); track tramo.rareza) {
+      <span
+        class="h-full border-r border-texto-primario/20 last:border-r-0"
+        [style.width.%]="tramo.porcentaje"
+        [style.background]="tramo.color"
+        [attr.title]="tramo.etiqueta + ': ' + tramo.cantidad"
+      ></span>
+    }
+  </div>
+
+  @if (mostrarLeyenda()) {
+    <ul class="mt-2.5 flex flex-wrap gap-x-4 gap-y-1.5">
+      @for (tramo of reparto(); track tramo.rareza) {
+        <li class="inline-flex items-center gap-1.5 font-interfaz text-xs text-texto-secundario">
+          <span
+            class="size-2.5 shrink-0 rounded-[3px] border border-texto-primario/30"
+            [style.background]="tramo.color"
+            aria-hidden="true"
+          ></span>
+          {{ tramo.etiqueta }}
+          <span class="font-bold text-texto-primario tabular-nums">{{ tramo.cantidad }}</span>
+        </li>
+      }
+    </ul>
+  }
+</div>

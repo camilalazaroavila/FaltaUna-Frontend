@@ -1,4 +1,5 @@
 ﻿import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { provideIcons } from '@ng-icons/core';
 import { GaleriaComponentes } from './galeria-componentes';
@@ -53,7 +54,7 @@ describe('GaleriaComponentes', () => {
 
     await TestBed.configureTestingModule({
       imports: [GaleriaComponentes],
-      providers: [provideRouter([]), provideIcons(ICONOS)],
+      providers: [provideRouter([]), provideHttpClient(), provideIcons(ICONOS)],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GaleriaComponentes);
@@ -66,8 +67,8 @@ describe('GaleriaComponentes', () => {
     document.documentElement.removeAttribute('data-movimiento');
   });
 
-  it('debe renderizar las diez secciones de la galeria', () => {
-    expect(SECCIONES.length).toBe(10);
+  it('debe renderizar las doce secciones de la galeria', () => {
+    expect(SECCIONES.length).toBe(12);
 
     for (const seccion of SECCIONES) {
       expect(html().querySelector(`#${seccion.id}`)).not.toBeNull();
@@ -126,7 +127,9 @@ describe('GaleriaComponentes', () => {
   });
 
   it('debe registrar el output del boton base al interactuar', () => {
-    const boton = html().querySelector<HTMLButtonElement>('#boton button[app-boton]') as HTMLButtonElement;
+    const boton = html().querySelector<HTMLButtonElement>(
+      '#boton button[app-boton]',
+    ) as HTMLButtonElement;
 
     expect(html().querySelector('#boton app-registro-eventos')?.textContent).toContain(
       'Sin eventos',

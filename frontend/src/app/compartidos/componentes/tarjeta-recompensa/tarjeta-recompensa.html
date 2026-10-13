@@ -1,0 +1,10 @@
+<div class="cupon">
+  <span class="cupon__sello" [style.background]="acento().fuerte" [style.color]="acento().sobre">
+    <ng-icon name="phosphorTicketFill" size="20" aria-hidden="true" />
+  </span>
+
+  <div class="cupon__cuerpo">
+    <p class="cupon__rotulo" [style.color]="acento().fuerte">{{ rotulo() }}</p>
+    <p class="cupon__titulo">{{ recompensa() }}</p>
+  </div>
+</div>

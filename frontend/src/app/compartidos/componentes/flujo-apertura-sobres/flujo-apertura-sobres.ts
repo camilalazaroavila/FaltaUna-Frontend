@@ -8,6 +8,7 @@ import {
   input,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
@@ -118,6 +119,8 @@ export class FlujoAperturaSobres {
   readonly abierto = input<boolean>(false);
   readonly sobresCatalogo = input<readonly SobreRespuesta[]>([]);
   readonly sobresDiariosDisponibles = input<number>(2);
+  /** Sobre con el que abrir directamente (reclamo de misión). `null` = grilla normal. */
+  readonly sobreInicial = input<SobreInicialApertura | null>(null);
 
   // Outputs
   readonly cerrar = output<void>();
@@ -163,9 +166,15 @@ export class FlujoAperturaSobres {
   private ignorarClic = false;
 
   constructor() {
-    // Al abrir el modal, reiniciar automáticamente a la fase de selección
+    // Al abrir el modal, reiniciar automáticamente a la fase de selección.
+    // Si llega un `sobreInicial` (reclamo de misión), saltamos la grilla y
+    // entramos directo a la vista previa de ese sobre.
     effect(() => {
-      if (this.abierto()) {
+      const abierto = this.abierto();
+      const inicial = this.sobreInicial();
+      if (!abierto) return;
+
+      untracked(() => {
         this.iniciar();
       }
     });
