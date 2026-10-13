@@ -1,5 +1,17 @@
 @if (abierto()) {
 
+<!--
+  El sobre se dibuja con `app-sobre-marca` en TODAS las fases, a partir del sobre
+  elegido (general = envoltorio Falta Una, categoría = icono, marca = logo).
+  Esta plantilla es la única fuente: grid, preview, carrusel y corte la reutilizan.
+  El host ocupa el 100% del contenedor y el ancho lo manda el contenedor.
+-->
+<ng-template #sobreTpl let-sobre>
+  @let p = propsDeSobre(sobre);
+  <app-sobre-marca class="w-full [&>*]:w-full!" tamanio="lg" [categoria]="p.categoria" [variante]="p.variante"
+    [nombre]="p.nombre" [logoUrl]="p.logoUrl" />
+</ng-template>
+
 <div class="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm transition-opacity duration-300"
   (click)="fase() === 'revelacion' ? avanzarOFinalizar() : (fase() === 'corte' || fase() === 'carrusel' ? null : cerrarFlujo())"
   aria-hidden="true"></div>
@@ -31,21 +43,24 @@
         <div
           class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 2xl:gap-6 p-2 pb-4 2xl:p-4">
           @for (sobre of listaSobresUI(); track sobre.id) {
-          <button type="button" (click)="seleccionarSobre(sobre)" [disabled]="!sobre.disponible"
-            class="group flex flex-col items-center p-2 2xl:p-3 rounded-2xl bg-white/5 border border-white/10 transition-all duration-200 hover:bg-white/15 hover:border-marca-primaria/50 hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-marca-acento">
-            <!-- Imagen / Silueta del Sobre -->
-            <div
-              class="relative w-full aspect-[2/3] max-h-28 sm:max-h-36 2xl:max-h-52 flex items-center justify-center p-1">
-              <img [src]="sobre.urlImagen" [alt]="sobre.nombre" draggable="false"
-                class="h-full w-auto object-contain drop-shadow-md group-hover:drop-shadow-xl transition-transform" />
+          @let p = propsDeSobre(sobre);
+          <div class="group flex flex-col items-center gap-1.5 2xl:gap-3 transition-opacity"
+            [class.opacity-40]="!sobre.disponible" [attr.inert]="sobre.disponible ? null : ''">
+            <!-- Solo el sobre: la altura manda y el ancho sale de la proporción -->
+            <div class="flex h-28 sm:h-36 2xl:h-52 w-full items-center justify-center p-1">
+              <div class="h-full aspect-[208.67/340.93] drop-shadow-md">
+                <app-sobre-marca class="w-full [&>*]:w-full!" tamanio="lg" clickeable [categoria]="p.categoria"
+                  [variante]="p.variante" [nombre]="p.nombre" [logoUrl]="p.logoUrl"
+                  (accion)="seleccionarSobre(sobre)" />
+              </div>
             </div>
 
             <!-- Etiqueta debajo del sobre -->
-            <span
-              class="mt-1.5 text-center font-titulo text-[11px] sm:text-xs 2xl:text-base font-black uppercase tracking-wider text-landing-claro-fondo line-clamp-1 group-hover:text-marca-acento transition-colors">
+            <span (click)="seleccionarSobre(sobre)"
+              class="cursor-pointer text-center font-titulo text-[11px] sm:text-xs 2xl:text-base font-black uppercase tracking-wider text-landing-claro-fondo line-clamp-1 group-hover:text-marca-acento transition-colors">
               {{ sobre.etiqueta }}
             </span>
-          </button>
+          </div>
           }
         </div>
       </app-panel-desplazable>
@@ -65,10 +80,10 @@
         {{ sobreSeleccionado()!.etiqueta }}
       </div>
 
-      <!-- Imagen del sobre: la altura manda y el ancho sale de la proporción -->
-      <div class="relative h-[clamp(11rem,40vh,36rem)] aspect-[2/3] flex items-center justify-center">
-        <img [src]="sobreSeleccionado()!.urlImagen" [alt]="sobreSeleccionado()!.nombre" draggable="false"
-          class="h-full w-auto object-contain drop-shadow-2xl transition-transform duration-300 hover:scale-105" />
+      <!-- Sobre: la altura manda y el ancho sale de la proporción -->
+      <div
+        class="relative h-[clamp(11rem,40vh,36rem)] aspect-[208.67/340.93] drop-shadow-2xl transition-transform duration-300 hover:scale-105">
+        <ng-container [ngTemplateOutlet]="sobreTpl" [ngTemplateOutletContext]="{ $implicit: sobreSeleccionado() }" />
       </div>
 
       <!-- Descripción del contenido del sobre -->
@@ -121,19 +136,21 @@
     <!--
           Escena 3D: --ancho-sobre es la única medida base. Tamaño de los sobres, separación
           entre ellos (ver obtenerTransformSobre) y perspectiva salen de ella, así todo escala junto.
+          El alto del sobre es ancho * 340.93 / 208.67 ≈ 1.634.
         -->
     <div #escena
-      class="relative w-full max-w-[min(100%,90rem)] h-[calc(var(--ancho-sobre)*1.5+2.5rem)] flex items-center justify-center [--ancho-sobre:clamp(7rem,min(24vw,27vh),24rem)] perspective-[calc(var(--ancho-sobre)*5)]">
+      class="relative w-full max-w-[min(100%,90rem)] h-[calc(var(--ancho-sobre)*1.64+2.5rem)] flex items-center justify-center [--ancho-sobre:clamp(7rem,min(24vw,27vh),24rem)] perspective-[calc(var(--ancho-sobre)*5)]">
       @for (sobre of sobresCarrusel(); track sobre.k) {
-      <div (click)="alHacerClicSobre(sobre.rel, $event)" class="absolute cursor-pointer"
+      @let p = propsDeSobre(sobre.item);
+      <div class="absolute"
         [class.pointer-events-none]="Math.abs(sobre.rel) > 2.5" [class.transition-all]="!enArrastre"
         [class.duration-300]="!enArrastre" [class.ease-out]="!enArrastre" [class.transition-none]="enArrastre"
         [style.transform]="obtenerTransformSobre(sobre.rel)" [style.opacity]="obtenerOpacidadSobre(sobre.rel)"
         [style.zIndex]="obtenerZIndexSobre(sobre.rel)">
-        <div
-          class="w-[var(--ancho-sobre)] aspect-[2/3] flex items-center justify-center filter drop-shadow-2xl transition-transform hover:scale-105">
-          <img [src]="sobre.urlImagen" [alt]="sobre.nombre" draggable="false"
-            class="pointer-events-none h-full w-auto object-contain select-none" />
+        <div class="w-[var(--ancho-sobre)] aspect-[208.67/340.93] filter drop-shadow-2xl">
+          <app-sobre-marca class="w-full [&>*]:w-full!" tamanio="lg" clickeable [categoria]="p.categoria"
+            [variante]="p.variante" [nombre]="p.nombre" [logoUrl]="p.logoUrl"
+            (accion)="alHacerClicSobre(sobre.rel)" />
         </div>
       </div>
       }
@@ -160,19 +177,22 @@
   <!-- FASE 4: CORTE Y RASGADO -->
   @if (fase() === 'corte' && sobreSeleccionado()) {
   <div class="pointer-events-auto flex flex-col items-center justify-center px-4 w-full select-none animate-fade-in">
-    <!-- Sobre: altura fluida, el ancho sale de la proporción 2:3 -->
-    <div class="relative h-[clamp(14rem,54vh,46rem)] aspect-[2/3] flex flex-col items-center justify-center">
 
-      <!-- RESPLANDOR DORADO DE APERTURA -->
+    <!-- Sobre: altura fluida, el ancho sale de la proporción real del sobre -->
+    <div
+      class="relative h-[clamp(14rem,54vh,46rem)] aspect-[208.67/340.93] drop-shadow-2xl transition-transform duration-300"
+      [class.scale-105]="cortando()">
+
+      <!-- Resplandor dorado, justo en la línea de corte -->
       @if (sobreCortado()) {
       <div
-        class="absolute inset-x-[8%] top-[2%] h-[22%] rounded-full bg-radial from-[#ffe79a] via-[#ffba38]/40 to-transparent blur-md pointer-events-none animate-pulse z-10">
-      </div>
+        class="absolute inset-x-[8%] h-[16%] rounded-full bg-radial from-[#ffe79a] via-[#ffba38]/40 to-transparent blur-md pointer-events-none animate-pulse z-10"
+        [style.top.%]="lineaCorte - 10"></div>
       }
 
-      <!-- CHISPAS / PARTÍCULAS DURANTE EL RASGADO -->
+      <!-- Chispas, pegadas a la línea de corte -->
       @if (cortando() || sobreCortado()) {
-      <div class="absolute -top-4 inset-x-0 h-16 pointer-events-none z-40 overflow-visible">
+      <div class="absolute inset-x-0 h-16 pointer-events-none z-40 overflow-visible" [style.top.%]="lineaCorte - 12">
         <span class="absolute left-[12%] top-2 text-[#ffd24a] text-sm 2xl:text-2xl animate-ping">✦</span>
         <span class="absolute left-[30%] -top-2 text-[#5fcf8e] text-xs 2xl:text-xl animate-bounce">✦</span>
         <span class="absolute right-[18%] top-1 text-[#3fd6c8] text-sm 2xl:text-2xl animate-ping">✦</span>
@@ -180,40 +200,38 @@
       </div>
       }
 
-      <!-- Contenedor del Sobre -->
-      <div class="relative w-full h-full flex flex-col items-center overflow-visible transition-transform duration-300"
-        [class.scale-105]="cortando()">
-        <!-- SOLAPA SUPERIOR RASGABLE -->
-        <div (click)="ejecutarCorte()" (pointerdown)="onPointerDownCorte($event)"
-          (pointermove)="onPointerMoveCorte($event)" (pointerup)="onPointerUpCorte()"
-          class="relative w-full h-[14%] min-h-12 flex items-center justify-center cursor-pointer transition-all duration-700 ease-out z-30 origin-top-left touch-none"
-          [class.-rotate-24]="sobreCortado()" [class.-translate-y-6]="sobreCortado()"
-          [class.translate-x-6]="sobreCortado()" [class.opacity-40]="sobreCortado()" title="Deslizá o tocá para cortar">
-          <!-- Línea de corte punteada con indicación clara -->
-          @if (!sobreCortado()) {
-          <div
-            class="absolute bottom-1 left-2 right-2 flex items-center justify-between border-b-2 border-dashed border-white/90 z-30 py-1">
-            <span class="text-[10px] sm:text-xs 2xl:text-base text-white/95 font-bold ml-2 tracking-wider">DESLIZÁ PARA
-              CORTAR</span>
-            <span class="text-white text-base 2xl:text-2xl mr-2 font-bold animate-pulse">▶</span>
-          </div>
-          }
-        </div>
+      <!-- Cuadradito amarillo: queda ENTRE las dos mitades. La de abajo lo tapa
+           hasta la línea de corte, y al abrirse asoma por la abertura. -->
+      @if (sobreCortado()) {
+      <div
+        class="absolute inset-x-[14%] top-[6%] h-[26%] z-20 rounded-xl bg-white/20 border border-white/40 shadow-xl -translate-y-4 flex items-start justify-center pt-2">
+        <span class="text-xs 2xl:text-lg font-bold text-white uppercase tracking-wider">¡Revelando!</span>
+      </div>
+      }
 
-        <!-- CUERPO DEL SOBRE -->
-        <div class="w-full flex-1 min-h-0 flex items-center justify-center relative z-20">
-          <img [src]="sobreSeleccionado()!.urlImagen" [alt]="sobreSeleccionado()!.nombre" draggable="false"
-            class="h-full w-auto object-contain drop-shadow-2xl" />
+      <!-- MITAD INFERIOR: no se mueve -->
+      <div class="absolute inset-0 z-30 pointer-events-none" [style.clip-path]="clipInferior" aria-hidden="true">
+        <ng-container [ngTemplateOutlet]="sobreTpl" [ngTemplateOutletContext]="{ $implicit: sobreSeleccionado() }" />
+      </div>
 
-          <!-- Carta asomando tras el corte -->
-          @if (sobreCortado()) {
-          <div
-            class="absolute inset-x-[14%] -top-8 h-[26%] rounded-xl bg-white/20 border border-white/40 shadow-xl -z-10 transition-transform duration-500 ease-out -translate-y-4 flex items-center justify-center">
-            <span class="text-xs 2xl:text-lg font-bold text-white uppercase tracking-wider">¡Revelando!</span>
-          </div>
-          }
+      <!-- MITAD SUPERIOR: se desprende. Gira sobre el extremo izquierdo de la línea de corte. -->
+      <div class="absolute inset-0 z-30 pointer-events-none transition-all duration-700 ease-out"
+        [style.clip-path]="clipSuperior" [style.transform-origin]="'0% ' + lineaCorte + '%'"
+        [class.-translate-y-10]="sobreCortado()" [class.translate-x-8]="sobreCortado()"
+        [class.-rotate-24]="sobreCortado()" [class.opacity-0]="sobreCortado()" aria-hidden="true">
+        <ng-container [ngTemplateOutlet]="sobreTpl" [ngTemplateOutletContext]="{ $implicit: sobreSeleccionado() }" />
+      </div>
+
+      <!-- ZONA DE DESLIZAR: solo la línea punteada, más ancha que el sobre para que sobresalga -->
+      @if (!sobreCortado()) {
+      <div (click)="ejecutarCorte()" (pointerdown)="onPointerDownCorte($event)"
+        (pointermove)="onPointerMoveCorte($event)" (pointerup)="onPointerUpCorte()"
+        class="absolute -inset-x-[10%] z-40 h-[12%] -translate-y-1/2 cursor-pointer touch-none"
+        [style.top.%]="lineaCorte" aria-label="Cortar el sobre">
+        <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 border-b-[3px] border-dashed border-white drop-shadow">
         </div>
       </div>
+      }
     </div>
 
     <!-- Indicador de estado: Apertura o Error -->
@@ -232,6 +250,11 @@
           Volver
         </button>
       </div>
+      } @else if (!cortando() && !sobreCortado()) {
+      <p
+        class="text-center font-interfaz text-xs sm:text-sm 2xl:text-lg text-white/90 uppercase tracking-widest pointer-events-none">
+        Clickeá y deslizá para cortar
+      </p>
       }
     </div>
   </div>
@@ -263,7 +286,7 @@
       </div>
       }
 
-      <!-- Estrellitas decorativas (tamaño relativo a la carta) si quiero que giren pegá esto al final : animate-spin duration-1000 -->
+      <!-- Estrellitas decorativas (tamaño relativo a la carta) -->
       <div class="absolute -top-4 -left-6 sm:-left-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">
         ★</div>
       <div class="absolute top-10 -left-8 sm:-left-12 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★

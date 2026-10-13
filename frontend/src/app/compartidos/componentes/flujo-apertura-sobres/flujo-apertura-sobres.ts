@@ -10,11 +10,13 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { SobresService } from '../../../servicios/sobres.service';
 import { AuthService } from '../../../servicios/auth.service';
 import { PanelDesplazable } from '../panel-desplazable/panel-desplazable';
 import { CartaComponent } from '../carta/carta'; // AJUSTAR la ruta a donde esté carta.ts
+import { SobreMarca } from '../sobre-marca/sobre-marca'; // AJUSTAR si está en otra carpeta
+import type { VarianteSobreMarca } from '../sobre-marca/sobre-marca';
 import {
   AperturaSobreRespuesta,
   CartaObtenidaRespuesta,
@@ -26,11 +28,15 @@ import { categoriaDesdeNombre } from '../../../modelos/categoria.model'; // AJUS
 import type { CategoriaSobre } from '../../../modelos/categoria.model';
 import { CARTAS_MOCK } from '../../../modelos/cartas.mock'; // AJUSTAR si tu mock está en otra carpeta
 
-import urlPaquete1 from '../../SVGs/Paquete1.svg';
-import urlPaquete2 from '../../SVGs/Paquete2.svg';
-import urlPaqueteHuh from '../../SVGs/PaqueteHuh.svg';
-
 export type FaseApertura = 'cerrado' | 'seleccion' | 'preview' | 'carrusel' | 'corte' | 'revelacion';
+
+/** Inputs de `app-sobre-marca` que corresponden a un sobre del flujo. */
+export interface PropsSobre {
+  readonly categoria: CategoriaSobre | null;
+  readonly variante: VarianteSobreMarca;
+  readonly nombre: string | null;
+  readonly logoUrl: string | null;
+}
 
 /** Cuántas cartas trae el sobre gratuito (general). Coincide con `Sobre General` en la base. */
 const CARTAS_SOBRE_DIARIO = 5;
@@ -67,10 +73,40 @@ const PESO_POR_RAREZA: Record<Carta['rareza'], number> = {
   legendaria: 1,
 };
 
+/**
+ * Logos provisorios por nombre de marca (clave normalizada: minúsculas, sin
+ * tildes ni símbolos). Solo se usan si el backend no manda `logoUrl`.
+ * Una marca que no esté acá ni traiga logo se dibuja con el envoltorio genérico.
+ */
+const LOGOS_MARCA_PROVISORIOS: Readonly<Record<string, string>> = {
+  mcdonalds: 'imagenes/McDonalds.jpg',
+  lego: 'imagenes/lego.png',
+  grido: 'imagenes/grido.jpg',
+  zara: 'imagenes/zara.png',
+  cocacola: 'imagenes/cocacola.jpg',
+  sony: 'imagenes/sony.png',
+  google: 'imagenes/google.jpg',
+  sprite: 'imagenes/Sprite.png',
+};
+
+const claveMarca = (nombre: string): string =>
+  nombre
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+
+/** Altura (en % del sobre) donde pasa la línea de corte. */
+const LINEA_CORTE = 22;
+
+/** Corte recto: la mitad de arriba termina justo donde empieza la de abajo. */
+const CLIP_SUPERIOR = `inset(0 0 ${100 - LINEA_CORTE}% 0)`;
+const CLIP_INFERIOR = `inset(${LINEA_CORTE}% 0 0 0)`;
+
 @Component({
   selector: 'app-flujo-apertura-sobres',
   standalone: true,
-  imports: [CommonModule, PanelDesplazable, CartaComponent],
+  imports: [NgTemplateOutlet, PanelDesplazable, CartaComponent, SobreMarca],
   templateUrl: './flujo-apertura-sobres.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -110,10 +146,10 @@ export class FlujoAperturaSobres {
   protected readonly repetidas = signal<boolean[]>([]);
   protected readonly esRepetida = computed(() => this.repetidas()[this.indiceCartaActual()] ?? false);
 
-  // Assets
-  protected readonly urlPaquete1 = urlPaquete1;
-  protected readonly urlPaquete2 = urlPaquete2;
-  protected readonly urlPaqueteHuh = urlPaqueteHuh;
+  // Animación de corte
+  protected readonly lineaCorte = LINEA_CORTE;
+  protected readonly clipSuperior = CLIP_SUPERIOR;
+  protected readonly clipInferior = CLIP_INFERIOR;
 
   protected readonly Math = Math;
 
@@ -135,6 +171,35 @@ export class FlujoAperturaSobres {
     });
   }
 
+  /**
+   * Cómo se dibuja cada sobre (en el grid, la preview, el carrusel y el corte):
+   * - General / diario: el envoltorio de Falta Una (sin categoría, nombre ni logo).
+   * - Categoría: el icono de la categoría. Si el nombre no se reconoce, cae al genérico.
+   * - Marca: variante clara con el logo (el del backend o el provisorio).
+   */
+  propsDeSobre(sobre: SobreItemUI | null): PropsSobre {
+    switch (sobre?.tipo) {
+      case 'CATEGORIA':
+        return {
+          categoria: categoriaDesdeNombre(sobre.categoria),
+          variante: 'oscuro',
+          nombre: null,
+          logoUrl: null,
+        };
+      case 'MARCA': {
+        const nombre = sobre.marca ?? sobre.nombre;
+        return {
+          categoria: null,
+          variante: 'claro',
+          nombre,
+          logoUrl: sobre.logoUrl ?? LOGOS_MARCA_PROVISORIOS[claveMarca(nombre)] ?? null,
+        };
+      }
+      default:
+        return { categoria: null, variante: 'oscuro', nombre: null, logoUrl: null };
+    }
+  }
+
   // Lista normalizada de sobres UI para mostrar en el grid
   protected readonly listaSobresUI = computed<SobreItemUI[]>(() => {
     const catalogo = this.sobresCatalogo();
@@ -153,16 +218,13 @@ export class FlujoAperturaSobres {
         tipo: 'GENERAL',
         precio: 0,
         cantidadCartas: CARTAS_SOBRE_DIARIO,
-        urlImagen: urlPaquete1,
         esDiario: true,
         disponible,
       });
     }
 
     // Sobres provenientes del backend
-    for (let i = 0; i < catalogo.length; i++) {
-      const s = catalogo[i];
-      const imagen = i % 2 === 0 ? urlPaquete2 : urlPaqueteHuh;
+    for (const s of catalogo) {
       const etiqueta = s.marca ?? s.categoria ?? (s.tipo === 'GENERAL' ? 'CLÁSICO' : s.nombre);
       items.push({
         id: s.id,
@@ -171,11 +233,11 @@ export class FlujoAperturaSobres {
         tipo: s.tipo,
         precio: s.precio,
         cantidadCartas: s.cantidadCartas,
-        urlImagen: imagen,
         esDiario: false,
         disponible: true,
         categoria: s.categoria ?? null,
         marca: s.marca ?? null,
+        logoUrl: s.logoUrl ?? null,
       });
     }
 
@@ -195,13 +257,7 @@ export class FlujoAperturaSobres {
       while (rel < -4) rel += 8;
       while (rel > 4) rel -= 8;
 
-      return {
-        k,
-        rel,
-        urlImagen: sel.urlImagen,
-        nombre: sel.nombre,
-        etiqueta: sel.etiqueta,
-      };
+      return { k, rel, item: sel };
     });
   });
 
@@ -404,7 +460,7 @@ export class FlujoAperturaSobres {
     this.cortando.set(true);
     this.errorApertura.set(null);
 
-    // Animación visual de rasgado de solapa
+    // Animación visual de rasgado: la mitad de arriba se desprende
     setTimeout(() => {
       this.sobreCortado.set(true);
       this.cortando.set(false);

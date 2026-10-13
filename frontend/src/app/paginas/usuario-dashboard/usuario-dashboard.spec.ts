@@ -69,7 +69,7 @@ describe('UsuarioDashboard Component', () => {
     expect(botonAvatar).toBeTruthy();
   });
 
-  it('debe mostrar 3 sobres en el abanico: general, categoría gastronomía y marca Lego', () => {
+  it('debe mostrar 3 sobres en el abanico: general, categoría indumentaria y marca Lego', () => {
     const sobres: HTMLElement[] = Array.from(
       fixture.nativeElement.querySelectorAll('app-sobre-marca button')
     );
@@ -77,7 +77,7 @@ describe('UsuarioDashboard Component', () => {
 
     expect(sobres.length).toBe(3);
     expect(etiquetas).toEqual(
-      expect.arrayContaining(['Sobre de Falta Una', 'Sobre de Gastronomía', 'Sobre de Lego'])
+      expect.arrayContaining(['Sobre de Falta Una', 'Sobre de Indumentaria', 'Sobre de Lego'])
     );
   });
 

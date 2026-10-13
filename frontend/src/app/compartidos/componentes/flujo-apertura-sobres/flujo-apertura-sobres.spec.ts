@@ -6,6 +6,8 @@ import { FlujoAperturaSobres } from './flujo-apertura-sobres';
 import { SobresService } from '../../../servicios/sobres.service';
 import { AuthService } from '../../../servicios/auth.service';
 import { AperturaSobreRespuesta, SobreRespuesta } from '../../../modelos/sobre.model';
+import { signal } from '@angular/core';
+import { Usuario } from '../../../modelos/usuario.model';
 
 describe('FlujoAperturaSobres Component', () => {
   let component: FlujoAperturaSobres;
@@ -53,7 +55,7 @@ describe('FlujoAperturaSobres Component', () => {
     } as unknown as jest.Mocked<SobresService>;
 
     authServiceMock = {
-      usuarioActual: jest.fn().mockReturnValue({
+      usuarioActual: signal<Usuario | null>({
         id: 7,
         nombreUsuario: 'testuser',
         email: 'test@faltauna.com',
