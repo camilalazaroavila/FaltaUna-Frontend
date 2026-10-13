@@ -11,45 +11,108 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { SobresService } from '../../../servicios/sobres.service';
 import { AuthService } from '../../../servicios/auth.service';
 import { PanelDesplazable } from '../panel-desplazable/panel-desplazable';
+import { CartaComponent } from '../carta/carta'; // AJUSTAR la ruta a donde esté carta.ts
+import { SobreMarca } from '../sobre-marca/sobre-marca'; // AJUSTAR si está en otra carpeta
+import type { VarianteSobreMarca } from '../sobre-marca/sobre-marca';
 import {
   AperturaSobreRespuesta,
   CartaObtenidaRespuesta,
   SobreItemUI,
   SobreRespuesta,
 } from '../../../modelos/sobre.model';
-
-import urlPaquete1 from '../../SVGs/Paquete1.svg';
-import urlPaquete2 from '../../SVGs/Paquete2.svg';
-import urlPaqueteHuh from '../../SVGs/PaqueteHuh.svg';
-import urlCartaComun from '../../SVGs/CartaComunPlaceholder.svg';
-import urlCartaRara from '../../SVGs/CartaRaraPlaceholder.svg';
-import urlEpicarta from '../../SVGs/EpicartaPlaceholder.svg';
-import urlUnicarta from '../../SVGs/UnicartaPlaceholder.svg';
+import type { Carta, CategoriaCarta } from '../../../modelos/carta.model';
+import { categoriaDesdeNombre } from '../../../modelos/categoria.model'; // AJUSTAR si está en otra carpeta
+import type { CategoriaSobre } from '../../../modelos/categoria.model';
+import { CARTAS_MOCK } from '../../../modelos/cartas.mock'; // AJUSTAR si tu mock está en otra carpeta
 
 export type FaseApertura = 'cerrado' | 'seleccion' | 'preview' | 'carrusel' | 'corte' | 'revelacion';
 
-/**
- * Descriptor del sobre con el que abrir el flujo directamente, sin pasar por la
- * grilla de selección. Lo usan flujos externos (p. ej. el reclamo de una misión)
- * para llevar al jugador a la animación de apertura de la recompensa.
- *
- * `etiqueta` se usa para emparejar un sobre del catálogo (categoría o marca);
- * si no hay coincidencia, se cae al sobre genérico (diario), nunca "el primero
- * que aparezca".
- */
+/** Inputs de `app-sobre-marca` que corresponden a un sobre del flujo. */
+export interface PropsSobre {
+  readonly categoria: CategoriaSobre | null;
+  readonly variante: VarianteSobreMarca;
+  readonly nombre: string | null;
+  readonly logoUrl: string | null;
+}
+
 export interface SobreInicialApertura {
   readonly tipo: 'GENERAL' | 'CATEGORIA' | 'MARCA';
   readonly etiqueta?: string;
 }
 
+/** Cuántas cartas trae el sobre gratuito (general). Coincide con `Sobre General` en la base. */
+const CARTAS_SOBRE_DIARIO = 5;
+
+/**
+ * Cartas del mock que usa ESTE flujo
+ * Cambiá estos dos números para usar otro rango; el resto del mock no se toca.
+ */
+const ID_MOCK_DESDE = 28;
+const ID_MOCK_HASTA = 39;
+
+const numeroDeId = (id: string): number => Number(id.replace(/\D/g, ''));
+
+const CARTAS_DEL_FLUJO: readonly Carta[] = CARTAS_MOCK.filter((c) => {
+  const n = numeroDeId(c.id);
+  return n >= ID_MOCK_DESDE && n <= ID_MOCK_HASTA;
+});
+
+/** La categoría del sobre (backend) se llama distinto que la de la carta: acá se traduce. */
+const CATEGORIA_SOBRE_A_CARTA: Record<CategoriaSobre, CategoriaCarta> = {
+  tecnologia: 'tecnologia',
+  cosmetica: 'cosmeticos',
+  entretenimiento: 'entretenimiento',
+  gastronomia: 'gastronomia',
+  indumentaria: 'indumentaria',
+  musica: 'musica',
+};
+
+/** Qué tan seguido sale cada rareza al sortear (mientras más alto, más frecuente). */
+const PESO_POR_RAREZA: Record<Carta['rareza'], number> = {
+  comun: 6,
+  rara: 3,
+  epicarta: 2,
+  legendaria: 1,
+};
+
+/**
+ * Logos provisorios por nombre de marca (clave normalizada: minúsculas, sin
+ * tildes ni símbolos). Solo se usan si el backend no manda `logoUrl`.
+ * Una marca que no esté acá ni traiga logo se dibuja con el envoltorio genérico.
+ */
+const LOGOS_MARCA_PROVISORIOS: Readonly<Record<string, string>> = {
+  mcdonalds: 'imagenes/McDonalds.jpg',
+  lego: 'imagenes/lego.png',
+  grido: 'imagenes/grido.jpg',
+  zara: 'imagenes/zara.png',
+  cocacola: 'imagenes/cocacola.jpg',
+  sony: 'imagenes/sony.png',
+  google: 'imagenes/google.jpg',
+  sprite: 'imagenes/Sprite.png',
+};
+
+const claveMarca = (nombre: string): string =>
+  nombre
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+
+/** Altura (en % del sobre) donde pasa la línea de corte. */
+const LINEA_CORTE = 22;
+
+/** Corte recto: la mitad de arriba termina justo donde empieza la de abajo. */
+const CLIP_SUPERIOR = `inset(0 0 ${100 - LINEA_CORTE}% 0)`;
+const CLIP_INFERIOR = `inset(${LINEA_CORTE}% 0 0 0)`;
+
 @Component({
   selector: 'app-flujo-apertura-sobres',
   standalone: true,
-  imports: [CommonModule, PanelDesplazable],
+  imports: [NgTemplateOutlet, PanelDesplazable, CartaComponent, SobreMarca],
   templateUrl: './flujo-apertura-sobres.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -80,21 +143,25 @@ export class FlujoAperturaSobres {
   protected readonly cartasObtenidas = signal<CartaObtenidaRespuesta[]>([]);
   protected readonly indiceCartaActual = signal<number>(0);
 
-  // Assets
-  protected readonly urlPaquete1 = urlPaquete1;
-  protected readonly urlPaquete2 = urlPaquete2;
-  protected readonly urlPaqueteHuh = urlPaqueteHuh;
-  protected readonly urlCartaComun = urlCartaComun;
+  /** Controla la animación de entrada de cada carta revelada. */
+  protected readonly animarCarta = signal(true);
 
-  /** Pool de ilustraciones para cartas que no traen `imagenUrl` desde el backend. */
-  private readonly poolImagenesCarta: readonly string[] = [
-    urlCartaComun,
-    urlCartaRara,
-    urlEpicarta,
-    urlUnicarta,
-  ];
-  /** Imagen asignada a cada carta del sobre actual (misma posición que `cartasObtenidas`). */
-  protected readonly imagenesCartas = signal<string[]>([]);
+  /** Las mismas cartas, convertidas al modelo `Carta` que consume `app-carta`. */
+  protected readonly cartasUI = signal<Carta[]>([]);
+  /** Carta que se muestra en la revelación (o null si no hay). */
+  protected readonly cartaActual = computed(
+    () => this.cartasUI()[this.indiceCartaActual()] ?? null,
+  );
+
+  /** Para cada carta del sobre actual (misma posición que `cartasUI`): true si ya la habías obtenido antes. */
+  protected readonly repetidas = signal<boolean[]>([]);
+  protected readonly esRepetida = computed(() => this.repetidas()[this.indiceCartaActual()] ?? false);
+
+  // Animación de corte
+  protected readonly lineaCorte = LINEA_CORTE;
+  protected readonly clipSuperior = CLIP_SUPERIOR;
+  protected readonly clipInferior = CLIP_INFERIOR;
+
   protected readonly Math = Math;
 
   // Variables de control de arrastre
@@ -107,6 +174,7 @@ export class FlujoAperturaSobres {
   private ignorarClic = false;
 
   constructor() {
+    // Al abrir el modal, reiniciar automáticamente a la fase de selección
     // Al abrir el modal, reiniciar automáticamente a la fase de selección.
     // Si llega un `sobreInicial` (reclamo de misión), saltamos la grilla y
     // entramos directo a la vista previa de ese sobre.
@@ -146,6 +214,35 @@ export class FlujoAperturaSobres {
     return items.find((item) => item.esDiario && item.disponible) ?? items.find((item) => item.esDiario) ?? null;
   }
 
+  /**
+   * Cómo se dibuja cada sobre (en el grid, la preview, el carrusel y el corte):
+   * - General / diario: el envoltorio de Falta Una (sin categoría, nombre ni logo).
+   * - Categoría: el icono de la categoría. Si el nombre no se reconoce, cae al genérico.
+   * - Marca: variante clara con el logo (el del backend o el provisorio).
+   */
+  propsDeSobre(sobre: SobreItemUI | null): PropsSobre {
+    switch (sobre?.tipo) {
+      case 'CATEGORIA':
+        return {
+          categoria: categoriaDesdeNombre(sobre.categoria),
+          variante: 'oscuro',
+          nombre: null,
+          logoUrl: null,
+        };
+      case 'MARCA': {
+        const nombre = sobre.marca ?? sobre.nombre;
+        return {
+          categoria: null,
+          variante: 'claro',
+          nombre,
+          logoUrl: sobre.logoUrl ?? LOGOS_MARCA_PROVISORIOS[claveMarca(nombre)] ?? null,
+        };
+      }
+      default:
+        return { categoria: null, variante: 'oscuro', nombre: null, logoUrl: null };
+    }
+  }
+
   // Lista normalizada de sobres UI para mostrar en el grid
   protected readonly listaSobresUI = computed<SobreItemUI[]>(() => {
     const catalogo = this.sobresCatalogo();
@@ -163,17 +260,14 @@ export class FlujoAperturaSobres {
         etiqueta: disponible ? 'GRATIS' : 'ABIERTO',
         tipo: 'GENERAL',
         precio: 0,
-        cantidadCartas: 4,
-        urlImagen: urlPaquete1,
+        cantidadCartas: CARTAS_SOBRE_DIARIO,
         esDiario: true,
         disponible,
       });
     }
 
     // Sobres provenientes del backend
-    for (let i = 0; i < catalogo.length; i++) {
-      const s = catalogo[i];
-      const imagen = i % 2 === 0 ? urlPaquete2 : urlPaqueteHuh;
+    for (const s of catalogo) {
       const etiqueta = s.marca ?? s.categoria ?? (s.tipo === 'GENERAL' ? 'CLÁSICO' : s.nombre);
       items.push({
         id: s.id,
@@ -182,11 +276,11 @@ export class FlujoAperturaSobres {
         tipo: s.tipo,
         precio: s.precio,
         cantidadCartas: s.cantidadCartas,
-        urlImagen: imagen,
         esDiario: false,
         disponible: true,
         categoria: s.categoria ?? null,
         marca: s.marca ?? null,
+        logoUrl: s.logoUrl ?? null,
       });
     }
 
@@ -206,13 +300,7 @@ export class FlujoAperturaSobres {
       while (rel < -4) rel += 8;
       while (rel > 4) rel -= 8;
 
-      return {
-        k,
-        rel,
-        urlImagen: sel.urlImagen,
-        nombre: sel.nombre,
-        etiqueta: sel.etiqueta,
-      };
+      return { k, rel, item: sel };
     });
   });
 
@@ -264,7 +352,8 @@ export class FlujoAperturaSobres {
     this.cortando.set(false);
     this.errorApertura.set(null);
     this.cartasObtenidas.set([]);
-    this.imagenesCartas.set([]);
+    this.cartasUI.set([]);
+    this.repetidas.set([]);
     this.indiceCartaActual.set(0);
     this.indiceCarrusel.set(0);
     this.dragOffset.set(0);
@@ -414,7 +503,7 @@ export class FlujoAperturaSobres {
     this.cortando.set(true);
     this.errorApertura.set(null);
 
-    // Animación visual de rasgado de solapa
+    // Animación visual de rasgado: la mitad de arriba se desprende
     setTimeout(() => {
       this.sobreCortado.set(true);
       this.cortando.set(false);
@@ -436,17 +525,11 @@ export class FlujoAperturaSobres {
     llamada$.subscribe({
       next: (resp) => {
         this.cargandoApertura.set(false);
-        const cartas =
-          resp?.cartas && resp.cartas.length > 0
-            ? resp.cartas
-            : this.generarCartasRespaldo(sobre);
 
-        this.asignarCartas(cartas);
+        // El backend define CUÁNTAS cartas trae el sobre; cuáles se ven lo define el front.
+        this.mostrarCartas(this.cantidadDeCartas(resp?.cartas ?? [], sobre), sobre);
         this.indiceCartaActual.set(0);
-        this.aperturaRealizada.emit({
-          ...resp,
-          cartas,
-        });
+        this.aperturaRealizada.emit(resp);
 
         // Transición fluida a revelación
         setTimeout(() => {
@@ -454,17 +537,16 @@ export class FlujoAperturaSobres {
         }, 400);
       },
       error: () => {
-        // En caso de que el backend falle o no tenga pool cargado, usamos respaldo
+        // Si el backend falla, se abre igual con la cantidad que indica el sobre
         this.cargandoApertura.set(false);
-        const cartasFallback = this.generarCartasRespaldo(sobre);
-        this.asignarCartas(cartasFallback);
+        this.mostrarCartas(this.cantidadDeCartas([], sobre), sobre);
         this.indiceCartaActual.set(0);
 
         const aperturaRespaldo: AperturaSobreRespuesta = {
           id: Date.now(),
           sobreId: typeof sobre?.id === 'number' ? sobre.id : 1,
           fecha: new Date().toISOString(),
-          cartas: cartasFallback,
+          cartas: this.cartasObtenidas(),
         };
         this.aperturaRealizada.emit(aperturaRespaldo);
 
@@ -475,43 +557,33 @@ export class FlujoAperturaSobres {
     });
   }
 
-  /** Genera cartas de respaldo en caso de que el backend no tenga pool populado aún */
-  private generarCartasRespaldo(sobre: SobreItemUI | null): CartaObtenidaRespuesta[] {
-    const nombreBase = sobre?.etiqueta && sobre.etiqueta !== 'GRATIS' ? sobre.etiqueta : 'FALTA UNA';
-    return [
-      {
-        cartaId: 101,
-        nombre: `SUPER ${nombreBase}`,
-        cantidad: 1,
-        imagenUrl: null,
-      },
-      {
-        cartaId: 102,
-        nombre: `${nombreBase} - CAPITÁN`,
-        cantidad: 1,
-        imagenUrl: null,
-      },
-      {
-        cartaId: 103,
-        nombre: `${nombreBase} - DEFENSOR`,
-        cantidad: 1,
-        imagenUrl: null,
-      },
-      {
-        cartaId: 104,
-        nombre: `${nombreBase} - EDICIÓN ESPECIAL`,
-        cantidad: 1,
-        imagenUrl: null,
-      },
-    ];
+  /**
+   * Cantidad de cartas a mostrar. Prioridad:
+   * 1. Lo que devolvió el backend (suma de `cantidad` de cada carta).
+   * 2. La `cantidadCartas` del sobre (general 5, categoría 3, marca 1).
+   */
+  private cantidadDeCartas(
+    delBackend: readonly CartaObtenidaRespuesta[],
+    sobre: SobreItemUI | null,
+  ): number {
+    const total = delBackend.reduce((suma, c) => suma + Math.max(1, c.cantidad ?? 1), 0);
+    if (total > 0) return total;
+    return sobre && sobre.cantidadCartas > 0 ? sobre.cantidadCartas : CARTAS_SOBRE_DIARIO;
   }
 
   // Siguiente carta o finalizar
   avanzarOFinalizar(): void {
     const actual = this.indiceCartaActual();
     const total = this.cartasObtenidas().length;
+
     if (actual < total - 1) {
-      this.indiceCartaActual.set(actual + 1);
+      // Reiniciamos la animación para la siguiente carta.
+      this.animarCarta.set(false);
+      this.indiceCartaActual.update((indice) => indice + 1);
+
+      setTimeout(() => {
+        this.animarCarta.set(true);
+      }, 30);
     } else {
       this.cerrarFlujo();
     }
@@ -522,23 +594,96 @@ export class FlujoAperturaSobres {
     this.cerrar.emit();
   }
 
-  /** Guarda las cartas del sobre y sortea una vez la imagen de cada una (sin repetir dentro del sobre mientras alcance el pool). */
-  private asignarCartas(cartas: readonly CartaObtenidaRespuesta[]): void {
-    this.cartasObtenidas.set([...cartas]);
-
-    const mezcladas = [...this.poolImagenesCarta];
-    for (let i = mezcladas.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [mezcladas[i], mezcladas[j]] = [mezcladas[j], mezcladas[i]];
-    }
-    this.imagenesCartas.set(cartas.map((_, i) => mezcladas[i % mezcladas.length]));
+  /** Sortea las cartas del sobre y las deja listas para `app-carta`. */
+  private mostrarCartas(cantidad: number, sobre: SobreItemUI | null): void {
+    const elegidas = this.sortearCartas(cantidad, this.cartasPosibles(sobre));
+    this.cartasUI.set(elegidas);
+    this.marcarRepetidas(elegidas);
+    // Se mantiene también la lista "simple": se usa para contar cartas y para el evento de salida.
+    this.cartasObtenidas.set(
+      elegidas.map((c, i) => ({ cartaId: i + 1, nombre: c.nombre, cantidad: 1, imagenUrl: c.imagenUrl })),
+    );
   }
 
-  obtenerImagenCarta(carta: CartaObtenidaRespuesta, indice = 0): string {
-    if (carta.imagenUrl && carta.imagenUrl.trim() !== '') {
-      return carta.imagenUrl;
+  /**
+   * Marca como repetidas las cartas que ya habías obtenido (en sobres anteriores o en este mismo).
+   * Provisorio: la lista de cartas vistas se guarda en el navegador (localStorage), por usuario.
+   * Cuando el backend informe qué cartas tiene cada usuario, se reemplaza `leerCartasVistas`.
+   */
+  private marcarRepetidas(cartas: readonly Carta[]): void {
+    const vistas = this.leerCartasVistas();
+    const repetidas = cartas.map((c) => {
+      const yaLaTenia = vistas.has(c.id);
+      vistas.add(c.id);
+      return yaLaTenia;
+    });
+    this.repetidas.set(repetidas);
+    this.guardarCartasVistas(vistas);
+  }
+
+  private claveCartasVistas(): string {
+    const usuarioId = this.authService.usuarioActual()?.id ?? 1;
+    return `faltauna.cartas-vistas.${usuarioId}`;
+  }
+
+  private leerCartasVistas(): Set<string> {
+    try {
+      const guardado = localStorage.getItem(this.claveCartasVistas());
+      return new Set<string>(guardado ? (JSON.parse(guardado) as string[]) : []);
+    } catch {
+      return new Set<string>();
     }
-    return this.imagenesCartas()[indice] ?? this.urlCartaComun;
+  }
+
+  private guardarCartasVistas(vistas: Set<string>): void {
+    try {
+      localStorage.setItem(this.claveCartasVistas(), JSON.stringify([...vistas]));
+    } catch { }
+  }
+
+  /**
+   * Cartas entre las que se sortea según el tipo de sobre:
+   * - Categoría: solo las de esa categoría (si no hay ninguna, usa todas las del flujo).
+   * - General y marca: todas las del flujo (el filtro por marca se agrega más adelante).
+   */
+  private cartasPosibles(sobre: SobreItemUI | null): readonly Carta[] {
+    const base = CARTAS_DEL_FLUJO.length > 0 ? CARTAS_DEL_FLUJO : CARTAS_MOCK;
+
+    if (sobre?.tipo === 'CATEGORIA') {
+      const categoriaSobre = categoriaDesdeNombre(sobre.categoria);
+      if (categoriaSobre) {
+        const deLaCategoria = base.filter(
+          (c) => c.categoria === CATEGORIA_SOBRE_A_CARTA[categoriaSobre],
+        );
+        if (deLaCategoria.length > 0) return deLaCategoria;
+      }
+    }
+
+    return base;
+  }
+
+  /**
+   * Elige `cantidad` cartas de `origen` al azar, sin repetir dentro del mismo sobre
+   * (si piden más cartas que las disponibles, recién ahí se repiten).
+   * Las comunes salen más seguido que las legendarias (ver `PESO_POR_RAREZA`).
+   */
+  private sortearCartas(cantidad: number, origen: readonly Carta[]): Carta[] {
+    const resultado: Carta[] = [];
+    let pool = [...origen];
+
+    for (let i = 0; i < cantidad; i++) {
+      if (pool.length === 0) pool = [...origen];
+
+      const total = pool.reduce((suma, c) => suma + PESO_POR_RAREZA[c.rareza], 0);
+      let tirada = Math.random() * total;
+      let indice = pool.findIndex((c) => (tirada -= PESO_POR_RAREZA[c.rareza]) < 0);
+      if (indice < 0) indice = pool.length - 1;
+
+      const [carta] = pool.splice(indice, 1);
+      resultado.push({ ...carta, obtenida: true }); // acaba de salir del sobre: se ve completa
+    }
+
+    return resultado;
   }
 
   /** Píxeles de arrastre que equivalen a desplazar un sobre (según el tamaño real en pantalla). */
