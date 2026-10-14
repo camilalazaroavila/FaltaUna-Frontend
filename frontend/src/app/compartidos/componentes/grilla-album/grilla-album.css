@@ -1,0 +1,65 @@
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 480px) {
+  .grilla {
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .grilla {
+    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* Celda interactiva de una carta obtenida, solo en modo "Marcar". */
+.celda {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+}
+
+.celda:focus-visible {
+  outline: 2px solid var(--borde-foco);
+  outline-offset: 4px;
+  border-radius: var(--radio-md);
+}
+
+/* Realce de la carta marcada: borde + corazón (no solo color). */
+.celda--marcada::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 3px solid var(--album-favorita-borde);
+  border-radius: calc(var(--radio-md) + 4px);
+  pointer-events: none;
+}
+
+.celda__corazon {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid var(--album-favorita-borde);
+  border-radius: var(--radio-circulo);
+  background-color: var(--album-favorita-fondo);
+  color: var(--album-favorita-icono);
+}

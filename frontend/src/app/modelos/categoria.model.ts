@@ -80,7 +80,7 @@ export const NOMBRES_CATEGORIA_BACKEND: Readonly<Record<string, CategoriaSobre>>
  * Se usa `NFD` + filtrado de diacríticos en lugar de una tabla de reemplazos
  * para no tener que mantenerla.
  */
-const normalizarNombre = (nombre: string): string =>
+export const normalizarNombre = (nombre: string): string =>
   nombre
     .trim()
     .toLowerCase()

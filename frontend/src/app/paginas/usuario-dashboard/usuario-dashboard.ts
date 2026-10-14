@@ -58,7 +58,7 @@ export class UsuarioDashboard implements OnInit {
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
     { id: 'misiones', nombre: 'Misiones', ruta: '/usuario/misiones', icono: 'phosphorTrophyFill' },
-    { id: 'album', nombre: 'Álbumes', urlIcono: urlIconoAlbum },
+    { id: 'album', nombre: 'Álbumes', ruta: '/usuario/albumes', urlIcono: urlIconoAlbum },
     { id: 'intercambios', nombre: 'Intercambio', urlIcono: urlIconoIntercambios },
     { id: 'qr', nombre: 'Canje', urlIcono: urlIconoQr },
     { id: 'cupones', nombre: 'Mis cupones', ruta: '/usuario/cupones', urlIcono: urlIconoDescuento },

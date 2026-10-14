@@ -1,0 +1,75 @@
+/* Vista "Álbumes" del jugador: estilos de la lista de álbumes del listado
+   lateral. Todo consume tokens semánticos (nunca #hex). */
+
+.album-item {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem;
+  border: 1px solid transparent;
+  border-radius: var(--radio-md);
+  background-color: var(--album-slot-fondo);
+  color: var(--texto-secundario);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.album-item:hover {
+  border-color: var(--album-seleccionado-borde);
+}
+
+.album-item:focus-visible {
+  outline: 2px solid var(--borde-foco);
+  outline-offset: 2px;
+}
+
+.album-item--activo {
+  border-color: var(--album-seleccionado-borde);
+  background-color: var(--album-seleccionado-fondo);
+  color: var(--texto-primario);
+}
+
+.album-item__logo {
+  box-sizing: border-box;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  border-radius: var(--radio-sm);
+  background-color: var(--fondo-coleccion-superficie);
+  object-fit: contain;
+}
+
+.album-item__inicial {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: var(--radio-sm);
+  background-color: var(--marca-acento);
+  color: var(--marca-sobre-acento);
+  font-family: var(--fuente-titulo);
+  font-size: 1.25rem;
+}
+
+.album-item__progreso {
+  display: block;
+  height: 0.35rem;
+  margin-top: 0.4rem;
+  overflow: hidden;
+  border-radius: var(--radio-pildora);
+  background-color: var(--borde-coleccion);
+}
+
+.album-item__progreso-relleno {
+  display: block;
+  height: 100%;
+  border-radius: var(--radio-pildora);
+  background-color: var(--marca-coleccion);
+}

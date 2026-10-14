@@ -24,7 +24,15 @@
   </div>
 
   <div class="carta__imagen-wrapper">
-    <img class="carta__imagen" [src]="carta().imagenUrl" [alt]="altImagen()" loading="lazy" />
+    @if (!imagenRota()) {
+      <img
+        class="carta__imagen"
+        [src]="carta().imagenUrl"
+        [alt]="altImagen()"
+        loading="lazy"
+        (error)="alFallarImagen()"
+      />
+    }
   </div>
 
   <div class="carta__nombre-wrapper">

@@ -1,0 +1,30 @@
+<div class="grilla">
+  @for (carta of cartas(); track carta.id) {
+    @if (!carta.obtenida) {
+      <app-slot-vacio
+        [marcable]="modoMarcar()"
+        [marcada]="esFavorita(carta)"
+        [etiqueta]="carta.nombre"
+        (alternar)="alternar.emit(carta.id)"
+      />
+    } @else if (modoMarcar()) {
+      <button
+        type="button"
+        class="celda"
+        [class.celda--marcada]="esFavorita(carta)"
+        [attr.aria-pressed]="esFavorita(carta)"
+        [attr.aria-label]="etiquetaObtenida(carta)"
+        (click)="alternar.emit(carta.id)"
+      >
+        <app-carta [carta]="cartaDe(carta)" />
+        @if (esFavorita(carta)) {
+          <span class="celda__corazon" aria-hidden="true">
+            <ng-icon name="phosphorHeartFill" size="20" />
+          </span>
+        }
+      </button>
+    } @else {
+      <app-carta [carta]="cartaDe(carta)" />
+    }
+  }
+</div>

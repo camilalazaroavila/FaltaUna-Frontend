@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CuponesService } from '../../servicios/cupones.service';
 import { CategoriaCupon, CuponDescuento } from '../../modelos/cupon.model';
 
@@ -57,6 +57,7 @@ interface FiltroCategoria {
 })
 export class UsuarioCupones {
   private readonly cuponesService = inject(CuponesService);
+  private readonly ruta = inject(ActivatedRoute);
 
   protected readonly categorias: readonly FiltroCategoria[] = [
     { id: 'gastronomia', nombre: 'Gastronomía', urlIcono: urlIconoGastro },
@@ -91,7 +92,16 @@ export class UsuarioCupones {
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.liberarQr());
+    this.aplicarCategoriaDesdeUrl();
     this.cargarCupones();
+  }
+
+  /** Preselecciona la categoría indicada por `?categoria=` (viene de un álbum). */
+  private aplicarCategoriaDesdeUrl(): void {
+    const categoria = this.ruta.snapshot.queryParamMap.get('categoria');
+    if (categoria && this.categorias.some((c) => c.id === categoria)) {
+      this.categoriaActiva.set(categoria as CategoriaCupon);
+    }
   }
 
   protected cargarCupones(): void {

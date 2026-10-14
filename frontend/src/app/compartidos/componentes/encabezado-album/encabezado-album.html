@@ -1,0 +1,74 @@
+<section class="flex flex-col gap-4" aria-labelledby="titulo-album">
+  <div class="flex min-w-0 flex-wrap items-center gap-4">
+    @if (mostrarLogo()) {
+      <img
+        class="size-14 shrink-0 rounded-md object-contain bg-fondo-coleccion-superficie sm:size-16"
+        [src]="album().logoUrl"
+        [alt]="'Logo de ' + album().marcaNombre"
+        (error)="alFallarLogo()"
+      />
+    } @else {
+      <span
+        class="grid size-14 shrink-0 place-items-center rounded-md bg-marca-acento font-titulo text-xl text-marca-sobre-acento sm:size-16 sm:text-2xl"
+        aria-hidden="true"
+      >
+        {{ inicial() }}
+      </span>
+    }
+
+    <div class="min-w-0 flex-1">
+      <p class="font-interfaz text-xs tracking-[0.14em] text-texto-apagado uppercase">
+        Álbum de marca
+      </p>
+      <h2
+        id="titulo-album"
+        class="truncate font-titulo text-2xl tracking-[0.03em] text-texto-primario sm:text-3xl">
+        {{ album().marcaNombre }}
+      </h2>
+      @if (album().descripcion) {
+        <p class="mt-1 text-sm text-texto-secundario">{{ album().descripcion }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <p class="font-interfaz text-sm text-texto-secundario" aria-live="polite">
+      <strong class="text-marca-coleccion">{{ album().obtenidas }}</strong>
+      de {{ album().total }} cartas obtenidas
+    </p>
+
+    <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+      @if (completo()) {
+        <a
+          app-boton
+          routerLink="/usuario/cupones"
+          [queryParams]="queryParamsCupon()"
+          variante="primario"
+          tamanio="sm"
+          class="w-full sm:w-auto"
+        >
+          <ng-icon name="phosphorTicketFill" size="18" aria-hidden="true" />
+          Canjear cupón
+        </a>
+      }
+
+      <button
+        app-boton
+        type="button"
+        variante="primario"
+        tamanio="sm"
+        class="w-full sm:w-auto"
+        [attr.aria-pressed]="modoMarcar()"
+        (click)="alternarModo.emit()"
+      >
+        {{ modoMarcar() ? 'Terminar de marcar' : 'Marcar cartas que quiero' }}
+      </button>
+    </div>
+  </div>
+
+  <app-barra-progreso
+    [actual]="album().obtenidas"
+    [objetivo]="album().total"
+    [etiqueta]="'Progreso del álbum ' + album().marcaNombre"
+  />
+</section>
