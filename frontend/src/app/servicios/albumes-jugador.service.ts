@@ -4,22 +4,26 @@ import { catchError, map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
 import {
-  MIN_CARTAS_COLECCION,
-  MAX_CARTAS_COLECCION,
-  validarCantidadCartasColeccion,
+  esCantidadAlbumValida,
   categoriaCartaDesdeNombre,
+  type CantidadAlbum,
   type CategoriaAlbum,
   type CartaAlbum,
   type DetalleAlbum,
   type ResumenAlbum,
 } from '../modelos/album-jugador.model';
-import { ETIQUETA_CATEGORIA, type CategoriaCarta, type RarezaCarta } from '../modelos/carta.model';
+import { CARTAS_MOCK, type CartaConMarca } from '../modelos/cartas.mock';
+import { ETIQUETA_CATEGORIA, type CategoriaCarta } from '../modelos/carta.model';
 
 /**
  * Datos de prueba mientras el backend no expone el listado/detalle de álbumes
  * del jugador ni el endpoint de favoritas con JWT. Los métodos públicos ya
  * devuelven `Observable` con la forma HTTP final: al conectar el back solo
  * cambia la implementación, no los componentes.
+ *
+ * Las cartas de cada álbum NO se duplican acá: salen del mismo mock que usa
+ * "Mis cartas" (`CARTAS_MOCK`), agrupadas por su marca. Así las dos vistas
+ * muestran exactamente la misma carta (id, nombre, rareza, imagen y categoría).
  */
 
 /** Marcas de prueba: al menos una por categoría, con una sin logo para el fallback. */
@@ -28,6 +32,8 @@ interface MarcaMock {
   readonly categoria: CategoriaCarta;
   readonly logoUrl: string | null;
   readonly descripcion: string;
+  /** Total de cartas de la colección: uno de 12, 20 o 30. */
+  readonly cartas: CantidadAlbum;
 }
 
 /** Las 7 categorías de carta, en el orden que usa el filtro. */
@@ -42,67 +48,94 @@ const CATEGORIAS_ALBUM: readonly CategoriaCarta[] = [
 ];
 
 const MARCAS_MOCK: readonly MarcaMock[] = [
-  { nombre: 'Grido', categoria: 'gastronomia', logoUrl: 'imagenes/grido.jpg', descripcion: 'Los clásicos helados de barrio, ahora en cartas.' },
-  { nombre: 'McDonald\'s', categoria: 'gastronomia', logoUrl: 'imagenes/McDonalds.jpg', descripcion: 'Sabores que hicieron historia.' },
-  { nombre: 'Coca-Cola', categoria: 'gastronomia', logoUrl: 'imagenes/cocacola.jpg', descripcion: 'La chispa que acompaña cada partido.' },
-  { nombre: 'Natura', categoria: 'cosmeticos', logoUrl: null, descripcion: 'Belleza de origen natural.' },
-  { nombre: 'Casa Limón', categoria: 'decoracion', logoUrl: null, descripcion: 'Deco cálida para tu casa.' },
-  { nombre: 'Zara', categoria: 'indumentaria', logoUrl: 'imagenes/zara.png', descripcion: 'Moda urbana para la cancha.' },
-  { nombre: 'Sony', categoria: 'musica', logoUrl: 'imagenes/sony.png', descripcion: 'Sonido que se juega de memoria.' },
-  { nombre: 'Google', categoria: 'tecnologia', logoUrl: 'imagenes/google.jpg', descripcion: 'Tecnología para todos los días.' },
-  { nombre: 'Lego', categoria: 'entretenimiento', logoUrl: 'imagenes/lego.png', descripcion: 'Armá tu propia historia.' },
+  { nombre: 'Grido', categoria: 'gastronomia', logoUrl: 'imagenes/grido.jpg', descripcion: 'Los clásicos helados de barrio, ahora en cartas.', cartas: 12 },
+  { nombre: 'McDonald\'s', categoria: 'gastronomia', logoUrl: 'imagenes/McDonalds.jpg', descripcion: 'Sabores que hicieron historia.', cartas: 20 },
+  { nombre: 'Coca-Cola', categoria: 'gastronomia', logoUrl: 'imagenes/cocacola.jpg', descripcion: 'La chispa que acompaña cada partido.', cartas: 30 },
+  { nombre: 'Natura', categoria: 'cosmeticos', logoUrl: null, descripcion: 'Belleza de origen natural.', cartas: 12 },
+  { nombre: 'Casa Limón', categoria: 'decoracion', logoUrl: null, descripcion: 'Deco cálida para tu casa.', cartas: 20 },
+  { nombre: 'Zara', categoria: 'indumentaria', logoUrl: 'imagenes/zara.png', descripcion: 'Moda urbana para la cancha.', cartas: 30 },
+  { nombre: 'Sony', categoria: 'musica', logoUrl: 'imagenes/sony.png', descripcion: 'Sonido que se juega de memoria.', cartas: 12 },
+  { nombre: 'Google', categoria: 'tecnologia', logoUrl: 'imagenes/google.jpg', descripcion: 'Tecnología para todos los días.', cartas: 20 },
+  { nombre: 'Lego', categoria: 'entretenimiento', logoUrl: 'imagenes/lego.png', descripcion: 'Armá tu propia historia.', cartas: 30 },
 ];
 
 const IMAGEN_FALLBACK = 'imagenes/Sprite.png';
-const RAREZAS_CICLO: readonly RarezaCarta[] = ['comun', 'rara', 'epicarta', 'legendaria', 'comun'];
-
-/** Tamaño determinista por álbum, siempre dentro de [MIN_CARTAS_COLECCION, MAX_CARTAS_COLECCION]. */
-const cartasPorAlbum = (indice: number): number =>
-  MIN_CARTAS_COLECCION + (indice % (MAX_CARTAS_COLECCION - MIN_CARTAS_COLECCION + 1));
 
 const redondearPorcentaje = (obtenidas: number, total: number): number =>
   total > 0 ? Math.round(Math.min(100, Math.max(0, (obtenidas / total) * 100))) : 0;
 
-/** Cantidad de cartas obtenidas: la última marca queda completa para el canje. */
-const obtenidasDeAlbum = (total: number, indice: number): number =>
-  indice === MARCAS_MOCK.length - 1 ? total : Math.max(1, Math.floor(total / 2));
+/** Adapta una carta de "Mis cartas" al modelo de la grilla del álbum. */
+const cartaDeMarcaACartaAlbum = (carta: CartaConMarca): CartaAlbum => ({
+  id: carta.id,
+  nombre: carta.nombre,
+  imagenUrl: carta.imagenUrl,
+  rareza: carta.rareza,
+  categoria: carta.categoria,
+  poder: carta.atributoIzquierdo,
+  costoMana: carta.atributoDerecho,
+  obtenida: carta.obtenida,
+  cantidad: carta.obtenida ? 1 : 0,
+  favorita: false,
+});
 
-const cartasDeAlbum = (marca: MarcaMock, indiceAlbum: number): CartaAlbum[] => {
-  const total = cartasPorAlbum(indiceAlbum);
-  const obtenidas = obtenidasDeAlbum(total, indiceAlbum - 1);
+/**
+ * Cartas conocidas de una marca: las de `CARTAS_MOCK` que le pertenecen, sin
+ * repetir (por id). Su estado `obtenida` es el de "Mis cartas".
+ */
+const cartasConocidasDeMarca = (nombreMarca: string): CartaAlbum[] => {
+  const vistas = new Set<string>();
+  const cartas: CartaAlbum[] = [];
 
-  return Array.from({ length: total }, (_, i) => {
-    const obtenida = i < obtenidas;
-    return {
-      id: `album-${indiceAlbum}-carta-${i + 1}`,
-      nombre: `${marca.nombre} ${i + 1}`,
-      imagenUrl: marca.logoUrl ?? IMAGEN_FALLBACK,
-      rareza: RAREZAS_CICLO[i % RAREZAS_CICLO.length],
-      categoria: marca.categoria,
-      poder: 10 + (i % 10) * 5,
-      costoMana: 4 + (i % 10) * 3,
-      obtenida,
-      cantidad: obtenida ? 1 : 0,
-      favorita: false,
-    };
-  });
+  for (const carta of CARTAS_MOCK) {
+    if (carta.marca !== nombreMarca || vistas.has(carta.id)) {
+      continue;
+    }
+    vistas.add(carta.id);
+    cartas.push(cartaDeMarcaACartaAlbum(carta));
+  }
+
+  return cartas;
+};
+
+/**
+ * Completa el álbum hasta `total` con slots vacíos sin identidad de carta: solo
+ * llevan una etiqueta de posición para el `aria-label`.
+ */
+const cartasDeAlbum = (marca: MarcaMock, idAlbum: number): CartaAlbum[] => {
+  const conocidas = cartasConocidasDeMarca(marca.nombre).slice(0, marca.cartas);
+  const faltantes = marca.cartas - conocidas.length;
+
+  const vacias: CartaAlbum[] = Array.from({ length: Math.max(0, faltantes) }, (_, i) => ({
+    id: `slot-${idAlbum}-${i + 1}`,
+    nombre: `Carta ${conocidas.length + i + 1}`,
+    imagenUrl: IMAGEN_FALLBACK,
+    rareza: 'comun',
+    categoria: marca.categoria,
+    poder: 0,
+    costoMana: 0,
+    obtenida: false,
+    cantidad: 0,
+    favorita: false,
+  }));
+
+  return [...conocidas, ...vacias];
 };
 
 const DETALLE_MOCK: readonly DetalleAlbum[] = MARCAS_MOCK.map((marca, indice) => {
-  const cartas = cartasDeAlbum(marca, indice + 1);
-  const total = cartas.length;
+  const id = indice + 1;
+  const cartas = cartasDeAlbum(marca, id);
   const obtenidas = cartas.filter((carta) => carta.obtenida).length;
 
   return {
-    id: indice + 1,
+    id,
     marcaNombre: marca.nombre,
     logoUrl: marca.logoUrl,
     descripcion: marca.descripcion,
     categoriaId: CATEGORIAS_ALBUM.indexOf(marca.categoria) + 1,
     categoriaNombre: ETIQUETA_CATEGORIA[marca.categoria],
-    total,
+    total: marca.cartas,
     obtenidas,
-    porcentaje: redondearPorcentaje(obtenidas, total),
+    porcentaje: redondearPorcentaje(obtenidas, marca.cartas),
     cartas,
   };
 });
@@ -154,7 +187,7 @@ export class AlbumesJugadorService {
       .pipe(catchError(() => of(this.albumesMock(categoriaId))));
   }
 
-  /** Detalle de un álbum con sus cartas, favoritas incluidas. Valida rango de 12 a 30 cartas. */
+  /** Detalle de un álbum con sus cartas, favoritas incluidas. Valida que el total sea 12, 20 o 30. */
   obtenerDetalleAlbum(id: number): Observable<DetalleAlbum> {
     return this.api.get<DetalleAlbum>(`Colecciones/${id}/album`).pipe(
       catchError(() => {
@@ -164,9 +197,9 @@ export class AlbumesJugadorService {
           : throwError(() => new Error('No encontramos el álbum.'));
       }),
       map((detalle) => {
-        if (!validarCantidadCartasColeccion(detalle.total)) {
+        if (!esCantidadAlbumValida(detalle.total)) {
           throw new Error(
-            `La colección tiene una cantidad de cartas inválida (${detalle.total}). Debe estar entre ${MIN_CARTAS_COLECCION} y ${MAX_CARTAS_COLECCION}.`,
+            `La colección tiene una cantidad de cartas inválida (${detalle.total}). Debe ser 12, 20 o 30.`,
           );
         }
         return detalle;

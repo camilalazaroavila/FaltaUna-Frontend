@@ -6,10 +6,13 @@ import {
 } from '@angular/common/http/testing';
 
 import { AlbumesJugadorService } from './albumes-jugador.service';
-import type {
-  CategoriaAlbum,
-  DetalleAlbum,
-  ResumenAlbum,
+import { CARTAS_MOCK } from '../modelos/cartas.mock';
+import {
+  CANTIDADES_ALBUM_VALIDAS,
+  esCantidadAlbumValida,
+  type CategoriaAlbum,
+  type DetalleAlbum,
+  type ResumenAlbum,
 } from '../modelos/album-jugador.model';
 
 describe('AlbumesJugadorService', () => {
@@ -27,8 +30,17 @@ describe('AlbumesJugadorService', () => {
 
   afterEach(() => httpMock.verify());
 
+  const detalleDesdeMock = (id: number): DetalleAlbum => {
+    let detalle: DetalleAlbum | null = null;
+    servicio.obtenerDetalleAlbum(id).subscribe((d) => (detalle = d));
+    httpMock
+      .expectOne((peticion) => peticion.url.includes(`Colecciones/${id}/album`))
+      .flush('error', { status: 500, statusText: 'Error' });
+    return detalle!;
+  };
+
   describe('listarCategorias', () => {
-    it('traduce los nombres del backend y descarta las categorías sin icono', () => {
+    it('traduce los nombres del backend, incluye Decoración y descarta las desconocidas', () => {
       let resultado: readonly CategoriaAlbum[] = [];
 
       servicio.listarCategorias().subscribe((categorias) => (resultado = categorias));
@@ -39,16 +51,18 @@ describe('AlbumesJugadorService', () => {
           { id: 1, nombre: 'Comida' },
           { id: 7, nombre: 'Decoración' },
           { id: 3, nombre: 'Ropa' },
+          { id: 9, nombre: 'Sin categoría conocida' },
         ]);
 
       expect(resultado.map((categoria) => categoria.categoria)).toEqual([
         'gastronomia',
+        'decoracion',
         'indumentaria',
       ]);
-      expect(resultado.map((categoria) => categoria.id)).toEqual([1, 3]);
+      expect(resultado.map((categoria) => categoria.id)).toEqual([1, 7, 3]);
     });
 
-    it('cae al mock de seis categorías cuando el backend falla', () => {
+    it('cae al mock de siete categorías cuando el backend falla', () => {
       let resultado: readonly CategoriaAlbum[] = [];
 
       servicio.listarCategorias().subscribe((categorias) => (resultado = categorias));
@@ -57,7 +71,7 @@ describe('AlbumesJugadorService', () => {
         .expectOne((req) => req.url.includes('Categorias'))
         .flush('error', { status: 500, statusText: 'Error' });
 
-      expect(resultado).toHaveLength(6);
+      expect(resultado).toHaveLength(7);
       expect(resultado.every((categoria) => categoria.categoria !== null)).toBe(true);
     });
   });
@@ -84,7 +98,8 @@ describe('AlbumesJugadorService', () => {
         .expectOne((peticion) => peticion.url.includes('Colecciones/albumes'))
         .flush('error', { status: 500, statusText: 'Error' });
 
-      expect(resultado).toHaveLength(1);
+      // Gastronomía: Grido, McDonald's y Coca-Cola.
+      expect(resultado).toHaveLength(3);
       expect(resultado.every((album) => album.categoriaId === 1)).toBe(true);
     });
 
@@ -97,12 +112,27 @@ describe('AlbumesJugadorService', () => {
         .expectOne((peticion) => peticion.url.includes('Colecciones/albumes'))
         .flush('error', { status: 500, statusText: 'Error' });
 
-      expect(resultado).toHaveLength(8);
+      expect(resultado).toHaveLength(9);
+      expect(resultado.every((album) => esCantidadAlbumValida(album.total))).toBe(true);
+    });
+
+    it('todos los álbumes del mock tienen un total válido (12, 20 o 30)', () => {
+      let resultado: readonly ResumenAlbum[] = [];
+
+      servicio.listarAlbumes().subscribe((albumes) => (resultado = albumes));
+      httpMock
+        .expectOne((peticion) => peticion.url.includes('Colecciones/albumes'))
+        .flush('error', { status: 500, statusText: 'Error' });
+
+      const totales = new Set(resultado.map((album) => album.total));
+      for (const total of totales) {
+        expect(CANTIDADES_ALBUM_VALIDAS).toContain(total);
+      }
     });
   });
 
   describe('obtenerDetalleAlbum', () => {
-    it('devuelve el detalle del backend cuando responde con cantidad válida de cartas', () => {
+    it('devuelve el detalle del backend cuando la cantidad de cartas es válida', () => {
       const detalle: DetalleAlbum = {
         id: 99,
         marcaNombre: 'Marca',
@@ -110,9 +140,9 @@ describe('AlbumesJugadorService', () => {
         descripcion: null,
         categoriaId: 4,
         categoriaNombre: 'Gastronomía',
-        total: 15,
+        total: 12,
         obtenidas: 8,
-        porcentaje: 53,
+        porcentaje: 67,
         cartas: [],
       };
 
@@ -124,15 +154,15 @@ describe('AlbumesJugadorService', () => {
       expect(resultado).toEqual(detalle);
     });
 
-    it('falla si la colección tiene menos de 12 cartas', () => {
+    it.each([11, 13, 21, 31])('falla si la colección tiene %i cartas', (total) => {
       const detalleInvalido: DetalleAlbum = {
         id: 99,
-        marcaNombre: 'Marca Corta',
+        marcaNombre: 'Marca',
         logoUrl: null,
         descripcion: null,
         categoriaId: 4,
         categoriaNombre: 'Gastronomía',
-        total: 11,
+        total,
         obtenidas: 5,
         porcentaje: 45,
         cartas: [],
@@ -152,32 +182,50 @@ describe('AlbumesJugadorService', () => {
       expect(error?.message).toContain('inválida');
     });
 
-    it('falla si la colección tiene más de 30 cartas', () => {
-      const detalleInvalido: DetalleAlbum = {
-        id: 99,
-        marcaNombre: 'Marca Larga',
-        logoUrl: null,
-        descripcion: null,
-        categoriaId: 4,
-        categoriaNombre: 'Gastronomía',
-        total: 31,
-        obtenidas: 10,
-        porcentaje: 32,
-        cartas: [],
-      };
+    it('cada álbum del mock tiene exactamente su total de cartas', () => {
+      for (let id = 1; id <= 9; id++) {
+        const detalle = detalleDesdeMock(id);
+        expect(detalle.cartas).toHaveLength(detalle.total);
+        expect(esCantidadAlbumValida(detalle.total)).toBe(true);
+      }
+    });
 
-      let error: Error | null = null;
-      servicio.obtenerDetalleAlbum(99).subscribe({
-        next: () => fail('debió fallar'),
-        error: (e) => (error = e),
-      });
+    it('incluye las cartas de "Mis cartas" con los mismos datos y marca', () => {
+      const detalle = detalleDesdeMock(1); // Grido
+      const esperadas = CARTAS_MOCK.filter((carta) => carta.marca === 'Grido');
 
-      httpMock
-        .expectOne((peticion) => peticion.url.includes('Colecciones/99/album'))
-        .flush(detalleInvalido);
+      expect(esperadas.length).toBeGreaterThan(0);
 
-      expect(error).toBeTruthy();
-      expect(error?.message).toContain('inválida');
+      for (const origen of esperadas) {
+        const enAlbum = detalle.cartas.find((carta) => carta.id === origen.id);
+        expect(enAlbum).toBeDefined();
+        expect(enAlbum!.nombre).toBe(origen.nombre);
+        expect(enAlbum!.rareza).toBe(origen.rareza);
+        expect(enAlbum!.imagenUrl).toBe(origen.imagenUrl);
+        expect(enAlbum!.categoria).toBe(origen.categoria);
+        expect(enAlbum!.poder).toBe(origen.atributoIzquierdo);
+        expect(enAlbum!.costoMana).toBe(origen.atributoDerecho);
+        expect(enAlbum!.obtenida).toBe(origen.obtenida);
+      }
+    });
+
+    it('cuenta las obtenidas y rellena el resto con slots vacíos sin identidad', () => {
+      const detalle = detalleDesdeMock(1); // Grido: 12 cartas
+      const conocidas = detalle.cartas.filter((carta) => carta.id.startsWith('c-'));
+
+      expect(detalle.obtenidas).toBe(conocidas.filter((carta) => carta.obtenida).length);
+      expect(detalle.cartas).toHaveLength(detalle.total);
+
+      const vacias = detalle.cartas.filter((carta) => carta.id.startsWith('slot-'));
+      expect(vacias.length).toBe(detalle.total - conocidas.length);
+      expect(vacias.every((carta) => !carta.obtenida && carta.cantidad === 0)).toBe(true);
+    });
+
+    it('recalcula el porcentaje a partir de obtenidas y total', () => {
+      const detalle = detalleDesdeMock(1);
+      expect(detalle.porcentaje).toBe(
+        Math.round((detalle.obtenidas / detalle.total) * 100),
+      );
     });
 
     it('falla si el álbum pedido no existe en el mock', () => {
@@ -195,39 +243,29 @@ describe('AlbumesJugadorService', () => {
 
   describe('favoritas', () => {
     it('recuerda una favorita marcada en el mock y la refleja en el detalle', () => {
-      servicio.marcarFavorita('album-1-carta-1').subscribe();
+      servicio.marcarFavorita('c-001').subscribe();
       httpMock
         .expectOne((peticion) => peticion.method === 'POST')
         .flush('error', { status: 500, statusText: 'Error' });
 
-      let detalle: DetalleAlbum | null = null;
-      servicio.obtenerDetalleAlbum(1).subscribe((d) => (detalle = d));
-      httpMock
-        .expectOne((peticion) => peticion.url.includes('Colecciones/1/album'))
-        .flush('error', { status: 500, statusText: 'Error' });
-
-      const carta = detalle!.cartas.find((c) => c.id === 'album-1-carta-1')!;
+      const detalle = detalleDesdeMock(1);
+      const carta = detalle.cartas.find((c) => c.id === 'c-001')!;
       expect(carta.favorita).toBe(true);
     });
 
     it('quita una favorita previamente marcada', () => {
-      servicio.marcarFavorita('album-1-carta-1').subscribe();
+      servicio.marcarFavorita('c-001').subscribe();
       httpMock
         .expectOne((peticion) => peticion.method === 'POST')
         .flush('error', { status: 500, statusText: 'Error' });
 
-      servicio.desmarcarFavorita('album-1-carta-1').subscribe();
+      servicio.desmarcarFavorita('c-001').subscribe();
       httpMock
         .expectOne((peticion) => peticion.method === 'DELETE')
         .flush('error', { status: 500, statusText: 'Error' });
 
-      let detalle: DetalleAlbum | null = null;
-      servicio.obtenerDetalleAlbum(1).subscribe((d) => (detalle = d));
-      httpMock
-        .expectOne((peticion) => peticion.url.includes('Colecciones/1/album'))
-        .flush('error', { status: 500, statusText: 'Error' });
-
-      const carta = detalle!.cartas.find((c) => c.id === 'album-1-carta-1')!;
+      const detalle = detalleDesdeMock(1);
+      const carta = detalle.cartas.find((c) => c.id === 'c-001')!;
       expect(carta.favorita).toBe(false);
     });
   });

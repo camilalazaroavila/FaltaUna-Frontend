@@ -16,17 +16,19 @@ import {
  * `album.model.ts`, que describe la creación de colecciones del modo empresa.
  */
 
-/** Límites de cartas por colección definidos por reglas de negocio. */
-export const MIN_CARTAS_COLECCION = 12;
-export const MAX_CARTAS_COLECCION = 30;
+/**
+ * Cantidades de cartas admitidas por colección (regla de negocio): solo 12, 20 o
+ * 30. Es un catálogo cerrado para que ningún álbum de la demo quede con un total
+ * intermedio (13, 21, …) que rompa la coherencia de la grilla.
+ */
+export const CANTIDADES_ALBUM_VALIDAS = [12, 20, 30] as const;
 
-/** Valida que el total de cartas de una colección esté en el rango permitido [12, 30]. */
-export function validarCantidadCartasColeccion(total: number): boolean {
-  return (
-    Number.isInteger(total) &&
-    total >= MIN_CARTAS_COLECCION &&
-    total <= MAX_CARTAS_COLECCION
-  );
+/** Total de cartas de un álbum: uno de los valores de `CANTIDADES_ALBUM_VALIDAS`. */
+export type CantidadAlbum = (typeof CANTIDADES_ALBUM_VALIDAS)[number];
+
+/** Valida que un total sea una cantidad de álbum admitida (12, 20 o 30). */
+export function esCantidadAlbumValida(total: number): total is CantidadAlbum {
+  return (CANTIDADES_ALBUM_VALIDAS as readonly number[]).includes(total);
 }
 
 /** Resumen de un álbum de marca para el listado lateral por categoría. */
