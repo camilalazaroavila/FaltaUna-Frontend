@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CuponesService } from '../../servicios/cupones.service';
 import { CategoriaCupon, CuponDescuento } from '../../modelos/cupon.model';
 
@@ -91,17 +92,26 @@ export class UsuarioCupones {
   );
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.liberarQr());
-    this.aplicarCategoriaDesdeUrl();
+    const destruir = inject(DestroyRef);
+    destruir.onDestroy(() => this.liberarQr());
+    this.escucharCategoriaDesdeUrl(destruir);
     this.cargarCupones();
   }
 
-  /** Preselecciona la categoría indicada por `?categoria=` (viene de un álbum). */
-  private aplicarCategoriaDesdeUrl(): void {
-    const categoria = this.ruta.snapshot.queryParamMap.get('categoria');
-    if (categoria && this.categorias.some((c) => c.id === categoria)) {
-      this.categoriaActiva.set(categoria as CategoriaCupon);
-    }
+  /**
+   * Preselecciona la categoría indicada por `?categoria=` (viene de un álbum) y
+   * reacciona a cambios posteriores del parámetro. Si falta o no es válida, se
+   * conserva la categoría actual.
+   */
+  private escucharCategoriaDesdeUrl(destruir: DestroyRef): void {
+    this.ruta.queryParamMap
+      .pipe(takeUntilDestroyed(destruir))
+      .subscribe((params) => {
+        const categoria = params.get('categoria');
+        if (categoria && this.categorias.some((c) => c.id === categoria)) {
+          this.categoriaActiva.set(categoria as CategoriaCupon);
+        }
+      });
   }
 
   protected cargarCupones(): void {
