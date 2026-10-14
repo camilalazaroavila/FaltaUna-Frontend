@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
-import type { RegistroEvento } from '../registro-eventos';
+import type { RegistroEvento } from '@paginas/galeria-componentes/registro-eventos';
 
 /** Etiqueta formateada de un evento, ya relativityal al reloj actual. */
 interface RegistroMostrado {

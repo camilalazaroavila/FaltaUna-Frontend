@@ -1,0 +1,311 @@
+@if (abierto()) {
+
+<!--
+  El sobre se dibuja con `app-sobre-marca` en TODAS las fases, a partir del sobre
+  elegido (general = envoltorio Falta Una, categoría = icono, marca = logo).
+  Esta plantilla es la única fuente: grid, preview, carrusel y corte la reutilizan.
+  El host ocupa el 100% del contenedor y el ancho lo manda el contenedor.
+-->
+<ng-template #sobreTpl let-sobre>
+  @let p = propsDeSobre(sobre);
+  <app-sobre-marca class="w-full [&>*]:w-full!" tamanio="lg" [categoria]="p.categoria" [variante]="p.variante"
+    [nombre]="p.nombre" [logoUrl]="p.logoUrl" />
+</ng-template>
+
+<div class="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm transition-opacity duration-300"
+  (click)="fase() === 'revelacion' ? avanzarOFinalizar() : (fase() === 'corte' || fase() === 'carrusel' ? null : cerrarFlujo())"
+  aria-hidden="true"></div>
+
+<!-- CONTENEDOR PRINCIPAL -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 2xl:p-8 overflow-hidden pointer-events-none">
+
+  <!-- FASE 1: GRID LATERAL DERECHO -->
+  @if (fase() === 'seleccion') {
+  <div
+    class="pointer-events-auto absolute right-2 sm:right-6 md:right-8 2xl:right-12 top-14 sm:top-8 2xl:top-12 bottom-3 sm:bottom-8 2xl:bottom-12 w-[calc(100%-1rem)] sm:w-[min(calc(100%-3rem),36rem)] lg:w-[min(52vw,44rem)] 2xl:w-[min(46vw,60rem)] rounded-3xl bg-[#082226]/95 border border-white/10 shadow-2xl p-3 sm:p-5 2xl:p-8 flex flex-col backdrop-blur-md animate-fade-in">
+    <!-- Encabezado del Drawer -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-3 2xl:pb-5 2xl:mb-5">
+      <h2 class="font-titulo text-lg sm:text-2xl 2xl:text-4xl text-marca-acento tracking-wide">
+        Elegí tu sobre
+      </h2>
+      <button type="button" (click)="cerrarFlujo()"
+        class="flex size-8 sm:size-9 2xl:size-12 cursor-pointer items-center justify-center rounded-circulo bg-white/10 text-white transition hover:bg-white/20 active:scale-95"
+        aria-label="Cerrar selector">
+        <svg class="size-4 sm:size-5 2xl:size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Panel con scrollbar personalizado -->
+    <div class="flex-1 min-h-0 overflow-hidden">
+      <app-panel-desplazable clasesExtra="h-full">
+        <div
+          class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 2xl:gap-6 p-2 pb-4 2xl:p-4">
+          @for (sobre of listaSobresUI(); track sobre.id) {
+          @let p = propsDeSobre(sobre);
+          <div class="group flex flex-col items-center gap-1.5 2xl:gap-3 transition-opacity"
+            [class.opacity-40]="!sobre.disponible" [attr.inert]="sobre.disponible ? null : ''">
+            <!-- Solo el sobre: la altura manda y el ancho sale de la proporción -->
+            <div class="flex h-28 sm:h-36 2xl:h-52 w-full items-center justify-center p-1">
+              <div class="h-full aspect-[208.67/340.93] drop-shadow-md">
+                <app-sobre-marca class="w-full [&>*]:w-full!" tamanio="lg" clickeable [categoria]="p.categoria"
+                  [variante]="p.variante" [nombre]="p.nombre" [logoUrl]="p.logoUrl"
+                  (accion)="seleccionarSobre(sobre)" />
+              </div>
+            </div>
+
+            <!-- Etiqueta debajo del sobre -->
+            <span (click)="seleccionarSobre(sobre)"
+              class="cursor-pointer text-center font-titulo text-[11px] sm:text-xs 2xl:text-base font-black uppercase tracking-wider text-landing-claro-fondo line-clamp-1 group-hover:text-marca-acento transition-colors">
+              {{ sobre.etiqueta }}
+            </span>
+          </div>
+          }
+        </div>
+      </app-panel-desplazable>
+    </div>
+  </div>
+  }
+
+  <!-- FASE 2: PREVIEW -->
+  @if (fase() === 'preview' && sobreSeleccionado()) {
+  <div
+    class="pointer-events-auto flex flex-col items-center justify-center px-6 pt-8 pb-4 2xl:pt-10 w-full max-w-sm sm:max-w-md lg:max-w-lg 2xl:max-w-2xl max-h-full overflow-y-auto animate-fade-in">
+    <!-- Tarjeta del Sobre Central -->
+    <div class="relative flex flex-col items-center select-none">
+      <!-- Badge superior con la Marca/Categoría -->
+      <div
+        class="absolute -top-3 -right-2 sm:right-0 z-20 rounded-lg bg-[#f9f9b2] px-2.5 py-0.5 sm:px-3 sm:py-1 2xl:px-5 2xl:py-1.5 shadow-md border border-black/10 text-teal-950 font-titulo text-xs sm:text-sm 2xl:text-xl font-black tracking-wider uppercase">
+        {{ sobreSeleccionado()!.etiqueta }}
+      </div>
+
+      <!-- Sobre: la altura manda y el ancho sale de la proporción -->
+      <div
+        class="relative h-[clamp(11rem,40vh,36rem)] aspect-[208.67/340.93] drop-shadow-2xl transition-transform duration-300 hover:scale-105">
+        <ng-container [ngTemplateOutlet]="sobreTpl" [ngTemplateOutletContext]="{ $implicit: sobreSeleccionado() }" />
+      </div>
+
+      <!-- Descripción del contenido del sobre -->
+      <p
+        class="mt-3 2xl:mt-5 max-w-[18rem] 2xl:max-w-md text-center font-titulo text-sm sm:text-base 2xl:text-2xl leading-snug text-landing-claro-fondo">
+        {{ descripcionSobre(sobreSeleccionado()!) }}
+      </p>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="mt-5 sm:mt-8 2xl:mt-12 flex flex-col items-center gap-2.5 2xl:gap-4 w-full sm:w-72 2xl:w-96">
+      <button type="button" (click)="irACarrusel()"
+        class="w-full cursor-pointer rounded-pildora bg-marca-primaria py-3 px-5 sm:py-3.5 sm:px-6 2xl:py-5 font-interfaz text-sm sm:text-base 2xl:text-xl font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:scale-105 active:scale-95">
+        ABRIR SOBRE
+      </button>
+
+      <button type="button" (click)="volverASeleccion()"
+        class="font-interfaz text-xs sm:text-sm 2xl:text-base font-bold text-texto-secundario underline transition hover:text-white cursor-pointer py-1">
+        VOLVER A SELECCIONAR
+      </button>
+    </div>
+  </div>
+  }
+
+  <!-- FASE 3: CARRUSEL CIRCULAR INFINITO -->
+  @if (fase() === 'carrusel') {
+  <div
+    class="pointer-events-auto relative w-full h-full flex flex-col items-center justify-center px-2 sm:px-4 overflow-hidden select-none animate-fade-in touch-none cursor-grab active:cursor-grabbing"
+    (pointerdown)="onPointerDownCarrusel($event)" (pointermove)="onPointerMoveCarrusel($event)"
+    (pointerup)="onPointerUpCarrusel($event)" (pointercancel)="onPointerCancelCarrusel()">
+    <!-- Botón volver superior -->
+    <button type="button" (pointerdown)="$event.stopPropagation()" (click)="volverASeleccion()"
+      class="absolute top-4 right-4 sm:top-6 sm:right-6 2xl:top-10 2xl:right-10 flex size-9 sm:size-10 2xl:size-14 items-center justify-center rounded-circulo bg-black/40 text-white/80 hover:text-white hover:bg-black/60 transition cursor-pointer z-40"
+      aria-label="Volver">
+      <svg class="size-5 sm:size-6 2xl:size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Flecha Izquierda -->
+    <button type="button" (pointerdown)="$event.stopPropagation()" (click)="cambiarSobreCarrusel(-1)"
+      class="absolute left-2 sm:left-6 md:left-12 2xl:left-20 z-40 flex size-10 sm:size-14 md:size-16 2xl:size-20 items-center justify-center rounded-circulo bg-marca-primaria text-marca-sobre-primaria shadow-alta transition hover:scale-110 active:scale-95 cursor-pointer"
+      aria-label="Sobre anterior">
+      <svg class="size-6 sm:size-8 md:size-10 2xl:size-12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="3">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+
+    <!--
+          Escena 3D: --ancho-sobre es la única medida base. Tamaño de los sobres, separación
+          entre ellos (ver obtenerTransformSobre) y perspectiva salen de ella, así todo escala junto.
+          El alto del sobre es ancho * 340.93 / 208.67 ≈ 1.634.
+        -->
+    <div #escena
+      class="relative w-full max-w-[min(100%,90rem)] h-[calc(var(--ancho-sobre)*1.64+2.5rem)] flex items-center justify-center [--ancho-sobre:clamp(7rem,min(24vw,27vh),24rem)] perspective-[calc(var(--ancho-sobre)*5)]">
+      @for (sobre of sobresCarrusel(); track sobre.k) {
+      @let p = propsDeSobre(sobre.item);
+      <div class="absolute" [class.pointer-events-none]="Math.abs(sobre.rel) > 2.5" [class.transition-all]="!enArrastre"
+        [class.duration-300]="!enArrastre" [class.ease-out]="!enArrastre" [class.transition-none]="enArrastre"
+        [style.transform]="obtenerTransformSobre(sobre.rel)" [style.opacity]="obtenerOpacidadSobre(sobre.rel)"
+        [style.zIndex]="obtenerZIndexSobre(sobre.rel)">
+        <div class="w-[var(--ancho-sobre)] aspect-[208.67/340.93] filter drop-shadow-2xl">
+          <app-sobre-marca class="w-full [&>*]:w-full!" tamanio="lg" clickeable [categoria]="p.categoria"
+            [variante]="p.variante" [nombre]="p.nombre" [logoUrl]="p.logoUrl" (accion)="alHacerClicSobre(sobre.rel)" />
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Flecha Derecha (Infinita, nunca deshabilitada) -->
+    <button type="button" (pointerdown)="$event.stopPropagation()" (click)="cambiarSobreCarrusel(1)"
+      class="absolute right-2 sm:right-6 md:right-12 2xl:right-20 z-40 flex size-10 sm:size-14 md:size-16 2xl:size-20 items-center justify-center rounded-circulo bg-marca-primaria text-marca-sobre-primaria shadow-alta transition hover:scale-110 active:scale-95 cursor-pointer"
+      aria-label="Sobre siguiente">
+      <svg class="size-6 sm:size-8 md:size-10 2xl:size-12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="3">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+
+    <!-- Pista de ayuda -->
+    <p
+      class="mt-4 sm:mt-6 2xl:mt-10 text-center font-interfaz text-xs sm:text-sm 2xl:text-lg text-texto-secundario uppercase tracking-widest pointer-events-none">
+      Deslizá y tocá el sobre para abrirlo
+    </p>
+  </div>
+  }
+
+  <!-- FASE 4: CORTE Y RASGADO -->
+  @if (fase() === 'corte' && sobreSeleccionado()) {
+  <div class="pointer-events-auto flex flex-col items-center justify-center px-4 w-full select-none animate-fade-in">
+
+    <!-- Sobre: altura fluida, el ancho sale de la proporción real del sobre -->
+    <div
+      class="relative h-[clamp(14rem,54vh,46rem)] aspect-[208.67/340.93] drop-shadow-2xl transition-transform duration-300"
+      [class.scale-105]="cortando()">
+
+      <!-- Resplandor dorado, justo en la línea de corte -->
+      @if (sobreCortado()) {
+      <div
+        class="absolute inset-x-[8%] h-[16%] rounded-full bg-radial from-[#ffe79a] via-[#ffba38]/40 to-transparent blur-md pointer-events-none animate-pulse z-10"
+        [style.top.%]="lineaCorte - 10"></div>
+      }
+
+      <!-- Chispas, pegadas a la línea de corte -->
+      @if (cortando() || sobreCortado()) {
+      <div class="absolute inset-x-0 h-16 pointer-events-none z-40 overflow-visible" [style.top.%]="lineaCorte - 12">
+        <span class="absolute left-[12%] top-2 text-[#ffd24a] text-sm 2xl:text-2xl animate-ping">✦</span>
+        <span class="absolute left-[30%] -top-2 text-[#5fcf8e] text-xs 2xl:text-xl animate-bounce">✦</span>
+        <span class="absolute right-[18%] top-1 text-[#3fd6c8] text-sm 2xl:text-2xl animate-ping">✦</span>
+        <span class="absolute right-[36%] -top-3 text-[#ff5d8f] text-xs 2xl:text-xl animate-bounce">✦</span>
+      </div>
+      }
+
+      <!-- Cuadradito amarillo: queda ENTRE las dos mitades. La de abajo lo tapa
+           hasta la línea de corte, y al abrirse asoma por la abertura. -->
+      @if (sobreCortado()) {
+      <div
+        class="absolute inset-x-[14%] top-[6%] h-[26%] z-20 rounded-xl bg-white/20 border border-white/40 shadow-xl -translate-y-4 flex items-start justify-center pt-2">
+        <span class="text-xs 2xl:text-lg font-bold text-white uppercase tracking-wider">¡Revelando!</span>
+      </div>
+      }
+
+      <!-- MITAD INFERIOR: no se mueve -->
+      <div class="absolute inset-0 z-30 pointer-events-none" [style.clip-path]="clipInferior" aria-hidden="true">
+        <ng-container [ngTemplateOutlet]="sobreTpl" [ngTemplateOutletContext]="{ $implicit: sobreSeleccionado() }" />
+      </div>
+
+      <!-- MITAD SUPERIOR: se desprende. Gira sobre el extremo izquierdo de la línea de corte. -->
+      <div class="absolute inset-0 z-30 pointer-events-none transition-all duration-700 ease-out"
+        [style.clip-path]="clipSuperior" [style.transform-origin]="'0% ' + lineaCorte + '%'"
+        [class.-translate-y-10]="sobreCortado()" [class.translate-x-8]="sobreCortado()"
+        [class.-rotate-24]="sobreCortado()" [class.opacity-0]="sobreCortado()" aria-hidden="true">
+        <ng-container [ngTemplateOutlet]="sobreTpl" [ngTemplateOutletContext]="{ $implicit: sobreSeleccionado() }" />
+      </div>
+
+      <!-- ZONA DE DESLIZAR: solo la línea punteada, más ancha que el sobre para que sobresalga -->
+      @if (!sobreCortado()) {
+      <div (click)="ejecutarCorte()" (pointerdown)="onPointerDownCorte($event)"
+        (pointermove)="onPointerMoveCorte($event)" (pointerup)="onPointerUpCorte()"
+        class="absolute -inset-x-[10%] z-40 h-[12%] -translate-y-1/2 cursor-pointer touch-none"
+        [style.top.%]="lineaCorte" aria-label="Cortar el sobre">
+        <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 border-b-[3px] border-dashed border-white drop-shadow">
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Indicador de estado: Apertura o Error -->
+    <div class="mt-6 sm:mt-8 2xl:mt-12 flex flex-col items-center">
+      @if (cargandoApertura()) {
+      <div
+        class="flex items-center gap-2.5 text-marca-acento font-titulo text-base sm:text-lg 2xl:text-3xl animate-pulse">
+        <span class="inline-block size-3 2xl:size-4 rounded-circulo bg-marca-acento"></span>
+        Abriendo sobre...
+      </div>
+      } @else if (errorApertura()) {
+      <div class="rounded-xl bg-error/20 border border-error/50 p-3 sm:p-4 2xl:p-6 text-center max-w-sm 2xl:max-w-lg">
+        <p class="font-interfaz text-xs sm:text-sm 2xl:text-lg text-white font-bold">{{ errorApertura() }}</p>
+        <button type="button" (click)="volverASeleccion()"
+          class="mt-2.5 rounded-pildora bg-white/20 px-4 py-1 2xl:px-6 2xl:py-2 font-interfaz text-xs 2xl:text-base font-bold text-white hover:bg-white/30 cursor-pointer">
+          Volver
+        </button>
+      </div>
+      } @else if (!cortando() && !sobreCortado()) {
+      <p
+        class="text-center font-interfaz text-xs sm:text-sm 2xl:text-lg text-white/90 uppercase tracking-widest pointer-events-none">
+        Clickeá y deslizá para cortar
+      </p>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- FASE 5: CONSEGUISTE (solo la carta, sin recuadro, con brillo amarillo) -->
+  @if (fase() === 'revelacion' && cartaActual()) {
+  @let carta = cartaActual()!;
+  <div (click)="avanzarOFinalizar()"
+    class="pointer-events-auto fixed inset-0 flex flex-col items-center justify-center px-4 py-4 sm:py-6 select-none cursor-pointer overflow-hidden animate-fade-in [--carta-h:clamp(12rem,50vh,50rem)]">
+    <!-- Título -->
+    <h1
+      class="font-titulo text-4xl sm:text-6xl md:text-7xl lg:text-8xl 2xl:text-9xl text-[#f9f9b2] tracking-wider uppercase drop-shadow-xl mb-3 sm:mb-6 2xl:mb-10 text-center">
+      CONSEGUISTE
+    </h1>
+
+    <!-- Escena central: carta con estrellas y brillo -->
+    <div class="escena-revelacion relative flex items-center justify-center"
+      [class.animacion-revelacion]="animarCarta()">
+      <!-- Halo amarillo detrás de la carta -->
+      <div
+        class="halo-revelacion pointer-events-none absolute -inset-[30%] rounded-full bg-radial from-[#f9f9b2]/45 via-[#f9f9b2]/15 to-transparent blur-2xl"
+        aria-hidden="true"></div>
+
+      <!-- Aviso de carta repetida -->
+      @if (esRepetida()) {
+      <div
+        class="absolute -top-5 left-1/2 z-30 -translate-x-1/2 rounded-pildora border-2 border-teal-950 bg-[#f9f9b2] px-4 py-1 font-titulo text-sm sm:text-lg 2xl:text-3xl font-black uppercase tracking-wider text-teal-950 shadow-alta whitespace-nowrap">
+        ¡Repetida!
+      </div>
+      }
+
+      <!-- Estrellitas decorativas (tamaño relativo a la carta) -->
+      <div class="brillo-estrella estrella-1 absolute -top-4 -left-6 sm:-left-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">★</div>
+      <div class="brillo-estrella estrella-2 absolute top-10 -left-8 sm:-left-12 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★</div>
+      <div class="brillo-estrella estrella-3 absolute -top-3 -right-6 sm:-right-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">★</div>
+      <div class="brillo-estrella estrella-4 absolute top-1/2 -right-8 sm:-right-12 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★</div>
+      <div class="brillo-estrella estrella-5 absolute -bottom-3 -left-5 sm:-left-8 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★</div>
+      <div class="brillo-estrella estrella-6 absolute -bottom-5 -right-5 sm:-right-8 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.09)]">★</div>
+
+      <!-- Carta: ancho derivado de la altura (proporción 5/7), levemente inclinada -->
+      <div
+        class="carta-revelada relative w-[calc(var(--carta-h)*5/7)] max-w-[60vw] rotate-[5deg] drop-shadow-[0_0_28px_rgba(249,249,178,0.65)]">
+        <app-carta [carta]="carta" />
+      </div>
+    </div>
+
+    <!-- Mensaje para continuar -->
+    <p
+      class="mt-8 sm:mt-14 2xl:mt-20 text-center font-interfaz text-[11px] sm:text-xs 2xl:text-base text-white/80 tracking-widest uppercase">
+      Tocá en cualquier parte para {{ indiceCartaActual() < cartasObtenidas().length - 1 ? 'ver la siguiente carta'
+        : 'volver al inicio' }} </p>
+  </div>
+  }
+</div>
+}

@@ -4,10 +4,9 @@ import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { UsuarioDashboard } from './usuario-dashboard';
-import { AuthService } from '../../servicios/auth.service';
-import { SobresService } from '../../servicios/sobres.service';
-import { Usuario } from '../../modelos/usuario.model';
-import { AperturaSobreRespuesta } from '../../modelos/sobre.model';
+import { AuthService } from '@servicios/auth.service';
+import { SobresService } from '@servicios/sobres.service';
+import { Usuario } from '@modelos/usuario.model';
 
 describe('UsuarioDashboard Component', () => {
   let component: UsuarioDashboard;
@@ -31,8 +30,13 @@ describe('UsuarioDashboard Component', () => {
       logout: jest.fn(),
     };
 
+    const signalSobres = signal({ actuales: 2, maximo: 2 });
     mockSobresService = {
       obtenerSobres: jest.fn().mockReturnValue(of([])),
+      sobresDisponibles: signalSobres,
+      consumirSobreGratuito: jest.fn().mockImplementation(() => {
+        signalSobres.update((s) => ({ ...s, actuales: Math.max(0, s.actuales - 1) }));
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -69,7 +73,7 @@ describe('UsuarioDashboard Component', () => {
     expect(botonAvatar).toBeTruthy();
   });
 
-  it('debe mostrar 3 sobres en el abanico: general, categoría gastronomía y marca Lego', () => {
+  it('debe mostrar 3 sobres en el abanico: general, categoría indumentaria y marca Lego', () => {
     const sobres: HTMLElement[] = Array.from(
       fixture.nativeElement.querySelectorAll('app-sobre-marca button')
     );
@@ -77,7 +81,7 @@ describe('UsuarioDashboard Component', () => {
 
     expect(sobres.length).toBe(3);
     expect(etiquetas).toEqual(
-      expect.arrayContaining(['Sobre de Falta Una', 'Sobre de Gastronomía', 'Sobre de Lego'])
+      expect.arrayContaining(['Sobre de Falta Una', 'Sobre de Indumentaria', 'Sobre de Lego'])
     );
   });
 
@@ -169,14 +173,8 @@ describe('UsuarioDashboard Component', () => {
   it('debe descontar sobres disponibles al completar una apertura', () => {
     expect(component['sobresDisponibles']().actuales).toBe(2);
 
-    const mockApertura: AperturaSobreRespuesta = {
-      id: 1,
-      sobreId: 1,
-      fecha: '2026-10-08T00:00:00Z',
-      cartas: [],
-    };
+    component.alCompletarApertura();
 
-    component.alCompletarApertura(mockApertura);
     expect(component['sobresDisponibles']().actuales).toBe(1);
   });
 

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { AuthService } from '../../servicios/auth.service';
-import { HeaderEmpresa } from '../../compartidos/componentes/header-empresa/header-empresa';
+import { AuthService } from '@servicios/auth.service';
+import { HeaderEmpresa } from '@compartidos/componentes/layout/header-empresa/header-empresa';
 
 /**
  * Marco de todas las vistas de rol Empresa: header violeta + contenido.

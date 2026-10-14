@@ -1,174 +1,191 @@
-<div
-  class="flow-root min-h-dvh bg-fondo-app bg-usuario-gradiente-amarillo-verde font-interfaz text-texto-primario"
->
+<div class="flow-root min-h-dvh bg-fondo-app bg-usuario-gradiente-amarillo-verde font-interfaz text-texto-primario">
   <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario" />
 
-  <div class="w-full px-5 pt-6 pb-12 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
-    <h1 class="font-titulo text-misiones-titulo tracking-[0.04em] text-marca-acento">
-      Misiones
-    </h1>
-    <p class="mt-1 max-w-2xl font-interfaz text-misiones-texto text-texto-secundario">
-      Completá misiones, reclamá tus sobres y seguí tu progreso hacia la legendaria.
-    </p>
+  <div class="w-full px-5 pt-2 pb-12 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
+    <div class="px-3 pt-1 sm:px-0">
+      <a routerLink="/usuario"
+        class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion">
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 6l-6 6 6 6" />
+        </svg>
+        Volver
+      </a>
+    </div>
 
-    <div class="mt-6 flex flex-col gap-6 md:flex-row md:items-start">
-      <app-panel-misiones
-        class="shrink-0"
-        [seccionActiva]="seccionActiva()"
-        (cambiar)="cambiarSeccion($event)"
-      />
+    <!-- Fila 1: título + controles/filtros alineados -->
+    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+      <h1 class="shrink-0 font-titulo text-misiones-titulo tracking-[0.04em] text-marca-acento">
+        Misiones
+      </h1>
+
+      @if (seccionActiva() === 'misiones') {
+      <div class="flex flex-wrap items-center justify-end gap-3">
+        @if (periodicidadActiva() === 'diaria') {
+        <span
+          class="inline-flex items-center gap-1.5 rounded-pildora border border-atencion-borde bg-atencion-fondo px-3 py-1 text-misiones-badge font-bold text-atencion-texto">
+          <ng-icon name="phosphorSpinnerGapFill" size="var(--misiones-medida-badge-icono)" aria-hidden="true" />
+          Se renueva cada 24 h
+        </span>
+        }
+
+        <p class="font-interfaz text-sm text-texto-secundario">
+          <span class="font-titulo text-base text-texto-primario">
+            {{ resumenDe(periodicidadActiva()).completadas }}
+          </span>
+          de {{ resumenDe(periodicidadActiva()).total }} completadas
+        </p>
+
+        <div role="tablist" aria-label="Periodicidad de las misiones"
+          class="inline-flex overflow-hidden rounded-pildora border border-borde-coleccion">
+          @for (periodicidad of periodicidades; track periodicidad; let i = $index) {
+          <button type="button" role="tab" [id]="'pestana-' + periodicidad"
+            [attr.aria-selected]="periodicidadActiva() === periodicidad" [attr.aria-controls]="'panel-' + periodicidad"
+            [attr.tabindex]="periodicidadActiva() === periodicidad ? 0 : -1"
+            class="cursor-pointer px-4 py-2 font-titulo text-misiones-control tracking-[0.04em] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-borde-foco not-first:border-l not-first:border-borde-coleccion sm:px-5 sm:py-2.5"
+            [class.bg-marca-acento]="periodicidadActiva() === periodicidad"
+            [class.hover:bg-marca-acento-activo]="periodicidadActiva() === periodicidad"
+            [class.hover:bg-white/6]="periodicidadActiva() !== periodicidad"
+            [class.text-marca-sobre-acento]="periodicidadActiva() === periodicidad"
+            [class.text-texto-secundario]="periodicidadActiva() !== periodicidad"
+            (click)="cambiarPeriodicidad(periodicidad)" (keydown)="alTecladoPestanas($event, i)">
+            {{ etiquetasPeriodicidad[periodicidad] }}
+          </button>
+          }
+        </div>
+      </div>
+      } @else {
+      <div class="flex flex-wrap items-center gap-3">
+        <button type="button" (click)="abrirModalPity()"
+          class="inline-flex cursor-pointer items-center gap-2 rounded-pildora border border-marca-acento/40 bg-marca-acento/10 px-4 py-2 font-titulo text-xs tracking-wider text-marca-acento uppercase transition-colors hover:border-marca-acento hover:bg-marca-acento/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          ¿Qué es el pity system?
+        </button>
+
+        <app-desplegable-seleccion etiqueta="Categoría" marcador="Todas" [mostrarEtiqueta]="true"
+          [opciones]="opcionesCategoria" [valor]="categoriaPity()" (valorCambiar)="cambiarCategoria($event)" />
+        <app-desplegable-seleccion etiqueta="Marca" marcador="Todas" [mostrarEtiqueta]="true"
+          [opciones]="opcionesMarca()" [valor]="marcaPity()" (valorCambiar)="cambiarMarca($event)" />
+        <app-desplegable-seleccion etiqueta="Ordenar por" [mostrarEtiqueta]="true" [permitirLimpiar]="false"
+          [opciones]="opcionesOrden" [valor]="ordenPity()" (valorCambiar)="cambiarOrden($event)" />
+        @if (hayFiltrosPity()) {
+        <button type="button"
+          class="cursor-pointer rounded-pildora border border-marca-coleccion bg-transparent px-4 py-2 text-xs font-bold tracking-[0.06em] text-marca-coleccion uppercase transition-colors hover:bg-marca-coleccion hover:text-marca-coleccion-sobre"
+          (click)="limpiarFiltrosPity()">
+          Limpiar
+        </button>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Fila 2: panel lateral + tarjetas alineados al tope -->
+    <div class="mt-2 flex flex-col gap-4 md:flex-row md:items-start">
+      <app-panel-misiones class="shrink-0" [seccionActiva]="seccionActiva()" (cambiar)="cambiarSeccion($event)" />
 
       <main class="min-w-0 flex-1">
         @if (seccionActiva() === 'misiones') {
-          <div
-            role="tablist"
-            aria-label="Periodicidad de las misiones"
-            class="inline-flex overflow-hidden rounded-pildora border border-borde-coleccion"
-          >
-            @for (periodicidad of periodicidades; track periodicidad; let i = $index) {
-              <button
-                type="button"
-                role="tab"
-                [id]="'pestana-' + periodicidad"
-                [attr.aria-selected]="periodicidadActiva() === periodicidad"
-                [attr.aria-controls]="'panel-' + periodicidad"
-                [attr.tabindex]="periodicidadActiva() === periodicidad ? 0 : -1"
-                class="cursor-pointer px-4 py-2.5 font-titulo text-misiones-control tracking-[0.04em] whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-borde-foco not-first:border-l not-first:border-borde-coleccion sm:px-6 sm:py-3"
-                [class.bg-marca-acento]="periodicidadActiva() === periodicidad"
-                [class.hover:bg-marca-acento-activo]="periodicidadActiva() === periodicidad"
-                [class.hover:bg-white/6]="periodicidadActiva() !== periodicidad"
-                [class.text-marca-sobre-acento]="periodicidadActiva() === periodicidad"
-                [class.text-texto-secundario]="periodicidadActiva() !== periodicidad"
-                (click)="cambiarPeriodicidad(periodicidad)"
-                (keydown)="alTecladoPestanas($event, i)"
-              >
-                {{ etiquetasPeriodicidad[periodicidad] }}
-              </button>
-            }
+        @for (periodicidad of periodicidades; track periodicidad) {
+        <div role="tabpanel" [id]="'panel-' + periodicidad" [attr.aria-labelledby]="'pestana-' + periodicidad"
+          [hidden]="periodicidadActiva() !== periodicidad" tabindex="0"
+          class="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco">
+          @if (misionesDe(periodicidad).length === 0) {
+          <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center">
+            <p class="font-titulo text-misiones-fila text-texto-secundario">
+              No hay misiones {{ etiquetasPeriodicidad[periodicidad].toLowerCase() }}s ahora.
+            </p>
+            <p class="text-misiones-texto text-texto-apagado">
+              Volvé más tarde: las misiones se renuevan según su periodicidad.
+            </p>
           </div>
-
-          @for (periodicidad of periodicidades; track periodicidad) {
-            @let resumen = resumenDe(periodicidad);
-            <div
-              role="tabpanel"
-              [id]="'panel-' + periodicidad"
-              [attr.aria-labelledby]="'pestana-' + periodicidad"
-              [hidden]="periodicidadActiva() !== periodicidad"
-              tabindex="0"
-              class="mt-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
-            >
-              @if (misionesDe(periodicidad).length === 0) {
-                <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center">
-                  <p class="font-titulo text-misiones-fila text-texto-secundario">
-                    No hay misiones {{ etiquetasPeriodicidad[periodicidad].toLowerCase() }}s ahora.
-                  </p>
-                  <p class="text-misiones-texto text-texto-apagado">
-                    Volvé más tarde: las misiones se renuevan según su periodicidad.
-                  </p>
-                </div>
-              } @else {
-                <div class="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
-                  <p class="font-interfaz text-sm text-texto-secundario">
-                    <span class="font-titulo text-base text-texto-primario">
-                      {{ resumen.completadas }}
-                    </span>
-                    de {{ resumen.total }} completadas
-                  </p>
-                  @if (periodicidad === 'diaria') {
-                    <span
-                      class="inline-flex items-center gap-1.5 rounded-pildora border border-atencion-borde bg-atencion-fondo px-3 py-1 text-misiones-badge font-bold text-atencion-texto"
-                    >
-                      <ng-icon
-                        name="phosphorSpinnerGapFill"
-                        size="var(--misiones-medida-badge-icono)"
-                        aria-hidden="true"
-                      />
-                      Se renueva cada 24 h
-                    </span>
-                  }
-                </div>
-
-                <ul class="misiones__lista">
-                  @for (mision of misionesDe(periodicidad); track mision.id) {
-                    <li>
-                      <app-tarjeta-mision [mision]="mision" (reclamar)="reclamarMision($event)" />
-                    </li>
-                  }
-                </ul>
-              }
-            </div>
-          }
-        } @else {
-          <p
-            class="mb-6 rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie p-3 font-interfaz text-misiones-texto text-texto-secundario"
-          >
-            El PT System cuenta los sobres que abrís de cada tipo. Al completar el total, te
-            asegurás una carta legendaria: la más rara del álbum.
-          </p>
-
-          <div class="mb-6 flex flex-wrap items-end gap-3">
-            <app-desplegable-seleccion
-              etiqueta="Categoría"
-              marcador="Todas"
-              [mostrarEtiqueta]="true"
-              [opciones]="opcionesCategoria"
-              [valor]="categoriaPity()"
-              (valorCambiar)="cambiarCategoria($event)"
-            />
-            <app-desplegable-seleccion
-              etiqueta="Marca"
-              marcador="Todas"
-              [mostrarEtiqueta]="true"
-              [opciones]="opcionesMarca()"
-              [valor]="marcaPity()"
-              (valorCambiar)="cambiarMarca($event)"
-            />
-            <app-desplegable-seleccion
-              etiqueta="Ordenar por"
-              [mostrarEtiqueta]="true"
-              [permitirLimpiar]="false"
-              [opciones]="opcionesOrden"
-              [valor]="ordenPity()"
-              (valorCambiar)="cambiarOrden($event)"
-            />
-          </div>
-
-          @if (pityFiltrado().length === 0) {
-            <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center">
-              <p class="font-titulo text-misiones-fila text-texto-secundario">
-                No hay sobres que coincidan con esos filtros.
-              </p>
-              <p class="text-misiones-texto text-texto-apagado">
-                Probá con otra categoría o marca para ver tu progreso hacia la legendaria.
-              </p>
-              @if (hayFiltrosPity()) {
-                <button
-                  type="button"
-                  class="mt-4 cursor-pointer rounded-pildora border border-marca-coleccion bg-transparent px-5 py-2 text-xs font-bold tracking-[0.06em] text-marca-coleccion uppercase transition-colors hover:bg-marca-coleccion hover:text-marca-coleccion-sobre"
-                  (click)="limpiarFiltrosPity()"
-                >
-                  Limpiar filtros
-                </button>
-              }
-            </div>
           } @else {
-            <ul class="misiones__lista">
-              @for (progreso of pityFiltrado(); track progreso.id) {
-                <li>
-                  <app-tarjeta-pity [progreso]="progreso" />
-                </li>
-              }
-            </ul>
+          <ul class="misiones__lista">
+            @for (mision of misionesDe(periodicidad); track mision.id) {
+            <li>
+              <app-tarjeta-mision [mision]="mision" (reclamar)="reclamarMision($event)" />
+            </li>
+            }
+          </ul>
           }
+        </div>
+        }
+        } @else {
+        @if (pityFiltrado().length === 0) {
+        <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center">
+          <p class="font-titulo text-misiones-fila text-texto-secundario">
+            No hay sobres que coincidan con esos filtros.
+          </p>
+          <p class="text-misiones-texto text-texto-apagado">
+            Probá con otra categoría o marca para ver tu progreso hacia la legendaria.
+          </p>
+          @if (hayFiltrosPity()) {
+          <button type="button"
+            class="mt-4 cursor-pointer rounded-pildora border border-marca-coleccion bg-transparent px-5 py-2 text-xs font-bold tracking-[0.06em] text-marca-coleccion uppercase transition-colors hover:bg-marca-coleccion hover:text-marca-coleccion-sobre"
+            (click)="limpiarFiltrosPity()">
+            Limpiar filtros
+          </button>
+          }
+        </div>
+        } @else {
+        <ul class="misiones__lista">
+          @for (progreso of pityFiltrado(); track progreso.id) {
+          <li>
+            <app-tarjeta-pity [progreso]="progreso" />
+          </li>
+          }
+        </ul>
+        }
         }
       </main>
     </div>
   </div>
 
-  <app-flujo-apertura-sobres
-    [abierto]="modalAperturaAbierto()"
-    [sobresCatalogo]="sobresCatalogo()"
-    [sobreInicial]="sobreReclamado()"
-    (cerrar)="cerrarAperturaSobres()"
-  />
+  @if (modalPityAbierto()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    role="dialog" aria-modal="true" aria-labelledby="titulo-modal-pity"
+    (click)="cerrarModalPity()" (keydown.escape)="cerrarModalPity()">
+    <div
+      class="relative w-full max-w-lg rounded-2xl border-2 border-borde-coleccion bg-fondo-app p-6 shadow-alta sm:p-7"
+      (click)="$event.stopPropagation()">
+      <button type="button" (click)="cerrarModalPity()"
+        class="cursor-pointer absolute top-4 right-4 inline-flex size-8 items-center justify-center rounded-circulo border border-borde-coleccion bg-fondo-coleccion-superficie text-texto-secundario transition-colors hover:bg-white/10 hover:text-texto-primario focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+        aria-label="Cerrar modal">
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
+      <h2 id="titulo-modal-pity" class="font-titulo text-xl tracking-wider text-marca-acento sm:text-2xl">
+        ¿Qué es el Pity System?
+      </h2>
+
+      <div class="mt-4 space-y-3 font-interfaz text-sm leading-relaxed text-texto-secundario sm:text-base">
+        <p>
+          El <strong>PT System</strong> (Pity System) cuenta los sobres que abrís de cada tipo. Al completar el total requerido, ¡te asegurás una <strong>carta legendaria</strong>, la más rara del álbum!
+        </p>
+        <p>
+          Si por ejemplo tu progreso está en 9/10, el próximo sobre que abras va a contener una legendaria, asique asegurate de abrir el sobre correcto!
+        </p>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button type="button" (click)="cerrarModalPity()"
+          class="cursor-pointer rounded-pildora bg-marca-acento px-5 py-2 font-titulo text-xs tracking-wider text-marca-sobre-acento uppercase transition-colors hover:bg-marca-acento-activo">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <app-flujo-apertura-sobres [abierto]="modalAperturaAbierto()" [sobresCatalogo]="sobresCatalogo()"
+    [sobreInicial]="sobreReclamado()" (cerrar)="cerrarAperturaSobres()" />
 </div>

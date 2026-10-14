@@ -1,0 +1,143 @@
+
+/* La escena completa entra con un pequeño impacto */
+.escena-revelacion.animacion-revelacion .carta-revelada {
+  animation: carta-aparece 750ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center center;
+}
+
+/* Halo que se expande al llegar la carta */
+.escena-revelacion.animacion-revelacion .halo-revelacion {
+  animation: halo-aparece 1100ms ease-out both;
+}
+
+/* Estrellas que salen despedidas desde el centro */
+.escena-revelacion.animacion-revelacion .brillo-estrella {
+  opacity: 0;
+  animation: estrella-explota 900ms ease-out both;
+}
+
+.escena-revelacion.animacion-revelacion .estrella-1 {
+  --estrella-x: -35px;
+  --estrella-y: -45px;
+  animation-delay: 250ms;
+}
+
+.escena-revelacion.animacion-revelacion .estrella-2 {
+  --estrella-x: -55px;
+  --estrella-y: 5px;
+  animation-delay: 320ms;
+}
+
+.escena-revelacion.animacion-revelacion .estrella-3 {
+  --estrella-x: 40px;
+  --estrella-y: -40px;
+  animation-delay: 280ms;
+}
+
+.escena-revelacion.animacion-revelacion .estrella-4 {
+  --estrella-x: 55px;
+  --estrella-y: 0px;
+  animation-delay: 360ms;
+}
+
+.escena-revelacion.animacion-revelacion .estrella-5 {
+  --estrella-x: -35px;
+  --estrella-y: 35px;
+  animation-delay: 400ms;
+}
+
+.escena-revelacion.animacion-revelacion .estrella-6 {
+  --estrella-x: 40px;
+  --estrella-y: 45px;
+  animation-delay: 330ms;
+}
+
+/* La carta se acerca, impacta y se acomoda */
+@keyframes carta-aparece {
+  0% {
+    opacity: 0;
+    transform: scale(0.25) rotate(-18deg);
+    filter: brightness(1.8);
+  }
+
+  55% {
+    opacity: 1;
+    transform: scale(1.12) rotate(8deg);
+    filter: brightness(1.6);
+  }
+
+  75% {
+    transform: scale(0.96) rotate(2deg);
+    filter: brightness(1.2);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+}
+
+/* Destello dorado detrás de la carta */
+@keyframes halo-aparece {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+
+  35% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+
+  65% {
+    opacity: 0.8;
+    transform: scale(1.3);
+  }
+
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+}
+
+/* Destello y dispersión de partículas */
+@keyframes estrella-explota {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.1) rotate(0deg);
+  }
+
+  25% {
+    opacity: 1;
+    transform: translate(
+      calc(var(--estrella-x) * 0.5),
+      calc(var(--estrella-y) * 0.5)
+    ) scale(1.5) rotate(90deg);
+  }
+
+  65% {
+    opacity: 1;
+    transform: translate(
+      var(--estrella-x),
+      var(--estrella-y)
+    ) scale(1) rotate(180deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(var(--estrella-x) * 1.3),
+      calc(var(--estrella-y) * 1.3)
+    ) scale(0.2) rotate(240deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .escena-revelacion.animacion-revelacion .carta-revelada,
+  .escena-revelacion.animacion-revelacion .halo-revelacion,
+  .escena-revelacion.animacion-revelacion .brillo-estrella {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+  }
+}

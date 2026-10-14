@@ -54,6 +54,7 @@ export interface ProgresoPity {
   readonly sobre: SobreReferencia;
   readonly abiertos: number;
   readonly umbral: number;
+  readonly imagenSvg?: string;
 }
 
 export const faltantesPity = (p: Pick<ProgresoPity, 'abiertos' | 'umbral'>): number =>

@@ -1,0 +1,59 @@
+<section
+  class="bg-landing-claro-fondo py-5 text-landing-claro-texto md:py-10 lg:py-16"
+  aria-labelledby="equipo-titulo"
+>
+  <div class="contenedor-landing">
+    <h2
+      id="equipo-titulo"
+      class="font-titulo text-3xl leading-[0.9] md:text-4xl lg:text-5xl"
+    >
+      ¿Quiénes somos?
+    </h2>
+
+    <div
+      class="mt-5 flex flex-col gap-6 md:mt-8 md:gap-8 lg:flex-row lg:items-stretch lg:gap-12"
+    >
+      <div
+        class="grid w-full grid-cols-4 gap-x-3 gap-y-4 sm:gap-x-6 lg:w-1/2 lg:gap-x-4 lg:gap-y-6"
+      >
+        @for (integrante of integrantes(); track integrante.nombre) {
+          <div class="flex min-w-0 flex-col items-center gap-2 text-center">
+            @if (integrante.avatarUrl) {
+              <img
+                [src]="integrante.avatarUrl"
+                [alt]="integrante.nombre"
+                class="size-landing-avatar-equipo rounded-circulo border-[3px] border-landing-claro-texto object-cover"
+              />
+            } @else {
+              <span
+                class="grid size-landing-avatar-equipo place-items-center rounded-circulo border-[3px] border-landing-claro-texto bg-landing-panel font-interfaz text-lg font-bold md:text-3xl lg:text-4xl"
+              >
+                {{ iniciales(integrante.nombre) }}
+              </span>
+            }
+            <span
+              class="w-full whitespace-nowrap text-xs font-semibold leading-tight md:text-base lg:text-lg"
+            >
+              {{ integrante.nombre }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <div
+        class="w-full rounded-[2rem_1rem_2.5rem_1.25rem] bg-landing-panel p-4 text-sm leading-relaxed text-landing-claro-texto md:p-6 md:text-base lg:w-1/2 lg:p-8 lg:text-landing-equipo"
+      >
+        <p>
+          Somos un grupo de desarrolladores apasionados por el coleccionismo, con
+          una idea clara: crear una experiencia que vaya más allá de coleccionar,
+          divertirse y jugar.
+        </p>
+        <p class="mt-3 md:mt-4">
+          Queremos conectar empresas y usuarios en un espacio donde todos ganen,
+          ofreciendo beneficios reales, recompensas y un progreso que se sienta en
+          cada colección.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

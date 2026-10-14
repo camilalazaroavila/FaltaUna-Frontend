@@ -1,19 +1,22 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CartaComponent } from '../../compartidos/componentes/carta/carta';
-import { CARTAS_MOCK } from '../../modelos/cartas.mock';
-import type { Carta, CategoriaCarta, RarezaCarta } from '../../modelos/carta.model';
-import { ETIQUETA_CATEGORIA } from '../../modelos/carta.model';
+import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup/carta-popup';
+import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
+import { CARTAS_MOCK } from '@modelos/cartas.mock';
+import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
+import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
+import { Header } from '@compartidos/componentes/layout/header/header';
 
-import urlGastro from '../../compartidos/SVGs/Icon_GastroInv.svg';
-import urlCosme from '../../compartidos/SVGs/Icon_CosmeInv.svg';
-import urlDeco from '../../compartidos/SVGs/Icon_DecoInv.svg';
-import urlIndumentaria from '../../compartidos/SVGs/Icon_IndumentariaInv.svg';
-import urlEntretenimiento from '../../compartidos/SVGs/Icon_EntretenimientoInv.svg';
-import urlMusica from '../../compartidos/SVGs/Icon_MusicaINV.svg';
-import urlTecno from '../../compartidos/SVGs/Icon_TecnoInv.svg';
+import urlGastro from '@svgs/Icon_GastroInv.svg';
+import urlCosme from '@svgs/Icon_CosmeInv.svg';
+import urlDeco from '@svgs/Icon_DecoInv.svg';
+import urlIndumentaria from '@svgs/Icon_IndumentariaInv.svg';
+import urlEntretenimiento from '@svgs/Icon_EntretenimientoInv.svg';
+import urlMusica from '@svgs/Icon_MusicaINV.svg';
+import urlTecno from '@svgs/Icon_TecnoInv.svg';
 
-import urlLogo from '../../compartidos/SVGs/Imagotipo_claro.svg';
+import urlLogo from '@svgs/Imagotipo_claro.svg';
 
 export type FiltroObtencion = 'todas' | 'obtenidas' | 'no-obtenidas';
 
@@ -52,7 +55,7 @@ const COLECCION: Carta[] = CARTAS_MOCK;
 @Component({
   selector: 'app-mis-cartas',
   standalone: true,
-  imports: [RouterLink, CartaComponent],
+  imports: [RouterLink, CartaComponent, CartaPopupComponent, PulsacionCartaDirective, Header],
   templateUrl: './mis-cartas.html',
   styleUrl: './mis-cartas.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,6 +65,9 @@ export class MisCartas {
 
   // Datos
   private readonly coleccion = signal<Carta[]>(COLECCION);
+
+  // Detalle de carta
+  protected readonly cartaPopup = signal<Carta | null>(null);
 
   // Filtros (signals)
   protected readonly busqueda = signal('');
@@ -174,5 +180,13 @@ export class MisCartas {
     this.busqueda.set('');
     this.filtroObtencion.set('todas');
     this.categoriaActiva.set(null);
+  }
+
+  protected abrirPopup(carta: Carta): void {
+    this.cartaPopup.set(carta);
+  }
+
+  protected cerrarPopup(): void {
+    this.cartaPopup.set(null);
   }
 }

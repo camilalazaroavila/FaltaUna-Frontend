@@ -54,8 +54,10 @@
 @import "./estilos/estilos-paginas/layout.css";
 @import "./estilos/estilos-paginas/misiones.css";
 @import "./estilos/estilos-paginas/album.css";
+@import "./estilos/estilos-paginas/look-cartas.css";
 @import "./estilos/estilos-tailwind/tema.css";
 @import "./estilos/estilos-tailwind/utilidades.css";
 @import "./estilos/estilos-fundamentos/base.css";
 @import "./estilos/estilos-feedback/toast.css";
 @import "./estilos/estilos-animaciones/animaciones.css";
+@import "./estilos/estilos-animaciones/revelacion-carta.css";

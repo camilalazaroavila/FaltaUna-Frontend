@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { SobreMarca } from '../../../../compartidos/componentes/sobre-marca/sobre-marca';
-import type { VarianteSobreMarca } from '../../../../compartidos/componentes/sobre-marca/sobre-marca';
-import { TarjetaMuestra } from '../../tarjeta-muestra/tarjeta-muestra';
-import { RegistroEventos } from '../../registro-eventos/registro-eventos';
-import { crearRegistroEventos } from '../../registro-eventos';
-import { COLORES_SOBRE_MARCA } from '../../datos-tokens';
-import { CATEGORIAS_SOBRE, ETIQUETAS_CATEGORIA } from '../../../../modelos/categoria.model';
+import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
+import type { VarianteSobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
+import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
+import { RegistroEventos } from '@paginas/galeria-componentes/registro-eventos/registro-eventos';
+import { crearRegistroEventos } from '@paginas/galeria-componentes/registro-eventos';
+import { COLORES_SOBRE_MARCA } from '@paginas/galeria-componentes/datos-tokens';
+import { CATEGORIAS_SOBRE, ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
 
 /**
  * Logo vertical de muestra.

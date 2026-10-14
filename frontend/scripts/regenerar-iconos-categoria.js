@@ -4,7 +4,7 @@ const path = require('path');
 const svgDir = path.resolve(__dirname, '../src/app/compartidos/SVGs');
 const targetFile = path.resolve(
   __dirname,
-  '../src/app/compartidos/componentes/sobre-marca/iconos-categoria.ts'
+  '../src/app/compartidos/componentes/cartas/sobre-marca/iconos-categoria.ts'
 );
 
 const svgFiles = {
@@ -63,7 +63,7 @@ if (datosExtraidos.musica.trazos.length !== 1) {
 }
 
 // 2. Formatear contenido del archivo TypeScript
-const header = `import type { CategoriaSobre } from '../../../modelos/categoria.model';
+const header = `import type { CategoriaSobre } from '@modelos/categoria.model';
 
 export const ORIGEN_ICONO_CATEGORIA: Record<CategoriaSobre, string> = {
   tecnologia: 'Icon_TecnoInv.svg',

@@ -9,6 +9,8 @@ export interface SobreRespuesta {
   readonly categoria?: string | null;
   readonly coleccion?: string | null;
   readonly marca?: string | null;
+  /** Logo de la marca (`marca.LogoUrl`). Opcional: si el backend aún no lo envía, se usa el mapa provisorio del flujo. */
+  readonly logoUrl?: string | null;
 }
 
 export interface CartaObtenidaRespuesta {
@@ -29,6 +31,10 @@ export interface AbrirSobreSolicitud {
   readonly usuarioId: number;
 }
 
+/**
+ * Sobre listo para mostrar. Ya no lleva `urlImagen`: el aspecto lo dibuja
+ * `app-sobre-marca` a partir de `tipo`, `categoria`, `marca` y `logoUrl`.
+ */
 export interface SobreItemUI {
   readonly id: number | string;
   readonly nombre: string;
@@ -36,9 +42,9 @@ export interface SobreItemUI {
   readonly tipo: TipoSobre;
   readonly precio: number;
   readonly cantidadCartas: number;
-  readonly urlImagen: string;
   readonly esDiario: boolean;
   readonly disponible: boolean;
   readonly categoria?: string | null;
   readonly marca?: string | null;
+  readonly logoUrl?: string | null;
 }

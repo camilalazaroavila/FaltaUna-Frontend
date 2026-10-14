@@ -1,16 +1,18 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, effect, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SECCIONES } from './secciones';
-import { SeccionTokens } from './secciones/tokens/seccion-tokens';
-import { SeccionBoton } from './secciones/boton/seccion-boton';
-import { SeccionBadge } from './secciones/badge/seccion-badge';
-import { SeccionNavegacionCircular } from './secciones/navegacion-circular/seccion-navegacion-circular';
-import { SeccionBotonOpcionJuego } from './secciones/boton-opcion-juego/seccion-boton-opcion-juego';
-import { SeccionBotonJugar } from './secciones/boton-jugar/seccion-boton-jugar';
-import { SeccionBotonFlotante } from './secciones/boton-flotante/seccion-boton-flotante';
-import { SeccionBotonIcono } from './secciones/boton-icono/seccion-boton-icono';
-import { SeccionSobreMarca } from './secciones/sobre-marca/seccion-sobre-marca';
-import { SeccionCarta } from './secciones/carta/seccion-carta';
+import { SeccionTokens } from '@paginas/galeria-componentes/secciones/tokens/seccion-tokens';
+import { SeccionBoton } from '@paginas/galeria-componentes/secciones/boton/seccion-boton';
+import { SeccionBadge } from '@paginas/galeria-componentes/secciones/badge/seccion-badge';
+import { SeccionNavegacionCircular } from '@paginas/galeria-componentes/secciones/navegacion-circular/seccion-navegacion-circular';
+import { SeccionBotonOpcionJuego } from '@paginas/galeria-componentes/secciones/boton-opcion-juego/seccion-boton-opcion-juego';
+import { SeccionBotonJugar } from '@paginas/galeria-componentes/secciones/boton-jugar/seccion-boton-jugar';
+import { SeccionBotonFlotante } from '@paginas/galeria-componentes/secciones/boton-flotante/seccion-boton-flotante';
+import { SeccionBotonIcono } from '@paginas/galeria-componentes/secciones/boton-icono/seccion-boton-icono';
+import { SeccionSobreMarca } from '@paginas/galeria-componentes/secciones/sobre-marca/seccion-sobre-marca';
+import { SeccionCarta } from '@paginas/galeria-componentes/secciones/carta/seccion-carta';
+import { SeccionCartaPopup } from '@paginas/galeria-componentes/secciones/carta-popup/seccion-carta-popup';
+import { SeccionAreaEmpresa } from '@paginas/galeria-componentes/secciones/area-empresa/seccion-area-empresa';
 
 export type ModoGaleria = 'jugador' | 'empresa';
 
@@ -28,6 +30,8 @@ export type ModoGaleria = 'jugador' | 'empresa';
     SeccionBotonIcono,
     SeccionSobreMarca,
     SeccionCarta,
+    SeccionCartaPopup,
+    SeccionAreaEmpresa,
   ],
   templateUrl: './galeria-componentes.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

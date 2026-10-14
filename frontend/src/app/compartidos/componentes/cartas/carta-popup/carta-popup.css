@@ -1,0 +1,5 @@
+/* El popup se compone de dos elementos fijos (fondo + diálogo) hermanos, como
+   el modal de cupones. El host no debe crear una caja propia. */
+:host {
+  display: contents;
+}

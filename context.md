@@ -29,11 +29,10 @@
 
 ### Documentos de contexto: desalineación conocida (sin resolver)
 
-Tres documentos describen el modelo de negocio de forma distinta y conviven sin reconciliar:
+Dos documentos describen el modelo de negocio de forma distinta y conviven sin reconciliar:
 
 1. `context.md` (este archivo): fútbol amateur + cartas (igual que la landing).
 2. `Reglas de negocio_ TCG de marcas.md`: TCG puro con pilares de cartas/sobres/misiones.
-3. `FaltaUna-auth/context.md`: versión detallada alineada al modelo TCG.
 
 **Decisión:** queda solo documentada; no se unificó a propósito (pendiente de decisión de los equipos).
 
@@ -139,9 +138,25 @@ FaltaUna-Frontend/
 ├── frontend/                  → Aplicación cliente Angular 20
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── compartidos/ui/→ Componentes de UI atómicos (boton, badge, etc.)
+│   │   │   ├── compartidos/
+│   │   │   │   ├── componentes/   → UI organizada por tema:
+│   │   │   │   │   ├── controles/ → boton, boton-flotante, boton-icono, boton-jugar, boton-opcion-juego, boton-navegacion-circular, campo-texto, campo-select, etiqueta-campo, encabezado-paso, desplegable-seleccion, subida-imagen, grilla-imagenes, panel-desplazable, calendario-mensual
+│   │   │   │   │   ├── cartas/    → carta, carta-popup, carta-seleccionable, estrella-rareza, barra-rareza, icono-categoria, sobre-marca, flujo-apertura-sobres, tarjeta-album
+│   │   │   │   │   ├── layout/    → body, header, header-empresa, navbar, auth-layout
+│   │   │   │   │   ├── landing/   → hero, carousel-marcas, acordeon-preguntas, faq-item, faq-section, team-section
+│   │   │   │   │   ├── empresa/   → stepper-suscripcion, plan-card, plans-section, tarjeta-plan, tarjeta-kpi, faq-item-empresa, faq-section-empresa
+│   │   │   │   │   ├── usuario/   → tarjeta-mision, panel-misiones, tarjeta-pity, tarjeta-recompensa
+│   │   │   │   │   └── feedback/  → badge, barra-progreso, info-tooltip
+│   │   │   │   ├── directivas/    → Directivas compartidas
+│   │   │   │   ├── ilustraciones/ → Ilustraciones y assets asociados
+│   │   │   │   ├── SVGs/          → Assets SVG (alias @svgs/*)
+│   │   │   │   └── utilidades/    → Utilidades compartidas
 │   │   │   ├── modelos/       → Interfaces TypeScript de dominio
 │   │   │   ├── servicios/     → Servicios HTTP y utilidades (usuario.service, gsap.service)
+│   │   │   ├── paginas/       → Páginas/vistas por ruta
+│   │   │   ├── guardias/      → Route guards (rol, auth, pago-aprobado)
+│   │   │   ├── interceptores/ → HTTP interceptors (auth)
+│   │   │   ├── datos/         → Datos estáticos (landing-empresa.data)
 │   │   │   ├── app.config.ts  → Configuración global (iconos, routing, providers)
 │   │   │   ├── app.html / ts  → Componente raíz
 │   │   │   └── app.routes.ts  → Definición de rutas
@@ -170,14 +185,27 @@ FaltaUna-Frontend/
 2. **Angular Signals:** Priorizar el uso de Signals para estado e inputs (`input()`, `input.required()`, `output()`, `computed()`, `signal()`).
 3. **Change Detection:** Aplicar siempre `changeDetection: ChangeDetectionStrategy.OnPush`.
 4. **Separación de Responsabilidades:** Los componentes nunca realizan peticiones HTTP directas ni gestionan lógica de persistencia; delegan siempre en un archivo dentro de `servicios/`.
-5. **Acceso al backend vía `ApiService`:** Todo consumo de la API pasa por `servicios/api.service.ts`, que centraliza `HttpClient` y `environment`. Es el **único** archivo de `servicios/` que inyecta `HttpClient` o importa `environment` para URLs. Los servicios de dominio llaman a `api.get/post/put/patch/delete` con **rutas relativas a `/api`** (por ejemplo `'Pagos/configuracion'`) y no arman URLs absolutas ni construyen `HttpParams` a mano. Para concatenar base y ruta usar la función pura exportada `unirUrl(base, ruta)`.
-6. **Accesibilidad (A11y):**
+5. **Ubicación de componentes compartidos:** Todo componente compartido nuevo va dentro de `compartidos/componentes/<tema>/` (controles, cartas, layout, landing, empresa, usuario, feedback). Si no encaja en ningún tema, preguntar antes de crear uno nuevo.
+6. **Acceso al backend vía `ApiService`:** Todo consumo de la API pasa por `servicios/api.service.ts`, que centraliza `HttpClient` y `environment`. Es el **único** archivo de `servicios/` que inyecta `HttpClient` o importa `environment` para URLs. Los servicios de dominio llaman a `api.get/post/put/patch/delete` con **rutas relativas a `/api`** (por ejemplo `'Pagos/configuracion'`) y no arman URLs absolutas ni construyen `HttpParams` a mano. Para concatenar base y ruta usar la función pura exportada `unirUrl(base, ruta)`.
+7. **Accesibilidad (A11y):**
    - Todo botón o enlace sin texto visual debe incluir `aria-label` o `aria-labelledby`.
    - Mantener el foco visible con `:focus-visible`.
    - Respetar `prefers-reduced-motion` en animaciones.
-6. **Idiomas:**
+8. **Idiomas:**
    - Código de negocio, modelos, variables y comentarios en **español** (`usuario`, `partido`, `boton`, `obtenerUsuarios`).
    - Respetar nombres técnicos universales de librerías (`inject`, `computed`, `OnInit`).
+
+### Path aliases (tsconfig.json + jest.config.ts)
+
+- `@app/*` → `src/app/*`
+- `@compartidos/*` → `src/app/compartidos/*`
+- `@modelos/*` → `src/app/modelos/*`
+- `@servicios/*` → `src/app/servicios/*`
+- `@paginas/*` → `src/app/paginas/*`
+- `@svgs/*` → `src/app/compartidos/SVGs/*`
+- `@environments/*` → `src/environments/*`
+
+Regla: los imports entre carpetas usan alias; los imports dentro de la misma carpeta usan `./`. Nunca `../`.
 
 ---
 

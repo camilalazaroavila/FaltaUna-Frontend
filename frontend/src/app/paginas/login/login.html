@@ -18,9 +18,9 @@
     </div>
   }
 
-  @if (error) {
+  @if (error()) {
     <div class="mb-5 rounded-xl border border-error-borde bg-error-fondo px-4 py-3 text-sm font-bold text-error-texto">
-      {{ error }}
+      {{ error() }}
     </div>
   }
 
@@ -49,13 +49,13 @@
     </div>
 
     <!-- Botón -->
-    <button type="submit" [disabled]="cargando"
+    <button type="submit" [disabled]="cargando()"
       class="w-full cursor-pointer rounded-xl bg-btn-primario-bg py-3.5 text-lg font-black text-btn-primario-texto
              shadow-baja transition duration-200 [@media(min-height:1000px)]:py-4
              hover:-translate-y-0.5 hover:bg-btn-primario-hover hover:shadow-media
              active:translate-y-0
              disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0">
-      {{ cargando ? 'INGRESANDO...' : 'INICIAR SESIÓN' }}
+      {{ cargando() ? 'INGRESANDO...' : 'INICIAR SESIÓN' }}
     </button>
 
   </form>

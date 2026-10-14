@@ -1,0 +1,162 @@
+:host {
+  display: block;
+}
+
+/* ==========================================================================
+   Abanico animado de categorías (landing empresarial)
+   Tres slots recorren las posiciones del abanico mientras cada slot rota por
+   las seis categorías de sobre: nunca se ven todas a la vez, pero todas pasan.
+   El ciclo de posición replica el abanico de sobres del panel de jugador.
+   ========================================================================== */
+.categorias-fan {
+  --categoria-izquierda: 24%;
+  --categoria-centro: 50%;
+  --categoria-derecha: 76%;
+  --duracion-posicion: 6s;
+  --paso-posicion: 2s;
+}
+
+/* Cada slot es una posición del abanico; apila todas las categorías dentro. */
+.categorias-fan__slot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  will-change: left, transform;
+  animation: categorias-fan-ciclo var(--duracion-posicion) ease-in-out infinite;
+}
+
+.categorias-fan__slot--a {
+  animation-delay: 0s;
+}
+
+.categorias-fan__slot--b {
+  animation-delay: calc(-1 * var(--paso-posicion));
+}
+
+.categorias-fan__slot--c {
+  animation-delay: calc(-2 * var(--paso-posicion));
+}
+
+/* Silueta de categoría recortada como máscara y pintada con el violeta. */
+.categorias-fan__icono {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-violeta-empresa) 78%, #ffffff) 0%,
+    var(--color-violeta-empresa) 52%,
+    var(--color-violeta-activo) 100%
+  );
+  -webkit-mask-image: var(--mascara);
+  mask-image: var(--mascara);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  opacity: 0;
+  transition: opacity 450ms ease;
+}
+
+.categorias-fan__icono--activo {
+  opacity: 1;
+}
+
+/*
+ * Escalonado: las tres posiciones cambian de categoría en momentos distintos
+ * (una por vez) en lugar de las tres a la vez. Los retardos reparten el
+ * intervalo entre cambios (2 s, ver INTERVALO_CATEGORIA en el TS) entre los
+ * tres slots, así cada silueta se transforma durante una pausa, en soledad.
+ */
+.categorias-fan__slot--a .categorias-fan__icono {
+  transition-delay: 0ms;
+}
+
+.categorias-fan__slot--b .categorias-fan__icono {
+  transition-delay: 660ms;
+}
+
+.categorias-fan__slot--c .categorias-fan__icono {
+  transition-delay: 1320ms;
+}
+
+@keyframes categorias-fan-ciclo {
+  /* Pausa a la izquierda */
+  0%,
+  30% {
+    left: var(--categoria-izquierda);
+    z-index: 10;
+    transform: translate(-50%, -50%) rotate(-12deg) scale(0.82);
+  }
+
+  /* Salto rápido al centro (al frente) */
+  33.333%,
+  63.333% {
+    left: var(--categoria-centro);
+    z-index: 20;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1.1);
+  }
+
+  /* Salto rápido a la derecha */
+  66.666%,
+  96.666% {
+    left: var(--categoria-derecha);
+    z-index: 10;
+    transform: translate(-50%, -50%) rotate(12deg) scale(0.82);
+  }
+
+  /* Regreso a la izquierda */
+  100% {
+    left: var(--categoria-izquierda);
+    z-index: 10;
+    transform: translate(-50%, -50%) rotate(-12deg) scale(0.82);
+  }
+}
+
+@media (min-width: 640px) {
+  .categorias-fan {
+    --categoria-izquierda: 28%;
+    --categoria-centro: 50%;
+    --categoria-derecha: 72%;
+  }
+}
+
+/* Pausar el ciclo mientras se pasa el cursor. */
+@media (hover: hover) {
+  .categorias-fan:hover .categorias-fan__slot {
+    animation-play-state: paused;
+  }
+}
+
+/* A11y: sin movimiento, el abanico queda estático y legible. */
+@media (prefers-reduced-motion: reduce) {
+  .categorias-fan__slot {
+    animation: none;
+    will-change: auto;
+  }
+
+  .categorias-fan__slot--a {
+    left: var(--categoria-izquierda);
+    transform: translate(-50%, -50%) rotate(-12deg) scale(0.82);
+  }
+
+  .categorias-fan__slot--b {
+    left: var(--categoria-centro);
+    z-index: 20;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  .categorias-fan__slot--c {
+    left: var(--categoria-derecha);
+    transform: translate(-50%, -50%) rotate(12deg) scale(0.82);
+  }
+
+  .categorias-fan__icono {
+    transition: none;
+  }
+}

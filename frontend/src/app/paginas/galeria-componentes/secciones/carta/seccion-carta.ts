@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { CartaComponent } from '../../../../compartidos/componentes/carta/carta';
-import { TarjetaMuestra } from '../../tarjeta-muestra/tarjeta-muestra';
-import type { Carta } from '../../../../modelos/carta.model';
+import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
+import type { Carta } from '@modelos/carta.model';
 
 @Component({
   selector: 'app-seccion-carta',

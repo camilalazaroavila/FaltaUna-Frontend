@@ -1,4 +1,4 @@
-import { OpcionSelect } from '../compartidos/componentes/campo-select/campo-select';
+import { OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
 
 /** Casillas de imagen que se muestran en el álbum de marca (máximo permitido). */
 export const CARTAS_POR_ALBUM = 12;
@@ -34,6 +34,7 @@ export interface CategoriaApi {
 export interface CrearAlbumSolicitud {
   referenciaPago: string;
   nombreMarca: string;
+  nombreColeccion?: string;
   logo: File;
   imagenes: File[];
   descripcion: string;
@@ -45,10 +46,26 @@ export interface CrearAlbumSolicitud {
   fechaFin: string;
 }
 
-/** Colección creada (`POST /api/Colecciones`). */
+/** Imagen individual de la colección/álbum devuelta por la API. */
+export interface ImagenAlbumRespuesta {
+  id: number;
+  imagenUrl: string;
+  descripcion: string | null;
+}
+
+/**
+ * Álbum devuelto por la API (`POST /api/Colecciones` o `GET /api/Colecciones/mis-colecciones`).
+ * Mantiene el nombre 'AlbumRespuesta' en el frontend pero mapea con la estructura del backend.
+ */
 export interface AlbumRespuesta {
   id: number;
   nombre: string;
+  descripcion: string;
   marcaId: number;
   marcaNombre: string;
+  marcaLogoUrl: string;
+  fechaInicio: string;
+  fechaFin: string;
+  activa: boolean;
+  imagenesAlbum: ImagenAlbumRespuesta[];
 }
