@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
 import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
@@ -8,15 +8,17 @@ import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import { ETIQUETA_RAREZA } from '@modelos/carta.model';
+
+import { AlbumesService } from '@servicios/albumes.service';
+import { AlbumRespuesta } from '@modelos/album.model';
 import {
-  ALBUMES_EMPRESA,
-  CARTAS_EMPRESA,
   EMPRESA_ACTUAL,
   ESTADISTICAS_CARTA,
   ORDEN_RAREZA,
+  RAREZAS_ORDENADAS,
+  COLOR_RAREZA,
   SIN_ESTADISTICAS,
   TOTAL_USUARIOS_EMPRESA,
-  calcularResumenAlbum,
   type AlbumEmpresa,
   type EstadoAlbum,
   type EstadisticasCartaEmpresa,
@@ -25,21 +27,12 @@ import {
 
 export type CriterioOrdenAlbum = 'nombre-asc' | 'nombre-desc' | 'rareza';
 
-/** Álbum con su resumen ya calculado, listo para pintar en la grilla. */
 interface AlbumConResumen extends AlbumEmpresa {
   readonly resumen: ResumenAlbum;
+  /** Nombre real de la marca, tomado del backend (reemplaza a empresa.nombre del mock). */
+  readonly marcaNombre: string;
 }
 
-/**
- * Vista de álbumes de empresa: primero una grilla con todos los álbumes (nombre,
- * descripción, recompensa y estadísticas agregadas) y, al elegir uno, el detalle
- * de la colección con sus cartas, filtros y el modal de estadísticas por carta.
- *
- * La empresa maneja una sola categoría y varios álbumes, así que el filtro
- * rápido es por rareza (no por categoría). Todo el contenido es mock
- * (`modelos/empresa.mock.ts`) y las tarjetas provienen de componentes
- * compartidos para poder mostrarlas también en la galería.
- */
 @Component({
   selector: 'app-empresa-albumes',
   standalone: true,
@@ -56,16 +49,83 @@ interface AlbumConResumen extends AlbumEmpresa {
   styleUrl: './empresa-albumes.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EmpresaAlbumes {
+export class EmpresaAlbumes implements OnInit {
+  private readonly albumesService = inject(AlbumesService);
+
+  /** Datos crudos traídos del backend */
+  protected readonly coleccionesBackend = signal<AlbumRespuesta[]>([]);
+  protected readonly cargando = signal(true);
+
   protected readonly empresa = EMPRESA_ACTUAL;
   protected readonly totalUsuarios = TOTAL_USUARIOS_EMPRESA;
   protected readonly etiquetaRareza = ETIQUETA_RAREZA;
 
-  /** Álbumes con sus métricas agregadas (se calculan una sola vez). */
-  protected readonly albumes: readonly AlbumConResumen[] = ALBUMES_EMPRESA.map((album) => ({
-    ...album,
-    resumen: calcularResumenAlbum(album),
-  }));
+  ngOnInit(): void {
+    this.cargarColecciones();
+  }
+
+  private cargarColecciones(): void {
+    this.cargando.set(true);
+    this.albumesService.obtenerMisAlbumes().subscribe({
+      next: (colecciones) => {
+        this.coleccionesBackend.set(colecciones);
+        this.cargando.set(false);
+      },
+      error: (err) => {
+        console.error('Error al obtener álbumes del backend:', err);
+        this.cargando.set(false);
+      },
+    });
+  }
+
+  /** Mapea la respuesta del backend a la estructura usada por la vista */
+  protected readonly albumes = computed<AlbumConResumen[]>(() => {
+    return this.coleccionesBackend().map((c) => {
+      const imagenes = c.imagenesAlbum || [];
+      const totalCartas = imagenes.length;
+
+      const albumEmpresa: AlbumEmpresa = {
+        id: String(c.id),
+        nombre: c.nombre,
+        temporada: new Date(c.fechaInicio).getFullYear().toString(),
+        estado: c.activa ? 'activo' : 'finalizado',
+        tono: 'azul',
+        descripcion: c.descripcion,
+        recompensa: 'Premio por completar la colección',
+        imagenPortada: c.marcaLogoUrl,
+        cartasIds: imagenes.map((img) => String(img.id)),
+        jugadoresCompletaron: 0,
+      };
+
+      const reparto = RAREZAS_ORDENADAS.map((rareza) => {
+        const cantidad = rareza === 'comun' ? totalCartas : 0;
+        return {
+          rareza,
+          etiqueta: ETIQUETA_RAREZA[rareza],
+          cantidad,
+          porcentaje: totalCartas === 0 ? 0 : Math.round((cantidad / totalCartas) * 100),
+          color: COLOR_RAREZA[rareza],
+        };
+      }).filter((tramo) => tramo.cantidad > 0);
+
+      const resumen: ResumenAlbum = {
+        totalCartas,
+        reparto,
+        favoritos: 0,
+        intercambios: 0,
+        porcentajeCompletado: 0,
+      };
+
+      return {
+        ...albumEmpresa,
+        marcaNombre: c.marcaNombre,
+        resumen,
+      };
+    });
+  });
+
+  /** Nombre de la marca para el encabezado de la grilla de álbumes. */
+  protected readonly nombreMarca = computed(() => this.albumes()[0]?.marcaNombre ?? '');
 
   protected readonly albumActivo = signal<string | null>(null);
   protected readonly busqueda = signal('');
@@ -73,30 +133,34 @@ export class EmpresaAlbumes {
   protected readonly criterioOrden = signal<CriterioOrdenAlbum>('nombre-asc');
   protected readonly cartaSeleccionada = signal<Carta | null>(null);
 
-  /** Álbum abierto en el detalle (`null` = se ve la grilla de álbumes). */
   protected readonly albumActual = computed<AlbumConResumen | null>(() => {
     const id = this.albumActivo();
-    return id === null ? null : (this.albumes.find((album) => album.id === id) ?? null);
+    return id === null ? null : (this.albumes().find((album) => album.id === id) ?? null);
   });
 
-  /** Cartas del álbum activo, siempre "obtenidas" (la empresa las posee todas). */
+  /** Mapea dinámicamente las imágenes guardadas en el backend como cartas de Angular */
   protected readonly cartasDelAlbum = computed<readonly Carta[]>(() => {
     const album = this.albumActual();
-    if (album === null) {
-      return [];
-    }
-    return album.cartasIds
-      .map((id) => CARTAS_EMPRESA.find((carta) => carta.id === id))
-      .filter((carta): carta is Carta => carta !== undefined)
-      .map((carta) => ({ ...carta, obtenida: true }));
+    if (album === null) return [];
+
+    const coleccionBackend = this.coleccionesBackend().find((c) => String(c.id) === album.id);
+    if (!coleccionBackend) return [];
+
+    return (coleccionBackend.imagenesAlbum || []).map((img, idx) => ({
+      id: String(img.id),
+      nombre: img.descripcion || `${coleccionBackend.nombre} #${idx + 1}`,
+      imagenUrl: img.imagenUrl,
+      rareza: 'comun',
+      categoria: 'gastronomia',
+      atributoIzquierdo: 10,
+      atributoDerecho: 10,
+      obtenida: true,
+    }));
   });
 
-  /** Tarjetas de métricas del álbum abierto (cifras agregadas). */
   protected readonly kpisAlbum = computed(() => {
     const album = this.albumActual();
-    if (album === null) {
-      return [];
-    }
+    if (album === null) return [];
     const resumen = album.resumen;
     return [
       {
@@ -126,7 +190,6 @@ export class EmpresaAlbumes {
     ];
   });
 
-  /** Rarezas presentes en el álbum, para el filtro rápido. */
   protected readonly rarezasDelAlbum = computed(() => {
     const presentes = new Set(this.cartasDelAlbum().map((carta) => carta.rareza));
     return [...presentes]
@@ -163,7 +226,6 @@ export class EmpresaAlbumes {
 
   protected readonly sinResultados = computed(() => this.cartasFiltradas().length === 0);
 
-  /** Estadísticas de la carta abierta en el modal (null si no hay ninguna). */
   protected readonly estadisticasSeleccionada = computed(() => {
     const carta = this.cartaSeleccionada();
     return carta ? this.estadisticasDe(carta.id) : null;
