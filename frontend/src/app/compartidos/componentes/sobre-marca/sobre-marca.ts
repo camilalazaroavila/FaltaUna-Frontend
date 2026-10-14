@@ -21,7 +21,7 @@ export type VarianteSobreMarca = 'oscuro' | 'claro';
  * Anchos en rem, no alturas: el sobre es vertical (viewBox 208.67 x 340.93)
  * y la altura sale de la proporcion intrinseca del SVG, que nunca se deforma.
  */
-export type TamanioSobreMarca = 'sm' | 'md' | 'lg';
+export type TamanioSobreMarca = 'sm' | 'md' | 'lg' | 'xl';
 
 const CLASES_BASE = ['motion-reduce:transition-none motion-reduce:transform-none',].join(' ');
 
@@ -44,7 +44,12 @@ const CLASES_TAMANIO: Record<TamanioSobreMarca, string> = {
   sm: 'w-20',
   md: 'w-28',
   lg: 'w-44',
+  /** Tamaño fluido de la vista de Misiones: ancho por token que crece con el viewport. */
+  xl: 'w-misiones-sobre',
 };
+
+/** Ancho de crecimiento por breakpoint cuando `fluido` está activo. */
+const CLASES_FLUIDO = 'sm:w-24 md:w-28';
 
 /** Texto por defecto del `aria-label` cuando la marca no pasa nombre. */
 export const ETIQUETA_SOBRE_POR_DEFECTO = 'Sobre de Falta Una';
@@ -372,6 +377,13 @@ export class SobreMarca {
   readonly variante = input<VarianteSobreMarca>('oscuro');
   readonly tamanio = input<TamanioSobreMarca>('md');
 
+  /**
+   * Ancho fluido: además del ancho base del `tamanio`, crece por breakpoint
+   * (`sm:w-24 md:w-28`). Se usa donde el sobre es protagonista y debe escalar
+   * con el viewport. Por defecto conserva el ancho fijo del `tamanio`.
+   */
+  readonly fluido = input<boolean, unknown>(false, { transform: booleanAttribute });
+
   readonly clickeable = input<boolean, unknown>(false, { transform: booleanAttribute });
 
   readonly accion = output<void>();
@@ -434,6 +446,10 @@ export class SobreMarca {
 
   protected readonly clases = computed(() => {
     const clases = [CLASES_BASE, CLASES_TAMANIO[this.tamanio()]];
+
+    if (this.fluido()) {
+      clases.push(CLASES_FLUIDO);
+    }
 
     if (this.clickeable()) {
       clases.push(CLASES_INTERACTIVAS);

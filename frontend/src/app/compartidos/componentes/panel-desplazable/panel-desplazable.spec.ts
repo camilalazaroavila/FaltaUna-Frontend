@@ -35,4 +35,11 @@ describe('PanelDesplazable Component', () => {
     const panel = fixture.nativeElement.querySelector('.panel-desplazable');
     expect(panel.classList.contains('max-h-96')).toBe(true);
   });
+
+  it('debe mostrar el tirador ocupando todo el carril cuando no hay nada que desplazar', () => {
+    const thumb = fixture.nativeElement.querySelector('[data-thumb]') as HTMLElement;
+    expect(thumb).not.toBeNull();
+    expect(thumb.style.height).toBe('100%');
+    expect(thumb.style.top).toBe('0%');
+  });
 });

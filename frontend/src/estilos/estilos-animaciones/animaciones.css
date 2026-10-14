@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Falta Una - Animaciones (Capa 3)
+   Keyframes (fadeIn, slideUp), clases .animate-*, el respeto por
+   prefers-reduced-motion y el bloque [data-movimiento-reducido] de la galeria.
+   Origen: bloques "ANIMACIONES MICRO-INTERACTIVAS" y "SIMULACION DE MOVIMIENTO
+   REDUCIDO" de styles.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   ANIMACIONES MICRO-INTERACTIVAS
+   ========================================================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Aviso suave de "recompensa lista para reclamar": un halo amarillo que late
+   sin mover el layout. Solo decorativo: la información real va en el texto. */
+@keyframes latidoReclamo {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--marca-acento) 55%, transparent);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px color-mix(in srgb, var(--marca-acento) 0%, transparent);
+    }
+}
+
+.animate-latido-reclamo {
+    animation: latidoReclamo 1.9s ease-out infinite;
+}
+
+/* Respeto por preferencias de movimiento reducido (A11y) */
+@media (prefers-reduced-motion: reduce) {
+
+    .animate-fade-in,
+    .animate-slide-up,
+    .animate-latido-reclamo {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ==========================================================================
+   SIMULACION DE MOVIMIENTO REDUCIDO
+   La galería de componentes (`/componentes`) replica la media query
+   `prefers-reduced-motion` con este atributo, porque esa consulta no se puede
+   forzar desde el DOM.
+
+   Solo neutraliza la mitad CSS: `motion-reduce:` de Tailwind y las
+   transiciones. NO afecta a GSAP, que lee `matchMedia` desde `GsapService`.
+   ========================================================================== */
+[data-movimiento='reducido'] *,
+[data-movimiento='reducido'] *::before,
+[data-movimiento='reducido'] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* =========================================
+   ABANICO DE SOBRES: CICLO COORDINADO
+   ========================================= */
+
+.abanico-sobres {
+  --abanico-izquierda: 24%;
+  --abanico-centro: 50%;
+  --abanico-derecha: 76%;
+}
+
+.abanico-sobres .sobre-carrusel {
+  position: absolute;
+  top: 50%;
+  height: 88%;
+  width: auto;
+  aspect-ratio: 208.67 / 340.93;
+
+  transform-origin: center center;
+  filter: drop-shadow(0 10px 10px rgb(0 0 0 / 20%));
+  will-change: left, transform;
+
+  animation: sobre-ciclo-coordinado 12s ease-in-out infinite;
+}
+
+/* Categoría: empieza a la izquierda */
+.abanico-sobres .sobre-carrusel--gastronomia {
+  animation-delay: 0s;
+}
+
+/* Marca: empieza a la derecha */
+.abanico-sobres .sobre-carrusel--lego {
+  animation-delay: -8s;
+}
+
+/* General: empieza en el centro */
+.abanico-sobres .sobre-carrusel--general {
+  animation-delay: -4s;
+}
+
+/*
+  Cada posición tiene la misma pausa.
+  Los desplazamientos ocupan aproximadamente 0,4 segundos.
+  El ciclo completo dura 12 segundos.
+*/
+@keyframes sobre-ciclo-coordinado {
+  /* Izquierda: pausa */
+  0%, 30% {
+    left: var(--abanico-izquierda);
+    z-index: 10;
+    transform: translate(-50%, -50%) rotate(-12deg) scale(.86);
+  }
+
+  /* Transición rápida hacia el centro */
+  33.333%, 63.333% {
+    left: var(--abanico-centro);
+    z-index: 20;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1.17);
+  }
+
+  /* Transición rápida hacia la derecha */
+  66.666%, 96.666% {
+    left: var(--abanico-derecha);
+    z-index: 10;
+    transform: translate(-50%, -50%) rotate(12deg) scale(.86);
+  }
+
+  /* Regreso a la izquierda */
+  100% {
+    left: var(--abanico-izquierda);
+    z-index: 10;
+    transform: translate(-50%, -50%) rotate(-12deg) scale(.86);
+  }
+}
+
+/* Pantallas medianas y grandes */
+@media (min-width: 640px) {
+  .abanico-sobres {
+    --abanico-izquierda: 28%;
+    --abanico-centro: 50%;
+    --abanico-derecha: 72%;
+  }
+}
+
+/* Pausar al pasar el cursor */
+@media (hover: hover) {
+  .abanico-sobres:hover .sobre-carrusel {
+    animation-play-state: paused;
+  }
+}
+
+/* Respetar preferencias de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .abanico-sobres .sobre-carrusel {
+    animation: none;
+    will-change: auto;
+  }
+}

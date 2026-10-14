@@ -1,0 +1,212 @@
+<section>
+  <header class="mb-8">
+    <p class="font-interfaz text-xs font-bold tracking-[0.18em] text-marca-secundaria uppercase">
+      Panel de empresa
+    </p>
+    <div class="mt-1 flex flex-wrap items-center gap-3">
+      <h1 class="font-titulo text-4xl text-texto-primario sm:text-5xl">Estadísticas</h1>
+      <span
+        class="rounded-pildora bg-marca-primaria px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-sobre-primaria uppercase"
+      >
+        {{ empresa.nombre }}
+      </span>
+      <span
+        class="rounded-pildora bg-marca-secundaria-suave px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-secundaria uppercase"
+      >
+        {{ empresa.categoriaEtiqueta }}
+      </span>
+    </div>
+    <p class="mt-2 max-w-2xl font-interfaz text-sm text-texto-secundario">
+      Mirá cómo interactúan los
+      <strong class="font-bold text-texto-primario">{{ totalUsuarios }}</strong>
+      jugadores con las cartas de tus álbumes.
+    </p>
+  </header>
+
+  <!-- KPIs generales -->
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    @for (kpi of kpis; track kpi.id) {
+      <article class="rounded-2xl border border-borde-default bg-fondo-superficie p-5 shadow-baja">
+        <div class="flex items-start justify-between gap-3">
+          <span
+            class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-marca-secundaria-suave text-marca-secundaria"
+            aria-hidden="true"
+          >
+            <ng-icon [name]="kpi.icono" size="24" />
+          </span>
+
+          <span
+            class="inline-flex items-center gap-1 rounded-pildora px-2 py-1 font-interfaz text-xs font-bold"
+            [class]="
+              kpi.tendenciaPositiva
+                ? 'bg-exito-fondo text-exito-texto'
+                : 'bg-error-fondo text-error-texto'
+            "
+          >
+            <ng-icon
+              name="phosphorTrendUpFill"
+              size="12"
+              class="shrink-0"
+              [class.rotate-180]="!kpi.tendenciaPositiva"
+              aria-hidden="true"
+            />
+            {{ kpi.tendencia }}
+          </span>
+        </div>
+
+        <p class="mt-4 font-titulo text-4xl leading-none text-texto-primario">
+          {{ kpi.valor }}
+        </p>
+        <p class="mt-2 font-interfaz text-sm font-bold text-texto-primario">{{ kpi.etiqueta }}</p>
+        <p class="font-interfaz text-xs text-texto-apagado">{{ kpi.detalle }}</p>
+      </article>
+    }
+  </div>
+
+  <!-- Favoritos por álbum + distribución por rareza -->
+  <div class="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+    <article class="rounded-2xl border border-borde-default bg-fondo-superficie p-6 shadow-baja">
+      <header class="mb-5 flex items-center gap-2.5">
+        <span class="text-marca-secundaria" aria-hidden="true">
+          <ng-icon name="phosphorCardsFill" size="20" />
+        </span>
+        <div>
+          <h2 class="font-titulo text-xl text-texto-primario">Favoritos por álbum</h2>
+          <p class="font-interfaz text-xs text-texto-apagado">
+            Cartas de cada álbum marcadas como favoritas.
+          </p>
+        </div>
+      </header>
+
+      <ul class="space-y-4">
+        @for (favorito of favoritosPorAlbum(); track favorito.id) {
+          <li class="space-y-1.5">
+            <div class="flex items-baseline justify-between gap-3 font-interfaz text-sm">
+              <span class="font-bold text-texto-primario">{{ favorito.etiqueta }}</span>
+              <span class="tabular-nums text-texto-secundario">{{ favorito.cantidad }}</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-pildora bg-fondo-hundido">
+              <div
+                class="h-full rounded-pildora bg-marca-secundaria"
+                [style.width.%]="favorito.porcentaje"
+              ></div>
+            </div>
+          </li>
+        }
+      </ul>
+    </article>
+
+    <article class="rounded-2xl border border-borde-default bg-fondo-superficie p-6 shadow-baja">
+      <header class="mb-5 flex items-center gap-2.5">
+        <span class="text-marca-primaria" aria-hidden="true">
+          <ng-icon name="phosphorChartDonutFill" size="20" />
+        </span>
+        <div>
+          <h2 class="font-titulo text-xl text-texto-primario">Por rareza</h2>
+          <p class="font-interfaz text-xs text-texto-apagado">Reparto de los favoritos.</p>
+        </div>
+      </header>
+
+      <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-center">
+        <div
+          class="relative size-40 shrink-0 rounded-full"
+          role="img"
+          aria-label="Distribución de favoritos por rareza de carta"
+          [style.background]="donutFondo()"
+        >
+          <div
+            class="absolute inset-[22%] flex flex-col items-center justify-center rounded-full bg-fondo-superficie"
+          >
+            <span class="font-titulo text-2xl leading-none text-texto-primario">{{
+              totalFavoritosRareza()
+            }}</span>
+            <span class="font-interfaz text-[0.65rem] text-texto-apagado uppercase">favoritos</span>
+          </div>
+        </div>
+
+        <ul class="w-full space-y-2.5">
+          @for (tramo of distribucionRareza(); track tramo.etiqueta) {
+            <li class="flex items-center gap-2.5 font-interfaz text-sm">
+              <span
+                class="size-3 shrink-0 rounded-sm"
+                [style.background]="tramo.color"
+                aria-hidden="true"
+              ></span>
+              <span class="flex-1 font-bold text-texto-primario">{{ tramo.etiqueta }}</span>
+              <span class="tabular-nums text-texto-secundario">{{ tramo.porcentaje }}%</span>
+            </li>
+          }
+        </ul>
+      </div>
+    </article>
+  </div>
+
+  <!-- Top cartas + evolución -->
+  <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_1fr]">
+    <article class="rounded-2xl border border-borde-default bg-fondo-superficie p-6 shadow-baja">
+      <header class="mb-5 flex items-center gap-2.5">
+        <span class="text-marca-primaria" aria-hidden="true">
+          <ng-icon name="phosphorTrophyFill" size="20" />
+        </span>
+        <div>
+          <h2 class="font-titulo text-xl text-texto-primario">Cartas más queridas</h2>
+          <p class="font-interfaz text-xs text-texto-apagado">Las más marcadas como favoritas.</p>
+        </div>
+      </header>
+
+      <ol class="space-y-2">
+        @for (carta of topCartas(); track carta.nombre; let indice = $index) {
+          <li class="flex items-center gap-3 rounded-xl bg-fondo-app px-3 py-2.5">
+            <span
+              class="flex size-7 shrink-0 items-center justify-center rounded-circulo bg-marca-secundaria font-interfaz text-xs font-black text-marca-sobre-secundaria"
+            >
+              {{ indice + 1 }}
+            </span>
+            <div class="min-w-0 flex-1">
+              <p class="truncate font-interfaz text-sm font-bold text-texto-primario">
+                {{ carta.nombre }}
+              </p>
+              <p class="truncate font-interfaz text-xs text-texto-apagado">{{ carta.album }}</p>
+            </div>
+            <span
+              class="flex items-center gap-1 font-interfaz text-sm font-bold text-marca-secundaria"
+            >
+              <ng-icon name="phosphorHeartFill" size="14" aria-hidden="true" />
+              {{ carta.favoritos }}
+            </span>
+          </li>
+        }
+      </ol>
+    </article>
+
+    <article class="rounded-2xl border border-borde-default bg-fondo-superficie p-6 shadow-baja">
+      <header class="mb-5 flex items-center gap-2.5">
+        <span class="text-marca-primaria" aria-hidden="true">
+          <ng-icon name="phosphorTrendUpFill" size="20" />
+        </span>
+        <div>
+          <h2 class="font-titulo text-xl text-texto-primario">Evolución de favoritos</h2>
+          <p class="font-interfaz text-xs text-texto-apagado">Últimos seis meses.</p>
+        </div>
+      </header>
+
+      <div class="flex h-40 items-end gap-3" role="img" aria-label="Evolución mensual de favoritos">
+        @for (punto of evolucion(); track punto.etiqueta) {
+          <div class="flex h-full flex-1 flex-col items-center justify-end gap-2">
+            <span class="font-interfaz text-[0.65rem] tabular-nums text-texto-apagado">
+              {{ punto.valor }}
+            </span>
+            <div
+              class="w-full rounded-t-lg bg-marca-primaria"
+              [style.height.%]="punto.altura"
+              [attr.title]="punto.etiqueta + ': ' + punto.valor + ' favoritos'"
+            ></div>
+            <span class="font-interfaz text-xs font-bold text-texto-secundario">
+              {{ punto.etiqueta }}
+            </span>
+          </div>
+        }
+      </div>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,27 @@
+<button
+  type="button"
+  class="carta-seleccionable__boton"
+  [attr.aria-pressed]="seleccionada()"
+  [attr.aria-disabled]="bloqueada() ? 'true' : null"
+  [attr.aria-label]="ariaLabel()"
+  (click)="alAlternar()"
+>
+  <span class="carta-seleccionable__carta" aria-hidden="true">
+    <app-carta [carta]="carta()" />
+  </span>
+
+  @if (seleccionada()) {
+    <span class="carta-seleccionable__marca" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M5 13l4 4L19 7" />
+      </svg>
+    </span>
+  }
+</button>

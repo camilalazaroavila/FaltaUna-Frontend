@@ -1,0 +1,51 @@
+<button
+  type="button"
+  [class]="clasesDisparador()"
+  aria-haspopup="listbox"
+  [attr.aria-expanded]="abierto()"
+  [attr.aria-controls]="idLista"
+  [attr.aria-label]="mostrarEtiqueta() ? etiqueta() + ': ' + etiquetaSeleccionada() : etiqueta()"
+  [attr.aria-activedescendant]="abierto() && indiceActivo() >= 0 ? idOpcion(indiceActivo()) : null"
+  (click)="alternar()"
+  (keydown)="alTeclado($event)"
+>
+  <span>
+    @if (mostrarEtiqueta()) {
+      <span class="text-texto-secundario">{{ etiqueta() }}:&nbsp;</span>
+    }
+    {{ etiquetaSeleccionada() }}
+  </span>
+  <ng-icon
+    name="phosphorCaretDownFill"
+    class="size-misiones-control-icono transition-transform"
+    [class.rotate-180]="abierto()"
+    aria-hidden="true"
+  />
+</button>
+
+@if (abierto()) {
+  <ul
+    [id]="idLista"
+    role="listbox"
+    tabindex="-1"
+    [attr.aria-label]="etiqueta()"
+    class="absolute left-0 top-full z-50 mt-1 max-h-64 w-full min-w-max overflow-y-auto rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie p-1 shadow-alta"
+  >
+    @for (item of opcionesInternas(); track item.valor; let i = $index) {
+      <li
+        [id]="idOpcion(i)"
+        role="option"
+        [attr.aria-selected]="esSeleccionado(item)"
+        [class]="
+          'cursor-pointer rounded-sm px-3 py-2 text-misiones-control font-semibold transition-colors ' +
+          (i === indiceActivo() ? 'bg-white/10 ' : '') +
+          (esSeleccionado(item) ? 'text-marca-coleccion' : 'text-texto-secundario')
+        "
+        (click)="elegir(item)"
+        (mousemove)="indiceActivo.set(i)"
+      >
+        {{ item.etiqueta }}
+      </li>
+    }
+  </ul>
+}

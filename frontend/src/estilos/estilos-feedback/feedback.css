@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Falta Una - Feedback (Capa 2)
+   Los cinco tokens por estado (exito, error, advertencia, atencion, info:
+   base / fondo / borde / texto / sobre) para AMBOS modos.
+   Orden critico: jugador primero, empresa despues (gana la cascada).
+   Origen: sub-bloques de feedback de los modos jugador y empresa de styles.css.
+   ========================================================================== */
+
+    /* ----------------------------------------------------------------------
+       SISTEMA DE FEEDBACK (Impeccable Design Standard)
+       Regla: nunca confiar únicamente en el color; acompañar con ícono y texto.
+       5 tokens por estado:
+         base   → Color sólido para íconos principales y badges de alto impacto.
+         fondo  → Tinte suave al 12-15% para no saturar la vista en tarjetas/toasts.
+         borde  → Contorno al 50-60% para delimitar la superficie con claridad.
+         texto  → Tono legible y armonioso sobre el fondo suave.
+         sobre  → Color del texto al colocarse sobre el color base sólido.
+       ---------------------------------------------------------------------- */
+
+:root,
+[data-modo="jugador"] {
+    /* ÉXITO (Confirmación, partido armado, pago acreditado) */
+    --exito: #3BD972;
+    --exito-fondo: rgba(59, 217, 114, 0.13);
+    --exito-borde: rgba(59, 217, 114, 0.55);
+    --exito-texto: #7BF0A5;
+    --exito-sobre: var(--color-teal-profundo);
+
+    /* ERROR (Acción bloqueada, cupo agotado, error de red) */
+    --error: #FF6666;
+    --error-fondo: rgba(255, 102, 102, 0.14);
+    --error-borde: rgba(255, 102, 102, 0.60);
+    --error-texto: #FFA3A3;
+    --error-sobre: var(--color-teal-profundo);
+
+    /* ADVERTENCIA (Falta confirmar asistencia, tiempo por expirar) */
+    --advertencia: #F5A623;
+    --advertencia-fondo: rgba(245, 166, 35, 0.14);
+    --advertencia-borde: rgba(245, 166, 35, 0.60);
+    --advertencia-texto: #FFD085;
+    --advertencia-sobre: var(--color-teal-profundo);
+
+    /* ATENCIÓN / NOVEDAD (El jugador que falta, sobre de cartas disponible) */
+    --atencion: var(--color-amarillo-acento);
+    --atencion-fondo: rgba(242, 238, 174, 0.12);
+    --atencion-borde: rgba(242, 238, 174, 0.55);
+    --atencion-texto: #FAF7CA;
+    --atencion-sobre: var(--color-teal-profundo);
+
+    /* INFORMACIÓN (Reglas de la cancha, tips de usuario) */
+    --info: #55B5E6;
+    --info-fondo: rgba(85, 181, 230, 0.14);
+    --info-borde: rgba(85, 181, 230, 0.55);
+    --info-texto: #99DCFF;
+    --info-sobre: var(--color-teal-profundo);
+}
+
+[data-modo="empresa"] {
+    /* --- Feedback Adaptado a Fondo Claro (Tonos enriquecidos para legibilidad) --- */
+    --exito: var(--color-verde-claro);
+    --exito-fondo: #E6F6ED;
+    --exito-borde: #8FD8A8;
+    --exito-texto: #02571B;
+    --exito-sobre: var(--blanco-puro);
+
+    --error: #C92A2A;
+    --error-fondo: #FDEEEE;
+    --error-borde: #F2A3A3;
+    --error-texto: #8F1919;
+    --error-sobre: var(--blanco-puro);
+
+    --advertencia: #BD6400;
+    --advertencia-fondo: #FFF5E6;
+    --advertencia-borde: #F5C282;
+    --advertencia-texto: #7A3F00;
+    --advertencia-sobre: var(--blanco-puro);
+
+    --atencion: #8A7200;
+    --atencion-fondo: #FDFCE6;
+    --atencion-borde: #E5D574;
+    --atencion-texto: #594A00;
+    --atencion-sobre: var(--blanco-puro);
+
+    --info: #236599;
+    --info-fondo: #EAF4FA;
+    --info-borde: #93C2E6;
+    --info-texto: #144266;
+    --info-sobre: var(--blanco-puro);
+}

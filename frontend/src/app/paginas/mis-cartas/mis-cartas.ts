@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CartaComponent } from '../../compartidos/componentes/carta/carta';
+import { CartaPopupComponent } from '../../compartidos/componentes/carta-popup/carta-popup';
+import { PulsacionCartaDirective } from '../../compartidos/directivas/pulsacion-carta.directive';
 import { CARTAS_MOCK } from '../../modelos/cartas.mock';
 import type { Carta, CategoriaCarta, RarezaCarta } from '../../modelos/carta.model';
 import { ETIQUETA_CATEGORIA } from '../../modelos/carta.model';
+import { Header } from '../../compartidos/componentes/header/header';
 
 import urlGastro from '../../compartidos/SVGs/Icon_GastroInv.svg';
 import urlCosme from '../../compartidos/SVGs/Icon_CosmeInv.svg';
@@ -52,7 +55,7 @@ const COLECCION: Carta[] = CARTAS_MOCK;
 @Component({
   selector: 'app-mis-cartas',
   standalone: true,
-  imports: [RouterLink, CartaComponent],
+  imports: [RouterLink, CartaComponent, CartaPopupComponent, PulsacionCartaDirective, Header],
   templateUrl: './mis-cartas.html',
   styleUrl: './mis-cartas.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,6 +65,9 @@ export class MisCartas {
 
   // Datos
   private readonly coleccion = signal<Carta[]>(COLECCION);
+
+  // Detalle de carta
+  protected readonly cartaPopup = signal<Carta | null>(null);
 
   // Filtros (signals)
   protected readonly busqueda = signal('');
@@ -174,5 +180,13 @@ export class MisCartas {
     this.busqueda.set('');
     this.filtroObtencion.set('todas');
     this.categoriaActiva.set(null);
+  }
+
+  protected abrirPopup(carta: Carta): void {
+    this.cartaPopup.set(carta);
+  }
+
+  protected cerrarPopup(): void {
+    this.cartaPopup.set(null);
   }
 }

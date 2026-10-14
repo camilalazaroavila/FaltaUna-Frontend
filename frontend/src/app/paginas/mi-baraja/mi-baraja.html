@@ -1,0 +1,267 @@
+<div
+  class="relative flex min-h-dvh flex-col overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white"
+>
+  <app-header [logueado]="true" />
+
+  <div class="look-cartas w-full px-1 pt-2 pb-10 sm:px-6 lg:px-8">
+    <!-- Encabezado -->
+    <div class="px-3 py-4 sm:px-0">
+      <a
+        routerLink="/usuario/mis-cartas"
+        class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion"
+      >
+        <svg
+          class="size-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M15 6l-6 6 6 6" />
+        </svg>
+        Mis cartas
+      </a>
+      <h1 class="mt-1 font-titulo text-2xl text-texto-primario sm:text-3xl">Mi baraja</h1>
+      <p class="mt-1 max-w-prose text-sm text-texto-secundario">
+        Elegí exactamente <strong class="text-marca-coleccion">{{ tamanoBaraja }}</strong> cartas de
+        tu colección. Hay topes por rareza, pero sos libre de armar la combinación que quieras.
+      </p>
+    </div>
+
+    <div class="baraja__layout">
+      <!-- Panel: la baraja en construcción (grilla 3x4) -->
+      <aside class="baraja__panel" aria-label="Baraja en construcción">
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-sm text-texto-secundario" aria-live="polite">
+            <strong class="text-lg text-marca-coleccion">{{ estado().total }}</strong> /
+            {{ tamanoBaraja }} cartas
+          </p>
+          <button
+            type="button"
+            class="cursor-pointer rounded-pildora border border-borde-coleccion px-3 py-1.5 text-xs font-bold tracking-[0.06em] text-texto-secundario uppercase transition-colors enabled:hover:border-borde-coleccion-fuerte enabled:hover:text-marca-coleccion disabled:cursor-not-allowed disabled:opacity-40"
+            [disabled]="estado().total === 0"
+            (click)="vaciar()"
+          >
+            Vaciar
+          </button>
+        </div>
+
+        <div
+          class="baraja__progreso"
+          role="progressbar"
+          aria-label="Progreso de la baraja"
+          [attr.aria-valuenow]="estado().total"
+          [attr.aria-valuemin]="0"
+          [attr.aria-valuemax]="tamanoBaraja"
+        >
+          <span class="baraja__progreso-relleno" [style.width.%]="porcentaje()"></span>
+        </div>
+
+        <ul class="baraja__conteos">
+          @for (conteo of estado().conteos; track conteo.rareza) {
+            <li class="baraja__conteo">
+              <span class="baraja__rareza-punto" [attr.data-rareza]="conteo.rareza"></span>
+              <span>{{ etiquetaRareza[conteo.rareza] }}</span>
+              <span
+                class="baraja__conteo-valor"
+                [class.baraja__conteo-valor--tope]="conteo.seleccionadas >= conteo.maximo"
+              >
+                {{ conteo.seleccionadas }}/{{ conteo.maximo }}
+              </span>
+            </li>
+          }
+        </ul>
+
+        <div class="baraja__slots">
+          @for (casillero of casilleros(); track $index) {
+            @if (casillero) {
+              <button
+                type="button"
+                class="baraja__slot baraja__slot--lleno"
+                [attr.aria-label]="'Quitar ' + casillero.nombre + ' de la baraja'"
+                (click)="quitar(casillero)"
+              >
+                <app-carta [carta]="casillero" />
+              </button>
+            } @else {
+              <span class="baraja__slot baraja__slot--vacio" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </span>
+            }
+          }
+        </div>
+
+        <p class="baraja__aviso" aria-live="polite">{{ aviso() }}</p>
+
+        <button
+          type="button"
+          class="baraja__guardar"
+          [disabled]="!estado().puedeConfirmar || guardando()"
+          (click)="guardar()"
+        >
+          {{ guardando() ? 'Guardando…' : guardado() ? 'Baraja guardada' : 'Guardar baraja' }}
+        </button>
+        @if (!estado().completa) {
+          <p class="mt-2 text-center text-xs text-texto-apagado">
+            Faltan {{ estado().faltantes }} cartas para poder guardar.
+          </p>
+        }
+      </aside>
+
+      <!-- Catálogo -->
+      <main class="baraja__catalogo">
+        <div class="flex flex-col gap-3 pb-4">
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="relative min-w-0 flex-1 basis-56">
+              <svg
+                class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-texto-apagado"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <circle cx="10.5" cy="10.5" r="6.5" />
+                <path d="M15.5 15.5 21 21" />
+              </svg>
+              <label class="sr-only" for="buscar-carta-baraja">Buscar carta por nombre</label>
+              <input
+                id="buscar-carta-baraja"
+                type="search"
+                autocomplete="off"
+                placeholder="Buscar carta..."
+                class="w-full rounded-pildora border border-borde-coleccion bg-fondo-coleccion-superficie py-2 pr-3 pl-9 text-sm text-texto-primario outline-none transition-colors placeholder:text-texto-apagado focus-visible:border-borde-foco"
+                [value]="busqueda()"
+                (input)="actualizarBusqueda($event)"
+              />
+            </div>
+
+            <div>
+              <label class="sr-only" for="orden-cartas-baraja">Ordenar cartas</label>
+              <select
+                id="orden-cartas-baraja"
+                class="cursor-pointer rounded-pildora border border-borde-coleccion bg-fondo-coleccion-superficie px-3.5 py-2 text-xs font-semibold text-texto-primario outline-none transition-colors focus-visible:border-borde-foco"
+                [value]="orden()"
+                (change)="cambiarOrden($event)"
+              >
+                @for (opcion of ordenesDisponibles; track opcion.valor) {
+                  <option [value]="opcion.valor">{{ opcion.etiqueta }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div
+              class="flex flex-wrap items-center gap-1.5"
+              role="group"
+              aria-label="Filtrar por categoría"
+            >
+              @for (cat of categoriasDisponibles; track cat.categoria) {
+                <button
+                  type="button"
+                  class="flex cursor-pointer items-center gap-2 rounded-pildora border px-3 py-1.5 text-xs font-semibold transition-colors"
+                  [class.border-borde-coleccion-fuerte]="categoriaActiva() === cat.categoria"
+                  [class.bg-marca-coleccion-fondo]="categoriaActiva() === cat.categoria"
+                  [class.text-marca-coleccion]="categoriaActiva() === cat.categoria"
+                  [class.border-transparent]="categoriaActiva() !== cat.categoria"
+                  [class.text-texto-secundario]="categoriaActiva() !== cat.categoria"
+                  [class.hover:bg-white/6]="categoriaActiva() !== cat.categoria"
+                  [attr.aria-pressed]="categoriaActiva() === cat.categoria"
+                  (click)="toggleCategoria(cat.categoria)"
+                >
+                  <img
+                    class="size-5 shrink-0 object-contain"
+                    [src]="cat.urlIcono"
+                    [style.filter]="tinteIcono"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <span class="truncate">{{ cat.etiqueta }}</span>
+                </button>
+              }
+            </div>
+
+            <div
+              class="flex flex-wrap items-center gap-1.5"
+              role="group"
+              aria-label="Filtrar por rareza"
+            >
+              @for (rareza of rarezasDisponibles; track rareza.rareza) {
+                <button
+                  type="button"
+                  class="flex cursor-pointer items-center gap-2 rounded-pildora border px-3 py-1.5 text-xs font-semibold transition-colors"
+                  [class.border-borde-coleccion-fuerte]="filtroRareza() === rareza.rareza"
+                  [class.bg-marca-coleccion-fondo]="filtroRareza() === rareza.rareza"
+                  [class.text-marca-coleccion]="filtroRareza() === rareza.rareza"
+                  [class.border-transparent]="filtroRareza() !== rareza.rareza"
+                  [class.text-texto-secundario]="filtroRareza() !== rareza.rareza"
+                  [class.hover:bg-white/6]="filtroRareza() !== rareza.rareza"
+                  [attr.aria-pressed]="filtroRareza() === rareza.rareza"
+                  (click)="toggleRareza(rareza.rareza)"
+                >
+                  <span
+                    class="baraja__rareza-punto"
+                    [attr.data-rareza]="rareza.rareza"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="truncate">{{ rareza.etiqueta }}</span>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        @if (sinResultados()) {
+          <div class="flex flex-col items-center justify-center gap-1.5 px-8 py-16 text-center">
+            <img
+              [src]="urlLogo"
+              alt=""
+              class="mb-3 h-10 w-auto object-contain opacity-35"
+              aria-hidden="true"
+            />
+            <p class="font-titulo text-lg text-texto-secundario">
+              No hay cartas que coincidan con esos filtros.
+            </p>
+            <p class="text-sm text-texto-apagado">
+              Probá cambiando la búsqueda, la categoría o la rareza seleccionada.
+            </p>
+          </div>
+        } @else {
+          <div class="baraja__grilla">
+            @for (carta of cartasFiltradas(); track carta.id) {
+              <app-carta-seleccionable
+                appPulsacionCarta
+                [clicRaton]="false"
+                [carta]="carta"
+                [seleccionada]="idsSeleccionados().has(carta.id)"
+                [bloqueada]="idsBloqueados().has(carta.id)"
+                (pulsacion)="abrirPopup(carta)"
+                (alternar)="alternar($event)"
+              />
+            }
+          </div>
+        }
+      </main>
+    </div>
+  </div>
+
+  @if (cartaPopup(); as carta) {
+    <app-carta-popup [carta]="carta" (cerrar)="cerrarPopup()" />
+  }
+</div>

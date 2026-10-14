@@ -68,14 +68,6 @@ describe('MisCartas', () => {
     expect(fixture.nativeElement.querySelectorAll('app-carta').length).toBe(CARTAS_MOCK.length);
   });
 
-  it('debe renderizar el encabezado con el título y el botón placeholder', () => {
-    const titulo = fixture.nativeElement.querySelector('h1') as HTMLElement;
-    const boton = fixture.nativeElement.querySelector('button') as HTMLElement;
-
-    expect(titulo.textContent?.trim()).toBe('Mis cartas');
-    expect(boton.textContent?.trim().toLowerCase()).toBe('construir baraja');
-  });
-
   it('debe filtrar por nombre mientras se escribe, sin distinguir mayúsculas', () => {
     buscar('danon');
 
@@ -200,5 +192,33 @@ describe('MisCartas', () => {
     expect(segmentos[1].getAttribute('aria-pressed')).toBe('true');
     expect(segmentos[1].classList.contains('bg-marca-coleccion')).toBe(true);
     expect(segmentos[0].getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('debe ofrecer el acceso a "Mi baraja"', () => {
+    const enlace = fixture.nativeElement.querySelector(
+      'a[href="/usuario/mi-baraja"]',
+    ) as HTMLAnchorElement | null;
+
+    expect(enlace).not.toBeNull();
+    expect(enlace?.textContent?.toLowerCase()).toContain('construir baraja');
+  });
+
+  it('debe abrir el detalle de una carta al activarla y cerrarlo desde el popup', () => {
+    const disparador = fixture.nativeElement.querySelector(
+      '.coleccion__disparador',
+    ) as HTMLButtonElement;
+
+    disparador.click();
+    fixture.detectChanges();
+
+    expect(componente['cartaPopup']()).not.toBeNull();
+    const popup = fixture.nativeElement.querySelector('app-carta-popup') as HTMLElement;
+    expect(popup).not.toBeNull();
+
+    (popup.querySelector('.carta-popup__cerrar') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(componente['cartaPopup']()).toBeNull();
+    expect(fixture.nativeElement.querySelector('app-carta-popup')).toBeNull();
   });
 });

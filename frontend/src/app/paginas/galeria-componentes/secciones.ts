@@ -66,6 +66,19 @@ export const SECCIONES: readonly SeccionGaleria[] = [
   {
     id: 'carta',
     titulo: 'app-carta',
-    descripcion: 'Carta coleccionable con rareza, atributos, categoria, imagen y estado obtenida/no obtenida.',
+    descripcion:
+      'Carta coleccionable con rareza, atributos, categoria, imagen y estado obtenida/no obtenida.',
+  },
+  {
+    id: 'carta-popup',
+    titulo: 'app-carta-popup',
+    descripcion:
+      'Detalle de una carta con rareza, categoria y oracion generica, abierto desde el gesto de tarjeta.',
+  },
+  {
+    id: 'area-empresa',
+    titulo: 'Área de empresa',
+    descripcion:
+      'Header, tarjeta de álbum, KPI, medidor de rareza y cupón de recompensa del panel de marcas (revisar en modo empresa).',
   },
 ] as const;

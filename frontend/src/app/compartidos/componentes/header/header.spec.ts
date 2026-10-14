@@ -1,8 +1,10 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 
 import { Header } from './header';
+import { AuthService } from '../../../servicios/auth.service';
 import logoClaro from '../../SVGs/Imagotipo_claro.svg';
 import logoOscuro from '../../SVGs/Imagotipo_Alt.svg';
 
@@ -24,15 +26,6 @@ describe('Header', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('muestra el buscador por defecto y lo oculta en la variante de auth', () => {
-    expect(fixture.nativeElement.querySelector('input[type="search"]')).toBeTruthy();
-
-    fixture.componentRef.setInput('enAuth', true);
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.querySelector('input[type="search"]')).toBeFalsy();
   });
 
   it('usa el logo compacto por defecto y el agrandado en la variante de auth', () => {
@@ -90,5 +83,72 @@ describe('Header', () => {
     const componente = sut.componentInstance as unknown as { urlLogo: string };
     expect(componente.urlLogo).toBe(logoClaro);
     expect(componente.urlLogo).not.toBe(logoOscuro);
+  });
+});
+
+describe('Header (variante logueado)', () => {
+  let fixture: ComponentFixture<Header>;
+  let logout: jest.Mock;
+
+  beforeEach(async () => {
+    logout = jest.fn();
+
+    await TestBed.configureTestingModule({
+      imports: [Header],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: {
+            usuarioActual: signal({ nombreUsuario: 'testuser' }),
+            logout,
+          } as unknown as AuthService,
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Header);
+    fixture.componentRef.setInput('logueado', true);
+    fixture.detectChanges();
+  });
+
+  it('muestra logo y avatar, sin buscador ni enlaces de login/registro', () => {
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('img[alt="Falta Una"]')).toBeTruthy();
+    expect(el.querySelector('button[aria-label="Menú de perfil"]')).toBeTruthy();
+    expect(el.querySelector('input[type="search"]')).toBeFalsy();
+    expect(el.querySelector('a[href="/login"]')).toBeFalsy();
+    expect(el.querySelector('a[href="/registro"]')).toBeFalsy();
+  });
+
+  it('despliega el menú con el nombre del usuario al tocar el avatar', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).not.toContain('testuser');
+
+    (el.querySelector('button[aria-label="Menú de perfil"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(el.textContent).toContain('testuser');
+    expect(
+      el.querySelector('button[aria-label="Menú de perfil"]')?.getAttribute('aria-expanded'),
+    ).toBe('true');
+  });
+
+  it('cierra la sesión y navega a /login', () => {
+    const router = TestBed.inject(Router);
+    const navegar = jest.spyOn(router, 'navigate').mockResolvedValue(true);
+    const el = fixture.nativeElement as HTMLElement;
+
+    (el.querySelector('button[aria-label="Menú de perfil"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    const botonCerrar = (Array.from(el.querySelectorAll('button')) as HTMLButtonElement[]).find(
+      (b) => b.textContent?.trim() === 'Cerrar sesión',
+    );
+    botonCerrar?.click();
+
+    expect(logout).toHaveBeenCalled();
+    expect(navegar).toHaveBeenCalledWith(['/login']);
   });
 });
