@@ -24,7 +24,14 @@
         }
       </button>
     } @else {
-      <app-carta [carta]="cartaDe(carta)" />
+      <div class="celda-carta">
+        <app-carta [carta]="cartaDe(carta)" />
+        @if (esFavorita(carta)) {
+          <span class="celda__corazon" aria-hidden="true">
+            <ng-icon name="phosphorHeartFill" size="20" />
+          </span>
+        }
+      </div>
     }
   }
 </div>

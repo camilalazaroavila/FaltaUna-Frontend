@@ -13,10 +13,10 @@
     --album-slot-ondas: rgba(244, 250, 246, 0.06);
     --album-slot-icono: var(--texto-primario);
 
-    /* Carta marcada como "quiero" (faltante u obtenida). */
-    --album-favorita-borde: var(--marca-acento);
-    --album-favorita-icono: var(--marca-acento);
-    --album-favorita-fondo: var(--marca-acento-suave);
+    /* Carta marcada como "quiero" (faltante u obtenida): círculo verde con ícono oscuro. */
+    --album-favorita-borde: var(--marca-primaria);
+    --album-favorita-icono: var(--marca-sobre-primaria);
+    --album-favorita-fondo: var(--marca-primaria);
 
     /* Realce del álbum seleccionado en el listado lateral. */
     --album-seleccionado-fondo: var(--marca-coleccion-fondo);

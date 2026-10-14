@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
 
 import { EncabezadoAlbum } from '../../compartidos/componentes/encabezado-album/encabezado-album';
@@ -10,14 +12,17 @@ import type {
   DetalleAlbum,
   ResumenAlbum,
 } from '../../modelos/album-jugador.model';
+import { normalizarNombre } from '../../modelos/categoria.model';
+import { categoriaCuponDesdeCarta, type CategoriaCupon } from '../../modelos/cupon.model';
 import { AlbumesJugadorService } from '../../servicios/albumes-jugador.service';
 
 /**
  * Vista "Álbumes" del jugador.
  *
- * A la izquierda, filtro por categoría de marca y listado de álbumes; a la
- * derecha, el álbum seleccionado con su progreso y su grilla. En mobile se
- * navega en dos pantallas (listado → detalle).
+ * A la izquierda, filtro por categoría de marca, buscador por nombre y listado
+ * de álbumes; a la derecha, el álbum seleccionado con su progreso y su grilla.
+ * Al entrar (o al cambiar de categoría/búsqueda) se selecciona el primer álbum
+ * visible. En mobile se navega en dos pantallas (listado → detalle).
  *
  * Los componentes no hacen HTTP: todo pasa por `AlbumesJugadorService`, que
  * consume `ApiService` con respaldo mock mientras el backend no expone el
@@ -25,7 +30,7 @@ import { AlbumesJugadorService } from '../../servicios/albumes-jugador.service';
  */
 @Component({
   selector: 'app-albumes',
-  imports: [Header, FiltrosCategoriaAlbum, EncabezadoAlbum, GrillaAlbum],
+  imports: [NgIcon, RouterLink, Header, FiltrosCategoriaAlbum, EncabezadoAlbum, GrillaAlbum],
   templateUrl: './albumes.html',
   styleUrl: './albumes.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +42,7 @@ export class Albumes implements OnInit {
   protected readonly categoriaActiva = signal<number | null>(null);
 
   protected readonly albumes = signal<readonly ResumenAlbum[]>([]);
+  protected readonly busqueda = signal('');
   protected readonly cargandoAlbumes = signal(true);
   protected readonly errorAlbumes = signal<string | null>(null);
 
@@ -53,6 +59,27 @@ export class Albumes implements OnInit {
 
   /** Logos de álbum que fallaron al cargar, para mostrar la inicial. */
   protected readonly logosFallidos = signal<ReadonlySet<number>>(new Set<number>());
+
+  /** Álbumes visibles: los de la categoría activa filtrados por el buscador. */
+  protected readonly albumesVisibles = computed(() => {
+    const termino = normalizarNombre(this.busqueda());
+    if (!termino) {
+      return this.albumes();
+    }
+    return this.albumes().filter((album) =>
+      normalizarNombre(album.marcaNombre).includes(termino),
+    );
+  });
+
+  /** Categoría de cupón del álbum seleccionado, para el CTA "Canjear cupón". */
+  protected readonly categoriaCuponSeleccionada = computed<CategoriaCupon | null>(() => {
+    const album = this.albumSeleccionado();
+    if (!album || album.categoriaId === null) {
+      return null;
+    }
+    const categoria = this.categorias().find((c) => c.id === album.categoriaId)?.categoria;
+    return categoria ? categoriaCuponDesdeCarta(categoria) : null;
+  });
 
   ngOnInit(): void {
     this.cargarCategorias();
@@ -74,6 +101,7 @@ export class Albumes implements OnInit {
       next: (albumes) => {
         this.albumes.set(albumes);
         this.cargandoAlbumes.set(false);
+        this.asegurarSeleccion();
       },
       error: () => {
         this.cargandoAlbumes.set(false);
@@ -88,10 +116,35 @@ export class Albumes implements OnInit {
     this.cargarAlbumes(categoriaId);
   }
 
+  protected buscar(evento: Event): void {
+    const valor = (evento.target as HTMLInputElement).value;
+    this.busqueda.set(valor);
+    this.asegurarSeleccion();
+  }
+
   protected seleccionarAlbum(resumen: ResumenAlbum): void {
     this.albumSeleccionado.set(resumen);
     this.modoMarcar.set(false);
     this.cargarDetalle(resumen.id);
+  }
+
+  /**
+   * Mantiene una selección coherente con lo visible: si no hay ningún álbum
+   * visible, limpia el panel; si el seleccionado dejó de estarlo, elige el
+   * primero visible.
+   */
+  private asegurarSeleccion(): void {
+    const visibles = this.albumesVisibles();
+    const actual = this.albumSeleccionado();
+
+    if (visibles.length === 0) {
+      this.volverALista();
+      return;
+    }
+
+    if (!actual || !visibles.some((album) => album.id === actual.id)) {
+      this.seleccionarAlbum(visibles[0]);
+    }
   }
 
   private cargarDetalle(id: number): void {

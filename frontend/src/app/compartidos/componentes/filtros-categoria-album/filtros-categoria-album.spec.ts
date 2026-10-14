@@ -9,7 +9,7 @@ const ICONO = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
 const CATEGORIAS: readonly CategoriaAlbum[] = [
   { id: 4, nombre: 'Gastronomía', categoria: 'gastronomia' },
   { id: 7, nombre: 'Desconocida', categoria: null },
-  { id: 2, nombre: 'Cosmética', categoria: 'cosmetica' },
+  { id: 2, nombre: 'Cosméticos', categoria: 'cosmeticos' },
 ];
 
 describe('FiltrosCategoriaAlbum', () => {
@@ -39,9 +39,20 @@ describe('FiltrosCategoriaAlbum', () => {
     const textos = botones().map((boton) => boton.textContent?.trim());
     expect(textos[0]).toBe('Todas');
     expect(textos).toContain('Gastronomía');
-    expect(textos).toContain('Cosmética');
+    expect(textos).toContain('Cosméticos');
     expect(textos).not.toContain('Desconocida');
     expect(botones()).toHaveLength(3);
+  });
+
+  it('el icono de "Todas" mide lo mismo que el de las categorías', () => {
+    montar();
+
+    const iconoTodas = botones()[0].querySelector('ng-icon')!;
+    const iconoCategoria = botones()[1].querySelector('app-icono-categoria')!;
+    const cajaCategoria = iconoCategoria.parentElement!;
+
+    expect(iconoTodas.className).toContain('size-6');
+    expect(cajaCategoria.className).toContain('size-6');
   });
 
   it('marca "Todas" como activa cuando no hay categoría elegida', () => {

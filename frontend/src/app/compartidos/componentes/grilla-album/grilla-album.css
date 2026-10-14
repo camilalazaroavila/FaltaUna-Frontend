@@ -18,6 +18,13 @@
   }
 }
 
+/* Carta obtenida fuera del modo "Marcar": mismo anclaje para el corazón. */
+.celda-carta {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
 /* Celda interactiva de una carta obtenida, solo en modo "Marcar". */
 .celda {
   position: relative;
