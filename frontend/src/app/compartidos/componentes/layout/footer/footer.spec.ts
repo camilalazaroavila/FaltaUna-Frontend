@@ -3,8 +3,9 @@ import { provideRouter } from '@angular/router';
 import { Footer } from './footer';
 
 /**
- * El footer es compartido por ambas landings: el `modo` solo decide el logo y
- * arrastra ese mismo modo al login/registro. No expone URLs de redes todavía.
+ * El footer es compartido por ambas landings: el `modo` solo decide el logo, la
+ * superficie y arrastra ese mismo modo al login/registro. No expone URLs de
+ * redes ni enlaces legales todavía (Open Decision).
  */
 describe('Footer', () => {
   beforeEach(async () => {
@@ -24,6 +25,9 @@ describe('Footer', () => {
   const enlaces = (fixture: ComponentFixture<Footer>) =>
     Array.from(fixture.nativeElement.querySelectorAll('nav a')) as HTMLAnchorElement[];
 
+  const texto = (fixture: ComponentFixture<Footer>) =>
+    fixture.nativeElement.querySelector('footer')?.textContent ?? '';
+
   it('crea el pie de página', () => {
     const fixture = crear();
     expect(fixture.componentInstance).toBeTruthy();
@@ -35,15 +39,17 @@ describe('Footer', () => {
 
     const textos = enlaces(fixture).map((a) => a.textContent?.trim());
     expect(textos).toContain('Modo empresa');
+    expect(textos).not.toContain('Modo usuario');
 
     const login = enlaces(fixture).find((a) => a.textContent?.trim() === 'Iniciar sesión');
     expect(login?.getAttribute('href')).toBe('/login');
   });
 
-  it('en modo empresa propaga ese modo al login y al registro y oculta el acceso a empresa', () => {
+  it('en modo empresa propaga ese modo al login/registro y ofrece el modo usuario', () => {
     const fixture = crear('empresa');
 
     const textos = enlaces(fixture).map((a) => a.textContent?.trim());
+    expect(textos).toContain('Modo usuario');
     expect(textos).not.toContain('Modo empresa');
 
     const login = enlaces(fixture).find((a) => a.textContent?.trim() === 'Iniciar sesión');
@@ -52,11 +58,12 @@ describe('Footer', () => {
     expect(registro?.getAttribute('href')).toBe('/registro?modo=empresa');
   });
 
-  it('muestra el año vigente en el copyright', () => {
+  it('muestra el año vigente y el descargo en la franja inferior', () => {
     const fixture = crear();
-    const texto = fixture.nativeElement.querySelector('footer p')?.textContent ?? '';
-    expect(texto).toContain(String(new Date().getFullYear()));
-    expect(texto).toContain('Falta Una');
+    const contenido = texto(fixture);
+    expect(contenido).toContain(String(new Date().getFullYear()));
+    expect(contenido).toContain('Falta Una');
+    expect(contenido).toContain('proyecto académico');
   });
 
   it('elige un logo distinto según el modo', () => {

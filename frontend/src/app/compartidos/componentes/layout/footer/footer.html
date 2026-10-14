@@ -1,30 +1,78 @@
-<footer class="border-t border-borde-default bg-fondo-elevado text-texto-primario">
-  <div
-    class="contenedor-landing flex flex-col items-center gap-4 py-6 md:flex-row md:justify-between md:gap-6 lg:py-8"
-  >
-    <a routerLink="/" class="shrink-0" aria-label="Falta Una, ir al inicio">
-      <img [src]="urlLogo()" alt="Falta Una" class="h-8 w-auto sm:h-9" />
-    </a>
-
-    <nav
-      class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6"
-      aria-label="Enlaces del pie de página"
+<footer [ngClass]="clasesPie()">
+  <div class="contenedor-landing py-10 md:py-14 lg:py-16">
+    <div
+      class="grid gap-8 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr] lg:gap-12"
     >
-      @for (enlace of enlaces(); track enlace.etiqueta) {
-        <a
-          [routerLink]="enlace.ruta"
-          [queryParams]="enlace.queryParams"
-          class="font-interfaz text-[11px] font-bold uppercase tracking-wide text-texto-secundario transition-colors hover:text-texto-primario focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco sm:text-xs"
-        >
-          {{ enlace.etiqueta }}
+      <!-- Marca -->
+      <div class="max-w-sm">
+        <a routerLink="/" class="inline-block" aria-label="Falta Una, ir al inicio">
+          <img [src]="urlLogo()" alt="Falta Una" class="h-12 w-auto md:h-14 lg:h-16" />
         </a>
-      }
-    </nav>
+        <p
+          class="mt-4 font-interfaz text-sm leading-relaxed"
+          [ngClass]="clasesTextoTenue()"
+        >
+          {{ descripcion }}
+        </p>
+      </div>
 
-    <p class="font-interfaz text-[10px] text-texto-apagado sm:text-xs">
-      © {{ anio }} Falta Una. Todos los derechos reservados.
-    </p>
+      <!-- Navegación -->
+      <nav class="flex flex-col gap-3" aria-labelledby="footer-navegacion-titulo">
+        <h2
+          id="footer-navegacion-titulo"
+          class="font-interfaz text-xs font-bold uppercase tracking-widest"
+          [ngClass]="clasesTextoTenue()"
+        >
+          Navegación
+        </h2>
+        @for (enlace of navegacion(); track enlace.etiqueta) {
+          <a
+            [routerLink]="enlace.ruta"
+            [queryParams]="enlace.queryParams"
+            class="w-fit font-interfaz text-sm font-semibold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          >
+            {{ enlace.etiqueta }}
+          </a>
+        }
+      </nav>
+
+      <!-- Cuenta -->
+      <nav class="flex flex-col gap-3" aria-labelledby="footer-cuenta-titulo">
+        <h2
+          id="footer-cuenta-titulo"
+          class="font-interfaz text-xs font-bold uppercase tracking-widest"
+          [ngClass]="clasesTextoTenue()"
+        >
+          Cuenta
+        </h2>
+        @for (enlace of cuenta(); track enlace.etiqueta) {
+          <a
+            [routerLink]="enlace.ruta"
+            [queryParams]="enlace.queryParams"
+            class="w-fit font-interfaz text-sm font-semibold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          >
+            {{ enlace.etiqueta }}
+          </a>
+        }
+      </nav>
+    </div>
+
+    <!-- Franja inferior: copyright y descargo -->
+    <div class="mt-10 border-t pt-6 md:mt-12" [ngClass]="claseBorde()">
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-8">
+        <p class="font-interfaz text-xs" [ngClass]="clasesTextoTenue()">
+          © {{ anio }} Falta Una. Todos los derechos reservados.
+        </p>
+        <p
+          class="max-w-2xl font-interfaz text-xs leading-relaxed"
+          [ngClass]="clasesTextoTenue()"
+        >
+          {{ descargo }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Redes sociales y enlaces legales/de ayuda: omitidos hasta contar con
+         URLs y rutas reales (Open Decision). -->
   </div>
-
-  <!-- Redes sociales: bloque omitido hasta contar con URLs reales (Open Decision). -->
 </footer>
