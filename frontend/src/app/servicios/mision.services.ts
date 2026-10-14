@@ -6,7 +6,7 @@ import {
   type Periodicidad,
   type ProgresoPity,
   faltantesPity,
-} from '../modelos/misiones.model';
+} from '@modelos/misiones.model';
 
 /**
  * Datos de prueba mientras el backend no expone misiones ni PT System.

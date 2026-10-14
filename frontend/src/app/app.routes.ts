@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { rolGuard } from './guardias/rol.guard';
-import { pagoAprobadoGuard } from './guardias/pago-aprobado.guard';
+import { rolGuard } from '@app/guardias/rol.guard';
+import { pagoAprobadoGuard } from '@app/guardias/pago-aprobado.guard';
 
 /**
  * Rutas de la aplicación.
@@ -17,26 +17,26 @@ export const routes: Routes = [
     path: '',
     pathMatch: 'full',
     title: 'Falta Una · Partidos y cartas',
-    loadComponent: () => import('./paginas/landing/landing').then((m) => m.Landing),
+    loadComponent: () => import('@paginas/landing/landing').then((m) => m.Landing),
   },
 
   {
     path: 'empresa/landing',
     title: 'Falta Una · Para empresas',
     loadComponent: () =>
-      import('./paginas/landing-empresa/landing-empresa').then((m) => m.LandingEmpresa),
+      import('@paginas/landing-empresa/landing-empresa').then((m) => m.LandingEmpresa),
   },
 
   {
     path: 'login',
     title: 'Ingresar · Falta Una',
-    loadComponent: () => import('./paginas/login/login').then((m) => m.Login),
+    loadComponent: () => import('@paginas/login/login').then((m) => m.Login),
   },
 
   {
     path: 'registro',
     title: 'Crear usuario · Falta Una',
-    loadComponent: () => import('./paginas/registro/registro').then((m) => m.Registro),
+    loadComponent: () => import('@paginas/registro/registro').then((m) => m.Registro),
   },
 
   {
@@ -44,7 +44,7 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Usuario'] },
     loadComponent: () =>
-      import('./paginas/usuario-dashboard/usuario-dashboard').then((m) => m.UsuarioDashboard),
+      import('@paginas/usuario-dashboard/usuario-dashboard').then((m) => m.UsuarioDashboard),
   },
 
   {
@@ -53,7 +53,7 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Usuario'] },
     loadComponent: () =>
-      import('./paginas/usuario-cupones/usuario-cupones').then((m) => m.UsuarioCupones),
+      import('@paginas/usuario-cupones/usuario-cupones').then((m) => m.UsuarioCupones),
   },
   {
     path: 'usuario/mis-cartas',
@@ -61,7 +61,7 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Usuario'] },
     loadComponent: () =>
-      import('./paginas/mis-cartas/mis-cartas').then((m) => m.MisCartas),
+      import('@paginas/mis-cartas/mis-cartas').then((m) => m.MisCartas),
   },
 
   {
@@ -69,7 +69,7 @@ export const routes: Routes = [
     title: 'Mi baraja · Falta Una',
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Usuario'] },
-    loadComponent: () => import('./paginas/mi-baraja/mi-baraja').then((m) => m.MiBaraja),
+    loadComponent: () => import('@paginas/mi-baraja/mi-baraja').then((m) => m.MiBaraja),
   },
 
   {
@@ -78,7 +78,7 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Usuario'] },
     loadComponent: () =>
-      import('./paginas/misiones/misiones').then((m) => m.Misiones),
+      import('@paginas/misiones/misiones').then((m) => m.Misiones),
   },
 
   {
@@ -87,7 +87,7 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Empleado'] },
     loadComponent: () =>
-      import('./paginas/empleado-dashboard/empleado-dashboard').then((m) => m.EmpleadoDashboard),
+      import('@paginas/empleado-dashboard/empleado-dashboard').then((m) => m.EmpleadoDashboard),
   },
 
   {
@@ -97,21 +97,21 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Empresa'] },
     loadComponent: () =>
-      import('./paginas/empresa-layout/empresa-layout').then((m) => m.EmpresaLayout),
+      import('@paginas/empresa-layout/empresa-layout').then((m) => m.EmpresaLayout),
     children: [
       {
         path: '',
         pathMatch: 'full',
         title: 'Elegí tu plan · Falta Una',
         loadComponent: () =>
-          import('./paginas/empresa-planes/empresa-planes').then((m) => m.EmpresaPlanes),
+          import('@paginas/empresa-planes/empresa-planes').then((m) => m.EmpresaPlanes),
       },
       {
         path: 'album/pago/:resultado',
         title: 'Estado del pago · Falta Una',
         loadComponent: () =>
           import(
-            './paginas/empresa-pago-resultado/empresa-pago-resultado'
+            '@paginas/empresa-pago-resultado/empresa-pago-resultado'
           ).then((m) => m.EmpresaPagoResultado),
       },
       {
@@ -129,7 +129,7 @@ export const routes: Routes = [
             path: 'marca',
             title: 'Tu marca · Falta Una',
             loadComponent: () =>
-              import('./paginas/empresa-album-marca/empresa-album-marca').then(
+              import('@paginas/empresa-album-marca/empresa-album-marca').then(
                 (m) => m.EmpresaAlbumMarca,
               ),
           },
@@ -137,7 +137,7 @@ export const routes: Routes = [
             path: 'identidad',
             title: 'Qué te identifica · Falta Una',
             loadComponent: () =>
-              import('./paginas/empresa-album-identidad/empresa-album-identidad').then(
+              import('@paginas/empresa-album-identidad/empresa-album-identidad').then(
                 (m) => m.EmpresaAlbumIdentidad,
               ),
           },
@@ -145,7 +145,7 @@ export const routes: Routes = [
             path: 'listo',
             title: 'Álbum creado · Falta Una',
             loadComponent: () =>
-              import('./paginas/empresa-album-exito/empresa-album-exito').then(
+              import('@paginas/empresa-album-exito/empresa-album-exito').then(
                 (m) => m.EmpresaAlbumExito,
               ),
           },
@@ -157,14 +157,14 @@ export const routes: Routes = [
         path: 'panel',
         title: 'Panel de empresa · Falta Una',
         loadComponent: () =>
-          import('./paginas/empresa-panel/empresa-panel').then((m) => m.EmpresaPanel),
+          import('@paginas/empresa-panel/empresa-panel').then((m) => m.EmpresaPanel),
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'estadisticas' },
           {
             path: 'estadisticas',
             title: 'Estadísticas · Falta Una',
             loadComponent: () =>
-              import('./paginas/empresa-estadisticas/empresa-estadisticas').then(
+              import('@paginas/empresa-estadisticas/empresa-estadisticas').then(
                 (m) => m.EmpresaEstadisticas,
               ),
           },
@@ -172,7 +172,7 @@ export const routes: Routes = [
             path: 'albumes',
             title: 'Álbumes · Falta Una',
             loadComponent: () =>
-              import('./paginas/empresa-albumes/empresa-albumes').then((m) => m.EmpresaAlbumes),
+              import('@paginas/empresa-albumes/empresa-albumes').then((m) => m.EmpresaAlbumes),
           },
         ],
       },
@@ -184,14 +184,14 @@ export const routes: Routes = [
     canActivate: [rolGuard],
     data: { rolesPermitidos: ['Admin'] },
     loadComponent: () =>
-      import('./paginas/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
+      import('@paginas/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
   },
 
   {
     path: 'componentes',
     title: 'Galería de componentes · Falta Una',
     loadComponent: () =>
-      import('./paginas/galeria-componentes/galeria-componentes').then(
+      import('@paginas/galeria-componentes/galeria-componentes').then(
         (m) => m.GaleriaComponentes,
       ),
   },

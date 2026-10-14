@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '@environments/environment';
 import {
   CanjeApi,
   CanjeExitosoRespuesta,
@@ -14,7 +14,7 @@ import {
   QrCupon,
   QrCuponApi,
   ValidarQrApi,
-} from '../modelos/cupon.model';
+} from '@modelos/cupon.model';
 
 /**
  * El backend todavía no manda la categoría del cupón, así que se deduce de la marca.

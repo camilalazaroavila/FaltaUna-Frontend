@@ -9,7 +9,7 @@ import {
   Rol,
   Usuario,
   UsuarioRespuesta
-} from '../modelos/usuario.model';
+} from '@modelos/usuario.model';
 
 const CLAVE_TOKEN = 'faltauna_token';
 const CLAVE_USUARIO = 'faltauna_usuario';

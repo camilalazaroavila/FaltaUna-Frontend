@@ -6,12 +6,12 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { toast } from 'ngx-sonner';
-import { Plan, PLANES } from '../../modelos/plan.model';
-import { SuscripcionEstado } from '../../servicios/suscripcion-estado.service';
-import { PagosService } from '../../servicios/pagos.service';
-import { AuthService } from '../../servicios/auth.service';
-import { StepperSuscripcion } from '../../compartidos/componentes/stepper-suscripcion/stepper-suscripcion';
-import { TarjetaPlan } from '../../compartidos/componentes/tarjeta-plan/tarjeta-plan';
+import { Plan, PLANES } from '@modelos/plan.model';
+import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
+import { PagosService } from '@servicios/pagos.service';
+import { AuthService } from '@servicios/auth.service';
+import { StepperSuscripcion } from '@compartidos/componentes/empresa/stepper-suscripcion/stepper-suscripcion';
+import { TarjetaPlan } from '@compartidos/componentes/empresa/tarjeta-plan/tarjeta-plan';
 
 /** Paso 1 del alta de campaña: elegir el plan mensual e iniciar el pago en Mercado Pago. */
 @Component({

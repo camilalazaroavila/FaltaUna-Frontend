@@ -1,22 +1,22 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { SobresService } from '../../servicios/sobres.service';
-import { BotonNavegacionCircular } from '../../compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
-import { FlujoAperturaSobres } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
-import { Header } from '../../compartidos/componentes/header/header';
-import { SobreMarca } from '../../compartidos/componentes/sobre-marca/sobre-marca';
-import { SobreRespuesta } from '../../modelos/sobre.model';
+import { SobresService } from '@servicios/sobres.service';
+import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
+import { FlujoAperturaSobres } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
+import { Header } from '@compartidos/componentes/layout/header/header';
+import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
+import { SobreRespuesta } from '@modelos/sobre.model';
 
-import urlSobreIzquierda from '../../compartidos/SVGs/PaqueteHuhDosColores.svg';
-import urlSobreCentro from '../../compartidos/SVGs/Paquete1.svg';
-import urlSobreDerecha from '../../compartidos/SVGs/Paquete2.svg';
-import urlIconPelea from '../../compartidos/SVGs/IconPelea.svg';
+import urlSobreIzquierda from '@svgs/PaqueteHuhDosColores.svg';
+import urlSobreCentro from '@svgs/Paquete1.svg';
+import urlSobreDerecha from '@svgs/Paquete2.svg';
+import urlIconPelea from '@svgs/IconPelea.svg';
 
-import urlIconoMisCartas from '../../compartidos/SVGs/Icon_misCartas.svg';
-import urlIconoAlbum from '../../compartidos/SVGs/Icon_Album.svg';
-import urlIconoIntercambios from '../../compartidos/SVGs/Icon_Intercambio.svg';
-import urlIconoQr from '../../compartidos/SVGs/Icon_Qr.svg';
-import urlIconoDescuento from '../../compartidos/SVGs/Icon_Descuento.svg';
+import urlIconoMisCartas from '@svgs/Icon_misCartas.svg';
+import urlIconoAlbum from '@svgs/Icon_Album.svg';
+import urlIconoIntercambios from '@svgs/Icon_Intercambio.svg';
+import urlIconoQr from '@svgs/Icon_Qr.svg';
+import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 
 export interface DestinoNavegacion {
   readonly id: string;

@@ -5,7 +5,7 @@ import {
   AbrirSobreSolicitud,
   AperturaSobreRespuesta,
   SobreRespuesta,
-} from '../modelos/sobre.model';
+} from '@modelos/sobre.model';
 
 @Injectable({
   providedIn: 'root',

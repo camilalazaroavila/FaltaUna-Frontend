@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import type { Carta, CategoriaCarta } from '../../modelos/carta.model';
-import { TAMANIO_BARAJA } from '../../modelos/baraja.model';
-import { CARTAS_MOCK } from '../../modelos/cartas.mock';
+import type { Carta, CategoriaCarta } from '@modelos/carta.model';
+import { TAMANIO_BARAJA } from '@modelos/baraja.model';
+import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import { MiBaraja } from './mi-baraja';
 
 describe('MiBaraja', () => {

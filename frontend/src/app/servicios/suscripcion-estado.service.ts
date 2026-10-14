@@ -1,6 +1,6 @@
 import { Injectable, effect, signal } from '@angular/core';
-import { Plan } from '../modelos/plan.model';
-import { PagoRespuesta } from '../modelos/pago.model';
+import { Plan } from '@modelos/plan.model';
+import { PagoRespuesta } from '@modelos/pago.model';
 
 const CLAVE_REFERENCIA = 'faltauna_pago_ref';
 

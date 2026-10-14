@@ -7,7 +7,7 @@ import {
   IniciarPagoRespuesta,
   IniciarPagoSolicitud,
   PagoRespuesta,
-} from '../modelos/pago.model';
+} from '@modelos/pago.model';
 
 @Injectable({
   providedIn: 'root',

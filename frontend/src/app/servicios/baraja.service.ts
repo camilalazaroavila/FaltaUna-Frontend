@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import type { Carta } from '../modelos/carta.model';
-import { CARTAS_MOCK } from '../modelos/cartas.mock';
+import type { Carta } from '@modelos/carta.model';
+import { CARTAS_MOCK } from '@modelos/cartas.mock';
 
 /**
  * Servicio (mock) de la baraja del jugador.

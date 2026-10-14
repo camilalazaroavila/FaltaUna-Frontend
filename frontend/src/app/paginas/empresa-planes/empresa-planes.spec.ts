@@ -4,9 +4,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { EmpresaPlanes } from './empresa-planes';
-import { PagosService } from '../../servicios/pagos.service';
-import { AuthService } from '../../servicios/auth.service';
-import { PLANES } from '../../modelos/plan.model';
+import { PagosService } from '@servicios/pagos.service';
+import { AuthService } from '@servicios/auth.service';
+import { PLANES } from '@modelos/plan.model';
 
 describe('EmpresaPlanes', () => {
   let mockPagosService: {
