@@ -26,7 +26,11 @@ import urlLogoClaro from '../../SVGs/Imagotipo_claro.svg';
         <div
           class="flex items-center justify-between gap-2 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
         >
-          <a routerLink="/" class="flex shrink-0 items-center" aria-label="Ir al inicio de Falta Una">
+          <a
+            [routerLink]="enlaceLogo()"
+            class="flex shrink-0 items-center"
+            aria-label="Ir al inicio de Falta Una"
+          >
             <img
               [src]="urlLogo"
               alt="Falta Una"
@@ -43,7 +47,7 @@ import urlLogoClaro from '../../SVGs/Imagotipo_claro.svg';
               [attr.aria-expanded]="menuUsuarioAbierto()"
             >
               <svg
-                class="size-5 text-[#0d3b40] sm:size-6 2xl:size-8"
+                class="size-6 text-marca-sobre-acento sm:size-7 2xl:size-9"
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 aria-hidden="true"
@@ -176,6 +180,12 @@ export class Header {
    * y avatar con menú de sesión a la derecha. Ignora `enAuth`.
    */
   readonly logueado = input(false);
+
+  /**
+   * Destino del logo cuando la sesión está iniciada. Las vistas del jugador
+   * apuntan a su home (`/usuario`); por defecto va a la landing.
+   */
+  readonly enlaceLogo = input('/');
 
   /** Emite el texto buscado al enviar el formulario (Enter). */
   readonly buscar = output<string>();
