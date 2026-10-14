@@ -12,7 +12,7 @@ import { INTEGRANTES_EQUIPO } from '@app/datos/landing-empresa.data';
 import urlCartaRara from '@svgs/CartaRara.svg';
 import urlEpicarta from '@svgs/Epicarta.svg';
 import urlUnicarta from '@svgs/Unicarta.svg';
-import urlLogo from '@svgs/Imagotipo_Alt.svg';
+import urlLogo from '@svgs/Imagotipo_claro.svg';
 import urlSobre from '@svgs/PaqueteHuh.svg';
 import urlSobreCentro from '@svgs/Paquete1.svg';
 import urlSobreDerecha from '@svgs/Paquete2.svg';

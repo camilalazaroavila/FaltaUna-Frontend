@@ -1,97 +1,103 @@
-:host{
-    display:block;
+:host {
+  display: block;
 }
 
-.faq-empresa{
-    overflow: hidden;
-    border: 2px solid var(--color-violeta-empresa);
-    border-radius:var(--radio-md);
-    background:transparent;
+.faq-empresa {
+  overflow: hidden;
+  border: 2px solid var(--color-violeta-empresa);
+  border-radius: var(--radio-md);
+  background: transparent;
 }
 
-.faq-empresa__cabecera{
-    display:flex;
-    width:100%;
-    align-items:center;
-    justify-content:space-between;
-    gap:.75rem;
-    padding:.65rem 1.1rem;
-    border:0;
-    background:transparent;
-    color:var(--color-teal-profundo);
-    font-family:var(--fuente-interfaz);
-    font-size:.8rem;
-    font-weight:700;
-    text-align:left;
-    cursor:pointer;
-    transition:color 150ms ease;
-}
-.faq-empresa__cabecera:hover{
-    color:var(--color-violeta-empresa);
+.faq-empresa__cabecera {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-teal-profundo);
+  font-family: var(--fuente-interfaz);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  transition: color 150ms ease;
 }
 
-.faq-empresa__cabecera:focus-visible{
-    outline:2px solid var(--color-violeta-empresa);
-    outline-offset:-4px;
-    border-radius:var(--radio-md);
+.faq-empresa__cabecera:hover {
+  color: var(--color-violeta-empresa);
 }
 
-.faq-empresa__pregunta{
-    min-width:0;
-}
-.faq-empresa__flecha{
-    flex:0 0 auto;
-    width:.9rem;
-    height:.9rem;
-    color:var(--color-violeta-empresa);
-    transition:transform 200ms ease;
+.faq-empresa__cabecera:focus-visible {
+  outline: 2px solid var(--color-violeta-empresa);
+  outline-offset: -4px;
+  border-radius: var(--radio-md);
 }
 
-.faq-empresa--abierto .faq-empresa__flecha{
-    transform:rotate(180deg);
+.faq-empresa__pregunta {
+  min-width: 0;
 }
 
-.faq-empresa__panel{
-    display:grid;
-    grid-template-rows:0fr;
-    transition:grid-template-rows 200ms ease;
+.faq-empresa__flecha {
+  flex: 0 0 auto;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--color-violeta-empresa);
+  transition: transform 200ms ease;
 }
 
-.faq-empresa--abierto .faq-empresa__panel{
-    grid-template-rows:1fr;
+.faq-empresa--abierto .faq-empresa__flecha {
+  transform: rotate(180deg);
 }
 
-.faq-empresa__contenido{
-    min-height:0;
-    overflow:hidden;
+.faq-empresa__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease;
 }
 
-.faq-empresa--abierto .faq-empresa__contenido{
-    padding-block:0 0.85rem;
+.faq-empresa--abierto .faq-empresa__panel {
+  grid-template-rows: 1fr;
 }
 
-.faq-empresa__respuesta{
-    margin:0;
-    padding-inline:1.1rem;
-    color:var(--color-teal-profundo);
-    font-family:var(--fuente-interfaz);
-    font-size:.78rem;
-    line-height:1.5;
+.faq-empresa__contenido {
+  min-height: 0;
+  overflow: hidden;
 }
-@media (min-width:768px){
-    .faq-empresa__cabecera{
-        padding:.85rem 1.5rem;
-        font-size:.9rem;
-    }
-    .faq-empresa__respuesta{
-        padding-inline:1.5rem;
-        font-size:.88rem;
-    }
+
+.faq-empresa--abierto .faq-empresa__contenido {
+  padding-block: 0 1rem;
 }
-@media (prefers-reduced-motion:reduce){
-    .faq-empresa__cabecera,
-    .faq-empresa__flecha,
-    .faq-empresa__panel{
-        transition:none;
-    }
+
+.faq-empresa__respuesta {
+  margin: 0;
+  padding-inline: 1.25rem;
+  color: var(--color-teal-profundo);
+  font-family: var(--fuente-interfaz);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .faq-empresa__cabecera {
+    padding: 1.1rem 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .faq-empresa__respuesta {
+    padding-inline: 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-empresa__cabecera,
+  .faq-empresa__flecha,
+  .faq-empresa__panel {
+    transition: none;
+  }
 }
