@@ -44,14 +44,14 @@ describe('FiltrosCategoriaAlbum', () => {
     expect(botones()).toHaveLength(3);
   });
 
-  it('el icono de "Todas" mide lo mismo que el de las categorías', () => {
+  it('el icono de "Todas" tiene su propio ajuste de tamaño, igual que las categorías', () => {
     montar();
 
     const iconoTodas = botones()[0].querySelector('ng-icon')!;
     const iconoCategoria = botones()[1].querySelector('app-icono-categoria')!;
     const cajaCategoria = iconoCategoria.parentElement!;
 
-    expect(iconoTodas.className).toContain('size-6');
+    expect(iconoTodas.className).toContain('icono-todas');
     expect(cajaCategoria.className).toContain('size-6');
   });
 
