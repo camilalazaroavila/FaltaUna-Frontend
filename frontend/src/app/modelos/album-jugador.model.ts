@@ -16,6 +16,19 @@ import {
  * `album.model.ts`, que describe la creación de colecciones del modo empresa.
  */
 
+/** Límites de cartas por colección definidos por reglas de negocio. */
+export const MIN_CARTAS_COLECCION = 12;
+export const MAX_CARTAS_COLECCION = 30;
+
+/** Valida que el total de cartas de una colección esté en el rango permitido [12, 30]. */
+export function validarCantidadCartasColeccion(total: number): boolean {
+  return (
+    Number.isInteger(total) &&
+    total >= MIN_CARTAS_COLECCION &&
+    total <= MAX_CARTAS_COLECCION
+  );
+}
+
 /** Resumen de un álbum de marca para el listado lateral por categoría. */
 export interface ResumenAlbum {
   readonly id: number;

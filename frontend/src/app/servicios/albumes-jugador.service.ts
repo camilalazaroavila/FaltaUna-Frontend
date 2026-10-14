@@ -4,6 +4,9 @@ import { catchError, map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
 import {
+  MIN_CARTAS_COLECCION,
+  MAX_CARTAS_COLECCION,
+  validarCantidadCartasColeccion,
   categoriaCartaDesdeNombre,
   type CategoriaAlbum,
   type CartaAlbum,
@@ -50,15 +53,12 @@ const MARCAS_MOCK: readonly MarcaMock[] = [
   { nombre: 'Lego', categoria: 'entretenimiento', logoUrl: 'imagenes/lego.png', descripcion: 'Armá tu propia historia.' },
 ];
 
-/** Mínimo y máximo de cartas por álbum de prueba (el backend real definirá su tamaño). */
-const MIN_CARTAS_POR_ALBUM = 12;
-const MAX_CARTAS_POR_ALBUM = 30;
 const IMAGEN_FALLBACK = 'imagenes/Sprite.png';
 const RAREZAS_CICLO: readonly RarezaCarta[] = ['comun', 'rara', 'epicarta', 'legendaria', 'comun'];
 
-/** Tamaño determinista por álbum, siempre dentro de [12, 30]. */
+/** Tamaño determinista por álbum, siempre dentro de [MIN_CARTAS_COLECCION, MAX_CARTAS_COLECCION]. */
 const cartasPorAlbum = (indice: number): number =>
-  MIN_CARTAS_POR_ALBUM + (indice % (MAX_CARTAS_POR_ALBUM - MIN_CARTAS_POR_ALBUM + 1));
+  MIN_CARTAS_COLECCION + (indice % (MAX_CARTAS_COLECCION - MIN_CARTAS_COLECCION + 1));
 
 const redondearPorcentaje = (obtenidas: number, total: number): number =>
   total > 0 ? Math.round(Math.min(100, Math.max(0, (obtenidas / total) * 100))) : 0;
@@ -154,7 +154,7 @@ export class AlbumesJugadorService {
       .pipe(catchError(() => of(this.albumesMock(categoriaId))));
   }
 
-  /** Detalle de un álbum con sus cartas, favoritas incluidas. */
+  /** Detalle de un álbum con sus cartas, favoritas incluidas. Valida rango de 12 a 30 cartas. */
   obtenerDetalleAlbum(id: number): Observable<DetalleAlbum> {
     return this.api.get<DetalleAlbum>(`Colecciones/${id}/album`).pipe(
       catchError(() => {
@@ -162,6 +162,14 @@ export class AlbumesJugadorService {
         return detalle
           ? of(this.conFavoritas(detalle))
           : throwError(() => new Error('No encontramos el álbum.'));
+      }),
+      map((detalle) => {
+        if (!validarCantidadCartasColeccion(detalle.total)) {
+          throw new Error(
+            `La colección tiene una cantidad de cartas inválida (${detalle.total}). Debe estar entre ${MIN_CARTAS_COLECCION} y ${MAX_CARTAS_COLECCION}.`,
+          );
+        }
+        return detalle;
       }),
     );
   }

@@ -102,7 +102,7 @@ describe('AlbumesJugadorService', () => {
   });
 
   describe('obtenerDetalleAlbum', () => {
-    it('devuelve el detalle del backend cuando responde', () => {
+    it('devuelve el detalle del backend cuando responde con cantidad válida de cartas', () => {
       const detalle: DetalleAlbum = {
         id: 99,
         marcaNombre: 'Marca',
@@ -110,9 +110,9 @@ describe('AlbumesJugadorService', () => {
         descripcion: null,
         categoriaId: 4,
         categoriaNombre: 'Gastronomía',
-        total: 1,
-        obtenidas: 1,
-        porcentaje: 100,
+        total: 15,
+        obtenidas: 8,
+        porcentaje: 53,
         cartas: [],
       };
 
@@ -122,6 +122,62 @@ describe('AlbumesJugadorService', () => {
       httpMock.expectOne((peticion) => peticion.url.includes('Colecciones/99/album')).flush(detalle);
 
       expect(resultado).toEqual(detalle);
+    });
+
+    it('falla si la colección tiene menos de 12 cartas', () => {
+      const detalleInvalido: DetalleAlbum = {
+        id: 99,
+        marcaNombre: 'Marca Corta',
+        logoUrl: null,
+        descripcion: null,
+        categoriaId: 4,
+        categoriaNombre: 'Gastronomía',
+        total: 11,
+        obtenidas: 5,
+        porcentaje: 45,
+        cartas: [],
+      };
+
+      let error: Error | null = null;
+      servicio.obtenerDetalleAlbum(99).subscribe({
+        next: () => fail('debió fallar'),
+        error: (e) => (error = e),
+      });
+
+      httpMock
+        .expectOne((peticion) => peticion.url.includes('Colecciones/99/album'))
+        .flush(detalleInvalido);
+
+      expect(error).toBeTruthy();
+      expect(error?.message).toContain('inválida');
+    });
+
+    it('falla si la colección tiene más de 30 cartas', () => {
+      const detalleInvalido: DetalleAlbum = {
+        id: 99,
+        marcaNombre: 'Marca Larga',
+        logoUrl: null,
+        descripcion: null,
+        categoriaId: 4,
+        categoriaNombre: 'Gastronomía',
+        total: 31,
+        obtenidas: 10,
+        porcentaje: 32,
+        cartas: [],
+      };
+
+      let error: Error | null = null;
+      servicio.obtenerDetalleAlbum(99).subscribe({
+        next: () => fail('debió fallar'),
+        error: (e) => (error = e),
+      });
+
+      httpMock
+        .expectOne((peticion) => peticion.url.includes('Colecciones/99/album'))
+        .flush(detalleInvalido);
+
+      expect(error).toBeTruthy();
+      expect(error?.message).toContain('inválida');
     });
 
     it('falla si el álbum pedido no existe en el mock', () => {
