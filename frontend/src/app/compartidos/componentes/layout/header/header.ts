@@ -26,7 +26,11 @@ import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
         <div
           class="flex items-center justify-between gap-2 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
         >
-          <a routerLink="/" class="flex shrink-0 items-center" aria-label="Ir al inicio de Falta Una">
+          <a
+            [routerLink]="destinoLogo()"
+            class="flex shrink-0 items-center"
+            aria-label="Ir al inicio de Falta Una"
+          >
             <img
               [src]="urlLogo"
               alt="Falta Una"
@@ -38,12 +42,12 @@ import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
             <button
               type="button"
               (click)="toggleMenuUsuario()"
-              class="flex size-9 cursor-pointer items-center justify-center rounded-circulo border border-black/10 bg-marca-acento text-marca-sobre-acento shadow-sm transition hover:brightness-105 sm:size-10 2xl:size-14"
+              class="flex size-9 cursor-pointer items-center justify-center rounded-circulo shadow-sm transition hover:brightness-105 hover:scale-105 sm:size-10 2xl:size-14"
               aria-label="Menú de perfil"
               [attr.aria-expanded]="menuUsuarioAbierto()"
             >
               <svg
-                class="size-5 text-[#0d3b40] sm:size-6 2xl:size-8"
+                class="size-15 --landing-claro-texto sm:size-10 2xl:size-10"
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 aria-hidden="true"
@@ -87,7 +91,7 @@ import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
         [class.bg-landing-oscuro-fondo]="!enAuth()"
         [class.bg-header-auth-fondo]="enAuth()"
       >
-        <a routerLink="/" class="shrink-0" aria-label="Falta Una, ir al inicio">
+        <a [routerLink]="destinoLogo()" class="shrink-0" aria-label="Falta Una, ir al inicio">
           <img
             [src]="urlLogo"
             alt=""
@@ -176,6 +180,16 @@ export class Header {
    * y avatar con menú de sesión a la derecha. Ignora `enAuth`.
    */
   readonly logueado = input(false);
+
+  /**
+   * Destino explícito del logo. Si no se indica, el logo lleva a la home del
+   * usuario (`/usuario`) con sesión iniciada y a la landing (`/`) si no lo está.
+   */
+  readonly enlaceLogo = input<string | null>(null);
+
+  protected readonly destinoLogo = computed(
+    () => this.enlaceLogo() ?? (this.logueado() ? '/usuario' : '/'),
+  );
 
   /** Emite el texto buscado al enviar el formulario (Enter). */
   readonly buscar = output<string>();

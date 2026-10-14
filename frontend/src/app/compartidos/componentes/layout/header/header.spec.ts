@@ -40,6 +40,13 @@ describe('Header', () => {
     expect(logo.classList.contains('h-12')).toBe(true);
   });
 
+  it('el logo lleva a la landing cuando no hay sesión', () => {
+    const logo = fixture.nativeElement.querySelector(
+      'header a[aria-label="Falta Una, ir al inicio"]',
+    ) as HTMLAnchorElement;
+    expect(logo.getAttribute('href')).toBe('/');
+  });
+
   it('en auth con modo jugador mantiene el fondo sólido y el logo con sus colores', () => {
     fixture.componentRef.setInput('enAuth', true);
     fixture.detectChanges();
@@ -110,6 +117,23 @@ describe('Header (variante logueado)', () => {
     fixture = TestBed.createComponent(Header);
     fixture.componentRef.setInput('logueado', true);
     fixture.detectChanges();
+  });
+
+  it('el logo lleva a la home del usuario (/usuario) con sesión iniciada', () => {
+    const logo = fixture.nativeElement.querySelector(
+      'a[aria-label="Ir al inicio de Falta Una"]',
+    ) as HTMLAnchorElement;
+    expect(logo.getAttribute('href')).toBe('/usuario');
+  });
+
+  it('respeta un enlaceLogo explícito por sobre el destino por defecto', () => {
+    fixture.componentRef.setInput('enlaceLogo', '/misiones');
+    fixture.detectChanges();
+
+    const logo = fixture.nativeElement.querySelector(
+      'a[aria-label="Ir al inicio de Falta Una"]',
+    ) as HTMLAnchorElement;
+    expect(logo.getAttribute('href')).toBe('/misiones');
   });
 
   it('muestra logo y avatar, sin buscador ni enlaces de login/registro', () => {
