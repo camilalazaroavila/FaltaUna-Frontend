@@ -10,26 +10,30 @@
       ¿Quiénes somos?
     </h2>
 
-    <div class="mt-4 flex items-start gap-4 md:mt-8 md:items-stretch md:gap-8 lg:gap-12">
+    <div
+      class="mt-5 flex flex-col gap-6 md:mt-8 md:gap-8 lg:flex-row lg:items-stretch lg:gap-12"
+    >
       <div
-        class="grid w-[45%] min-w-0 grid-cols-4 gap-x-1.5 gap-y-3 md:gap-x-2 md:gap-y-4 lg:w-1/2 lg:gap-x-3 lg:gap-y-6"
+        class="grid w-full grid-cols-4 gap-x-3 gap-y-4 sm:gap-x-6 lg:w-1/2 lg:gap-x-4 lg:gap-y-6"
       >
         @for (integrante of integrantes(); track integrante.nombre) {
-          <div class="flex min-w-0 flex-col items-center gap-1 text-center">
+          <div class="flex min-w-0 flex-col items-center gap-2 text-center">
             @if (integrante.avatarUrl) {
               <img
                 [src]="integrante.avatarUrl"
                 [alt]="integrante.nombre"
-                class="size-8 rounded-circulo border-[3px] border-landing-claro-texto object-cover md:size-14 lg:size-landing-avatar"
+                class="size-landing-avatar-equipo rounded-circulo border-[3px] border-landing-claro-texto object-cover"
               />
             } @else {
               <span
-                class="grid size-8 place-items-center rounded-circulo border-[3px] border-landing-claro-texto bg-landing-panel font-interfaz text-[10px] font-bold md:size-14 md:text-base lg:size-landing-avatar lg:text-lg"
+                class="grid size-landing-avatar-equipo place-items-center rounded-circulo border-[3px] border-landing-claro-texto bg-landing-panel font-interfaz text-lg font-bold md:text-3xl lg:text-4xl"
               >
                 {{ iniciales(integrante.nombre) }}
               </span>
             }
-            <span class="w-full whitespace-nowrap text-[9px] leading-none md:text-xs lg:text-sm">
+            <span
+              class="w-full whitespace-nowrap text-xs font-semibold leading-tight md:text-base lg:text-lg"
+            >
               {{ integrante.nombre }}
             </span>
           </div>
@@ -37,14 +41,14 @@
       </div>
 
       <div
-        class="w-[45%] rounded-[2rem_1rem_2.5rem_1.25rem] bg-fondo-elevado p-3 text-[11px] leading-snug md:w-1/2 md:p-6 md:text-base lg:p-8 lg:text-landing-equipo"
+        class="w-full rounded-[2rem_1rem_2.5rem_1.25rem] bg-landing-panel p-4 text-sm leading-relaxed text-landing-claro-texto md:p-6 md:text-base lg:w-1/2 lg:p-8 lg:text-landing-equipo"
       >
         <p>
           Somos un grupo de desarrolladores apasionados por el coleccionismo, con
           una idea clara: crear una experiencia que vaya más allá de coleccionar,
           divertirse y jugar.
         </p>
-        <p class="mt-2 md:mt-3">
+        <p class="mt-3 md:mt-4">
           Queremos conectar empresas y usuarios en un espacio donde todos ganen,
           ofreciendo beneficios reales, recompensas y un progreso que se sienta en
           cada colección.

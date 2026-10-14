@@ -214,7 +214,7 @@
     --spacing-landing-cta: var(--landing-medida-cta);
     --spacing-landing-sobres: var(--landing-medida-sobres);
     --spacing-landing-ilustracion: var(--landing-medida-ilustracion);
-    --spacing-landing-avatar: var(--landing-medida-avatar);
+    --spacing-landing-avatar-equipo: var(--landing-medida-avatar-equipo);
     --spacing-landing-columna: var(--landing-espacio-columna);
 
     /* Escala fluida de Misiones expuesta a las utilidades de Tailwind:
