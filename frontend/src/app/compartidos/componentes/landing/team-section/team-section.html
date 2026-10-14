@@ -20,11 +20,11 @@
               <img
                 [src]="integrante.avatarUrl"
                 [alt]="integrante.nombre"
-                class="size-8 rounded-circulo border-2 border-landing-claro-texto object-cover md:size-14 lg:size-landing-avatar"
+                class="size-8 rounded-circulo border-[3px] border-landing-claro-texto object-cover md:size-14 lg:size-landing-avatar"
               />
             } @else {
               <span
-                class="grid size-8 place-items-center rounded-circulo border-2 border-landing-claro-texto bg-landing-panel font-interfaz text-[10px] font-bold md:size-14 md:text-base lg:size-landing-avatar lg:text-lg"
+                class="grid size-8 place-items-center rounded-circulo border-[3px] border-landing-claro-texto bg-landing-panel font-interfaz text-[10px] font-bold md:size-14 md:text-base lg:size-landing-avatar lg:text-lg"
               >
                 {{ iniciales(integrante.nombre) }}
               </span>

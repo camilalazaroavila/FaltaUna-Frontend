@@ -5,7 +5,7 @@ import { Navbar } from '@compartidos/componentes/layout/navbar/navbar';
 import { PlansSection } from '@compartidos/componentes/empresa/plans-section/plans-section';
 import { TeamSection } from '@compartidos/componentes/landing/team-section/team-section';
 import {
-  INTEGRANTES_EQUIPO_EMPRESA,
+  INTEGRANTES_EQUIPO,
   PLANES_EMPRESA,
   PREGUNTAS_FRECUENTES_EMPRESA,
 } from '@app/datos/landing-empresa.data';
@@ -21,5 +21,5 @@ import {
 export class LandingEmpresa {
   protected readonly planes = PLANES_EMPRESA;
   protected readonly preguntas = PREGUNTAS_FRECUENTES_EMPRESA;
-  protected readonly integrantes = INTEGRANTES_EQUIPO_EMPRESA;
+  protected readonly integrantes = INTEGRANTES_EQUIPO;
 }

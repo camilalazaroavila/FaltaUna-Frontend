@@ -3,9 +3,11 @@ import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { AcordeonPregunta } from '@compartidos/componentes/landing/acordeon-preguntas/acordeon-preguntas';
 import { CarruselMarcas, MarcaCarrusel } from '@compartidos/componentes/landing/carousel-marcas/carousel-marcas';
+import { TeamSection } from '@compartidos/componentes/landing/team-section/team-section';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { IlustracionTienda } from '@compartidos/ilustraciones/ilustracion-tienda/ilustracion-tienda';
+import { INTEGRANTES_EQUIPO } from '@app/datos/landing-empresa.data';
 import urlCartaRara from '@svgs/CartaRara.svg';
 import urlEpicarta from '@svgs/Epicarta.svg';
 import urlUnicarta from '@svgs/Unicarta.svg';
@@ -20,12 +22,6 @@ interface PreguntaFrecuente {
   respuesta: string;
 }
 
-interface IntegranteEquipo {
-  nombre: string;
-  /** Foto opcional; si no existe se usan las iniciales como fallback. */
-  avatarUrl?: string;
-}
-
 /**
  * Landing pública de Falta Una (ruta raíz `''`).
  *
@@ -36,7 +32,7 @@ interface IntegranteEquipo {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, NgIcon, Header, CarruselMarcas, AcordeonPregunta, Boton, IlustracionTienda],
+  imports: [RouterLink, NgIcon, Header, CarruselMarcas, AcordeonPregunta, TeamSection, Boton, IlustracionTienda],
   templateUrl: './landing.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -115,23 +111,6 @@ export class Landing {
     },
   ];
 
-  /** `avatarUrl` queda preparado para cuando existan las fotos del equipo. */
-  protected readonly equipo: IntegranteEquipo[] = [
-    { nombre: 'Juli' },
-    { nombre: 'Mateo C' },
-    { nombre: 'Gonza' },
-    { nombre: 'Mateo' },
-    { nombre: 'Cami' },
-    { nombre: 'Joaco' },
-    { nombre: 'Tori' },
-  ];
-
-  protected iniciales(nombre: string): string {
-    return nombre
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((parte) => parte.charAt(0).toUpperCase())
-      .join('');
-  }
+  /** Integrantes del equipo con su foto; compartidos con la landing de empresa. */
+  protected readonly equipo = INTEGRANTES_EQUIPO;
 }
