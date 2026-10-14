@@ -66,17 +66,17 @@ describe('TarjetaPity', () => {
 
   it('etiqueta el tipo de sobre sin repetir la palabra "sobres"', () => {
     const generico = montar(crearProgreso());
-    expect(generico.querySelector('p')?.textContent).toContain('Generales');
+    expect(generico.querySelector('p')?.textContent).toContain('Genérico');
 
     const categoria = montar(
       crearProgreso({ id: 'cat', sobre: { tipo: 'categoria', categoria: 'musica' } }),
     );
-    expect(categoria.querySelector('p')?.textContent).toContain('Música');
+    expect(categoria.querySelector('p')?.textContent).toContain('Categoría');
 
     const marca = montar(
       crearProgreso({ id: 'marca', sobre: { tipo: 'marca', nombre: 'Grido', logoUrl: null } }),
     );
-    expect(marca.querySelector('p')?.textContent).toContain('Grido');
+    expect(marca.querySelector('p')?.textContent).toContain('Marca');
   });
 
   it('renderiza el sobre como elemento informativo, sin botón', () => {
