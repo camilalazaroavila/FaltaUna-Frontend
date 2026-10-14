@@ -11,8 +11,9 @@ import { faltantesPity, UMBRAL_CASI_PITY, type ProgresoPity } from '@modelos/mis
  * qué tipo es la recompensa que está en camino.
  *
  * La jerarquía pone primero el dato que importa (cuántos sobres faltan) y deja
- * el nombre del sobre como dato secundario. Cuando la fila está cerca de la
- * legendaria (faltantes <= UMBRAL_CASI_PITY) se destaca con el acento amarillo.
+ * el tipo de sobre (Genérico / Categoría / Marca) como dato secundario. Cuando
+ * la fila está cerca de la legendaria (faltantes <= UMBRAL_CASI_PITY) se
+ * destaca con el acento amarillo.
  */
 @Component({
   selector: 'app-tarjeta-pity',
@@ -27,18 +28,18 @@ export class TarjetaPity {
   protected readonly faltantes = computed(() => faltantesPity(this.progreso()));
 
   /**
-   * Rótulo visible del tipo de sobre. No repite la palabra "sobres" del título:
-   * el sobre de la derecha ya comunica que se trata de un sobre.
+   * Rótulo visible bajo el título: el TIPO de sobre, no su nombre.
+   * (El nombre concreto, ej. "Tecnología" o "McDonald's", sigue disponible en
+   * `etiquetaSobre` para accesibilidad y se ve en el sobre de la derecha.)
    */
   protected readonly nombreSobre = computed(() => {
-    const sobre = this.progreso().sobre;
-    switch (sobre.tipo) {
+    switch (this.progreso().sobre.tipo) {
       case 'categoria':
-        return ETIQUETAS_CATEGORIA[sobre.categoria];
+        return 'Categoría';
       case 'marca':
-        return sobre.nombre;
+        return 'Marca';
       default:
-        return 'Generales';
+        return 'Genérico';
     }
   });
 
@@ -51,7 +52,7 @@ export class TarjetaPity {
       case 'marca':
         return `Sobre de ${sobre.nombre}`;
       default:
-        return 'Sobre general';
+        return 'Sobre genérico';
     }
   });
 

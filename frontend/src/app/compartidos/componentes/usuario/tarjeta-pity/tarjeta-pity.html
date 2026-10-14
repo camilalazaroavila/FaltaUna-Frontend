@@ -30,12 +30,20 @@
     />
   </div>
 
-  <div class="shrink-0">
-    <app-sobre-marca
-      tamanio="md"
-      [categoria]="categoria()"
-      [nombre]="nombre()"
-      [logoUrl]="logoUrl()"
-    />
+  <div class="shrink-0 flex items-center justify-center">
+    @if (progreso().imagenSvg; as svg) {
+      <img
+        [src]="svg"
+        [alt]="etiquetaSobre()"
+        class="h-auto w-20 sm:w-24 md:w-28 object-contain drop-shadow-md select-none pointer-events-none"
+      />
+    } @else {
+      <app-sobre-marca
+        tamanio="md"
+        [categoria]="categoria()"
+        [nombre]="nombre()"
+        [logoUrl]="logoUrl()"
+      />
+    }
   </div>
 </article>

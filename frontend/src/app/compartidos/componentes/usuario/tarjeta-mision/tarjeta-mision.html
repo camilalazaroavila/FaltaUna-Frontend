@@ -1,5 +1,5 @@
   <article
-    class="flex items-center gap-3 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-3 shadow-marca transition-colors sm:gap-4 sm:p-4 md:gap-5 md:p-5"
+    class="flex items-center gap-3 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-3 shadow-marca transition-colors sm:gap-4 sm:p-4"
     [class.border-atencion]="listaParaReclamar()"
     [class.border-dashed]="!disponible()"
     [class.animate-latido-reclamo]="listaParaReclamar()"
@@ -82,7 +82,7 @@
         Recompensa
       </span>
       <app-sobre-marca
-        tamanio="xl"
+        tamanio="md"
         [clickeable]="listaParaReclamar()"
         [categoria]="recompensaCategoria()"
         [nombre]="recompensaNombre()"

@@ -97,7 +97,7 @@ export class UsuarioDashboard implements OnInit {
   /** Ninguna sección está activa por defecto: el dashboard no es ninguno de los destinos del dock. */
   protected readonly seccionActiva = signal<string | null>(null);
   protected readonly selectorSobresAbierto = signal<boolean>(false);
-  protected readonly sobresDisponibles = signal<{ actuales: number; maximo: number }>({
+  protected readonly sobresDisponibles = this.sobresService.sobresDisponibles ?? signal<{ actuales: number; maximo: number }>({
     actuales: 2,
     maximo: 2,
   });
@@ -118,10 +118,14 @@ export class UsuarioDashboard implements OnInit {
   }
 
   alCompletarApertura(): void {
-    this.sobresDisponibles.update((s) => ({
-      ...s,
-      actuales: Math.max(0, s.actuales - 1),
-    }));
+    if (this.sobresService.consumirSobreGratuito) {
+      this.sobresService.consumirSobreGratuito();
+    } else {
+      (this.sobresDisponibles as any).update?.((s: any) => ({
+        ...s,
+        actuales: Math.max(0, s.actuales - 1),
+      }));
+    }
   }
 
   seleccionarSeccion(id: string): void {
@@ -143,10 +147,14 @@ export class UsuarioDashboard implements OnInit {
   abrirSobre(opcion: SobreOpcion): void {
     if (!opcion.disponible) return;
     // Si quedan sobres disponibles se descuenta 1
-    this.sobresDisponibles.update((s) => ({
-      ...s,
-      actuales: Math.max(0, s.actuales - 1),
-    }));
+    if (this.sobresService.consumirSobreGratuito) {
+      this.sobresService.consumirSobreGratuito();
+    } else {
+      (this.sobresDisponibles as any).update?.((s: any) => ({
+        ...s,
+        actuales: Math.max(0, s.actuales - 1),
+      }));
+    }
     this.cerrarSelectorSobres();
   }
 }
