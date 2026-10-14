@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Header } from '@compartidos/componentes/layout/header/header';
 import { CuponesService } from '@servicios/cupones.service';
 import { CategoriaCupon, CuponDescuento } from '@modelos/cupon.model';
 
@@ -32,7 +33,7 @@ interface FiltroCategoria {
 @Component({
   selector: 'app-usuario-cupones',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, Header],
   templateUrl: './usuario-cupones.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown.escape)': 'cerrarCupon()' },

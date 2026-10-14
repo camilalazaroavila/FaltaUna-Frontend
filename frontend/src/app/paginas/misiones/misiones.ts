@@ -56,6 +56,7 @@ export class Misiones implements OnInit {
   protected readonly categoriaPity = signal<string | null>(null);
   protected readonly marcaPity = signal<string | null>(null);
   protected readonly ordenPity = signal<CriterioOrdenPity>('cercania');
+  protected readonly modalPityAbierto = signal(false);
 
   /** Id de la misión cuyo reclamo está en vuelo; evita el doble clic. */
   private readonly reclamando = signal<number | null>(null);
@@ -181,6 +182,14 @@ export class Misiones implements OnInit {
     this.marcaPity.set(null);
   }
 
+  protected abrirModalPity(): void {
+    this.modalPityAbierto.set(true);
+  }
+
+  protected cerrarModalPity(): void {
+    this.modalPityAbierto.set(false);
+  }
+
   protected reclamarMision(id: number): void {
     if (this.reclamando() !== null) return;
     this.reclamando.set(id);
@@ -209,8 +218,15 @@ export class Misiones implements OnInit {
     this.modalAperturaAbierto.set(true);
   }
 
+  private notificadoMision3 = false;
+
   protected cerrarAperturaSobres(): void {
     this.modalAperturaAbierto.set(false);
+    const mision3 = this.servicio.misiones().find((m) => m.id === 3);
+    if (mision3?.estado === 'completada' && !this.notificadoMision3) {
+      this.notificadoMision3 = true;
+      toast.success('¡Completaste la misión "Abrí 2 sobres"! Ya podés reclamarla.');
+    }
   }
 
   /** Traduce la recompensa de una misión al descriptor que consume el modal. */
