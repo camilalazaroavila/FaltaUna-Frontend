@@ -228,6 +228,15 @@ describe('AlbumesJugadorService', () => {
       );
     });
 
+    it('deja el álbum de Grido al 100% para poder probar el canje', () => {
+      const detalle = detalleDesdeMock(1); // Grido
+
+      expect(detalle.total).toBe(12);
+      expect(detalle.obtenidas).toBe(12);
+      expect(detalle.porcentaje).toBe(100);
+      expect(detalle.cartas.every((carta) => carta.obtenida)).toBe(true);
+    });
+
     it('falla si el álbum pedido no existe en el mock', () => {
       let error: unknown;
 
