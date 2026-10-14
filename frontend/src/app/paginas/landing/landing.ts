@@ -5,6 +5,7 @@ import { AcordeonPregunta } from '@compartidos/componentes/landing/acordeon-preg
 import { CarruselMarcas, MarcaCarrusel } from '@compartidos/componentes/landing/carousel-marcas/carousel-marcas';
 import { TeamSection } from '@compartidos/componentes/landing/team-section/team-section';
 import { Header } from '@compartidos/componentes/layout/header/header';
+import { Footer } from '@compartidos/componentes/layout/footer/footer';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { IlustracionTienda } from '@compartidos/ilustraciones/ilustracion-tienda/ilustracion-tienda';
 import { INTEGRANTES_EQUIPO } from '@app/datos/landing-empresa.data';
@@ -32,7 +33,7 @@ interface PreguntaFrecuente {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, NgIcon, Header, CarruselMarcas, AcordeonPregunta, TeamSection, Boton, IlustracionTienda],
+  imports: [RouterLink, NgIcon, Header, CarruselMarcas, AcordeonPregunta, TeamSection, Footer, Boton, IlustracionTienda],
   templateUrl: './landing.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
