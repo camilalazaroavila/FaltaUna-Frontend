@@ -16,7 +16,7 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'Falta Una · Partidos y cartas',
+    title: 'Falta Una · Coleccioná y ganá',
     loadComponent: () => import('@paginas/landing/landing').then((m) => m.Landing),
   },
 

@@ -66,16 +66,16 @@ export class Landing {
   ];
 
   protected readonly pasos: string[] = [
-    'Registrate y sumate a un partido cerca tuyo.',
-    'Confirmá tu asistencia y jugá con la comunidad.',
+    'Registrate y empezá tu colección.',
     'Abrí tu sobre diario y descubrí cartas nuevas.',
     'Intercambiá repetidas y completá tu álbum.',
+    'Canjeá recompensas en tus marcas favoritas.',
   ];
 
   protected readonly beneficios: string[] = [
-    'Publicá tus canchas y torneos en minutos.',
-    'Ofrecé cupones y llegá a más jugadores.',
-    'Gestioná reservas desde un panel propio.',
+    'Publicá tu colección de cartas personalizada.',
+    'Ofrecé cupones y llegá a más coleccionistas.',
+    'Gestioná tu campaña desde un panel propio.',
     'Medí el impacto de tus campañas.',
   ];
 
@@ -83,11 +83,11 @@ export class Landing {
     {
       pregunta: '¿Qué es Falta Una?',
       respuesta:
-        'La plataforma donde organizás partidos de fútbol amateur y coleccionás cartas de tus marcas favoritas.',
+        'La plataforma donde coleccionás cartas de tus marcas favoritas y ganás descuentos.',
     },
     {
       pregunta: '¿Cómo consigo cartas?',
-      respuesta: 'Jugando partidos y abriendo sobres. Cada partido confirmado suma chances de cartas nuevas.',
+      respuesta: 'Abriendo sobres y completando misiones. Cada acción suma chances de cartas nuevas.',
     },
     {
       pregunta: '¿Qué es el sobre diario?',
@@ -95,7 +95,7 @@ export class Landing {
     },
     {
       pregunta: '¿Puedo intercambiar cartas?',
-      respuesta: 'Sí. Cambiá tus repetidas con otros jugadores y conseguí las que te faltan.',
+      respuesta: 'Sí. Cambiá tus repetidas con otros coleccionistas y conseguí las que te faltan.',
     },
     {
       pregunta: '¿Qué hago con las repetidas?',
@@ -107,11 +107,11 @@ export class Landing {
     },
     {
       pregunta: '¿Necesito pagar para jugar?',
-      respuesta: 'No. Crear tu cuenta, buscar partidos y abrir el sobre diario es gratuito.',
+      respuesta: 'No. Crear tu cuenta y abrir el sobre diario es gratuito.',
     },
     {
       pregunta: '¿Cómo sumo mi negocio?',
-      respuesta: 'Creá una cuenta de empresa, publicá tus canchas y empezá a ofrecer cupones.',
+      respuesta: 'Creá una cuenta de empresa, publicá tu colección y empezá a ofrecer cupones.',
     },
   ];
 
