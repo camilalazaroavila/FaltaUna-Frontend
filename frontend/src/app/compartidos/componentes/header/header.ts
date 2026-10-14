@@ -42,12 +42,12 @@ import urlLogoClaro from '../../SVGs/Imagotipo_claro.svg';
             <button
               type="button"
               (click)="toggleMenuUsuario()"
-              class="flex size-9 cursor-pointer items-center justify-center rounded-circulo border border-black/10 bg-marca-acento text-marca-sobre-acento shadow-sm transition hover:brightness-105 sm:size-10 2xl:size-14"
+              class="flex size-9 cursor-pointer items-center justify-center rounded-circulo text-landing-oscuro-texto transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco sm:size-10 2xl:size-14"
               aria-label="Menú de perfil"
               [attr.aria-expanded]="menuUsuarioAbierto()"
             >
               <svg
-                class="size-6 text-marca-sobre-acento sm:size-7 2xl:size-9"
+                class="size-8"
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 aria-hidden="true"
