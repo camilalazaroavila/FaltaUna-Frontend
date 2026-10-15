@@ -7,7 +7,9 @@ import {
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Header } from '@compartidos/componentes/layout/header/header';
 import { CuponesService } from '@servicios/cupones.service';
 import { CategoriaCupon, CuponDescuento } from '@modelos/cupon.model';
 
@@ -32,7 +34,7 @@ interface FiltroCategoria {
 @Component({
   selector: 'app-usuario-cupones',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, Header],
   templateUrl: './usuario-cupones.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown.escape)': 'cerrarCupon()' },
@@ -57,6 +59,7 @@ interface FiltroCategoria {
 })
 export class UsuarioCupones {
   private readonly cuponesService = inject(CuponesService);
+  private readonly ruta = inject(ActivatedRoute);
 
   protected readonly categorias: readonly FiltroCategoria[] = [
     { id: 'gastronomia', nombre: 'Gastronomía', urlIcono: urlIconoGastro },
@@ -90,8 +93,26 @@ export class UsuarioCupones {
   );
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.liberarQr());
+    const destruir = inject(DestroyRef);
+    destruir.onDestroy(() => this.liberarQr());
+    this.escucharCategoriaDesdeUrl(destruir);
     this.cargarCupones();
+  }
+
+  /**
+   * Preselecciona la categoría indicada por `?categoria=` (viene de un álbum) y
+   * reacciona a cambios posteriores del parámetro. Si falta o no es válida, se
+   * conserva la categoría actual.
+   */
+  private escucharCategoriaDesdeUrl(destruir: DestroyRef): void {
+    this.ruta.queryParamMap
+      .pipe(takeUntilDestroyed(destruir))
+      .subscribe((params) => {
+        const categoria = params.get('categoria');
+        if (categoria && this.categorias.some((c) => c.id === categoria)) {
+          this.categoriaActiva.set(categoria as CategoriaCupon);
+        }
+      });
   }
 
   protected cargarCupones(): void {

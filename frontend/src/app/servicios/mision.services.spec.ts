@@ -9,6 +9,7 @@ describe('MisionesService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     servicio = TestBed.inject(MisionesService);
+    servicio.restablecerMisiones();
   });
 
   it('filtra las misiones por periodicidad', () => {
@@ -34,6 +35,17 @@ describe('MisionesService', () => {
     servicio.reclamar(completada.id).subscribe((m) => {
       expect(m.estado).toBe('reclamada');
       expect(servicio.misiones().find((x) => x.id === completada.id)?.estado).toBe('reclamada');
+      hecho();
+    });
+  });
+
+  it('al reclamar la misión 2 ("Abrí 1 sobre"), la misión 3 ("Abrí 2 sobres") pasa a estar completada', (hecho) => {
+    expect(servicio.misiones().find((m) => m.id === 3)?.estado).toBe('en_curso');
+
+    servicio.reclamar(2).subscribe(() => {
+      const mision3 = servicio.misiones().find((m) => m.id === 3);
+      expect(mision3?.actual).toBe(2);
+      expect(mision3?.estado).toBe('completada');
       hecho();
     });
   });

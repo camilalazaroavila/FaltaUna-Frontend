@@ -1,0 +1,46 @@
+<aside class="w-full" aria-label="Filtrar álbumes por categoría">
+  <h2 class="mb-2 font-titulo text-xs tracking-[0.14em] text-texto-apagado uppercase">
+    Categorías
+  </h2>
+
+  <div
+    class="flex flex-col gap-1.5 max-md:flex-row max-md:flex-wrap"
+    role="group"
+    aria-label="Categorías de marca"
+  >
+    <button
+      type="button"
+      class="flex w-full cursor-pointer items-center gap-2.5 rounded-md border border-transparent bg-transparent py-2 pr-2.5 pl-2.5 text-left text-xs font-semibold transition-colors max-md:w-auto max-md:rounded-pildora"
+      [class.border-borde-coleccion-fuerte]="categoriaActiva() === null"
+      [class.bg-marca-coleccion-fondo]="categoriaActiva() === null"
+      [class.text-marca-coleccion]="categoriaActiva() === null"
+      [class.text-texto-secundario]="categoriaActiva() !== null"
+      [class.hover:bg-white/6]="categoriaActiva() !== null"
+      [attr.aria-pressed]="categoriaActiva() === null"
+      (click)="alElegirTodas()"
+    >
+      <ng-icon name="phosphorStackFill" class="icono-todas" aria-hidden="true" />
+      <span class="truncate">Todas</span>
+    </button>
+
+    @for (categoria of conIcono(); track categoria.id) {
+      <button
+        type="button"
+        class="flex w-full cursor-pointer items-center gap-2.5 rounded-md border border-transparent bg-transparent py-2 pr-2.5 pl-2.5 text-left text-xs font-semibold transition-colors max-md:w-auto max-md:rounded-pildora"
+        [class.border-borde-coleccion-fuerte]="categoriaActiva() === categoria.id"
+        [class.bg-marca-coleccion-fondo]="categoriaActiva() === categoria.id"
+        [class.text-marca-coleccion]="categoriaActiva() === categoria.id"
+        [class.text-texto-secundario]="categoriaActiva() !== categoria.id"
+        [class.hover:bg-white/6]="categoriaActiva() !== categoria.id"
+        [attr.aria-pressed]="categoriaActiva() === categoria.id"
+        [attr.aria-label]="'Filtrar álbumes por ' + etiquetaDe[categoria.categoria!]"
+        (click)="alElegir(categoria.id)"
+      >
+        <span class="filtros__icono block size-6 shrink-0">
+          <app-icono-categoria [categoria]="categoria.categoria!" />
+        </span>
+        <span class="truncate">{{ etiquetaDe[categoria.categoria!] }}</span>
+      </button>
+    }
+  </div>
+</aside>

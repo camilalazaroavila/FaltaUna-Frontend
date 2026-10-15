@@ -1,0 +1,10 @@
+/* Caja del icono de categoría: el tinte lo aporta `app-icono-categoria`
+   (mismo tratamiento que los botones de "Mis cartas"). Acá solo se fija el
+   tamaño del contenedor. */
+.filtros__icono {
+  line-height: 0;
+}
+
+.icono-todas {
+  font-size: 1.4rem;
+}

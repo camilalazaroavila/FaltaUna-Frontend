@@ -76,12 +76,12 @@ export const PREGUNTAS_FRECUENTES_EMPRESA: PreguntaFrecuente[] = [
   },
 ];
 
-export const INTEGRANTES_EQUIPO_EMPRESA: IntegranteEquipo[] = [
-  { nombre: 'Juli' },
-  { nombre: 'Mateo C' },
-  { nombre: 'Gonza' },
-  { nombre: 'Mateo' },
-  { nombre: 'Cami' },
-  { nombre: 'Joaco' },
-  { nombre: 'Tori' },
+export const INTEGRANTES_EQUIPO: IntegranteEquipo[] = [
+  { nombre: 'Juli', avatarUrl: '/imagenes/perfiles/Juli.png' },
+  { nombre: 'Mateo C', avatarUrl: '/imagenes/perfiles/Mateo C.png' },
+  { nombre: 'Gonza', avatarUrl: '/imagenes/perfiles/Gonza.png' },
+  { nombre: 'Mateo', avatarUrl: '/imagenes/perfiles/Mateo.png' },
+  { nombre: 'Cami', avatarUrl: '/imagenes/perfiles/Cami.png' },
+  { nombre: 'Joaco', avatarUrl: '/imagenes/perfiles/Joaquin.png' },
+  { nombre: 'Tori', avatarUrl: '/imagenes/perfiles/Tori.png' },
 ];

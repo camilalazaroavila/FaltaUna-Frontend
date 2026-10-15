@@ -12,6 +12,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { injectModoAuth } from '@compartidos/componentes/layout/auth-layout/auth-modo';
 import { AuthService } from '@servicios/auth.service';
 import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
+import urlLogoAlt from '@svgs/Imagotipo_Negro.svg'; // NUEVO
 
 @Component({
   selector: 'app-header',
@@ -21,7 +22,7 @@ import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
   host: { class: 'block' },
   template: `
     @if (logueado()) {
-      <!-- VARIANTE LOGUEADO: logo + avatar con menú de sesión (vistas del usuario) -->
+      <!-- VARIANTE LOGUEADO: sin cambios -->
       <header class="relative z-40 m-5">
         <div
           class="flex items-center justify-between gap-2 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
@@ -31,11 +32,7 @@ import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
             class="flex shrink-0 items-center"
             aria-label="Ir al inicio de Falta Una"
           >
-            <img
-              [src]="urlLogo"
-              alt="Falta Una"
-              class="h-8 w-auto sm:h-9 lg:h-[75px]"
-            />
+            <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto sm:h-9 lg:h-[75px]" />
           </a>
 
           <div class="relative shrink-0">
@@ -85,15 +82,18 @@ import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
         </div>
       </header>
     } @else {
-      <!-- VARIANTES PÚBLICA (landing) Y AUTH (login/registro) -->
+      <!-- VARIANTES PÚBLICA (landing, opcionalmente amarilla) Y AUTH (login/registro) -->
       <header
-        class="m-5 flex items-center gap-2 rounded-md px-3 py-2 shadow-md text-landing-oscuro-texto sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
-        [class.bg-landing-oscuro-fondo]="!enAuth()"
+        class="m-5 flex items-center gap-2 rounded-md px-3 py-2 shadow-md sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
+        [class.bg-landing-oscuro-fondo]="!enAuth() && !fondoAmarillo()"
+        [class.bg-marca-acento]="fondoAmarillo()"
         [class.bg-header-auth-fondo]="enAuth()"
+        [class.text-landing-oscuro-texto]="!fondoAmarillo()"
+        [class.text-black]="fondoAmarillo()"
       >
         <a [routerLink]="destinoLogo()" class="shrink-0" aria-label="Falta Una, ir al inicio">
           <img
-            [src]="urlLogo"
+            [src]="fondoAmarillo() ? urlLogoOscuro : urlLogo"
             alt=""
             class="w-auto lg:h-[75px]"
             [class.h-8]="!enAuth()"
@@ -105,36 +105,17 @@ import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
           />
         </a>
 
-        @if (!enAuth()) {
-          <form
-            role="search"
-            class="relative min-w-0 flex-1 md:w-64 md:flex-none lg:w-[290px]"
-            (submit)="buscarCampania($event)"
-          >
-            <label class="sr-only" for="buscador-campania">Buscar campaña</label>
-            <svg
-              class="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-landing-claro-texto/60"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              aria-hidden="true"
-            >
-              <circle cx="10.5" cy="10.5" r="6.5" />
-              <path d="M15.5 15.5 21 21" />
-            </svg>
-          </form>
-        }
-
         <nav class="ml-auto flex shrink-0 items-center gap-2 sm:gap-4" aria-label="Acceso a la cuenta">
           <a
             routerLink="/login"
             routerLinkActive="hidden"
             [routerLinkActiveOptions]="{ exact: true }"
             queryParamsHandling="preserve"
-            class="font-interfaz text-[10px] font-bold uppercase tracking-wide text-landing-oscuro-texto transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
-            [class.hover:text-landing-marca]="!enAuth()"
+            class="font-interfaz text-[10px] font-bold uppercase tracking-wide transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
+            [class.text-landing-oscuro-texto]="!fondoAmarillo()"
+            [class.text-black]="fondoAmarillo()"
+            [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo()"
+            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo()"
             [class.hover:text-marca-primaria]="enAuth() && modo() === 'jugador'"
             [class.hover:text-landing-acento]="enAuth() && modo() === 'empresa'"
           >
@@ -145,8 +126,11 @@ import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
             routerLinkActive="hidden"
             [routerLinkActiveOptions]="{ exact: true }"
             queryParamsHandling="preserve"
-            class="font-interfaz text-[10px] font-bold uppercase tracking-wide text-landing-oscuro-texto transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
-            [class.hover:text-landing-marca]="!enAuth()"
+            class="font-interfaz text-[10px] font-bold uppercase tracking-wide transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
+            [class.text-landing-oscuro-texto]="!fondoAmarillo()"
+            [class.text-black]="fondoAmarillo()"
+            [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo()"
+            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo()"
             [class.hover:text-marca-primaria]="enAuth() && modo() === 'jugador'"
             [class.hover:text-landing-acento]="enAuth() && modo() === 'empresa'"
           >
@@ -163,43 +147,36 @@ export class Header {
 
   protected readonly modo = injectModoAuth();
 
-  /** Logo claro: el header siempre usa fondo oscuro (teal en jugador, marrón en empresa). */
+  /** Logo claro: para fondos oscuros (teal en jugador, marrón en empresa). */
   protected readonly urlLogo = urlLogoClaro;
+
+  /** NUEVO: logo oscuro, para el header amarillo de la landing. */
+  protected readonly urlLogoOscuro = urlLogoAlt;
 
   protected readonly termino = signal('');
 
-  /**
-   * Variante para las pantallas de autenticación (Login/Registro): resuelve los
-   * colores a tokens por modo (jugador/empresa), agranda el logo en pantallas
-   * chicas y oculta el buscador. Por defecto se mantiene el aspecto de la landing.
-   */
+  /** Variante para Login/Registro. */
   readonly enAuth = input(false);
 
-  /**
-   * Variante para las vistas del usuario con sesión iniciada: logo a la izquierda
-   * y avatar con menú de sesión a la derecha. Ignora `enAuth`.
-   */
+  /** Variante con sesión iniciada. Ignora `enAuth`. */
   readonly logueado = input(false);
 
-  /**
-   * Destino explícito del logo. Si no se indica, el logo lleva a la home del
-   * usuario (`/usuario`) con sesión iniciada y a la landing (`/`) si no lo está.
-   */
+  /** NUEVO: header amarillo con texto y logo negros. Solo se usa en la landing. */
+  readonly amarillo = input(false);
+
+  /** NUEVO: el amarillo nunca se aplica en las vistas de auth. */
+  protected readonly fondoAmarillo = computed(() => this.amarillo() && !this.enAuth());
+
   readonly enlaceLogo = input<string | null>(null);
 
   protected readonly destinoLogo = computed(
     () => this.enlaceLogo() ?? (this.logueado() ? '/usuario' : '/'),
   );
 
-  /** Emite el texto buscado al enviar el formulario (Enter). */
   readonly buscar = output<string>();
 
   protected readonly menuUsuarioAbierto = signal(false);
 
-  /**
-   * `AuthService` se resuelve recién cuando la variante `logueado` lo necesita,
-   * así la landing y el auth no dependen de él (ni de `HttpClient`).
-   */
   private authService: AuthService | null = null;
   private obtenerAuth(): AuthService {
     return (this.authService ??= this.injector.get(AuthService));

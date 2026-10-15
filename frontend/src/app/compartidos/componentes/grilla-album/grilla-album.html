@@ -1,0 +1,20 @@
+<div class="grilla">
+  @for (carta of cartas(); track carta.id) {
+    <div class="celda-envoltorio" (dblclick)="alTocar(carta.id)">
+      @if (carta.obtenida) {
+        <div class="celda">
+          <app-carta [carta]="cartaDe(carta)" />
+        </div>
+      } @else {
+        <app-slot-vacio [nombre]="carta.nombre" [rareza]="carta.rareza" />
+      }
+
+      <app-boton-favorita
+        class="celda__corazon"
+        [favorita]="esFavorita(carta)"
+        [nombre]="carta.nombre"
+        (alternar)="alTocar(carta.id)"
+      />
+    </div>
+  }
+</div>
