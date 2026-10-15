@@ -45,10 +45,10 @@ describe('modelo de baraja', () => {
   });
   it('marca la baraja como completa y confirmable con la composición válida', () => {
     const estado = calcularEstadoBaraja([
-      ...varias('comun', 5),
-      ...varias('rara', 4),
-      ...varias('epicarta', 2),
-      ...varias('legendaria', 1),
+      ...varias('comun', 2),
+      ...varias('rara', 5),
+      ...varias('epicarta', 3),
+      ...varias('legendaria', 2),
     ]);
     expect(estado.total).toBe(12);
     expect(estado.completa).toBe(true);
