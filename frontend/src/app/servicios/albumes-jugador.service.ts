@@ -11,9 +11,9 @@ import {
   type CartaAlbum,
   type DetalleAlbum,
   type ResumenAlbum,
-} from '../modelos/album-jugador.model';
-import { CARTAS_MOCK, type CartaConMarca } from '../modelos/cartas.mock';
-import { ETIQUETA_CATEGORIA, type CategoriaCarta } from '../modelos/carta.model';
+} from '@modelos/album-jugador.model';
+import { CARTAS_MOCK, type CartaConMarca } from '@modelos/cartas.mock';
+import { ETIQUETA_CATEGORIA, type CategoriaCarta } from '@modelos/carta.model';
 
 /**
  * Datos de prueba mientras el backend no expone el listado/detalle de álbumes

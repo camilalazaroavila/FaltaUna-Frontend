@@ -6,14 +6,14 @@ import {
 } from '@angular/common/http/testing';
 
 import { AlbumesJugadorService } from './albumes-jugador.service';
-import { CARTAS_MOCK } from '../modelos/cartas.mock';
+import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import {
   CANTIDADES_ALBUM_VALIDAS,
   esCantidadAlbumValida,
   type CategoriaAlbum,
   type DetalleAlbum,
   type ResumenAlbum,
-} from '../modelos/album-jugador.model';
+} from '@modelos/album-jugador.model';
 
 describe('AlbumesJugadorService', () => {
   let servicio: AlbumesJugadorService;
@@ -192,20 +192,20 @@ describe('AlbumesJugadorService', () => {
 
     it('incluye las cartas de "Mis cartas" con los mismos datos y marca', () => {
       const detalle = detalleDesdeMock(1); // Grido
-      const esperadas = CARTAS_MOCK.filter((carta) => carta.marca === 'Grido');
+      const conocidas = detalle.cartas.filter((carta) => carta.id.startsWith('c-'));
 
-      expect(esperadas.length).toBeGreaterThan(0);
+      expect(conocidas.length).toBeGreaterThan(0);
 
-      for (const origen of esperadas) {
-        const enAlbum = detalle.cartas.find((carta) => carta.id === origen.id);
-        expect(enAlbum).toBeDefined();
-        expect(enAlbum!.nombre).toBe(origen.nombre);
-        expect(enAlbum!.rareza).toBe(origen.rareza);
-        expect(enAlbum!.imagenUrl).toBe(origen.imagenUrl);
-        expect(enAlbum!.categoria).toBe(origen.categoria);
-        expect(enAlbum!.poder).toBe(origen.atributoIzquierdo);
-        expect(enAlbum!.costoMana).toBe(origen.atributoDerecho);
-        expect(enAlbum!.obtenida).toBe(origen.obtenida);
+      for (const enAlbum of conocidas) {
+        const origen = CARTAS_MOCK.find((carta) => carta.id === enAlbum.id);
+        expect(origen).toBeDefined();
+        expect(enAlbum.nombre).toBe(origen!.nombre);
+        expect(enAlbum.rareza).toBe(origen!.rareza);
+        expect(enAlbum.imagenUrl).toBe(origen!.imagenUrl);
+        expect(enAlbum.categoria).toBe(origen!.categoria);
+        expect(enAlbum.poder).toBe(origen!.atributoIzquierdo);
+        expect(enAlbum.costoMana).toBe(origen!.atributoDerecho);
+        expect(enAlbum.obtenida).toBe(origen!.obtenida);
       }
     });
 

@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 
-import { IconoCategoriaComponent } from '../icono-categoria/icono-categoria.component';
-import type { CategoriaAlbum } from '../../../modelos/album-jugador.model';
-import { ETIQUETA_CATEGORIA } from '../../../modelos/carta.model';
+import { IconoCategoriaComponent } from '@compartidos/componentes/cartas/icono-categoria/icono-categoria.component';
+import type { CategoriaAlbum } from '@modelos/album-jugador.model';
+import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
 
 /**
  * Filtro lateral de la vista Álbumes: lista las 7 categorías de carta (con su

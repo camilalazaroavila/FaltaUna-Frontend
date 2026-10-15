@@ -3,18 +3,18 @@ import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
 
-import { EncabezadoAlbum } from '../../compartidos/componentes/encabezado-album/encabezado-album';
-import { FiltrosCategoriaAlbum } from '../../compartidos/componentes/filtros-categoria-album/filtros-categoria-album';
-import { GrillaAlbum } from '../../compartidos/componentes/grilla-album/grilla-album';
-import { Header } from '../../compartidos/componentes/header/header';
+import { EncabezadoAlbum } from '@compartidos/componentes/encabezado-album/encabezado-album';
+import { FiltrosCategoriaAlbum } from '@compartidos/componentes/filtros-categoria-album/filtros-categoria-album';
+import { GrillaAlbum } from '@compartidos/componentes/grilla-album/grilla-album';
+import { Header } from '@compartidos/componentes/layout/header/header';
 import type {
   CategoriaAlbum,
   DetalleAlbum,
   ResumenAlbum,
-} from '../../modelos/album-jugador.model';
-import { normalizarNombre } from '../../modelos/categoria.model';
-import { categoriaCuponDesdeCarta, type CategoriaCupon } from '../../modelos/cupon.model';
-import { AlbumesJugadorService } from '../../servicios/albumes-jugador.service';
+} from '@modelos/album-jugador.model';
+import { normalizarNombre } from '@modelos/categoria.model';
+import { categoriaCuponDesdeCarta, type CategoriaCupon } from '@modelos/cupon.model';
+import { AlbumesJugadorService } from '@servicios/albumes-jugador.service';
 
 /**
  * Vista "Álbumes" del jugador.

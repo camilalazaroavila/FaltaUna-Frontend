@@ -5,13 +5,13 @@ import { provideIcons } from '@ng-icons/core';
 import { of, throwError } from 'rxjs';
 
 import { Albumes } from './albumes';
-import { AlbumesJugadorService } from '../../servicios/albumes-jugador.service';
-import { AuthService } from '../../servicios/auth.service';
+import { AlbumesJugadorService } from '@servicios/albumes-jugador.service';
+import { AuthService } from '@servicios/auth.service';
 import type {
   CategoriaAlbum,
   DetalleAlbum,
   ResumenAlbum,
-} from '../../modelos/album-jugador.model';
+} from '@modelos/album-jugador.model';
 
 jest.mock('ngx-sonner', () => ({
   toast: { success: jest.fn(), error: jest.fn() },

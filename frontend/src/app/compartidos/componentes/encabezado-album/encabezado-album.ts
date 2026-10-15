@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, computed, input, output, signal } f
 import { RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 
-import { BarraProgreso } from '../barra-progreso/barra-progreso';
-import { Boton } from '../boton/boton';
-import type { ResumenAlbum } from '../../../modelos/album-jugador.model';
-import type { CategoriaCupon } from '../../../modelos/cupon.model';
+import { BarraProgreso } from '@compartidos/componentes/feedback/barra-progreso/barra-progreso';
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import type { ResumenAlbum } from '@modelos/album-jugador.model';
+import type { CategoriaCupon } from '@modelos/cupon.model';
 
 /**
  * Encabezado del álbum seleccionado: marca, descripción, progreso de obtención

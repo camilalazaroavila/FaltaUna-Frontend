@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideIcons } from '@ng-icons/core';
 
 import { GrillaAlbum } from './grilla-album';
-import type { CartaAlbum } from '../../../modelos/album-jugador.model';
+import type { CartaAlbum } from '@modelos/album-jugador.model';
 
 const ICONO = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
 

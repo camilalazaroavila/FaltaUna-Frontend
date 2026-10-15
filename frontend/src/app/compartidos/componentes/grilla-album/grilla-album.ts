@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 
-import { CartaComponent } from '../carta/carta';
-import { SlotVacio } from '../slot-vacio/slot-vacio';
+import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { SlotVacio } from '@compartidos/componentes/slot-vacio/slot-vacio';
 import {
   cartaAlbumACarta,
   type CartaAlbum,
-} from '../../../modelos/album-jugador.model';
-import type { Carta } from '../../../modelos/carta.model';
+} from '@modelos/album-jugador.model';
+import type { Carta } from '@modelos/carta.model';
 
 /**
  * Grilla de un álbum: las cartas obtenidas se renderizan con `app-carta` y las
