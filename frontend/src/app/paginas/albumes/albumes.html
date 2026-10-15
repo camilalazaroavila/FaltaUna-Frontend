@@ -153,6 +153,12 @@
               role="status">
               Tocá una carta para marcarla como "la quiero". {{ hayFavoritas() ? '' : 'Todavía no marcaste ninguna.' }}
             </p>
+          } @else if (detalle(); as detalleAlbum) {
+            @if (detalleAlbum.cartas.length > 0) {
+              <p class="mt-4 text-xs text-texto-apagado">
+                Hacé doble click sobre una carta —o tocá su corazón— para guardarla en tus deseadas.
+              </p>
+            }
           }
 
           <div class="mt-5">

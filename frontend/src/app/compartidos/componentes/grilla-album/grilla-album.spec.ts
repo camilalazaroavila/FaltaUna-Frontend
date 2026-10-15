@@ -50,7 +50,11 @@ describe('GrillaAlbum', () => {
     TestBed.configureTestingModule({
       imports: [GrillaAlbum],
       providers: [
-        provideIcons({ phosphorHeartFill: ICONO, phosphorPlusFill: ICONO }),
+        provideIcons({
+          phosphorHeart: ICONO,
+          phosphorHeartFill: ICONO,
+          phosphorPlusFill: ICONO,
+        }),
       ],
     });
 
@@ -79,7 +83,7 @@ describe('GrillaAlbum', () => {
 
     const celda = el.querySelector('button.celda')!;
     expect(celda.getAttribute('aria-pressed')).toBe('true');
-    expect(celda.querySelector('.celda__corazon')).not.toBeNull();
+    expect(el.querySelector('app-boton-favorita.celda__corazon')).not.toBeNull();
   });
 
   it('emite el id de la carta obtenida al tocarla en modo marcar', () => {
@@ -100,5 +104,74 @@ describe('GrillaAlbum', () => {
     (el.querySelector('app-slot-vacio button') as HTMLButtonElement).click();
 
     expect(emitidos).toEqual(['c2']);
+  });
+
+  it('muestra el corazón siempre visible, también en el modo normal', () => {
+    const el = montar();
+
+    const corazones = el.querySelectorAll('app-boton-favorita.celda__corazon');
+    expect(corazones).toHaveLength(2);
+    expect(corazones[0].querySelector('button.like-btn')!.getAttribute('aria-pressed')).toBe(
+      'false',
+    );
+  });
+
+  it('alterna con doble click sobre la carta en el modo normal', () => {
+    const emitidos: string[] = [];
+    fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
+
+    const el = montar();
+    (el.querySelector('.celda') as HTMLElement).dispatchEvent(
+      new MouseEvent('dblclick', { bubbles: true }),
+    );
+
+    expect(emitidos).toEqual(['c1']);
+  });
+
+  it('el doble click no alterna dentro del modo marcar', () => {
+    const emitidos: string[] = [];
+    fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
+
+    const el = montar({ modoMarcar: true });
+    (el.querySelector('button.celda') as HTMLElement).dispatchEvent(
+      new MouseEvent('dblclick', { bubbles: true }),
+    );
+
+    expect(emitidos).toEqual([]);
+  });
+
+  it('el doble click alterna también la carta faltante', () => {
+    const emitidos: string[] = [];
+    fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
+
+    const el = montar();
+    const faltante = el.querySelector('app-slot-vacio')!.closest('.celda-envoltorio')!;
+    faltante.dispatchEvent(new MouseEvent('dblclick'));
+
+    expect(emitidos).toEqual(['c2']);
+  });
+
+  it('alterna al tocar el corazón de una carta', () => {
+    const emitidos: string[] = [];
+    fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
+
+    const el = montar();
+    const corazones = el.querySelectorAll('button.like-btn');
+    corazones[1].click();
+
+    expect(emitidos).toEqual(['c2']);
+  });
+
+  it('el doble click sobre el corazón alterna una sola vez', () => {
+    const emitidos: string[] = [];
+    fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
+
+    const el = montar();
+    const corazon = el.querySelector('button.like-btn') as HTMLButtonElement;
+    corazon.click();
+    corazon.click();
+    corazon.closest('.celda-envoltorio')!.dispatchEvent(new MouseEvent('dblclick'));
+
+    expect(emitidos).toEqual(['c1']);
   });
 });

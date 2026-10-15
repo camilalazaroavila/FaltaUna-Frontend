@@ -18,6 +18,9 @@
     --album-favorita-icono: var(--marca-sobre-primaria);
     --album-favorita-fondo: var(--marca-primaria);
 
+    /* Corazón del botón de favorita: naranja cuando está marcada. */
+    --album-favorita-corazon: var(--color-naranja-favorito);
+
     /* Realce del álbum seleccionado en el listado lateral. */
     --album-seleccionado-fondo: var(--marca-coleccion-fondo);
     --album-seleccionado-borde: var(--marca-coleccion-borde);

@@ -51,6 +51,7 @@ import {
   phosphorTrendUpFill,
   phosphorTagFill,
 } from '@ng-icons/phosphor-icons/fill';
+import { phosphorHeart } from '@ng-icons/phosphor-icons/regular';
 import {
   heroPlusSolid,
   heroCheckSolid,
@@ -85,6 +86,7 @@ export const appConfig: ApplicationConfig = {
       phosphorInfoFill,
       phosphorStarFill,
       phosphorHeartFill,
+      phosphorHeart,
       phosphorTrophyFill,
       phosphorGiftFill,
       phosphorCoinsFill,

@@ -18,14 +18,20 @@
   }
 }
 
-/* Carta obtenida fuera del modo "Marcar": mismo anclaje para el corazón. */
-.celda-carta {
+/* Ancla de la celda y del corazón. El corazón vive como hermano de la carta
+   para no anidar un botón dentro del botón del modo "Marcar". */
+.celda-envoltorio {
   position: relative;
   display: block;
   width: 100%;
 }
 
-/* Celda interactiva de una carta obtenida, solo en modo "Marcar". */
+/* Aviso visual de que la carta entera es alternable por doble click. */
+.celda-envoltorio--activa {
+  cursor: pointer;
+}
+
+/* Celda de la carta: es `<button>` en modo "Marcar" y `<div>` en el normal. */
 .celda {
   position: relative;
   display: block;
@@ -34,10 +40,10 @@
   padding: 0;
   border: 0;
   background: transparent;
-  cursor: pointer;
   color: inherit;
   font: inherit;
   text-align: inherit;
+  cursor: pointer;
 }
 
 .celda:focus-visible {
@@ -61,12 +67,4 @@
   right: -8px;
   bottom: -8px;
   z-index: 5;
-  display: grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 2px solid var(--album-favorita-borde);
-  border-radius: var(--radio-circulo);
-  background-color: var(--album-favorita-fondo);
-  color: var(--album-favorita-icono);
 }

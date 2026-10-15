@@ -39,6 +39,9 @@
     --color-amarillo-crema: #FFF3A0;
     /* Amarillo crema del nombre, los números y las estrellas de carta */
 
+    /* Naranja de la marca "carta que quiero" (corazón marcado como favorita). */
+    --color-naranja-favorito: #FF8A00;
+
     /* --- Paleta de cartas coleccionables --- */
     --color-carta-fondo: #0F2E36;
     /* Verde azulado muy oscuro de la vista "Mis cartas" */

@@ -1,37 +1,42 @@
 <div class="grilla">
   @for (carta of cartas(); track carta.id) {
-    @if (!carta.obtenida) {
-      <app-slot-vacio
-        [marcable]="modoMarcar()"
-        [marcada]="esFavorita(carta)"
-        [etiqueta]="carta.nombre"
-        (alternar)="alternar.emit(carta.id)"
+    <div
+      class="celda-envoltorio"
+      [class.celda-envoltorio--activa]="!modoMarcar()"
+      (dblclick)="alTocarDoble(carta.id)"
+    >
+      @if (carta.obtenida) {
+        @if (modoMarcar()) {
+          <button
+            type="button"
+            class="celda"
+            [class.celda--marcada]="esFavorita(carta)"
+            [attr.aria-pressed]="esFavorita(carta)"
+            [attr.aria-label]="etiquetaObtenida(carta)"
+            (click)="alTocar(carta.id)"
+          >
+            <app-carta [carta]="cartaDe(carta)" />
+          </button>
+        } @else {
+          <div class="celda">
+            <app-carta [carta]="cartaDe(carta)" />
+          </div>
+        }
+      } @else {
+        <app-slot-vacio
+          [marcable]="modoMarcar()"
+          [marcada]="esFavorita(carta)"
+          [etiqueta]="carta.nombre"
+          (alternar)="alTocar(carta.id)"
+        />
+      }
+
+      <app-boton-favorita
+        class="celda__corazon"
+        [favorita]="esFavorita(carta)"
+        [nombre]="carta.nombre"
+        (alternar)="alTocar(carta.id)"
       />
-    } @else if (modoMarcar()) {
-      <button
-        type="button"
-        class="celda"
-        [class.celda--marcada]="esFavorita(carta)"
-        [attr.aria-pressed]="esFavorita(carta)"
-        [attr.aria-label]="etiquetaObtenida(carta)"
-        (click)="alternar.emit(carta.id)"
-      >
-        <app-carta [carta]="cartaDe(carta)" />
-        @if (esFavorita(carta)) {
-          <span class="celda__corazon" aria-hidden="true">
-            <ng-icon name="phosphorHeartFill" size="20" />
-          </span>
-        }
-      </button>
-    } @else {
-      <div class="celda-carta">
-        <app-carta [carta]="cartaDe(carta)" />
-        @if (esFavorita(carta)) {
-          <span class="celda__corazon" aria-hidden="true">
-            <ng-icon name="phosphorHeartFill" size="20" />
-          </span>
-        }
-      </div>
-    }
+    </div>
   }
 </div>
