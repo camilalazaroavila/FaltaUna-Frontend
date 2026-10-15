@@ -1,0 +1,29 @@
+/* ==========================================================================
+   Falta Una - Vista "Álbumes" del jugador (Capa 2)
+   Tokens propios de la vista: slots vacíos (faltantes), corazón de favorita y el
+   realce del álbum seleccionado. Solo modo jugador: la vista vive detrás del rol
+   Usuario.
+   ========================================================================== */
+
+:root,
+[data-modo="jugador"] {
+    /* Slot de carta faltante: una única variante uniforme, con ondas. */
+    --album-slot-fondo: var(--fondo-coleccion-superficie);
+    --album-slot-borde: rgba(244, 250, 246, 0.18);
+    --album-slot-ondas: rgba(244, 250, 246, 0.06);
+    --album-slot-icono: var(--texto-primario);
+
+    /* Carta marcada como favorita (faltante u obtenida): círculo verde. */
+    --album-favorita-borde: var(--marca-primaria);
+    --album-favorita-fondo: var(--marca-primaria);
+
+    /* Corazón del botón de favorita: negro sobre el círculo verde marcado. */
+    --album-favorita-corazon: var(--color-negro-favorito);
+
+    /* Sobre del slot vacío: a color, atenuado pero con contraste sobre el fondo. */
+    --album-slot-paquete-opacidad: 0.75;
+
+    /* Realce del álbum seleccionado en el listado lateral. */
+    --album-seleccionado-fondo: var(--marca-coleccion-fondo);
+    --album-seleccionado-borde: var(--marca-coleccion-borde);
+}

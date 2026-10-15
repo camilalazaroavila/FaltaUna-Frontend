@@ -1,0 +1,25 @@
+<button
+  type="button"
+  class="like-btn"
+  [class.liked]="favorita()"
+  [class.pop]="pop()"
+  [attr.aria-pressed]="favorita()"
+  [attr.aria-label]="etiqueta()"
+  (click)="alAlternar()"
+>
+  <ng-icon
+    class="heart"
+    [name]="favorita() ? 'phosphorHeartFill' : 'phosphorHeart'"
+    size="20"
+    aria-hidden="true"
+  />
+
+  @for (particula of particulas(); track particula.id) {
+    <span
+      class="particle"
+      [style.--tx]="particula.tx"
+      [style.--ty]="particula.ty"
+      aria-hidden="true"
+    ></span>
+  }
+</button>

@@ -1,4 +1,4 @@
-﻿import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import {
   ESTRELLAS_POR_RAREZA,
@@ -38,6 +38,13 @@ const FONDO_POR_RAREZA: Record<RarezaCarta, string> = {
 })
 export class CartaComponent {
   readonly carta = input.required<Carta>();
+
+  /** `true` cuando la imagen no carga: se oculta y queda el marco de la carta. */
+  protected readonly imagenRota = signal(false);
+
+  protected alFallarImagen(): void {
+    this.imagenRota.set(true);
+  }
 
   protected readonly urlFondo = computed(
     () => FONDO_POR_RAREZA[this.carta().rareza],

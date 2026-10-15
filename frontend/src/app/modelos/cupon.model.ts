@@ -1,3 +1,5 @@
+import type { CategoriaCarta } from './carta.model';
+
 export type EstadoCupon = 'Disponible' | 'Usado' | 'Vencido';
 
 export type CategoriaCupon =
@@ -8,6 +10,23 @@ export type CategoriaCupon =
   | 'entretenimiento'
   | 'musica'
   | 'tecnologia';
+
+/**
+ * Puente de la categoría de carta a la categoría de cupón: solo difieren en el
+ * nombre, `decoracion` vs `deco` y `cosmeticos` vs `cosmetica`.
+ */
+export function categoriaCuponDesdeCarta(
+  categoria: CategoriaCarta,
+): CategoriaCupon {
+  switch (categoria) {
+    case 'cosmeticos':
+      return 'cosmetica';
+    case 'decoracion':
+      return 'deco';
+    default:
+      return categoria;
+  }
+}
 
 /** Cupón de descuento de una marca (distinto del "cupón" como recurso de juego). */
 export interface CuponDescuento {

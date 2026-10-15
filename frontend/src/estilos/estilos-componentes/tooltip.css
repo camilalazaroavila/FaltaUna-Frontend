@@ -1,0 +1,23 @@
+/* ==========================================================================
+   Falta Una - Tooltip reutilizable (Capa 2/3)
+   Tokens del globo y la flecha que consume `app-tooltip`. El componente sólo
+   usa estos tokens: nunca colores crudos. Se define primero el modo jugador y
+   después el modo empresa (regla de orden jugador → empresa).
+   ========================================================================== */
+
+:root,
+[data-modo="jugador"] {
+    --tip-fondo: var(--color-teal-hundido);
+    --tip-texto: var(--color-blanco-verdoso);
+    --tip-borde: rgba(244, 250, 246, 0.16);
+    --tip-sombra: var(--sombra-media);
+    --tip-flecha: var(--color-teal-hundido);
+}
+
+[data-modo="empresa"] {
+    --tip-fondo: var(--color-teal-profundo);
+    --tip-texto: var(--color-crema-superficie);
+    --tip-borde: rgba(10, 46, 54, 0.16);
+    --tip-sombra: var(--sombra-media);
+    --tip-flecha: var(--color-teal-profundo);
+}

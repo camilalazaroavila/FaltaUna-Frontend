@@ -82,6 +82,15 @@ export const routes: Routes = [
   },
 
   {
+    path: 'usuario/albumes',
+    title: 'Álbumes · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/albumes/albumes').then((m) => m.Albumes),
+  },
+
+  {
     path: 'empleado',
     title: 'Canje de cupones · Falta Una',
     canActivate: [rolGuard],
