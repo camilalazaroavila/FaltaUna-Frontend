@@ -32,11 +32,13 @@ describe('SlotVacio', () => {
     expect(el.querySelector('button')).toBeNull();
   });
 
-  it('muestra el sobre de la incógnita y el nombre de la carta', () => {
+  it('muestra el sobre completo y el nombre de la carta debajo', () => {
     const el = montar('Super Grido', 'epicarta');
 
-    expect(el.querySelector('.slot-vacio__misterio')).not.toBeNull();
-    expect(el.querySelector('.slot-vacio__nombre')!.textContent).toContain('Super Grido');
+    expect(el.querySelector('.slot-vacio__paquete')).not.toBeNull();
+    expect(el.querySelector('.slot-vacio__info .slot-vacio__nombre')!.textContent).toContain(
+      'Super Grido',
+    );
   });
 
   it('dibuja una estrella por cada nivel de rareza', () => {

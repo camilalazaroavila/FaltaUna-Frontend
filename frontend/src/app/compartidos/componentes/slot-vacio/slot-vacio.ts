@@ -6,13 +6,13 @@ import {
   ETIQUETA_RAREZA,
   type RarezaCarta,
 } from '@modelos/carta.model';
-import urlMisterio from '@svgs/PaqueteHuh.svg';
+import urlPaquete from '@svgs/PaqueteHuh.svg';
 
 /**
  * Casilla de carta faltante dentro de un álbum.
  *
- * Muestra el sobre de la incógnita (`PaqueteHuh`) recortado como símbolo de
- * "carta misteriosa", y debajo el nombre y la rareza (estrellas) de la carta que
+ * Muestra el sobre completo (`PaqueteHuh`) ocupando la casilla, como si fuera la
+ * carta ausente, y debajo el nombre y la rareza (estrellas) de la carta que
  * falta. Es una casilla informativa: la marca de favorita vive en el corazón que
  * la grilla superpone a cada celda.
  */
@@ -30,7 +30,7 @@ export class SlotVacio {
   /** Rareza de la carta que falta; define cuántas estrellas se muestran. */
   readonly rareza = input.required<RarezaCarta>();
 
-  protected readonly urlMisterio = urlMisterio;
+  protected readonly urlPaquete = urlPaquete;
 
   protected readonly estrellas = computed(() =>
     Array.from({ length: ESTRELLAS_POR_RAREZA[this.rareza()] }, (_, i) => i),

@@ -1,17 +1,19 @@
 <div class="slot-vacio" role="img" [attr.aria-label]="ariaLabel()">
   <img
-    class="slot-vacio__misterio"
-    [src]="urlMisterio"
+    class="slot-vacio__paquete"
+    [src]="urlPaquete"
     alt=""
     aria-hidden="true"
     draggable="false"
   />
 
-  <span class="slot-vacio__nombre">{{ nombre() }}</span>
+  <div class="slot-vacio__info">
+    <span class="slot-vacio__nombre">{{ nombre() }}</span>
 
-  <span class="slot-vacio__estrellas" aria-hidden="true">
-    @for (estrella of estrellas(); track $index) {
-      <app-estrella-rareza class="slot-vacio__estrella" />
-    }
-  </span>
+    <span class="slot-vacio__estrellas" aria-hidden="true">
+      @for (estrella of estrellas(); track $index) {
+        <app-estrella-rareza class="slot-vacio__estrella" />
+      }
+    </span>
+  </div>
 </div>

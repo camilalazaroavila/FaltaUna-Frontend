@@ -20,9 +20,8 @@
     /* Corazón del botón de favorita: negro sobre el círculo verde marcado. */
     --album-favorita-corazon: var(--color-negro-favorito);
 
-    /* Símbolo de "carta misteriosa" del slot vacío: tinte monocromo del sobre. */
-    --album-slot-misterio-opacidad: 0.45;
-    --album-slot-misterio-filtro: brightness(0) invert(1);
+    /* Sobre del slot vacío: a color, atenuado pero con contraste sobre el fondo. */
+    --album-slot-paquete-opacidad: 0.75;
 
     /* Realce del álbum seleccionado en el listado lateral. */
     --album-seleccionado-fondo: var(--marca-coleccion-fondo);
