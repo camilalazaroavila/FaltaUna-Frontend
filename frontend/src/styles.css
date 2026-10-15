@@ -20,7 +20,7 @@
      estilos-fundamentos/  → primitivos.css, base.css
      estilos-roles/        → jugador.css, empresa.css
      estilos-feedback/     → feedback.css, alertas.css, toast.css
-     estilos-componentes/  → botones.css, cartas.css, sobres.css
+     estilos-componentes/  → botones.css, cartas.css, sobres.css, tooltip.css
      estilos-paginas/      → landing.css, layout.css, misiones.css
      estilos-tailwind/     → tema.css (@theme inline), utilidades.css
      estilos-animaciones/  → animaciones.css
@@ -50,6 +50,7 @@
 @import "./estilos/estilos-componentes/cartas.css";
 @import "./estilos/estilos-componentes/sobres.css";
 @import "./estilos/estilos-componentes/barra-progreso.css";
+@import "./estilos/estilos-componentes/tooltip.css";
 @import "./estilos/estilos-paginas/landing.css";
 @import "./estilos/estilos-paginas/layout.css";
 @import "./estilos/estilos-paginas/misiones.css";

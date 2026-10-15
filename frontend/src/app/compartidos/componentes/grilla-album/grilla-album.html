@@ -1,34 +1,12 @@
 <div class="grilla">
   @for (carta of cartas(); track carta.id) {
-    <div
-      class="celda-envoltorio"
-      [class.celda-envoltorio--activa]="!modoMarcar()"
-      (dblclick)="alTocarDoble(carta.id)"
-    >
+    <div class="celda-envoltorio" (dblclick)="alTocar(carta.id)">
       @if (carta.obtenida) {
-        @if (modoMarcar()) {
-          <button
-            type="button"
-            class="celda"
-            [class.celda--marcada]="esFavorita(carta)"
-            [attr.aria-pressed]="esFavorita(carta)"
-            [attr.aria-label]="etiquetaObtenida(carta)"
-            (click)="alTocar(carta.id)"
-          >
-            <app-carta [carta]="cartaDe(carta)" />
-          </button>
-        } @else {
-          <div class="celda">
-            <app-carta [carta]="cartaDe(carta)" />
-          </div>
-        }
+        <div class="celda">
+          <app-carta [carta]="cartaDe(carta)" />
+        </div>
       } @else {
-        <app-slot-vacio
-          [marcable]="modoMarcar()"
-          [marcada]="esFavorita(carta)"
-          [etiqueta]="carta.nombre"
-          (alternar)="alTocar(carta.id)"
-        />
+        <app-slot-vacio [nombre]="carta.nombre" [rareza]="carta.rareza" />
       }
 
       <app-boton-favorita

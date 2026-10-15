@@ -142,22 +142,23 @@
 
           <app-encabezado-album
             [album]="resumen"
-            [modoMarcar]="modoMarcar()"
             [categoriaCupon]="categoriaCuponSeleccionada()"
-            (alternarModo)="alternarModoMarcar()"
           />
 
-          @if (modoMarcar()) {
-            <p
-              class="mt-4 rounded-md border border-atencion-borde bg-atencion-fondo px-3 py-2 text-sm text-atencion-texto"
-              role="status">
-              Tocá una carta para marcarla como "la quiero". {{ hayFavoritas() ? '' : 'Todavía no marcaste ninguna.' }}
-            </p>
-          } @else if (detalle(); as detalleAlbum) {
+          @if (detalle(); as detalleAlbum) {
             @if (detalleAlbum.cartas.length > 0) {
-              <p class="mt-4 text-xs text-texto-apagado">
-                Hacé doble click sobre una carta —o tocá su corazón— para guardarla en tus deseadas.
-              </p>
+              <div class="mt-4 flex flex-wrap items-center gap-1.5">
+                <p class="text-xs text-texto-apagado">
+                  Hacé doble click sobre una carta —o tocá su corazón— para guardarla en tus
+                  deseadas.
+                </p>
+                <app-tooltip
+                  [icono]="true"
+                  posicion="abajo-izquierda"
+                  etiqueta="Qué significa guardar en tus deseadas"
+                  texto="Marcá tus cartas deseadas para que, al intercambiar, el otro usuario vea cuáles querés y sepa qué ofrecerte."
+                />
+              </div>
             }
           }
 
@@ -187,7 +188,6 @@
               } @else {
                 <app-grilla-album
                   [cartas]="d.cartas"
-                  [modoMarcar]="modoMarcar()"
                   [favoritas]="favoritas()"
                   (alternar)="alternarFavorita($event)"
                 />

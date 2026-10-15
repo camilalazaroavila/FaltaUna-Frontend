@@ -17,12 +17,11 @@ const VENTANA_ALTERNANCIA_MS = 320;
 
 /**
  * Grilla de un álbum: las cartas obtenidas se renderizan con `app-carta` y las
- * faltantes con el slot vacío uniforme.
+ * faltantes con el slot vacío (sobre + nombre + estrellas de rareza).
  *
- * Cada carta tiene un corazón propio (`app-boton-favorita`) siempre visible,
- * que es el disparo principal y el que usan teclado y touch. Fuera del modo
- * "Marcar cartas que quiero" además se puede alternar con doble click sobre la
- * carta; dentro del modo se conserva el toque simple.
+ * Cada carta tiene un corazón propio (`app-boton-favorita`) siempre visible, que
+ * es el disparo principal y el que usan teclado y touch; además se puede alternar
+ * con doble click sobre la celda.
  */
 @Component({
   selector: 'app-grilla-album',
@@ -33,7 +32,6 @@ const VENTANA_ALTERNANCIA_MS = 320;
 })
 export class GrillaAlbum {
   readonly cartas = input.required<readonly CartaAlbum[]>();
-  readonly modoMarcar = input(false);
   readonly favoritas = input<ReadonlySet<string>>(new Set<string>());
 
   readonly alternar = output<string>();
@@ -58,19 +56,6 @@ export class GrillaAlbum {
 
   protected esFavorita(carta: CartaAlbum): boolean {
     return this.favoritas().has(carta.id);
-  }
-
-  protected etiquetaObtenida(carta: CartaAlbum): string {
-    const base = `Carta ${carta.nombre}, obtenida`;
-    return this.esFavorita(carta) ? `${base}, marcada como que la quiero` : base;
-  }
-
-  /** Doble click sobre la carta; solo fuera del modo "Marcar cartas". */
-  protected alTocarDoble(cartaId: string): void {
-    if (this.modoMarcar()) {
-      return;
-    }
-    this.alTocar(cartaId);
   }
 
   protected alTocar(cartaId: string): void {

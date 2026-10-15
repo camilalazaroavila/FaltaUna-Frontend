@@ -37,8 +37,8 @@
       de {{ album().total }} cartas obtenidas
     </p>
 
-    <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-      @if (completo()) {
+    @if (completo()) {
+      <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
         <a
           app-boton
           routerLink="/usuario/cupones"
@@ -50,20 +50,8 @@
           <ng-icon name="phosphorTicketFill" size="18" aria-hidden="true" />
           Canjear cupón
         </a>
-      }
-
-      <button
-        app-boton
-        type="button"
-        variante="primario"
-        tamanio="sm"
-        class="w-full sm:w-auto"
-        [attr.aria-pressed]="modoMarcar()"
-        (click)="alternarModo.emit()"
-      >
-        {{ modoMarcar() ? 'Terminar de marcar' : 'Marcar cartas que quiero' }}
-      </button>
-    </div>
+      </div>
+    }
   </div>
 
   <app-barra-progreso

@@ -36,11 +36,8 @@ const CARTAS: readonly CartaAlbum[] = [
 describe('GrillaAlbum', () => {
   let fixture: ComponentFixture<GrillaAlbum>;
 
-  const montar = (
-    opciones: { modoMarcar?: boolean; favoritas?: readonly string[] } = {},
-  ): HTMLElement => {
+  const montar = (opciones: { favoritas?: readonly string[] } = {}): HTMLElement => {
     fixture.componentRef.setInput('cartas', CARTAS);
-    fixture.componentRef.setInput('modoMarcar', opciones.modoMarcar ?? false);
     fixture.componentRef.setInput('favoritas', new Set(opciones.favoritas ?? []));
     fixture.detectChanges();
     return fixture.nativeElement as HTMLElement;
@@ -53,7 +50,6 @@ describe('GrillaAlbum', () => {
         provideIcons({
           phosphorHeart: ICONO,
           phosphorHeartFill: ICONO,
-          phosphorPlusFill: ICONO,
         }),
       ],
     });
@@ -69,44 +65,15 @@ describe('GrillaAlbum', () => {
     expect(el.querySelector('button.celda')).toBeNull();
   });
 
-  it('en modo marcar, la carta obtenida se vuelve un botón con aria-pressed', () => {
-    const el = montar({ modoMarcar: true });
+  it('el slot vacío recibe el nombre y la rareza de la carta faltante', () => {
+    const el = montar();
 
-    const celda = el.querySelector('button.celda')!;
-    expect(celda).not.toBeNull();
-    expect(celda.getAttribute('aria-pressed')).toBe('false');
-    expect(el.querySelectorAll('app-slot-vacio')).toHaveLength(1);
+    const slot = el.querySelector('app-slot-vacio')!;
+    const contenedor = slot.querySelector('.slot-vacio[role="img"]')!;
+    expect(contenedor.getAttribute('aria-label')).toBe('Carta faltante: Carta faltante, Rara');
   });
 
-  it('refleja una favorita marcada como botón presionado con su corazón', () => {
-    const el = montar({ modoMarcar: true, favoritas: ['c1'] });
-
-    const celda = el.querySelector('button.celda')!;
-    expect(celda.getAttribute('aria-pressed')).toBe('true');
-    expect(el.querySelector('app-boton-favorita.celda__corazon')).not.toBeNull();
-  });
-
-  it('emite el id de la carta obtenida al tocarla en modo marcar', () => {
-    const emitidos: string[] = [];
-    fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
-
-    const el = montar({ modoMarcar: true });
-    (el.querySelector('button.celda') as HTMLButtonElement).click();
-
-    expect(emitidos).toEqual(['c1']);
-  });
-
-  it('emite el id de la carta faltante al tocar el slot marcable', () => {
-    const emitidos: string[] = [];
-    fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
-
-    const el = montar({ modoMarcar: true });
-    (el.querySelector('app-slot-vacio button') as HTMLButtonElement).click();
-
-    expect(emitidos).toEqual(['c2']);
-  });
-
-  it('muestra el corazón siempre visible, también en el modo normal', () => {
+  it('muestra el corazón siempre visible en todas las celdas', () => {
     const el = montar();
 
     const corazones = el.querySelectorAll('app-boton-favorita.celda__corazon');
@@ -116,7 +83,14 @@ describe('GrillaAlbum', () => {
     );
   });
 
-  it('alterna con doble click sobre la carta en el modo normal', () => {
+  it('refleja una favorita marcada como corazón presionado', () => {
+    const el = montar({ favoritas: ['c1'] });
+
+    const corazon = el.querySelector('button.like-btn') as HTMLButtonElement;
+    expect(corazon.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('alterna con doble click sobre la carta obtenida', () => {
     const emitidos: string[] = [];
     fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
 
@@ -126,18 +100,6 @@ describe('GrillaAlbum', () => {
     );
 
     expect(emitidos).toEqual(['c1']);
-  });
-
-  it('el doble click no alterna dentro del modo marcar', () => {
-    const emitidos: string[] = [];
-    fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
-
-    const el = montar({ modoMarcar: true });
-    (el.querySelector('button.celda') as HTMLElement).dispatchEvent(
-      new MouseEvent('dblclick', { bubbles: true }),
-    );
-
-    expect(emitidos).toEqual([]);
   });
 
   it('el doble click alterna también la carta faltante', () => {

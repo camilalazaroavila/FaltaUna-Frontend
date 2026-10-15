@@ -6,11 +6,14 @@
 .slot-vacio {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;
   box-sizing: border-box;
   width: 100%;
   aspect-ratio: 5 / 7;
+  padding: 0.6rem;
   border: 2px dashed var(--album-slot-borde);
   border-radius: var(--radio-md);
   background-color: var(--album-slot-fondo);
@@ -19,50 +22,37 @@
       transparent 0 9%,
       var(--album-slot-ondas) 9% 11.5%);
   color: var(--album-slot-icono);
+  text-align: center;
 }
 
-.slot-vacio ng-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-}
-
-.slot-vacio--interactiva {
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.slot-vacio--interactiva:hover {
-  transform: translateY(-2%) scale(1.03);
-}
-
-.slot-vacio--interactiva:focus-visible {
-  outline: 2px solid var(--borde-foco);
-  outline-offset: 2px;
-}
-
-.slot-vacio--marcada {
-  border-style: solid;
-  border-color: var(--album-favorita-borde);
-  background-color: var(--album-favorita-fondo);
-  color: var(--album-favorita-icono);
-}
-
-.slot-vacio__icono {
+/* Sobre de la incógnita: mismo trazo del PaqueteHuh, tintado al ícono del slot. */
+.slot-vacio__misterio {
   width: 46%;
-  aspect-ratio: 1 / 1;
+  height: auto;
+  object-fit: contain;
+  opacity: var(--album-slot-misterio-opacidad);
+  filter: var(--album-slot-misterio-filtro);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .slot-vacio--interactiva {
-    transition: none;
-  }
+.slot-vacio__nombre {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--album-slot-icono);
+  font-family: var(--fuente-titulo);
+  font-size: 0.8rem;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  .slot-vacio--interactiva:hover {
-    transform: none;
-  }
+.slot-vacio__estrellas {
+  display: flex;
+  justify-content: center;
+  gap: 0.12rem;
+}
+
+.slot-vacio__estrella {
+  width: 0.85rem;
+  height: 0.85rem;
 }

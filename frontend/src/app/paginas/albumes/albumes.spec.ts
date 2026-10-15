@@ -120,8 +120,9 @@ describe('Albumes', () => {
         provideRouter([]),
         provideIcons({
           phosphorStackFill: ICONO,
-          phosphorPlusFill: ICONO,
+          phosphorHeart: ICONO,
           phosphorHeartFill: ICONO,
+          phosphorInfoFill: ICONO,
           phosphorArrowLeftFill: ICONO,
           phosphorMagnifyingGlassFill: ICONO,
         }),
@@ -187,15 +188,12 @@ describe('Albumes', () => {
     expect(servicio.listarAlbumes).toHaveBeenCalledWith(4);
   });
 
-  it('marca una carta como favorita desde el modo marcar', () => {
+  it('marca una carta como favorita al tocar su corazón', () => {
     (raiz().querySelector('.album-item') as HTMLButtonElement).click();
     fixture.detectChanges();
 
-    fixture.componentInstance['alternarModoMarcar']();
-    fixture.detectChanges();
-
-    const celda = raiz().querySelector('button.celda') as HTMLButtonElement;
-    celda.click();
+    const corazon = raiz().querySelector('button.like-btn') as HTMLButtonElement;
+    corazon.click();
     fixture.detectChanges();
 
     expect(servicio.marcarFavorita).toHaveBeenCalledWith('c1');

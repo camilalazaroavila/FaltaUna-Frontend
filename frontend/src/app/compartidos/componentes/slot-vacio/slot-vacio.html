@@ -1,20 +1,17 @@
-@if (marcable()) {
-  <button
-    type="button"
-    class="slot-vacio slot-vacio--interactiva"
-    [class.slot-vacio--marcada]="marcada()"
-    [attr.aria-label]="ariaLabel()"
-    [attr.aria-pressed]="marcada()"
-    (click)="alternar.emit()"
-  >
-    <ng-icon
-      [name]="marcada() ? 'phosphorHeartFill' : 'phosphorPlusFill'"
-      class="slot-vacio__icono"
-      aria-hidden="true"
-    />
-  </button>
-} @else {
-  <div class="slot-vacio" role="img" [attr.aria-label]="ariaLabel()">
-    <ng-icon name="phosphorPlusFill" class="slot-vacio__icono" aria-hidden="true" />
-  </div>
-}
+<div class="slot-vacio" role="img" [attr.aria-label]="ariaLabel()">
+  <img
+    class="slot-vacio__misterio"
+    [src]="urlMisterio"
+    alt=""
+    aria-hidden="true"
+    draggable="false"
+  />
+
+  <span class="slot-vacio__nombre">{{ nombre() }}</span>
+
+  <span class="slot-vacio__estrellas" aria-hidden="true">
+    @for (estrella of estrellas(); track $index) {
+      <app-estrella-rareza class="slot-vacio__estrella" />
+    }
+  </span>
+</div>

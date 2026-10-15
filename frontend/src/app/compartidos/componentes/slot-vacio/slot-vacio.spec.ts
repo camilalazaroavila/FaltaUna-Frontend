@@ -1,82 +1,55 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideIcons } from '@ng-icons/core';
 
 import { SlotVacio } from './slot-vacio';
-
-const ICONO = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
+import { ESTRELLAS_POR_RAREZA, type RarezaCarta } from '@modelos/carta.model';
 
 describe('SlotVacio', () => {
   let fixture: ComponentFixture<SlotVacio>;
 
-  const montar = (inputs: {
-    etiqueta: string;
-    marcable?: boolean;
-    marcada?: boolean;
-  }): HTMLElement => {
-    fixture.componentRef.setInput('etiqueta', inputs.etiqueta);
-    if (inputs.marcable !== undefined) {
-      fixture.componentRef.setInput('marcable', inputs.marcable);
-    }
-    if (inputs.marcada !== undefined) {
-      fixture.componentRef.setInput('marcada', inputs.marcada);
-    }
+  const montar = (nombre: string, rareza: RarezaCarta): HTMLElement => {
+    fixture.componentRef.setInput('nombre', nombre);
+    fixture.componentRef.setInput('rareza', rareza);
     fixture.detectChanges();
     return fixture.nativeElement as HTMLElement;
   };
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [SlotVacio],
-      providers: [
-        provideIcons({ phosphorPlusFill: ICONO, phosphorHeartFill: ICONO }),
-      ],
-    });
-
+    TestBed.configureTestingModule({ imports: [SlotVacio] });
     fixture = TestBed.createComponent(SlotVacio);
   });
 
-  it('no es operable cuando no es marcable: es una imagen informativa', () => {
-    const el = montar({ etiqueta: 'Carta 3' });
+  it('es una imagen informativa con el nombre y la rareza en el aria-label', () => {
+    const el = montar('Carta 6', 'rara');
+
+    const contenedor = el.querySelector('.slot-vacio[role="img"]')!;
+    expect(contenedor).not.toBeNull();
+    expect(contenedor.getAttribute('aria-label')).toBe('Carta faltante: Carta 6, Rara');
+  });
+
+  it('no es operable: no renderiza ningún botón', () => {
+    const el = montar('Carta 6', 'comun');
 
     expect(el.querySelector('button')).toBeNull();
-    const contenedor = el.querySelector('div')!;
-    expect(contenedor.getAttribute('role')).toBe('img');
-    expect(contenedor.getAttribute('aria-label')).toBe('Carta faltante: Carta 3');
   });
 
-  it('es un botón con aria-pressed cuando es marcable', () => {
-    const el = montar({ etiqueta: 'Carta 3', marcable: true });
+  it('muestra el sobre de la incógnita y el nombre de la carta', () => {
+    const el = montar('Super Grido', 'epicarta');
 
-    const boton = el.querySelector('button')!;
-    expect(boton.getAttribute('aria-pressed')).toBe('false');
-    expect(boton.getAttribute('aria-label')).toBe('Carta faltante: Carta 3');
+    expect(el.querySelector('.slot-vacio__misterio')).not.toBeNull();
+    expect(el.querySelector('.slot-vacio__nombre')!.textContent).toContain('Super Grido');
   });
 
-  it('refleja el estado marcado también en el aria-label', () => {
-    const el = montar({ etiqueta: 'Carta 3', marcable: true, marcada: true });
+  it('dibuja una estrella por cada nivel de rareza', () => {
+    const el = montar('Carta 6', 'legendaria');
 
-    const boton = el.querySelector('button')!;
-    expect(boton.getAttribute('aria-pressed')).toBe('true');
-    expect(boton.getAttribute('aria-label')).toContain('marcada como que la quiero');
+    expect(el.querySelectorAll('app-estrella-rareza')).toHaveLength(
+      ESTRELLAS_POR_RAREZA['legendaria'],
+    );
   });
 
-  it('emite alternar al hacer clic', () => {
-    const emitidos: void[] = [];
-    fixture.componentInstance.alternar.subscribe(() => emitidos.push(undefined));
+  it('una carta común muestra una sola estrella', () => {
+    const el = montar('Carta 6', 'comun');
 
-    const el = montar({ etiqueta: 'Carta 3', marcable: true });
-    (el.querySelector('button') as HTMLButtonElement).click();
-
-    expect(emitidos).toHaveLength(1);
-  });
-
-  it('no emite nada cuando no es marcable', () => {
-    const emitidos: void[] = [];
-    fixture.componentInstance.alternar.subscribe(() => emitidos.push(undefined));
-
-    const el = montar({ etiqueta: 'Carta 3' });
-    el.querySelector('div')!.click();
-
-    expect(emitidos).toHaveLength(0);
+    expect(el.querySelectorAll('app-estrella-rareza')).toHaveLength(1);
   });
 });

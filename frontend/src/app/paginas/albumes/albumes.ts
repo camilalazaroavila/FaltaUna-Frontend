@@ -4,6 +4,7 @@ import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
 
 import { EncabezadoAlbum } from '@compartidos/componentes/encabezado-album/encabezado-album';
+import { Tooltip } from '@compartidos/componentes/feedback/tooltip/tooltip';
 import { FiltrosCategoriaAlbum } from '@compartidos/componentes/filtros-categoria-album/filtros-categoria-album';
 import { GrillaAlbum } from '@compartidos/componentes/grilla-album/grilla-album';
 import { Header } from '@compartidos/componentes/layout/header/header';
@@ -30,7 +31,7 @@ import { AlbumesJugadorService } from '@servicios/albumes-jugador.service';
  */
 @Component({
   selector: 'app-albumes',
-  imports: [NgIcon, RouterLink, Header, FiltrosCategoriaAlbum, EncabezadoAlbum, GrillaAlbum],
+  imports: [NgIcon, RouterLink, Header, FiltrosCategoriaAlbum, EncabezadoAlbum, GrillaAlbum, Tooltip],
   templateUrl: './albumes.html',
   styleUrl: './albumes.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,7 +52,6 @@ export class Albumes implements OnInit {
   protected readonly cargandoDetalle = signal(false);
   protected readonly errorDetalle = signal<string | null>(null);
 
-  protected readonly modoMarcar = signal(false);
   protected readonly favoritas = signal<ReadonlySet<string>>(new Set<string>());
 
   /** Id de la carta cuyo guardado está en vuelo; evita el doble toque. */
@@ -124,7 +124,6 @@ export class Albumes implements OnInit {
 
   protected seleccionarAlbum(resumen: ResumenAlbum): void {
     this.albumSeleccionado.set(resumen);
-    this.modoMarcar.set(false);
     this.cargarDetalle(resumen.id);
   }
 
@@ -181,11 +180,6 @@ export class Albumes implements OnInit {
   protected volverALista(): void {
     this.albumSeleccionado.set(null);
     this.detalle.set(null);
-    this.modoMarcar.set(false);
-  }
-
-  protected alternarModoMarcar(): void {
-    this.modoMarcar.update((activo) => !activo);
   }
 
   protected alternarFavorita(cartaId: string): void {
@@ -216,10 +210,6 @@ export class Albumes implements OnInit {
         toast.error('No pudimos guardar la marca. Probá de nuevo.');
       },
     });
-  }
-
-  protected hayFavoritas(): boolean {
-    return this.favoritas().size > 0;
   }
 
   protected mostrarLogo(album: ResumenAlbum): boolean {

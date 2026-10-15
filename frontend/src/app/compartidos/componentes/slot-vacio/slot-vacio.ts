@@ -1,34 +1,42 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { NgIcon } from '@ng-icons/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+
+import { EstrellaRarezaComponent } from '@compartidos/componentes/cartas/estrella-rareza/estrella-rareza.component';
+import {
+  ESTRELLAS_POR_RAREZA,
+  ETIQUETA_RAREZA,
+  type RarezaCarta,
+} from '@modelos/carta.model';
+import urlMisterio from '@svgs/PaqueteHuh.svg';
 
 /**
  * Casilla de carta faltante dentro de un álbum.
  *
- * Una única variante visual (ondas uniformes) para no dar significado a
- * estados decorativos. Si es `marcable`, renderiza un `<button>` operable por
- * teclado para marcarla como "carta que quiero"; si no, es una casilla
- * informativa con `role="img"`.
+ * Muestra el sobre de la incógnita (`PaqueteHuh`) recortado como símbolo de
+ * "carta misteriosa", y debajo el nombre y la rareza (estrellas) de la carta que
+ * falta. Es una casilla informativa: la marca de favorita vive en el corazón que
+ * la grilla superpone a cada celda.
  */
 @Component({
   selector: 'app-slot-vacio',
-  imports: [NgIcon],
+  imports: [EstrellaRarezaComponent],
   templateUrl: './slot-vacio.html',
   styleUrl: './slot-vacio.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block w-full' },
 })
 export class SlotVacio {
-  /** Permite marcar/desmarcar como favorita. */
-  readonly marcable = input(false);
-  /** Estado actual de "carta que quiero". */
-  readonly marcada = input(false);
-  /** Nombre de la carta, solo para el `aria-label` (visualmente no se expone). */
-  readonly etiqueta = input.required<string>();
+  /** Nombre de la carta que falta. */
+  readonly nombre = input.required<string>();
+  /** Rareza de la carta que falta; define cuántas estrellas se muestran. */
+  readonly rareza = input.required<RarezaCarta>();
 
-  readonly alternar = output<void>();
+  protected readonly urlMisterio = urlMisterio;
 
-  protected readonly ariaLabel = computed(() => {
-    const base = `Carta faltante: ${this.etiqueta()}`;
-    return this.marcada() ? `${base}, marcada como que la quiero` : base;
-  });
+  protected readonly estrellas = computed(() =>
+    Array.from({ length: ESTRELLAS_POR_RAREZA[this.rareza()] }, (_, i) => i),
+  );
+
+  protected readonly ariaLabel = computed(
+    () => `Carta faltante: ${this.nombre()}, ${ETIQUETA_RAREZA[this.rareza()]}`,
+  );
 }

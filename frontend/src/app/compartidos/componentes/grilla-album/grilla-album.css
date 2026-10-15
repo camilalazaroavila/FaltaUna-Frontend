@@ -19,47 +19,26 @@
 }
 
 /* Ancla de la celda y del corazón. El corazón vive como hermano de la carta
-   para no anidar un botón dentro del botón del modo "Marcar". */
+   para no anidar un botón dentro de la celda. */
 .celda-envoltorio {
   position: relative;
   display: block;
   width: 100%;
-}
-
-/* Aviso visual de que la carta entera es alternable por doble click. */
-.celda-envoltorio--activa {
   cursor: pointer;
 }
 
-/* Celda de la carta: es `<button>` en modo "Marcar" y `<div>` en el normal. */
+/* Celda de la carta (o del slot): el doble click alterna la favorita. */
 .celda {
   position: relative;
   display: block;
   box-sizing: border-box;
   width: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  text-align: inherit;
-  cursor: pointer;
 }
 
 .celda:focus-visible {
   outline: 2px solid var(--borde-foco);
   outline-offset: 4px;
   border-radius: var(--radio-md);
-}
-
-/* Realce de la carta marcada: borde + corazón (no solo color). */
-.celda--marcada::after {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border: 3px solid var(--album-favorita-borde);
-  border-radius: calc(var(--radio-md) + 4px);
-  pointer-events: none;
 }
 
 .celda__corazon {
