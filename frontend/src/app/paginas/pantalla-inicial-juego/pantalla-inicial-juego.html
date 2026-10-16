@@ -1,0 +1,29 @@
+<div class="relative flex min-h-dvh flex-col overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white">
+  <app-header [logueado]="true" />
+ 
+  <main class="grid flex-1 grid-cols-1 gap-6 pt-6 pb-8 md:grid-cols-[minmax(18rem,26rem)_1fr] md:items-start md:gap-10">
+    <!-- Menú lateral: pegado al borde izquierdo en escritorio, como en el mockup -->
+    <nav aria-label="Opciones de juego" class="flex flex-col gap-4 pr-4 sm:pr-6 md:pr-0">
+      @for (opcion of opciones; track opcion.id) {
+        <a app-boton-opcion-juego ancho="completo" [routerLink]="opcion.ruta">
+          {{ opcion.texto }}
+        </a>
+      }
+    </nav>
+ 
+    <!-- En móvil el título va arriba del menú (order-first); en escritorio, a la derecha -->
+    <section class="order-first flex flex-col items-center gap-6 px-4 sm:px-6 md:order-none lg:px-8">
+      <h1 class="text-center font-titulo text-5xl uppercase text-marca-primaria sm:text-6xl lg:text-8xl">
+        ¡A combatir!
+      </h1>
+ 
+      <!-- Decorativa: solo se muestra desde tablet hacia arriba -->
+      <img
+        src="assets/juego/personaje-combate.png"
+        alt=""
+        aria-hidden="true"
+        class="hidden max-h-[55dvh] w-full max-w-md object-contain md:block" />
+    </section>
+  </main>
+</div>
+ 
