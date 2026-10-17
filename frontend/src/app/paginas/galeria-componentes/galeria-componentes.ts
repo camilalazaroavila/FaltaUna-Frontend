@@ -13,6 +13,8 @@ import { SeccionSobreMarca } from '@paginas/galeria-componentes/secciones/sobre-
 import { SeccionCarta } from '@paginas/galeria-componentes/secciones/carta/seccion-carta';
 import { SeccionCartaPopup } from '@paginas/galeria-componentes/secciones/carta-popup/seccion-carta-popup';
 import { SeccionAreaEmpresa } from '@paginas/galeria-componentes/secciones/area-empresa/seccion-area-empresa';
+import { SeccionTexto } from '@paginas/galeria-componentes/secciones/texto/seccion-texto';
+import { SeccionCajas } from '@paginas/galeria-componentes/secciones/cajas/seccion-cajas';
 
 export type ModoGaleria = 'jugador' | 'empresa';
 
@@ -32,6 +34,8 @@ export type ModoGaleria = 'jugador' | 'empresa';
     SeccionCarta,
     SeccionCartaPopup,
     SeccionAreaEmpresa,
+    SeccionTexto,
+    SeccionCajas,
   ],
   templateUrl: './galeria-componentes.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

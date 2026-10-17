@@ -1,0 +1,177 @@
+<div class="space-y-8">
+  <header class="space-y-2">
+    <h2 class="font-titulo text-subtitulo text-texto-primario">Texto</h2>
+    <p class="font-cuerpo text-sm text-texto-secundario">
+      Directivas de contenido (<code class="font-interfaz text-texto-primario">app-titulo</code>,
+      <code class="font-interfaz text-texto-primario">app-subtitulo</code>,
+      <code class="font-interfaz text-texto-primario">app-texto</code> y
+      <code class="font-interfaz text-texto-primario">app-sobretitulo</code>). Los dos bloques de
+      abajo muestran lo mismo: el izquierdo fija
+      <code class="font-interfaz text-texto-primario">data-modo="jugador"</code> y el derecho
+      <code class="font-interfaz text-texto-primario">data-modo="empresa"</code>, así que se ven los
+      dos modos a la vez, sin importar el selector global de arriba.
+    </p>
+  </header>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    @for (modo of modos; track modo) {
+      <div
+        [attr.data-modo]="modo"
+        class="space-y-6 rounded-lg border border-borde-default bg-fondo-app p-4 text-texto-primario sm:p-6"
+      >
+        <h3 class="font-titulo text-cuerpo text-texto-primario">Modo {{ modo }}</h3>
+
+        <app-tarjeta-muestra
+          titulo="app-titulo · tamaños"
+          descripcion="Nivel visual por `tamano`, independiente de la etiqueta. Los ejemplos usan h4 para no competir con la jerarquía de la propia galería."
+        >
+          <div class="space-y-4">
+            @for (tamano of tamanosTitulo; track tamano) {
+              <div class="space-y-1">
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  tamano="{{ tamano }}"
+                </span>
+                <h4 app-titulo [tamano]="tamano">Ejemplo de título de bloque</h4>
+              </div>
+            }
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="app-titulo · color"
+          descripcion="Todas las variantes de color salen de tokens. `heredar` no aplica clase: toma el color del contenedor (acá, el texto primario del bloque de modo)."
+        >
+          <div class="space-y-4">
+            @for (color of colores; track color) {
+              <div class="space-y-1">
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  color="{{ color }}"
+                </span>
+                <h4 app-titulo tamano="md" [color]="color">Ejemplo de título de bloque</h4>
+              </div>
+            }
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="app-subtitulo"
+          descripcion="Variante secundaria del título: misma familia display, con el color de texto secundario por defecto. Tamaños `md` y `sm`."
+        >
+          <div class="space-y-4">
+            @for (tamano of tamanosSubtitulo; track tamano) {
+              <div class="space-y-1">
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  tamano="{{ tamano }}"
+                </span>
+                <p app-subtitulo [tamano]="tamano">Subtítulo de apoyo del bloque</p>
+              </div>
+            }
+
+            @for (color of colores; track color) {
+              <div class="space-y-1">
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  color="{{ color }}"
+                </span>
+                <p app-subtitulo [color]="color">Subtítulo de apoyo del bloque</p>
+              </div>
+            }
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="app-texto"
+          descripcion="Cuerpo de lectura con Merriweather. Variantes de color y dos tamaños de la escala semántica."
+        >
+          <div class="space-y-4">
+            @for (variante of variantesTexto; track variante) {
+              <div class="space-y-1">
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  variante="{{ variante }}"
+                </span>
+                <p app-texto [variante]="variante">
+                  Texto de lectura para revisar el color y el interlineado de párrafo.
+                </p>
+              </div>
+            }
+
+            @for (tamano of tamanosTexto; track tamano) {
+              <div class="space-y-1">
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  tamano="{{ tamano }}"
+                </span>
+                <p app-texto [tamano]="tamano">
+                  Texto de lectura para revisar el tamaño de la escala semántica.
+                </p>
+              </div>
+            }
+          </div>
+
+          <div slot="nota" class="mt-4 space-y-3">
+            <div class="rounded-md border border-borde-default bg-elevado p-3">
+              <p app-texto variante="apagado">texto apagado sobre superficie elevada.</p>
+            </div>
+
+            <div class="rounded-md border-l-2 border-advertencia bg-advertencia-fondo px-3 py-2">
+              <p class="font-interfaz text-xs text-advertencia-texto">
+                Regla de uso: <strong>no usar texto apagado sobre superficies elevadas</strong>.
+                En modo jugador <code>--texto-apagado</code> cumple AA sobre fondo-app (5.32:1),
+                superficie (4.60:1) y hundido (7.16:1), pero sobre <code>bg-elevado</code> queda en
+                3.64:1. Si necesitás texto secundario sobre una superficie elevada, usá
+                <code>--texto-secundario</code>.
+              </p>
+            </div>
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="app-sobretitulo"
+          descripcion="Rótulo corto en mayúsculas con la familia de interfaz. El color sale solo de tokens."
+        >
+          <div class="space-y-4">
+            @for (color of colores; track color) {
+              <div class="space-y-1">
+                <span class="font-interfaz text-[0.6875rem] text-texto-apagado">
+                  color="{{ color }}"
+                </span>
+                <p app-sobretitulo [color]="color">Sobretítulo</p>
+              </div>
+            }
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="Todas las etiquetas semánticas"
+          descripcion="Un ejemplo por etiqueta soportada: h1 a h6 sobre app-titulo, y p y span sobre app-texto."
+        >
+          <div class="space-y-3" aria-hidden="true">
+            <h1 app-titulo tamano="lg">h1 — Título de página</h1>
+            <h2 app-titulo tamano="md">h2 — Título de sección</h2>
+            <h3 app-titulo tamano="md">h3 — Título de subsección</h3>
+            <h4 app-titulo tamano="sm">h4 — Título de bloque</h4>
+            <h5 app-titulo tamano="sm">h5 — Título menor</h5>
+            <h6 app-titulo tamano="sm">h6 — Rótulo más chico</h6>
+            <p app-texto>p — Párrafo de lectura con la familia Merriweather.</p>
+            <span app-texto class="block">span — Texto en línea con la familia Merriweather.</span>
+          </div>
+
+          <div slot="nota" class="mt-4 rounded-md border-l-2 border-atencion bg-atencion-fondo px-3 py-2">
+            <p class="font-interfaz text-xs text-atencion-texto">
+              Cada página necesita <strong>un solo h1</strong>. Acá se muestran todas las etiquetas
+              juntas solo como demostración; el ejemplo queda fuera del árbol de accesibilidad
+              (<code>aria-hidden</code>) para no romper el índice de encabezados de la galería.
+            </p>
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="Título largo sin espacios"
+          descripcion="Valida el break-words de la directiva: un título sin espacios no debe generar scroll horizontal."
+        >
+          <h4 app-titulo tamano="md">
+            SupercalifragilisticoespialidosoSinEspaciosParaProbarElDesbordeDelTituloEnPantallasAngostas
+          </h4>
+        </app-tarjeta-muestra>
+      </div>
+    }
+  </div>
+</div>

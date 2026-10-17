@@ -24,7 +24,7 @@
             ></div>
           </div>
 
-<p class="font-mono font-interfaz text-xs text-texto-secundario">
+<p class="font-interfaz text-xs text-texto-secundario">
                 class="{{ color.utilidad }}"
               </p>
         </div>
@@ -73,7 +73,7 @@
                   </span>
                 </div>
 
-                <p class="font-mono font-interfaz text-[0.6875rem] text-texto-secundario">
+                <p class="font-interfaz text-[0.6875rem] text-texto-secundario">
                   {{ variante.utilidad }}
                 </p>
               </div>
@@ -87,7 +87,7 @@
   <!-- Tipografías -->
   <app-tarjeta-muestra
     titulo="Tipografías"
-    descripcion="Familias cargadas vía Google Fonts: Russo One / Rock Salt para títulos, Merriweather para cuerpo y system-ui para controles."
+    descripcion="Dos familias de marca cargadas vía Google Fonts: Russo One para títulos y Merriweather para lectura. system-ui queda como excepción para controles y datos técnicos."
   >
     <div class="space-y-4">
       @for (fuente of tipografias; track fuente.token) {
@@ -103,7 +103,7 @@
             </div>
 
             <p class="font-interfaz text-[0.6875rem] text-texto-secundario">
-              <span class="font-mono">class=&quot;{{ fuente.utilidad }}&quot;</span>
+              <span class="font-interfaz">class=&quot;{{ fuente.utilidad }}&quot;</span>
             </p>
           </div>
 
@@ -129,7 +129,7 @@
           ></div>
           <p class="font-interfaz text-xs font-bold text-texto-primario">{{ radio.token }}</p>
           <p class="font-interfaz text-[0.6875rem] text-texto-apagado">{{ radio.valor }}</p>
-          <p class="font-interfaz text-[0.6875rem] font-mono text-texto-secundario">
+          <p class="font-interfaz text-[0.6875rem] text-texto-secundario">
             {{ radio.utilidad }}
           </p>
         </div>
@@ -153,7 +153,7 @@
           </div>
 
           <p class="font-interfaz text-xs font-bold text-texto-primario">{{ sombra.token }}</p>
-          <p class="font-interfaz text-[0.6875rem] font-mono text-texto-secundario">
+          <p class="font-interfaz text-[0.6875rem] text-texto-secundario">
             {{ sombra.utilidad }}
           </p>
         </div>

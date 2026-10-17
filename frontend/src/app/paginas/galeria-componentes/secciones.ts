@@ -81,4 +81,16 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     descripcion:
       'Header, tarjeta de álbum, KPI, medidor de rareza y cupón de recompensa del panel de marcas (revisar en modo empresa).',
   },
+  {
+    id: 'texto',
+    titulo: 'Texto',
+    descripcion:
+      'Directivas de contenido textual con todos sus tamaños, colores y etiquetas semánticas, en modo jugador y empresa a la vez.',
+  },
+  {
+    id: 'cajas',
+    titulo: 'Cajas',
+    descripcion:
+      'Contenedor de contenido con variantes, sombras, paddings, radios y slots, en modo jugador y empresa a la vez.',
+  },
 ] as const;

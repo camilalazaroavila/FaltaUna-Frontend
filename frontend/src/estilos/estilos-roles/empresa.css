@@ -71,7 +71,9 @@
     --texto-primario: var(--color-teal-profundo);
     /* #0A2E36: Contraste impecable > 11:1 */
     --texto-secundario: #3D555A;
-    --texto-apagado: #6B7D81;
+    /* Oscurecido para cumplir AA (>= 4.5:1) sobre las tres superficies:
+       hundido #EEDBC5 (4.56:1), fondo-app #FCEFE0 (5.44:1) y superficie #FFFFFF (6.15:1). */
+    --texto-apagado: #566467;
     --texto-sobre-oscuro: #F4FAF6;
     --texto-sobre-claro: var(--color-teal-profundo);
     --texto-link: var(--color-violeta-empresa);
