@@ -38,12 +38,18 @@ export class EmpresaPagoResultado implements OnInit {
   /** Segundos que se muestra el pago aprobado antes de pasar solo al paso 3. */
   private static readonly ESPERA_AVANCE_MS = 3000;
 
+  private static readonly MAX_REINTENTOS = 3;
+  private static readonly ESPERA_REINTENTO_MS = 2500;
+
   protected readonly resultadoRuta = signal<ResultadoUrlPago>('pendiente');
   protected readonly paymentId = signal<string | null>(null);
   protected readonly externalReference = signal<string | null>(null);
+  protected readonly referenciaVerificacion = signal<string | null>(null);
   protected readonly estadoVista = signal<EstadoVista>('cargando');
   protected readonly pago = signal<PagoRespuesta | null>(null);
   protected readonly mensajeError = signal<string | null>(null);
+
+  private reintentos = 0;
 
   protected readonly planNombre = computed(() => {
     return (
@@ -73,43 +79,43 @@ export class EmpresaPagoResultado implements OnInit {
     const qp = this.route.snapshot.queryParamMap;
     const paymentId = qp.get('payment_id') || qp.get('collection_id');
     const externalRef =
-      qp.get('external_reference') ||
-      this.estado.ultimoPago()?.referenciaExterna;
+      qp.get('external_reference') ??
+      this.estado.ultimoPago()?.referenciaExterna ??
+      this.estado.referenciaGuardada();
 
     this.paymentId.set(paymentId);
     this.externalReference.set(externalRef ?? null);
+    this.referenciaVerificacion.set(externalRef ?? null);
 
-    // Si viene con payment_id y referencia externa, sincronizar con el backend
-    if (paymentId && externalRef) {
-      this.confirmarConBackend(externalRef, paymentId, resultadoParam);
+    // Recuerda la referencia para que `pagoAprobadoGuard` pueda revalidar el pago
+    // contra el backend aunque se recargue la página o falle la confirmación.
+    if (externalRef) this.estado.recordarReferencia(externalRef);
+
+    // La URL sola no alcanza para dar el pago por acreditado: siempre se valida
+    // contra el backend antes de mostrar el éxito y habilitar el paso 3.
+    if (externalRef && paymentId) {
+      this.confirmarConBackend(externalRef, paymentId);
     } else if (externalRef) {
-      this.consultarPago(externalRef, resultadoParam);
+      this.consultarPago(externalRef);
     } else {
-      // Sin IDs: se basa en el resultado indicado por la URL
-      this.estadoVista.set(resultadoParam === 'exito' ? 'exito' : resultadoParam === 'error' ? 'error' : 'pendiente');
+      // Sin referencia ni payment_id no hay nada que verificar.
+      this.estadoVista.set(resultadoParam === 'error' ? 'error' : 'pendiente');
     }
   }
 
-  private confirmarConBackend(
-    referencia: string,
-    pagoMercadoPagoId: string,
-    fallbackUrl: ResultadoUrlPago,
-  ): void {
+  private confirmarConBackend(referencia: string, pagoMercadoPagoId: string): void {
     this.pagos.confirmarPago(referencia, pagoMercadoPagoId).subscribe({
       next: (pago) => this.aplicarPago(pago),
-      error: () => {
-        // Si el endpoint de confirmación falla, caemos de manera segura en el resultado de URL
-        this.estadoVista.set(
-          fallbackUrl === 'exito' ? 'exito' : fallbackUrl === 'error' ? 'error' : 'pendiente',
-        );
-      },
+      // Si la confirmación directa falla, se usa el estado que ya tenga el backend
+      // (el webhook pudo haber procesado el cobro) antes de reintentar.
+      error: () => this.consultarPago(referencia),
     });
   }
 
-  private consultarPago(referencia: string, fallbackUrl: ResultadoUrlPago): void {
+  private consultarPago(referencia: string): void {
     this.pagos.obtenerPago(referencia).subscribe({
       next: (pago) => this.aplicarPago(pago),
-      error: () => this.estadoVista.set(fallbackUrl),
+      error: () => this.reintentarOEstadoFinal(),
     });
   }
 
@@ -121,25 +127,69 @@ export class EmpresaPagoResultado implements OnInit {
     if (pago.estado === 'Aprobado') {
       this.estadoVista.set('exito');
       // Solo se avanza solo con un pago VERIFICADO por el backend (el guard del paso 3 lo exige).
+      if (this.temporizador) clearTimeout(this.temporizador);
       this.temporizador = setTimeout(
         () => this.irACrearAlbum(),
         EmpresaPagoResultado.ESPERA_AVANCE_MS,
       );
-    } else if (pago.estado === 'Rechazado' || pago.estado === 'Cancelado') {
-      this.estadoVista.set('error');
-    } else {
-      this.estadoVista.set('pendiente');
+      return;
     }
+
+    if (pago.estado === 'Rechazado' || pago.estado === 'Cancelado') {
+      this.estadoVista.set('error');
+      return;
+    }
+
+      this.reintentarOEstadoFinal();
+  }
+
+  /**
+   * El backend todavía no confirma el cobro. Si el usuario volvió con un pago
+   * exitoso se reintenta la verificación unos segundos (el webhook puede demorar);
+   * si no, se muestra el estado pendiente con la opción de verificar de nuevo.
+   */
+  private reintentarOEstadoFinal(): void {
+    const referencia = this.referenciaVerificacion();
+    if (referencia && this.puedeReintentar()) {
+      this.reintentos++;
+      this.estadoVista.set('cargando');
+      this.temporizador = setTimeout(
+        () => this.verificarPago(referencia),
+        EmpresaPagoResultado.ESPERA_REINTENTO_MS,
+      );
+      return;
+    }
+
+    this.estadoVista.set(this.resultadoRuta() === 'error' ? 'error' : 'pendiente');
+  }
+
+  private puedeReintentar(): boolean {
+    return (
+      this.resultadoRuta() === 'exito' && this.reintentos < EmpresaPagoResultado.MAX_REINTENTOS
+    );
+  }
+
+  /** Verifica el pago contra el backend: confirma con el id de MP si lo tiene. */
+  private verificarPago(referencia: string): void {
+    const pagoId = this.paymentId();
+    if (pagoId) this.confirmarConBackend(referencia, pagoId);
+    else this.consultarPago(referencia);
+  }
+
+  protected verificarDeNuevo(): void {
+    const referencia = this.referenciaVerificacion();
+    if (!referencia) return;
+
+    if (this.temporizador) clearTimeout(this.temporizador);
+    this.reintentos = 0;
+    this.estadoVista.set('cargando');
+    this.verificarPago(referencia);
   }
 
   /** Pago aprobado: sigue el alta en el paso 3 (nombre e imágenes de la marca). */
   protected irACrearAlbum(): void {
     if (this.temporizador) clearTimeout(this.temporizador);
     this.router.navigate(['/empresa/album/crear/marca']);
-  }
-
-  protected irAlPanel(): void {
-    this.router.navigate(['/empresa/panel']);
   }
 
   protected reintentar(): void {

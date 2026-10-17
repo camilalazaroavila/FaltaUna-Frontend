@@ -17,6 +17,10 @@ import { PagosService } from '@servicios/pagos.service';
 import { PagoRespuesta } from '@modelos/pago.model';
 
 describe('EmpresaPagoResultado', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
   const mockPagoAprobado: PagoRespuesta = {
     referenciaExterna: 'PAG-EXT-123',
     estado: 'Aprobado',
@@ -111,5 +115,35 @@ describe('EmpresaPagoResultado', () => {
 
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('No se pudo procesar el pago');
+  });
+
+  it('con una referencia sin acreditar muestra pendiente y ofrece revalidar (sin botón de crear álbum)', async () => {
+    const { fixture, mockPagosService } = await configurarModulo('pendiente', {
+      external_reference: 'PAG-EXT-123',
+    });
+    mockPagosService.obtenerPago.mockReturnValue(
+      of({ ...mockPagoAprobado, estado: 'Pendiente', fechaAprobacion: null }),
+    );
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Pago pendiente de confirmación');
+    expect(el.textContent).toContain('Verificar de nuevo');
+    expect(el.textContent).not.toContain('Crear mi álbum');
+  });
+
+  it('no muestra el éxito si el backend no puede verificar el pago', async () => {
+    const { fixture, mockPagosService } = await configurarModulo('exito', {
+      payment_id: '999888',
+      external_reference: 'PAG-EXT-123',
+    });
+    mockPagosService.confirmarPago.mockReturnValue(
+      of({ ...mockPagoAprobado, estado: 'Pendiente', fechaAprobacion: null }),
+    );
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).not.toContain('¡Pago acreditado con éxito!');
+    expect(el.textContent).not.toContain('Crear mi álbum');
   });
 });
