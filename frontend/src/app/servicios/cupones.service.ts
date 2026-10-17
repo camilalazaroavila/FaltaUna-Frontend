@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
@@ -10,6 +10,7 @@ import {
   CuponDescuento,
   CuponValidado,
   EstadoCupon,
+  FiltrosCupones,
   MiCuponApi,
   QrCupon,
   QrCuponApi,
@@ -44,10 +45,18 @@ export class CuponesService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  /** Cupones del usuario logueado (rol Usuario). */
-  obtenerMisCupones(): Observable<CuponDescuento[]> {
+  /**
+   * Cupones del usuario logueado (rol Usuario). Admite buscar por marca, nombre,
+   * descripción o código, y filtrar por estado; ambos filtros los aplica el backend.
+   */
+  obtenerMisCupones(filtros: FiltrosCupones = {}): Observable<CuponDescuento[]> {
+    let params = new HttpParams();
+    const buscar = filtros.buscar?.trim();
+    if (buscar) params = params.set('buscar', buscar);
+    if (filtros.estado) params = params.set('estado', filtros.estado);
+
     return this.http
-      .get<MiCuponApi[]>(`${this.apiUrl}/Cupones/mis-cupones`)
+      .get<MiCuponApi[]>(`${this.apiUrl}/Cupones/mis-cupones`, { params })
       .pipe(map((cupones) => cupones.map((c) => this.aCuponDescuento(c))));
   }
 
