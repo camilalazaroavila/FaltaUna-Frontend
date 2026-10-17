@@ -92,3 +92,11 @@
         background: var(--marca-primaria);
     }
 }
+
+   @utility fondo-combate {
+     background-image: linear-gradient(
+       to bottom,
+       var(--combate-fondo-alto),
+       var(--combate-fondo-bajo)
+     );
+   }
