@@ -3,10 +3,7 @@ import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-
 import { HeaderEmpresa } from '@compartidos/componentes/layout/header-empresa/header-empresa';
 import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarjeta-album';
 import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
-import type {
-  EstadoKpi,
-  VariacionKpi,
-} from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
+
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import {
   ALBUMES_EMPRESA,
@@ -28,8 +25,6 @@ interface KpiMuestra {
   readonly etiqueta: string;
   readonly valor: string;
   readonly contexto?: string;
-  readonly variacion?: VariacionKpi;
-  readonly estado: EstadoKpi;
 }
 
 /**
@@ -68,37 +63,29 @@ export class SeccionAreaEmpresa {
       etiqueta: 'Cartas',
       valor: String(this.primario.resumen.totalCartas),
       contexto: 'En toda la colección',
-      estado: 'listo',
     },
     {
       etiqueta: 'Completaron',
       valor: `${this.primario.resumen.porcentajeCompletado}%`,
-      variacion: { valor: '+12%', positiva: true },
       contexto: 'Sube respecto al mes pasado',
-      estado: 'listo',
     },
     {
       etiqueta: 'Favoritos',
       valor: this.primario.resumen.favoritos.toLocaleString('es-AR'),
-      variacion: { valor: '-8%', positiva: false },
       contexto: 'Baja respecto al mes pasado',
-      estado: 'listo',
     },
     {
       etiqueta: 'Intercambios',
       valor: this.primario.resumen.intercambios.toLocaleString('es-AR'),
-      estado: 'cargando',
     },
     {
       etiqueta: 'Cupones canjeados',
       valor: '0',
-      estado: 'sin-datos',
     },
     {
       etiqueta: 'Jugadores activos',
       valor: '0',
       contexto: 'Servidor no disponible',
-      estado: 'error',
     },
   ];
 
