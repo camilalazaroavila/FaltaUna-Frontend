@@ -13,75 +13,135 @@
    ========================================================================== */
 :root,
 [data-modo="jugador"] {
-    color-scheme: dark;
+   color-scheme: dark;
 
-    /* --- Identidad y Marca --- */
-    --marca-primaria: var(--color-verde-jugador);
-    --marca-primaria-hover: var(--color-verde-jugador-hover);
-    --marca-primaria-activa: var(--color-verde-jugador-activa);
-    --marca-primaria-suave: rgba(59, 217, 114, 0.14);
-    --marca-sobre-primaria: var(--color-teal-profundo);
-    /* Contraste oscuro sobre verde brillante */
+   /* --- Identidad y Marca --- */
+   --marca-primaria: var(--color-verde-jugador);
+   --marca-primaria-hover: var(--color-verde-jugador-hover);
+   --marca-primaria-activa: var(--color-verde-jugador-activa);
+   --marca-primaria-suave: rgba(59, 217, 114, 0.14);
+   --marca-sobre-primaria: var(--color-teal-profundo);
+   /* Contraste oscuro sobre verde brillante */
 
-    --marca-acento: var(--color-amarillo-acento);
-    --marca-acento-hover: var(--color-amarillo-hover);
-    --marca-acento-activo: var(--color-amarillo-activo);
-    --marca-acento-suave: rgba(242, 238, 174, 0.14);
-    --marca-sobre-acento: var(--color-teal-profundo);
+   --marca-acento: var(--color-amarillo-acento);
+   --marca-acento-hover: var(--color-amarillo-hover);
+   --marca-acento-activo: var(--color-amarillo-activo);
+   --marca-acento-suave: rgba(242, 238, 174, 0.14);
+   --marca-sobre-acento: var(--color-teal-profundo);
 
-    /* Acento secundario: en jugador reutiliza el acento cálido del logo. */
-    --marca-secundaria: var(--color-amarillo-acento);
-    --marca-secundaria-hover: var(--color-amarillo-hover);
-    --marca-secundaria-activa: var(--color-amarillo-activo);
-    --marca-secundaria-suave: rgba(242, 238, 174, 0.14);
-    --marca-sobre-secundaria: var(--color-teal-profundo);
+   /* Acento secundario: en jugador reutiliza el acento cálido del logo. */
+   --marca-secundaria: var(--color-amarillo-acento);
+   --marca-secundaria-hover: var(--color-amarillo-hover);
+   --marca-secundaria-activa: var(--color-amarillo-activo);
+   --marca-secundaria-suave: rgba(242, 238, 174, 0.14);
+   --marca-sobre-secundaria: var(--color-teal-profundo);
 
-    /* --- Superficies y Capas Visuales --- */
-    --fondo-app: var(--color-teal-base);
-    --fondo-superficie: var(--color-teal-superficie);
-    --fondo-elevado: var(--color-teal-elevado);
-    --fondo-hundido: var(--color-teal-hundido);
-    --borde-default: var(--color-teal-borde);
-    --borde-fuerte: #35676E;
-    --borde-foco: var(--color-amarillo-acento);
-    /* Foco visible con máximo contraste sobre teal */
-    --overlay: rgba(7, 35, 38, 0.82);
+   /* --- Superficies y Capas Visuales --- */
+   --fondo-app: var(--color-teal-base);
+   --fondo-superficie: var(--color-teal-superficie);
+   --fondo-elevado: var(--color-teal-elevado);
+   --fondo-hundido: var(--color-teal-hundido);
+   --borde-default: var(--color-teal-borde);
+   --borde-fuerte: #35676E;
+   --borde-foco: var(--color-amarillo-acento);
+   /* Foco visible con máximo contraste sobre teal */
+   --overlay: rgba(7, 35, 38, 0.82);
 
-    /* --- Auth: panel de imagen (login / register) ---
+   /* --- Auth: panel de imagen (login / register) ---
        El panel lateral cubre la foto con un degradado del modo para que el
        texto (o el fallback) se lea sobre la imagen sin depender de la foto. */
-    --auth-imagen-texto: var(--texto-sobre-oscuro);
-    --auth-imagen-overlay: linear-gradient(165deg,
-            color-mix(in srgb, var(--color-teal-profundo) 85%, transparent) 0%,
-            color-mix(in srgb, var(--color-teal-profundo) 40%, transparent) 58%,
-            transparent 100%);
-    --auth-imagen-fondo: var(--fondo-superficie);
-    --header-auth-fondo: var(--color-teal-base);
+   --auth-imagen-texto: var(--texto-sobre-oscuro);
+   --auth-imagen-overlay: linear-gradient(165deg,
+         color-mix(in srgb, var(--color-teal-profundo) 85%, transparent) 0%,
+         color-mix(in srgb, var(--color-teal-profundo) 40%, transparent) 58%,
+         transparent 100%);
+   --auth-imagen-fondo: var(--fondo-superficie);
+   --header-auth-fondo: var(--color-teal-base);
 
-    /* --- Sombras (Modo Jugador / Oscuro Deportivo) --- */
-    --sombra-baja: 0 2px 8px rgba(0, 0, 0, 0.22);
-    --sombra-media: 0 8px 20px rgba(0, 0, 0, 0.32);
-    --sombra-alta: 0 16px 36px rgba(0, 0, 0, 0.45);
-    --sombra-brillo-verde: 0 0 20px color-mix(in srgb, var(--color-verde-jugador) 35%, transparent);
+   /* --- Sombras (Modo Jugador / Oscuro Deportivo) --- */
+   --sombra-baja: 0 2px 8px rgba(0, 0, 0, 0.22);
+   --sombra-media: 0 8px 20px rgba(0, 0, 0, 0.32);
+   --sombra-alta: 0 16px 36px rgba(0, 0, 0, 0.45);
+   --sombra-brillo-verde: 0 0 20px color-mix(in srgb, var(--color-verde-jugador) 35%, transparent);
 
-    /* --- Tipografía y Jerarquía de Texto --- */
-    --texto-primario: #F4FAF6;
-    /* Blanco suave ligeramente verdoso (evita fatiga visual) */
-    --texto-secundario: #B8D3CF;
-    /* Lectura secundaria con ratio > 5.5:1 */
-    --texto-apagado: #7A9F9B;
-    /* Placeholders, metadatos y fechas */
-    --texto-sobre-oscuro: #F4FAF6;
-    --texto-sobre-claro: var(--color-teal-profundo);
-    --texto-link: var(--color-verde-jugador);
-    --texto-link-hover: var(--color-verde-jugador-hover);
+   /* --- Tipografía y Jerarquía de Texto --- */
+   --texto-primario: #F4FAF6;
+   /* Blanco suave ligeramente verdoso (evita fatiga visual) */
+   --texto-secundario: #B8D3CF;
+   /* Lectura secundaria con ratio > 5.5:1 */
+   --texto-apagado: #93B1AE;
+   /* Placeholders, metadatos y fechas. Aclarado para cumplir AA (>= 4.5:1)
+       sobre fondo-app (5.32:1), superficie (4.60:1) y hundido (7.16:1).
+       Sobre elevado queda en 3.64:1: no usar texto apagado sobre superficies elevadas. */
+   --texto-sobre-oscuro: #F4FAF6;
+   --texto-sobre-claro: var(--color-teal-profundo);
+   --texto-link: var(--color-verde-jugador);
+   --texto-link-hover: var(--color-verde-jugador-hover);
 
-    /* --- Interacciones --- */
-    --interactivo-seleccionado: var(--marca-primaria-suave);
-    --interactivo-hover: rgba(244, 250, 246, 0.07);
+   /* --- Interacciones --- */
+   --interactivo-seleccionado: var(--marca-primaria-suave);
+   --interactivo-hover: rgba(244, 250, 246, 0.07);
 
-    /* --- Familias Tipográficas --- */
-    --fuente-titulo: "Russo One", "Rock Salt", cursive, ui-sans-serif, system-ui, sans-serif;
-    --fuente-cuerpo: "Merriweather", Georgia, "Times New Roman", serif;
-    --fuente-interfaz: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+   /* --- Familias Tipográficas ---
+       Dos familias de marca: titulares (Russo One) y lectura (Merriweather).
+       `--fuente-interfaz` (system-ui) queda como excepción reservada a los
+       controles de UI: botones, inputs, badges, tablas y datos técnicos.
+       El modo empresa hereda estas mismas familias. */
+   --fuente-titulo: "Russo One", ui-sans-serif, system-ui, sans-serif;
+   --fuente-cuerpo: "Merriweather", Georgia, "Times New Roman", serif;
+   --fuente-interfaz: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+   /* --- Escala Tipográfica Semántica (compartida por ambos modos) ---
+       Tamaños y pesos por rol, para que los componentes no usen valores
+       arbitrarios. Se consumen vía las utilidades `text-*`, `font-peso-*`,
+       `leading-*` y `tracking-*` del mapeo de Tailwind. */
+   --tipografia-display: 3rem;
+   --tipografia-titulo: 2.25rem;
+   --tipografia-subtitulo: 1.5rem;
+   --tipografia-cuerpo: 1rem;
+   --tipografia-menor: 0.875rem;
+   --tipografia-etiqueta: 0.75rem;
+
+   --peso-titular: 400;
+   --peso-lectura: 400;
+   --peso-etiqueta: 700;
+
+   --interlineado-titulo: 1.1;
+   --interlineado-cuerpo: 1.6;
+   --interletrado-titulo: 0.02em;
+   --interletrado-etiqueta: 0.06em;
+
+   /* --- Tablero de partida --- */
+   --tablero-fondo: linear-gradient(to bottom,
+         color-mix(in srgb, var(--color-teal-superficie) 45%, var(--color-gris-teal)) 0%,
+         var(--color-amarillo-logo) 100%);
+
+   /* Slots: el rival arriba (claro), el propio abajo (oscuro), como en tu Canva */
+   --slot-rival-fondo: var(--color-amarillo-logo);
+   --slot-propio-fondo: var(--color-teal-superficie);
+   --slot-borde: var(--color-teal-profundo);
+   --slot-resaltado: var(--marca-primaria);
+   --slot-resaltado-anillo: color-mix(in srgb, var(--marca-primaria) 45%, transparent);
+
+   /* Zona */
+   --zona-marco: var(--color-teal-profundo);
+   --zona-marco-destacado: var(--color-amarillo-logo);
+
+   /* Puntaje de zona (badge) */
+   --puntaje-zona-ganando-fondo: var(--marca-primaria);
+   --puntaje-zona-ganando-texto: var(--marca-sobre-primaria);
+   --puntaje-zona-perdiendo-fondo: var(--color-teal-elevado);
+   --puntaje-zona-perdiendo-texto: var(--texto-primario);
+   --puntaje-zona-empate-fondo: var(--color-amarillo-acento);
+   --puntaje-zona-empate-texto: var(--color-teal-profundo);
+
+   /* Sombras cartoon gruesas (sólidas, sin difuminar) */
+   --sombra-cartoon: 4px 4px 0 var(--color-teal-profundo);
+   --sombra-cartoon-gruesa: 7px 7px 0 var(--color-teal-profundo);
+   --sombra-cartoon-clara: 7px 7px 0 var(--color-amarillo-logo);
+
+   /* Tiempos de animación de partida */
+   --duracion-revelado-carta: 600ms;
+   --duracion-cambio-zona: 900ms;
+   --duracion-vuelo-carta: 450ms;
 }

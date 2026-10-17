@@ -48,18 +48,28 @@
   <!-- KPI -->
   <app-tarjeta-muestra
     titulo="app-tarjeta-kpi"
-    descripcion="Indicador con acento lateral y valor tipográfico. Admite ícono opcional y detalle, y toma el color de su tono."
+    descripcion="Indicador informativo con franja de acento en el borde derecho y valor tipográfico. Admite etiqueta, valor, variación opcional (éxito o error), contexto opcional y un estado de carga: listo, cargando, sin datos o error."
   >
     <div class="grid gap-4 sm:grid-cols-3">
-      @for (tono of tonos; track tono) {
+      @for (kpi of kpisMuestra; track kpi.etiqueta) {
         <app-tarjeta-kpi
-          etiqueta="Completaron"
-          [valor]="kpis[1].valor"
-          [detalle]="'tono ' + tono"
-          icono="phosphorTrophyFill"
-          [tono]="tono"
+          [etiqueta]="kpi.etiqueta"
+          [valor]="kpi.valor"
+          [contexto]="kpi.contexto"
+          [variacion]="kpi.variacion"
+          [estado]="kpi.estado"
         />
       }
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        El acento es <code>--marca-primaria</code> por defecto y pasa a
+        <code>--exito</code> o <code>--error</code> con una variación (o con un error de carga). Todas
+        las tarjetas conservan la misma superficie y el mismo borde neutro: el estado se lee en el
+        acento y en el mensaje, nunca en un borde de color. La tarjeta es informativa: no es un botón
+        ni trae gráficos.
+      </p>
     </div>
   </app-tarjeta-muestra>
 

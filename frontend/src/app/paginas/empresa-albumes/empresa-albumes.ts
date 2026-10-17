@@ -27,6 +27,13 @@ import {
 
 export type CriterioOrdenAlbum = 'nombre-asc' | 'nombre-desc' | 'rareza';
 
+/** Dato que alimenta una tarjeta KPI del detalle del álbum. */
+interface KpiAlbum {
+  readonly etiqueta: string;
+  readonly valor: string;
+  readonly contexto: string;
+}
+
 interface AlbumConResumen extends AlbumEmpresa {
   readonly resumen: ResumenAlbum;
   /** Nombre real de la marca, tomado del backend (reemplaza a empresa.nombre del mock). */
@@ -158,7 +165,7 @@ export class EmpresaAlbumes implements OnInit {
     }));
   });
 
-  protected readonly kpisAlbum = computed(() => {
+  protected readonly kpisAlbum = computed<readonly KpiAlbum[]>(() => {
     const album = this.albumActual();
     if (album === null) return [];
     const resumen = album.resumen;
@@ -166,26 +173,22 @@ export class EmpresaAlbumes implements OnInit {
       {
         etiqueta: 'Cartas',
         valor: String(resumen.totalCartas),
-        detalle: 'En toda la colección',
-        icono: 'phosphorCardsFill',
+        contexto: 'En toda la colección',
       },
       {
         etiqueta: 'Completaron',
         valor: `${resumen.porcentajeCompletado}%`,
-        detalle: `${album.jugadoresCompletaron} jugadores`,
-        icono: 'phosphorTrophyFill',
+        contexto: `${album.jugadoresCompletaron} jugadores`,
       },
       {
         etiqueta: 'Favoritos',
         valor: resumen.favoritos.toLocaleString('es-AR'),
-        detalle: 'Marcas de tus cartas',
-        icono: 'phosphorHeartFill',
+        contexto: 'Marcas de tus cartas',
       },
       {
         etiqueta: 'Intercambios',
         valor: resumen.intercambios.toLocaleString('es-AR'),
-        detalle: 'Entre jugadores',
-        icono: 'phosphorArrowsLeftRightFill',
+        contexto: 'Entre jugadores',
       },
     ];
   });

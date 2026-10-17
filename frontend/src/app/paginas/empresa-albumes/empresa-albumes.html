@@ -36,8 +36,7 @@
   <!-- KPIs del álbum -->
   <div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
     @for (kpi of kpisAlbum(); track kpi.etiqueta) {
-    <app-tarjeta-kpi [etiqueta]="kpi.etiqueta" [valor]="kpi.valor" [detalle]="kpi.detalle" [icono]="kpi.icono"
-      [tono]="album.tono" />
+    <app-tarjeta-kpi [etiqueta]="kpi.etiqueta" [valor]="kpi.valor" [contexto]="kpi.contexto" />
     }
   </div>
 
