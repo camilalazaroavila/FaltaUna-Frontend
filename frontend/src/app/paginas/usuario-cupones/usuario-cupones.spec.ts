@@ -141,4 +141,46 @@ describe('UsuarioCupones', () => {
     componente.elegirEstado('Usado');
     expect(componente.cuponesFiltrados()).toHaveLength(0);
   });
+
+  it('el menú hamburguesa se abre, lista los 3 estados y se cierra al elegir uno', async () => {
+    await montar(null);
+    const componente = fixture.componentInstance as any;
+    const raiz: HTMLElement = fixture.nativeElement;
+
+    expect(raiz.querySelector('#menu-filtros-cupones')).toBeNull();
+
+    (raiz.querySelector('button[aria-label="Filtrar por estado"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    const menu = raiz.querySelector('#menu-filtros-cupones') as HTMLElement;
+    expect(menu).not.toBeNull();
+    expect(menu.querySelectorAll('ul button')).toHaveLength(3);
+    expect(menu.textContent).toContain('Limpiar filtros');
+
+    componente.elegirEstado('Usado');
+    fixture.detectChanges();
+    expect(raiz.querySelector('#menu-filtros-cupones')).toBeNull();
+  });
+
+  it('el botón Limpiar filtros del menú está deshabilitado sin filtros y los borra al usarlo', async () => {
+    await montar(null);
+    const componente = fixture.componentInstance as any;
+    const raiz: HTMLElement = fixture.nativeElement;
+
+    componente.alternarMenu();
+    fixture.detectChanges();
+    const limpiar = () =>
+      Array.from(raiz.querySelectorAll('#menu-filtros-cupones button')).find((b) =>
+        b.textContent?.includes('Limpiar filtros'),
+      ) as HTMLButtonElement;
+    expect(limpiar().disabled).toBe(true);
+
+    componente.escribirBusqueda('grido');
+    fixture.detectChanges();
+    expect(limpiar().disabled).toBe(false);
+
+    limpiar().click();
+    fixture.detectChanges();
+    expect(componente.hayFiltros()).toBe(false);
+  });
 });

@@ -25,45 +25,125 @@
         Volver
       </a>
     </div>
-    <h1 class="mt-2 font-titulo text-3xl uppercase tracking-wide sm:text-5xl">Mis cupones</h1>
+    <!-- Título + buscador y menú de filtros -->
+    <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <h1 class="font-titulo text-3xl uppercase tracking-wide sm:text-5xl">Mis cupones</h1>
 
-    <!-- Buscador y filtro por estado -->
-    <div class="mt-4 flex flex-col gap-3 px-3 sm:flex-row sm:items-center sm:px-0">
-      <div class="relative sm:max-w-sm sm:flex-1">
-        <label for="buscador-cupones" class="sr-only">Buscar cupones</label>
-        <input
-          #buscador
-          id="buscador-cupones"
-          type="search"
-          [value]="busqueda()"
-          (input)="escribirBusqueda(buscador.value)"
-          placeholder="Buscar por marca, descuento o código"
-          autocomplete="off"
-          class="w-full rounded-pildora border-2 border-btn-juego-texto bg-btn-juego-bg px-4 py-2 font-interfaz text-sm font-bold placeholder:font-normal placeholder:text-texto-apagado focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
-        />
-      </div>
+      <div class="flex items-center gap-2 px-3 sm:px-0" (click)="$event.stopPropagation()">
+        <!-- Buscador -->
+        <div class="relative min-w-0 flex-1 sm:w-80 sm:flex-none">
+          <label for="buscador-cupones" class="sr-only">Buscar cupones</label>
+          <svg
+            class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-texto-apagado"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-3.5-3.5" />
+          </svg>
+          <input
+            #buscador
+            id="buscador-cupones"
+            type="text"
+            [value]="busqueda()"
+            (input)="escribirBusqueda(buscador.value)"
+            placeholder="Buscar por marca o código"
+            autocomplete="off"
+            class="w-full rounded-pildora border-2 border-btn-juego-texto bg-btn-juego-bg py-2 pl-10 pr-9 font-interfaz text-sm font-bold shadow-sm transition placeholder:font-normal placeholder:text-texto-apagado focus-visible:border-marca-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          />
+          @if (busqueda()) {
+            <button
+              type="button"
+              (click)="escribirBusqueda(''); buscador.focus()"
+              aria-label="Borrar búsqueda"
+              class="absolute right-2.5 top-1/2 flex size-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-circulo bg-btn-juego-texto text-[10px] font-bold text-btn-juego-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+            >
+              ✕
+            </button>
+          }
+        </div>
 
-      <div role="group" aria-label="Filtrar por estado" class="flex flex-wrap items-center gap-2">
-        @for (estado of estados; track estado) {
+        <!-- Menú hamburguesa: estado del cupón -->
+        <div class="relative shrink-0">
           <button
             type="button"
-            (click)="elegirEstado(estado)"
-            [attr.aria-pressed]="estadoActivo() === estado"
-            class="cursor-pointer rounded-pildora border-2 border-btn-juego-texto px-3 py-1 font-interfaz text-xs font-bold uppercase transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
-            [class.bg-marca-primaria]="estadoActivo() === estado"
+            (click)="alternarMenu()"
+            aria-haspopup="true"
+            [attr.aria-expanded]="menuAbierto()"
+            aria-controls="menu-filtros-cupones"
+            aria-label="Filtrar por estado"
+            class="relative flex size-10 cursor-pointer items-center justify-center rounded-pildora border-2 border-btn-juego-texto shadow-sm transition hover:bg-marca-primaria/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+            [class.bg-marca-primaria]="menuAbierto() || estadoActivo() !== null"
           >
-            {{ estado }}
+            <svg
+              class="size-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.75"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            @if (estadoActivo() !== null) {
+              <span
+                aria-hidden="true"
+                class="absolute -right-1 -top-1 size-3 rounded-circulo border-2 border-btn-juego-bg bg-landing-oscuro-fondo"
+              ></span>
+            }
           </button>
-        }
-        @if (hayFiltros()) {
-          <button
-            type="button"
-            (click)="limpiarFiltros()"
-            class="cursor-pointer font-interfaz text-xs font-bold uppercase underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
-          >
-            Limpiar
-          </button>
-        }
+
+          @if (menuAbierto()) {
+            <div
+              id="menu-filtros-cupones"
+              role="group"
+              aria-label="Filtros de cupones"
+              class="absolute right-0 top-full z-30 mt-2 w-56 rounded-2xl bg-landing-oscuro-fondo p-3 text-landing-oscuro-texto shadow-alta"
+            >
+              <p class="px-2 pb-2 font-interfaz text-[11px] font-bold uppercase tracking-[0.08em] text-texto-secundario">
+                Estado del cupón
+              </p>
+              <ul class="flex flex-col gap-1">
+                @for (estado of estados; track estado) {
+                  <li>
+                    <button
+                      type="button"
+                      (click)="elegirEstado(estado)"
+                      [attr.aria-pressed]="estadoActivo() === estado"
+                      class="flex w-full cursor-pointer items-center gap-3 rounded-xl px-2 py-2 text-left font-interfaz text-sm font-bold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+                      [class.bg-white/10]="estadoActivo() === estado"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="size-2.5 shrink-0 rounded-circulo"
+                        [class.bg-marca-primaria]="estado === 'Disponible'"
+                        [class.bg-texto-secundario]="estado === 'Usado'"
+                        [class.bg-red-400]="estado === 'Vencido'"
+                      ></span>
+                      <span class="flex-1">{{ estado }}</span>
+                      @if (estadoActivo() === estado) {
+                        <span aria-hidden="true" class="text-marca-primaria">✓</span>
+                      }
+                    </button>
+                  </li>
+                }
+              </ul>
+              <button
+                type="button"
+                (click)="limpiarFiltros()"
+                [disabled]="!hayFiltros()"
+                class="mt-3 w-full cursor-pointer rounded-pildora bg-marca-primaria px-4 py-2 font-interfaz text-xs font-bold uppercase text-marca-sobre-primaria transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
+              >
+                Limpiar filtros
+              </button>
+            </div>
+          }
+        </div>
       </div>
     </div>
 

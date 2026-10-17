@@ -38,7 +38,10 @@ interface FiltroCategoria {
   imports: [RouterLink, DatePipe, Header],
   templateUrl: './usuario-cupones.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:keydown.escape)': 'cerrarCupon()' },
+  host: {
+    '(document:keydown.escape)': 'cerrarCupon(); cerrarMenu()',
+    '(document:click)': 'cerrarMenu()',
+  },
   styles: `
     .sello {
       --perforacion: var(--btn-juego-bg);
@@ -82,6 +85,8 @@ export class UsuarioCupones {
   /** Estado elegido en el filtro; null = todos. */
   protected readonly estadoActivo = signal<EstadoCupon | null>(null);
   protected readonly estados: readonly EstadoCupon[] = ['Disponible', 'Usado', 'Vencido'];
+  /** Menú hamburguesa con los estados del cupón. */
+  protected readonly menuAbierto = signal(false);
   protected readonly hayFiltros = computed(
     () => this.busqueda().trim() !== '' || this.estadoActivo() !== null,
   );
@@ -224,6 +229,14 @@ export class UsuarioCupones {
     this.categoriaActiva.set(id);
   }
 
+  protected alternarMenu(): void {
+    this.menuAbierto.update((abierto) => !abierto);
+  }
+
+  protected cerrarMenu(): void {
+    this.menuAbierto.set(false);
+  }
+
   protected escribirBusqueda(texto: string): void {
     this.busqueda.set(texto);
   }
@@ -231,12 +244,14 @@ export class UsuarioCupones {
   /** Volver a tocar el estado activo lo desactiva. */
   protected elegirEstado(estado: EstadoCupon): void {
     this.estadoActivo.set(this.estadoActivo() === estado ? null : estado);
+    this.menuAbierto.set(false);
     this.cargarCupones();
   }
 
   protected limpiarFiltros(): void {
     this.busqueda.set('');
     this.estadoActivo.set(null);
+    this.menuAbierto.set(false);
     this.cargarCupones();
   }
 
