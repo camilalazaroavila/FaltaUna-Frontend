@@ -19,6 +19,7 @@ import urlLogoAlt from '@svgs/Imagotipo_Negro.svg'; // NUEVO
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  
   host: { class: 'block' },
   template: `
     @if (logueado()) {

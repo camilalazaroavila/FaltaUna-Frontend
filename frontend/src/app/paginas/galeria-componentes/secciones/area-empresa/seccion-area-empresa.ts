@@ -3,6 +3,7 @@ import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-
 import { HeaderEmpresa } from '@compartidos/componentes/layout/header-empresa/header-empresa';
 import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarjeta-album';
 import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
+
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import {
   ALBUMES_EMPRESA,
@@ -17,6 +18,13 @@ import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tar
 interface AlbumMuestra {
   readonly album: AlbumEmpresa;
   readonly resumen: ResumenAlbum;
+}
+
+/** Tarjeta KPI de muestra, cubriendo los estados y la variación del contrato. */
+interface KpiMuestra {
+  readonly etiqueta: string;
+  readonly valor: string;
+  readonly contexto?: string;
 }
 
 /**
@@ -49,31 +57,35 @@ export class SeccionAreaEmpresa {
 
   protected readonly tonos: readonly TonoAlbum[] = ['violeta', 'azul', 'acento'];
 
-  /** KPIs del primer álbum, para leer la tarjeta con cifras coherentes. */
-  protected readonly kpis = [
+  /** Tarjetas KPI de muestra: valor con variación, cargando, sin datos y error. */
+  protected readonly kpisMuestra: readonly KpiMuestra[] = [
     {
       etiqueta: 'Cartas',
       valor: String(this.primario.resumen.totalCartas),
-      detalle: 'En toda la colección',
-      icono: 'phosphorCardsFill',
+      contexto: 'En toda la colección',
     },
     {
       etiqueta: 'Completaron',
       valor: `${this.primario.resumen.porcentajeCompletado}%`,
-      detalle: `${this.primario.album.jugadoresCompletaron} jugadores`,
-      icono: 'phosphorTrophyFill',
+      contexto: 'Sube respecto al mes pasado',
     },
     {
       etiqueta: 'Favoritos',
       valor: this.primario.resumen.favoritos.toLocaleString('es-AR'),
-      detalle: 'Marcas de tus cartas',
-      icono: 'phosphorHeartFill',
+      contexto: 'Baja respecto al mes pasado',
     },
     {
       etiqueta: 'Intercambios',
       valor: this.primario.resumen.intercambios.toLocaleString('es-AR'),
-      detalle: 'Entre jugadores',
-      icono: 'phosphorArrowsLeftRightFill',
+    },
+    {
+      etiqueta: 'Cupones canjeados',
+      valor: '0',
+    },
+    {
+      etiqueta: 'Jugadores activos',
+      valor: '0',
+      contexto: 'Servidor no disponible',
     },
   ];
 
