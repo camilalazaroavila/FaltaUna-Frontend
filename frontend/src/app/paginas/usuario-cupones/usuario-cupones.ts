@@ -207,22 +207,6 @@ export class UsuarioCupones {
       });
   }
 
-  /**
-   * Preselecciona la categoría indicada por `?categoria=` (viene de un álbum) y
-   * reacciona a cambios posteriores del parámetro. Si falta o no es válida, se
-   * conserva la categoría actual.
-   */
-  private escucharCategoriaDesdeUrl(destruir: DestroyRef): void {
-    this.ruta.queryParamMap
-      .pipe(takeUntilDestroyed(destruir))
-      .subscribe((params) => {
-        const categoria = params.get('categoria');
-        if (categoria && this.categorias.some((c) => c.id === categoria)) {
-          this.categoriaActiva.set(categoria as CategoriaCupon);
-        }
-      });
-  }
-
   protected cargarCupones(): void {
     this.cargando.set(true);
     this.error.set(null);
