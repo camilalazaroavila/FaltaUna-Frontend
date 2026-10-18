@@ -4,7 +4,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
 import { Plan, PLANES } from '@modelos/plan.model';
 import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
@@ -17,7 +17,7 @@ import { TarjetaPlan } from '@compartidos/componentes/empresa/tarjeta-plan/tarje
 @Component({
   selector: 'app-empresa-planes',
   standalone: true,
-  imports: [RouterLink, StepperSuscripcion, TarjetaPlan],
+  imports: [StepperSuscripcion, TarjetaPlan],
   templateUrl: './empresa-planes.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -43,6 +43,9 @@ export class EmpresaPlanes {
     this.pagos.iniciarPago(plan.backendId).subscribe({
       next: (respuesta) => {
         this.estado.ultimoPago.set(respuesta.pago);
+        if (respuesta.pago.referenciaExterna) {
+          this.estado.recordarReferencia(respuesta.pago.referenciaExterna);
+        }
         toast.success(
           `Conectando con Mercado Pago para el plan ${plan.nombre}...`,
         );
