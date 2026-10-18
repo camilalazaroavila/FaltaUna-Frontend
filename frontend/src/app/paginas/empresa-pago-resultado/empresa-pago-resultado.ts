@@ -35,9 +35,6 @@ export class EmpresaPagoResultado implements OnInit {
   private readonly estado = inject(SuscripcionEstado);
   private temporizador: ReturnType<typeof setTimeout> | null = null;
 
-  /** Segundos que se muestra el pago aprobado antes de pasar solo al paso 3. */
-  private static readonly ESPERA_AVANCE_MS = 3000;
-
   private static readonly MAX_REINTENTOS = 3;
   private static readonly ESPERA_REINTENTO_MS = 2500;
 
@@ -119,19 +116,15 @@ export class EmpresaPagoResultado implements OnInit {
     });
   }
 
-  /** Refleja el pago confirmado por el backend. Si está aprobado, avanza solo al paso 3. */
   private aplicarPago(pago: PagoRespuesta): void {
     this.pago.set(pago);
     this.estado.ultimoPago.set(pago);
 
     if (pago.estado === 'Aprobado') {
-      this.estadoVista.set('exito');
-      // Solo se avanza solo con un pago VERIFICADO por el backend (el guard del paso 3 lo exige).
+      // Se corta cualquier reintento pendiente; ya no hace falta seguir verificando.
       if (this.temporizador) clearTimeout(this.temporizador);
-      this.temporizador = setTimeout(
-        () => this.irACrearAlbum(),
-        EmpresaPagoResultado.ESPERA_AVANCE_MS,
-      );
+      this.temporizador = null;
+      this.estadoVista.set('exito');
       return;
     }
 
@@ -140,7 +133,7 @@ export class EmpresaPagoResultado implements OnInit {
       return;
     }
 
-      this.reintentarOEstadoFinal();
+    this.reintentarOEstadoFinal();
   }
 
   /**
