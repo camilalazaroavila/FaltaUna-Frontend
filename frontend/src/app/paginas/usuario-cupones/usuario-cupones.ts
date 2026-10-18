@@ -8,10 +8,11 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { CuponesService } from '@servicios/cupones.service';
-import { CategoriaCupon, CuponDescuento } from '@modelos/cupon.model';
+import { CategoriaCupon, CuponDescuento, EstadoCupon } from '@modelos/cupon.model';
 
 import urlIconoGastro from '@svgs/Icon_GastroInv.svg';
 import urlIconoDeco from '@svgs/Icon_DecoInv.svg';
