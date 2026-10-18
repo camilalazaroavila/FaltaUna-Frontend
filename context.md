@@ -1,7 +1,10 @@
 # CONTEXT.md — Proyecto Falta Una (TPI 2026)
 
-> Documento de contexto integral para **Claude** y agentes de IA.  
-> Contiene la arquitectura del sistema, el modelo de negocio, el sistema de diseño de 3 capas, las convenciones de código y las reglas obligatorias de interacción.
+> Documento único de contexto para **Claude** y agentes de IA.
+> Unifica las reglas de negocio del TCG de marcas, la arquitectura, el sistema de diseño, las convenciones de código y las reglas obligatorias de interacción.
+> **Reemplaza** a la versión anterior de `context.md` y a `Reglas de negocio_ TCG de marcas.md`. Ya no existe ninguna relación con fútbol, canchas, torneos ni reservas.
+>
+> Convenciones del documento: **Pendiente** = falta definición del equipo. **A confirmar** = hay una regla propuesta que el equipo debe validar. **⚠️ Conflicto** = dos fuentes dicen cosas distintas (ver sección 12).
 
 ---
 
@@ -9,36 +12,256 @@
 
 - **Nombre:** Falta Una (Trabajo Práctico Integrador — 2026)
 - **Repositorio:** `FaltaUna-Frontend`
-- **Dominio del Negocio:** Plataforma integral para la organización de partidos de fútbol amateur complementada con un **universo gamificado de colección de cartas intercambiables**:
-  - **Jugadores / Coleccionistas:** Buscan partidos, confirman asistencia, abren sobres diarios, coleccionan cartas de jugadores con diferentes rarezas (★ a ★★★★), intercambian repetidas y canjean cupones de recompensa.
-  - **Empresas / Clubes / Marcas:** Administran complejos deportivos, publican canchas y torneos, ofrecen cupones promocionales y gestionan su presencia a través de un panel especializado.
-  - **Administradores y Empleados:** Supervisan el estado de reservas, validan canjes de cupones y gestionan usuarios y roles.
+- **Qué es:** plataforma de **coleccionismo digital** donde el jugador colecciona álbumes de marcas y los completa para **canjear cupones de descuento reales**. Tres pilares: **coleccionar, jugar e intercambiar**.
+- **Quién paga:** el **jugador no paga nada**. Paga la **empresa/marca** mediante un plan, a través de Mercado Pago. No hay compra de sobres ni moneda para el jugador.
+- Las "cartas de Falta Una" son una colección propia del sistema, distinta de las colecciones de las marcas.
+- **Pendiente:** qué entra en esta entrega (TPI) y qué queda como visión futura.
 
-### Identidad de marca y copy (fuente: landing pública)
+### Flujo general del producto
 
-- **Tono de voz:** voseo rioplatense, frases cortas e imperativas («Abrí mi primer sobre», «Comenzá a coleccionar», «Explorá el modo empresa»). El copy de marca nunca usa infinitivo de manual ni formalidad de ustedes.
-- **Vocabulario de marca:** partido, cancha, torneo, asistencia, sobre diario, carta (rareza ★ a ★★★★), álbum, intercambio, cupón, marca, descuento. Evitar sinónimos inventados.
-- **Claim / tagline:** «Ganá descuentos coleccionando y jugando con cartas de tus marcas preferidas» (hero de la landing).
-- **Definición de producto (verbatim de la landing):** «La plataforma donde organizás partidos de fútbol amateur y coleccionás cartas de tus marcas favoritas».
-- **Audiencias por modo:**
-  - `[data-modo="jugador"]` → jugadores/coleccionistas: partidos, confirmación de asistencia, sobres diarios, álbum e intercambios.
-  - `[data-modo="empresa"]` → clubes/marcas: «Publicá tus canchas y torneos en minutos», «Gestioná reservas desde un panel propio», cupones y métricas de campaña.
-- **Gradiente de marca:** `--landing-gradiente-amarillo-verde` (amarillo-logo → teal-profundo) con utility `bg-landing-gradiente-amarillo-verde`. Es exclusivo de bloques públicos/en modo jugador; en modo empresa la landing usa superficie crema.
-- **Logos según fondo:** `Imagotipo_Alt.svg` (oscuro) sobre amarillo o gradiente claro; `Imagotipo_claro.svg` sobre fondos oscuros; `Imagotipo_Empresa.svg` en modo empresa.
-- **Open decisions de marca (sin resolver):** tagline oficial definitiva, propuesta de valor consolidada para empresas y guía de tono formal — no existen como documento en el repo.
-
-### Documentos de contexto: desalineación conocida (sin resolver)
-
-Dos documentos describen el modelo de negocio de forma distinta y conviven sin reconciliar:
-
-1. `context.md` (este archivo): fútbol amateur + cartas (igual que la landing).
-2. `Reglas de negocio_ TCG de marcas.md`: TCG puro con pilares de cartas/sobres/misiones.
-
-**Decisión:** queda solo documentada; no se unificó a propósito (pendiente de decisión de los equipos).
+1. **Dos landings** (jugador y empresa), cada una con imagen principal, carrusel de marcas, explicación de la plataforma, modo empresa, preguntas frecuentes y quiénes somos.
+2. Al ingresar, el jugador ve los **tres sobres más populares** del momento y recibe **sobres genéricos gratis** (ver sección 6).
+3. Abre sobres, completa **álbumes** (las colecciones de cada marca) y canjea **cupones** mostrándoselos al empleado del local con un **QR y un código alfanumérico**.
+4. Revisa su **colección** (con filtros), arma **mazos**, **juega** partidas e **intercambia** cartas con otros jugadores.
+5. La **empresa** se registra, sube su material, elige un plan, paga y gestiona sus colecciones y métricas desde su panel. Su **empleado** valida los cupones.
 
 ---
 
-## 2. Stack Tecnológico y Entorno de Ejecución
+## 2. Roles
+
+| Rol | Permisos |
+| --- | --- |
+| **Jugador** | Coleccionar, abrir sobres, armar mazos, jugar, intercambiar, canjear cupones, gestionar su perfil. |
+| **Admin de empresa** | Ver métricas, ver colecciones activas, subir fotos para crear colecciones, canjear cupones. |
+| **Empleado** | Pertenece a una empresa (vista dentro del modo empresa). Solo canjea cupones, ingresando el código o escaneando el QR. |
+| **Admin del sistema** (equipo de desarrollo) | Crea las cartas (descripción, costo, poder), balancea, crea colecciones con las imágenes provistas por las marcas y crea los efectos de zonas. |
+
+- Autenticación con JWT y autorización por rol. Cada empresa gestiona solo lo suyo.
+- No hay moderación ni baneo por ahora.
+
+---
+
+## 3. Registro y onboarding
+
+- Registro con usuario, email y contraseña (únicos).
+- **Paquete de bienvenida:** 36 cartas fijas organizadas en **3 mazos base de 12 cartas**. Todos los usuarios reciben los mismos.
+- Las cartas de bienvenida **no se pueden intercambiar**.
+- Además recibe **1 sobre genérico** al entrar.
+- **Pendiente:** verificación de email y recuperación de contraseña.
+- **A confirmar:** si las cartas de bienvenida cuentan para el % de completitud de la colección "Falta Una".
+
+### Registro de empresa
+
+- Sube el logo de su marca, la foto de su local y las cartas de su colección (**12, 20 o 30**, según el plan).
+- Define el nombre del álbum, sus redes sociales y su contacto.
+- Elige si el álbum tiene duración limitada o es permanente.
+- Paga el plan por **Mercado Pago**.
+
+---
+
+## 4. Cartas
+
+- Atributos: nombre, descripción, **poder**, **costo** (recurso de juego), rareza, imagen y categoría. Las crea el equipo.
+- Cada carta pertenece a **una sola colección** y a **una categoría**.
+- **Rarezas (4):** Común, Rara, Epicarta, Legendaria.
+- **Toda carta tiene habilidad.** Las de mayor rareza tienen habilidades más fuertes o complejas, pero la rareza no debe volver a la carta abrumadoramente más fuerte.
+- **Momentos de activación** (el motor debe ser flexible): al jugarla, al terminar la ronda, o cuando hay otra carta de cierta categoría.
+- **Ejemplos de habilidades** (la lista no es cerrada): +1 de poder cada turno; +2 de poder a las cartas de la misma zona o fila; sumar a aliados cercanos; robar una carta; reemplazar la zona por una aleatoria; reducir el poder de las cartas enemigas (por ejemplo, la que está enfrente); bonificación a cartas de la misma categoría; transformarse en otra carta al azar.
+- Las cartas **no se retiran** del juego.
+- **Pendiente:** rangos de poder y costo por rareza.
+
+> **Naming a resolver:** el recurso de juego (antes "maná") ahora se llama **cupón** y se representa con la imagen de un cuponcito, pero también existen los **cupones de descuento** de las marcas (sección 13). Conviene renombrar uno de los dos (por ejemplo "energía" para el recurso de juego) para evitar confusión en código y UI. El modelo de datos actual todavía usa `Mana` (`CostoMana`, `ManaActual`).
+
+---
+
+## 5. Categorías, marcas y colecciones
+
+- Las **marcas son una entidad propia**. Una marca puede tener varias colecciones (álbumes), según su plan.
+- Las categorías son ampliables (Comida, Ropa, Accesorios, Tecnología, Música, etc.).
+- **Planes:** definen la cantidad máxima de colecciones y las cartas por colección.
+  - Básico: 12 cartas por colección.
+  - Intermedio: 20 cartas por colección.
+  - Premium (el más caro): 30 cartas por colección.
+  - **Pendiente:** nombres, precios y cantidad de colecciones por plan.
+- Las colecciones son permanentes. Algunas pueden tener fecha de inicio y fin; al vencer, se desactivan **automáticamente**.
+- Una colección **inactiva** nunca se borra: las cartas siguen existiendo, se pueden jugar e intercambiar, pero la imagen de la marca se reemplaza por una ilustración genérica (dibujo a mano o IA) para no hacer publicidad.
+- Las colecciones pueden **reeditarse**.
+- Dar de baja una colección tiene un **cooldown** para evitar altas y bajas constantes. **Pendiente:** duración.
+- El % de completitud cuenta **solo cartas únicas**; las repetidas sirven para intercambiar.
+- Las colecciones de "Falta Una" son del sistema y permanentes.
+- En la vista de álbumes, el jugador ve las cartas que le faltan para completar cada colección y los álbumes de cada marca que consiguió.
+
+---
+
+## 6. Sobres
+
+| Tipo | Cartas por sobre |
+| --- | --- |
+| Genérico | 5 |
+| De categoría | 3 (solo de esa categoría) |
+| De marca | 1 |
+
+- **Probabilidades (sobre genérico, por carta):** 50 % Común · 30 % Rara · 15 % Epicarta · 5 % Legendaria. **Pendiente:** tablas de categoría y marca.
+- Se pueden obtener **repetidas dentro del mismo sobre**.
+- **Pity (garantía) por barras de progreso:** el usuario tiene una barra por tipo de sobre (genérico, categoría, marca) para no frustrarse con las legendarias. Por ejemplo, 50 sobres genéricos garantizan una legendaria. Los sobres de categoría y marca requieren menos aperturas porque son más difíciles de conseguir. El usuario puede elegir qué barra avanzar. Al salir una legendaria, la barra **vuelve a 0**. **Pendiente:** valores para categoría y marca, y si hay una barra por categoría/marca o una global por tipo.
+- **Sobres diarios:** 2 por día, genéricos y no elegibles, uno cada 12 horas. No se acumulan. **A confirmar:** si es un sobre a las 00:00 y otro a las 12:00.
+- Los sobres **no se compran**: se obtienen por misiones, bienvenida y otras recompensas.
+- Se abren **de inmediato**. Si la apertura se interrumpe, las cartas van directo a la colección.
+- Un sobre de marca **no se puede abrir** si la marca se desafilió o la colección se dio de baja.
+- Hay un **límite diario de aperturas**. El intento de abrir un sobre diario de más es rechazado.
+- **El servidor decide siempre qué carta sale.**
+
+---
+
+## 7. Economía
+
+- **No hay moneda en el juego**: ni Oro, ni monedas de intercambio, ni cosmética por ahora.
+- Las recompensas son **sobres, cartas, iconos de jugador y títulos**.
+- No existe pay-to-win ni pago dentro de la app para el jugador.
+
+---
+
+## 8. Misiones
+
+- **Diarias:** iniciar sesión, jugar una partida, abrir sobres (misión escalonada: 1 y luego 2).
+- **Semanales:** jugar partidas, misión **escalonada** con tramos (10 / 20 / 30), con premios distintos (usualmente sobres genéricos).
+- Las **victorias cuentan doble** para el progreso de la misión.
+- **Por categoría:** por ejemplo, conseguir 10 cartas de Comida da un sobre de marca a elección; jugar con 1 carta de Comida en el mazo da un sobre de Comida.
+- **De marca:** misiones de **una sola vez**.
+- **Por volumen de partidas:** sobres genéricos, de categoría y, a mayor juego, de marca.
+- **Logros/hitos:** puede haber (primera victoria, etc.).
+- **Reinicio:** los martes a las 21:00. La recompensa no reclamada **se pierde**. **A confirmar:** si esto aplica también a las diarias y a qué hora se reinician.
+- El premio se reclama **manualmente**, con un botón **"Reclamar todo"**.
+- Algunas misiones dan más progreso por jugar en matchmaking.
+
+---
+
+## 9. Mazos
+
+- **12 cartas exactas**, sin copias repetidas.
+- **Composición obligatoria:** 5 Comunes, 4 Raras, 2 Epicartas, 1 Legendaria.
+- Máximo **20 mazos** por usuario, con nombre.
+- Se puede mezclar cualquier marca y categoría.
+- Si se intercambia una carta del mazo, el mazo queda **inhabilitado** hasta reemplazarla.
+- Si una marca se va, solo se reemplaza la imagen de la carta; el mazo sigue válido.
+- Los 3 mazos base de bienvenida son fijos.
+
+---
+
+## 10. Partidas
+
+- **1 vs 1**, **6 rondas**, ambos jugadores actúan **a la vez** (estilo Marvel Snap). **Límite de 40 segundos por ronda.**
+- **Mano:** cada jugador empieza con **3 cartas** en mano y roba **1 carta por ronda**, empezando en la primera. Por eso en la primera ronda ya tiene 4.
+- **Recurso de juego ("cupón"):** empieza en 1 y sube 1 por ronda hasta 6. Determina qué cartas se pueden jugar según su costo.
+- **Zonas:** hay exactamente **2 zonas a la vez** (una a la izquierda y otra a la derecha) que **rotan cada turno por zonas aleatorias distintas**. Las cartas pertenecen al **LUGAR** (izquierda/derecha), no a la zona: al rotar la zona, las cartas se quedan donde estaban y solo cambian la foto, el marco y el efecto, recalculándose los puntajes de inmediato (un jugador puede pasar de golpe a tener ventaja o desventaja). Tienen efectos que afectan a ambos lados, y las cartas tienen sus propios efectos. Cada zona representa un local real de una marca (ver sección 11).
+- **Revelado:** las cartas se revelan de a una, en orden; primero la del jugador que tiene el turno y luego la del rival.
+- **A confirmar (revelado):** la regla exacta de quién revela primero en cada ronda.
+- **Puntaje:** los puntos de las cartas jugadas quedan en el lugar/zona. Al final de cada ronda se compara: el jugador con más puntos en la zona suma **la diferencia** (ej.: 6 contra 2, gana 4; 6 contra 5, gana 1 y el rival no suma). Los puntos del rival restan a los propios, para generar competencia entre cartas. Para impedir que el rival sume hay que tener **al menos los mismos puntos** que él en esa zona. La resolución ocurre al finalizar la ronda.
+- **Tablero:** las cartas se bajan desde la mano hacia los slots de cada zona. **A confirmar:** si son 6 slots por lado y la cantidad de cartas jugables por ronda.
+- **Resultado:** victoria, empate o derrota. Ganás si sumaste más puntos que tu rival, empatás si sumaron lo mismo y perdés si sumaste menos. El empate no se resuelve.
+- **Condición de victoria (definida por el equipo):** la partida termina por una de dos vías. Gana quien llega primero a **100 puntos acumulados**, o, si nadie los alcanza, gana quien suma **más puntos tras las 6 rondas**. Si ambos suman lo mismo al final, es empate.
+- **A confirmar (detalle de la regla de 100 puntos):** qué pasa si ambos jugadores superan los 100 puntos en la misma ronda (por la resolución simultánea al final de la ronda), y si los 100 puntos son alcanzables dentro de las 6 rondas con el balance actual de cartas y zonas.
+- **Desconexión y abandono** cuentan como derrota. Hay botón de **rendirse**.
+- **Modos:** contra bot (práctica) y amistoso con otro usuario. Habrá **matchmaking** al final del proyecto, sin ranking ni ELO.
+- **Todo cálculo se valida en el servidor.**
+
+---
+
+## 11. Zonas
+
+- Están **atadas a una marca real** (por ejemplo, un local de una marca adherida). La marca solo sube la foto de su local.
+- Si la marca se va, la zona se reemplaza por una genérica.
+- Hay exactamente **2 zonas simultáneas en el tablero** (izquierda y derecha) que **rotan por turno** por otras aleatorias. Las cartas jugadas pertenecen al lugar y se mantienen fijas en su posición al rotar la zona.
+- Tienen **efectos que potencian cartas**, creados por los desarrolladores. Se sortean al azar.
+- **Pendiente:** si conservan el bonus de poder por categoría (`ZonaCategoria`) o se reemplaza por efectos.
+
+---
+
+## 12. Intercambios, favoritas y contradicciones abiertas
+
+### Intercambios
+
+- **Flujo (reglas v1, asincrónico, estilo Pokémon Pocket):** el usuario elige **una** carta suya para ofrecer, según las favoritas del rival o las que le faltan, y queda en espera. El receptor ve la oferta, acepta y elige una carta propia a cambio. Luego se confirma.
+- Solo se pueden intercambiar cartas de la **misma rareza**.
+- Se pueden dar repetidas o únicas; si es la única copia, solo se muestra un aviso.
+- Las **cartas de bienvenida no son intercambiables**.
+- **Reserva y vencimiento:** la oferta vence a los **3 días**. Las cartas ofrecidas quedan reservadas y no se pueden usar mientras tanto.
+- **Sugerencias:** el sistema sugiere usuarios según favoritas y faltantes de ambos, mostrando arriba a quienes tienen las cartas que el usuario más quiere.
+- **Límites:** 3 intentos de intercambio al día (se resetea al día siguiente) y máximo 10 intercambios exitosos por día.
+- **Favoritas:** hasta 20 por usuario, visibles en el perfil. Sirven para saber qué cartas del usuario interesan en el panel de intercambio.
+- La transferencia es **atómica**: no duplica ni intercambia dos veces la misma carta.
+- **A confirmar:** qué cuenta como "intento" (¿rechazos, ofertas enviadas?).
+- Se guarda en la base de datos; no hay historial visible.
+- **Idea del equipo, no incluida en las reglas v1:** al finalizar un intercambio, enviar una solicitud de amistad desde el mismo panel. No hay sistema de amistades definido todavía.
+
+### Contradicciones a resolver entre las dos fuentes
+
+| # | Tema | Explicación del equipo | Reglas v1 |
+| --- | --- | --- | --- |
+| 1 | Condición de victoria | ✅ **Resuelto:** valen ambas (primero en llegar a 100 puntos, o más puntos tras 6 rondas). Queda por confirmar el desempate si ambos superan 100 en la misma ronda | — |
+| 2 | Tipo de intercambio | Sincrónico (ambos conectados) | Asincrónico, con vencimiento de 3 días |
+| 3 | Tablero | Slots por lado y cartas jugables por ronda (la mano ya quedó definida: 3 iniciales + 1 por ronda) | A confirmar si son 6 slots por lado y cartas jugables por ronda |
+| 4 | Zonas simultáneas | ✅ **Resuelto:** exactamente 2 zonas a la vez (izquierda y derecha) que rotan cada turno por otras aleatorias; las cartas pertenecen al lugar y se mantienen al rotar | — |
+| 5 | Sobres populares al ingresar | Se muestran los 3 más populares | No lo menciona |
+| 6 | Solicitud de amistad | Posible tras un intercambio | No existe en el alcance |
+| 7 | Nombre del recurso de juego | "Maná" como cuponcito | Se llama "cupón" y choca con los cupones de marca |
+| 8 | Códigos promocionales | — | Se dijo que no hay, y también que un código se usa "una vez en total": aclarar si aplica al futuro |
+
+---
+
+## 13. Cupones de marca
+
+- Se obtienen **completando una colección** (los álbumes se completan solo por colección). La marca define los hitos y los descuentos.
+- El cupón es de **un solo uso** y **único por usuario**.
+- **Estados:** disponible, usado, vencido.
+- Se canjea mostrando al empleado un **QR y un código alfanumérico**. El empleado valida ingresando el código o escaneando el QR desde su panel.
+- La marca define los **locales adheridos** al armar la colección y el **máximo de canjes** de la campaña (ej.: 10.000).
+- Si el usuario pierde cartas por intercambio después de canjear, **conserva el cupón** y puede intercambiar las cartas libremente.
+
+### Obtención de cartas fuera de sobres
+
+- Códigos promocionales/QR: **no en esta versión**.
+- Otras fuentes: recompensas por **partidas y misiones**; eventos a futuro.
+
+---
+
+## 14. Perfil, cosméticos, administración y métricas
+
+- No hay nivel de usuario. El perfil incluye avatar, favoritas y estadísticas. El usuario elige un **icono** entre varios (no sube imágenes propias).
+- El perfil puede ser **público o privado**. La visibilidad pública se implementa **al final** del proyecto.
+- **Cosméticos:** futuro, fuera de esta etapa. **A confirmar:** hay una tensión entre "globales por usuario" y "viajan con la carta" en un intercambio; definir si se asocian a cada carta o al perfil.
+- **Métricas para la marca** (en su panel de empresa). Ejemplos mencionados: partidas jugadas con sus cartas, cantidad de sobres coleccionados y cantidad de veces que sus cartas fueron marcadas como favoritas. **Pendiente:** definición final (cartas obtenidas, canjes, etc.).
+- La **marca** solo ve métricas y sube fotos para crear colecciones. El **admin del sistema** crea y balancea.
+
+---
+
+## 15. Integridad y antifraude
+
+- El servidor decide cartas, valida partidas y límites.
+- Sobres: límite diario; intento extra rechazado.
+- Intercambios: 3 intentos y 10 exitosos por día, transferencia atómica.
+- Cupones únicos e irrepetibles; colecciones inactivas no generan cartas ni sobres.
+- Aperturas e intercambios se guardan en la BD (sin historial visible).
+
+---
+
+## 16. Estado del modelo de datos
+
+La migración inicial (`InitialCreate`, EF Core + MySQL) define las tablas: `categoria`, `coleccion`, `Usuario`, `zona`, `carta`, `cupon`, `sobre`, `intercambio`, `mazo`, `partida`, `zonacategoria`, `coleccioncarta`, `habilidad`, `usuariocarta`, `usuariocupon`, `aperturasobre`, `intercambiocarta`, `intercambiomoneda`, `matchmaking`, `mazocarta`, `jugadorpartida`, `ronda`, `zonapartida`, `aperturasobrecarta`, `cartapartida`, `resultadozona` y `zonaronda`.
+
+Cambios necesarios para alinearlo con las reglas de negocio:
+
+| Cambio | Detalle |
+| --- | --- |
+| **Eliminar** | `Usuario.Oro`, `Usuario.MonedasIntercambio`, tabla `IntercambioMoneda`; `JugadorPartida.Vida`; `DanioJugador1/2` en `ResultadoZona`. |
+| **Agregar** | `Marca`, `Plan`, `Mision` y progreso por usuario, favoritas por usuario, progreso de pity por tipo de sobre, inventario de sobres, local/sucursal por colección, rol de usuario y su empresa, visibilidad del perfil, icono de perfil. |
+| **Revisar** | `Cupon` hoy cuelga de `Coleccion`; debe vincularse a `Marca` e hitos. `Intercambio` necesita fecha de vencimiento y reserva de cartas. `Carta` con una sola colección (hoy `ColeccionCarta` es N:N). Cartas de bienvenida marcadas como no intercambiables. `Ronda.FechaFin` es obligatoria y debería ser opcional. Renombrar `Mana` según la decisión de naming (sección 4). `ZonaPartida` hoy tiene `ZonaId` fijo y `CartaPartida` apunta a `ZonaPartidaId`: para que las cartas no se muevan al rotar, `ZonaPartida` debe representar el lugar físico y la zona activa debe variar por ronda (`ZonaRonda` podría cubrirlo); pendiente de revisión del backend. |
+
+> El frontend ya tiene componentes de misiones, pity, apertura de sobres y suscripción de empresa (ver estructura en la sección 5). **A verificar:** qué parte de eso está respaldada por backend y base de datos, y qué está solo en la interfaz.
+
+---
+
+## 17. Stack Tecnológico y Entorno de Ejecución
 
 ### Frontend
 - **Framework:** Angular 20 (Standalone Components, Signals API, `ChangeDetectionStrategy.OnPush`).
@@ -52,21 +275,22 @@ Dos documentos describen el modelo de negocio de forma distinta y conviven sin r
 
 ### Backend
 - **Framework:** .NET 10 — ASP.NET Core Web API (Controllers).
-- **Arquitectura:** Clean Architecture / Ports & Adapters con carpetas en español (`Controladores`, `Aplicacion/CasosDeUso`, `Aplicacion/Interfaces`, `Dominio/Modelos`, `Infraestructura/Persistencia`).
+- **Arquitectura:** Clean Architecture / Ports & Adapters con carpetas en español (`Controladores`, `Aplicacion/CasosDeUso`, `Aplicacion/Interfaces`, `Dominio`, `Infraestructura/Persistencia`).
 - **ORM:** Entity Framework Core con proveedor Pomelo MySQL (`9.0.20`, fijado a la rama 9.x).
 - **Seguridad:** Autenticación basada en JWT y autorización por roles.
+- **Pagos:** Mercado Pago (pago de planes de empresa).
 - **Puerto de la API:** `http://localhost:5142` (Swagger disponible en `/swagger`).
 
 ### Base de Datos
 - **Motor:** MySQL 8.4 LTS administrado mediante Docker Compose (`docker-compose.yml`).
-- **Contenedor:** `tpi2026-mysql` en puerto `3306` (Base: `tpi2026`, Usuario: `tpi2026`, Password: `tpi2026_dev`).
+- **Contenedor:** `tpi2026-mysql` en puerto `3306` (Base: `tpi2026`, Usuario: `tpi2026`, Password: `tpi2026_dev`; solo desarrollo local).
 - **Persistencia:** Volumen Docker `mysql_data`.
 
 ---
 
-## 3. Sistema de Diseño (Impeccable Design System)
+## 18. Sistema de Diseño (Impeccable Design System)
 
-El diseño está dividido por dominio en `frontend/src/estilos/` y se importa desde `frontend/src/styles.css`, que ahora es solo un **índice** de `@import` (no contiene reglas). `frontend/src/styles.scss` sigue importando `styles.css`, por lo que `angular.json` y los consumidores no cambian. Sigue una estricta **arquitectura en 3 capas** auditada con 0 anti-patrones por la herramienta **Impeccable**:
+El diseño está dividido por dominio en `frontend/src/estilos/` y se importa desde `frontend/src/styles.css`, que es solo un **índice** de `@import` (no contiene reglas). `frontend/src/styles.scss` sigue importando `styles.css`. Sigue una estricta **arquitectura en 3 capas**:
 
 ```
 Capa 1: Primitivos   → Colores base (#hex crudos)
@@ -78,7 +302,7 @@ Estructura de `src/estilos/` (cada archivo agrupa un dominio y conserva sus come
 
 ```
 estilos-fundamentos/  primitivos.css (Capa 1), base.css (ESTILOS BASE + TIPOGRAFÍAS)
-estilos-roles/        jugador.css, empresa.css (Capa 2: identidad, superficies, auth, sombras, texto)
+estilos-roles/        jugador.css, empresa.css (Capa 2: identidad, superficies, auth, sombras, texto, escala tipográfica)
 estilos-feedback/     feedback.css (5 tokens por estado), alertas.css (--estado-*), toast.css (ngx-sonner)
 estilos-componentes/  botones.css (--btn-*), cartas.css (rarezas y --carta-*), sobres.css (--sobre-*)
 estilos-paginas/      landing.css (LANDING PÚBLICA + escala fluida), layout.css (ESTRUCTURA DE PÁGINA)
@@ -86,41 +310,85 @@ estilos-tailwind/     tema.css (@theme inline completo), utilidades.css (@custom
 estilos-animaciones/  animaciones.css (keyframes, .animate-*, reduced-motion)
 ```
 
-> ⚠️ **REGLA DE ORO DE DISEÑO:** Los componentes nunca usan valores `#hex` directos. Si se necesita un nuevo color o variante, primero se define el token semántico.
+> ⚠️ **REGLA DE ORO DE DISEÑO:** Los componentes nunca usan valores `#hex` directos ni familias de fuente directas. Si se necesita un nuevo color, tamaño o variante, primero se define el token semántico.
 
 ### ¿Dónde agrego un token nuevo?
-Elegí el archivo por **dominio**, no por capa: color de marca/superficie → `estilos-roles/jugador.css` y `estilos-roles/empresa.css`; un estado de feedback → `estilos-feedback/feedback.css`; un badge de estado → `estilos-feedback/alertas.css`; un botón → `estilos-componentes/botones.css`; carta/rareza o vista "Mis cartas" → `estilos-componentes/cartas.css`; sobre → `estilos-componentes/sobres.css`; landing → `estilos-paginas/landing.css`; layout → `estilos-paginas/layout.css`. Si el token es de un modo (jugador/empresa), va en el archivo de su dominio con el bloque de **jugador primero y empresa después**. Después, si debe generar utilidad Tailwind, agregá el mapeo en `estilos-tailwind/tema.css`.
+Elegí el archivo por **dominio**, no por capa: color de marca/superficie/texto/escala tipográfica → `estilos-roles/jugador.css` y `estilos-roles/empresa.css`; un estado de feedback → `estilos-feedback/feedback.css`; un badge de estado → `estilos-feedback/alertas.css`; un botón → `estilos-componentes/botones.css`; carta/rareza o vista "Mis cartas" → `estilos-componentes/cartas.css`; sobre → `estilos-componentes/sobres.css`; landing → `estilos-paginas/landing.css`; layout → `estilos-paginas/layout.css`. Después, si debe generar utilidad Tailwind, agregá el mapeo en `estilos-tailwind/tema.css`.
 
-> ⚠️ **REGLA DE ORDEN (jugador → empresa):** `:root, [data-modo="jugador"]` y `[data-modo="empresa"]` tienen la misma especificidad, así que gana el último bloque cargado. Por eso, para cada token, el bloque de empresa va **siempre después** del de jugador: dentro de un mismo archivo de dominio (feedback, alertas, botones) o en un archivo que se importe más tarde (`estilos-roles/empresa.css` se importa después de `estilos-roles/jugador.css`). El orden de los `@import` del índice está definido para respetar esta regla.
+> ⚠️ **REGLA DE ORDEN (jugador → empresa):** `:root, [data-modo="jugador"]` y `[data-modo="empresa"]` tienen la misma especificidad, así que gana el último bloque cargado. Por eso, para cada token, el bloque de empresa va **siempre después** del de jugador: dentro de un mismo archivo de dominio o en un archivo que se importe más tarde (`estilos-roles/empresa.css` se importa después de `estilos-roles/jugador.css`). El orden de los `@import` del índice respeta esta regla.
 
 ### Modos y Temas (`data-modo`)
-Se alternan cambiando el atributo en el elemento raíz (por ejemplo `<html data-modo="jugador">`):
+Se alternan cambiando el atributo en el elemento raíz (por ejemplo `<html data-modo="jugador">`). Como los tokens usan selectores `[data-modo="…"]` puros, el atributo también puede aplicarse a un **contenedor anidado** (la galería lo usa para mostrar ambos modos a la vez). Un contenedor anidado debe declarar su propio fondo (`bg-fondo-app`) y color de texto (`text-texto-primario`), porque el `body` no cambia.
 
 | Atributo | Tema | Descripción Visual y Paleta |
 | :--- | :--- | :--- |
-| `[data-modo="jugador"]` *(Default)* | **Oscuro Deportivo** | Fondo teal profundo (`#0D3B40`, `#214448`), marca principal verde cancha (`#3BD972`), acentos amarillo crema cálido (`#F2EEAE`) y texto blanco suave (`#F4FAF6`). |
-| `[data-modo="empresa"]` | **Claro Editorial** | Fondo crema suave (`#FCEFE0`), tarjetas blancas, marca violeta corporativo (`#675679`), acento verde institucional de alto contraste (`#04862B`) y texto teal profundo (`#0A2E36` con ratio WCAG AAA > 11:1). |
+| `[data-modo="jugador"]` *(Default)* | **Oscuro** | Fondo teal profundo (`#0D3B40`, `#214448`), marca principal verde vibrante (`#3BD972`), acentos amarillo crema cálido (`#F2EEAE`) y texto blanco suave (`#F4FAF6`). |
+| `[data-modo="empresa"]` | **Claro Editorial** | Fondo crema suave (`#FCEFE0`), tarjetas blancas, marca violeta corporativo (`#675679`), acento verde institucional de alto contraste (`#04862B`) y texto teal profundo (`#0A2E36`, ratio WCAG AAA > 11:1). |
 
 ### Escala de Feedback (5 Tokens por Estado)
-Cada estado de interacción provee 5 variantes para evitar la fatiga visual y asegurar contraste accesible:
-- **Éxito (`--exito`)**: Partidos confirmados, canjes aceptados y reservas acreditadas.
-- **Error (`--error`)**: Cupos agotados, pagos rechazados o fallos de red.
-- **Advertencia (`--advertencia`)**: Asistencia pendiente de confirmación o tiempos límite.
-- **Atención (`--atencion`)**: Cartas nuevas, sobres diarios disponibles y anuncios destacados.
-- **Información (`--info`)**: Tips, reglas de la cancha y descripciones informativas.
+Cada estado provee 5 variantes (base, fondo, borde, texto, sobre) para evitar la fatiga visual y asegurar contraste accesible. Nunca depender solo del color: acompañar con ícono o texto.
+- **Éxito (`--exito`)**: canjes aceptados, álbum completado, pago acreditado, victoria.
+- **Error (`--error`)**: pago rechazado, cupón vencido, fallo de red, derrota.
+- **Advertencia (`--advertencia`)**: oferta de intercambio por vencer, recompensa sin reclamar, tiempos límite.
+- **Atención (`--atencion`)**: cartas nuevas, sobres disponibles y anuncios destacados.
+- **Información (`--info`)**: tips, reglas del juego y descripciones informativas.
 
-### Tipografías
-- **Headings / Títulos:** `'Russo One'`, `'Rock Salt'` (Google Fonts, estilo display rústico/urbano similar a Rockstone).
-- **Lectura / Cuerpo:** `'Merriweather'` (serifa de pantalla con excelente legibilidad y contraste visual).
-- **Controles UI:** `system-ui` (botones, formularios, tablas y badges).
+### Tipografías (normalizadas)
+- **Titulares:** `'Russo One'` (token `--fuente-titulo`, utilidad `font-titulo`).
+- **Lectura / cuerpo:** `'Merriweather'` (token `--fuente-cuerpo`, utilidad `font-cuerpo`).
+- **Controles de UI:** `system-ui` (token `--fuente-interfaz`, utilidad `font-interfaz`). Es la única **excepción** documentada: botones, formularios, tablas, badges y etiquetas.
+- No se usa ninguna otra familia (ni `font-mono`, ni fuentes decorativas).
+
+### Escala tipográfica semántica
+Definida en `estilos-roles/jugador.css` (empresa hereda) y mapeada a Tailwind en `estilos-tailwind/tema.css`:
+- **Tamaños:** `--tipografia-display|titulo|subtitulo|cuerpo|menor|etiqueta`.
+- **Pesos:** `--peso-titular|lectura|etiqueta`.
+- **Interlineado:** `--interlineado-titulo|cuerpo`. **Interletrado:** `--interletrado-titulo|etiqueta`.
+- Los componentes usan esta escala y no tamaños arbitrarios (`text-[0.6875rem]`, etc.). Las vistas existentes que todavía usan tamaños o fuentes sueltas no están migradas.
 
 ### Tokens de Forma y Sombra
 - **Radios:** `--radio-sm` (`0.375rem`), `--radio-md` (`0.75rem`), `--radio-lg` (`1.25rem`), `--radio-pildora` (`9999px`), `--radio-circulo` (`50%`).
-- **Sombras:** `--sombra-baja`, `--sombra-media`, `--sombra-alta`, `--sombra-brillo-verde` (adaptadas automáticamente al modo oscuro o claro).
+- **Sombras:** `--sombra-baja`, `--sombra-media`, `--sombra-alta`, `--sombra-brillo-verde` (adaptadas automáticamente al modo oscuro o claro; misma intensidad en ambos modos).
+
+### Tokens de partida
+Definidos en `estilos-roles/jugador.css` (la partida es exclusiva del dominio de jugador y no lleva bloque en empresa) y mapeados en `estilos-tailwind/tema.css`:
+- **Tablero y slots:** `--background-image-tablero-fondo: var(--tablero-fondo)`, `--color-slot-rival-fondo`, `--color-slot-propio-fondo`, `--color-slot-borde`, `--color-slot-resaltado`, `--color-slot-resaltado-anillo`.
+- **Zonas y puntajes:** `--color-zona-marco`, `--color-zona-marco-destacado`, `--color-puntaje-zona-{ganando,perdiendo,empate}-{fondo,texto}`.
+- **Recursos y barras:** cupón de recurso (`--color-cupon-{fondo,borde,texto,perforacion}`), barra de puntos (`--color-barra-puntos-{fondo,borde,sombra,propio-relleno,rival-relleno}`).
+- **Sombras cartoon:** `--shadow-cartoon`, `--shadow-cartoon-gruesa`, `--shadow-cartoon-clara` (sólidas, sin difuminar).
+- **Tiempos de animación:** duraciones en CSS (`--duracion-revelado-carta`, `--duracion-cambio-zona`, `--duracion-vuelo-carta`, `--duracion-micro: 300ms`), no mapeadas a Tailwind; las lee `GsapService` mediante `duracionPartida()`.
+
+### Contraste del texto apagado
+- Empresa: `--texto-apagado` es `#566467` y cumple AA (≥ 4.5:1) sobre fondo-app, superficie, elevado y hundido.
+- Jugador: `--texto-apagado` es `#7A9F9B` y **no** alcanza AA sobre fondo-app, superficie ni elevado (solo sobre hundido). **Pendiente de corrección.**
+- **Regla de uso:** no usar texto apagado sobre superficies elevadas.
+
+### Componentes base de contenido
+Ubicación: `compartidos/componentes/textual/`, `compartidos/componentes/contenedor/` y `compartidos/componentes/partida/`.
+
+- **Textuales** (directivas de atributo que se aplican sobre etiquetas nativas; el nivel semántico lo da la etiqueta y el nivel visual lo da el input):
+  - `app-titulo` (h1–h6): `tamano` (display, lg, md, sm; default md) y `color` (default heredar).
+  - `app-subtitulo` (p, span, h1–h6): `tamano` (md, sm) y `color` (default secundario).
+  - `app-texto` (p, span): `variante` (normal, secundario, apagado, heredar) y `tamano` (cuerpo, menor).
+  - `app-sobretitulo` (p, span): fuente de interfaz, mayúsculas, color por defecto apagado.
+  - Colores disponibles: heredar, primario, secundario, apagado, marca (`colores.ts`).
+- **Caja** (`app-caja`): `variante` (base, elevada, hundida, destacada, éxito, error, advertencia, atención, info), `sombra` (ninguna, baja, media, alta), `padding` (sm, md, lg), `radio` (sm, md, lg), `acento` (ninguno, derecha; default ninguno) y slots de contenido `encabezado` y `pie`. Las variantes de superficie fijan `text-texto-primario`; las de feedback fijan el color de texto de su estado. Ningún color propio.
+  - **Acento:** `acento="derecha"` dibuja una franja fina recortada contra el radio de la caja (suma `relative overflow-hidden`, solo con acento, así no genera scroll horizontal a 375 px). Su color es `var(--marca-primaria)` por defecto y el consumidor lo cambia definiendo `--acento-caja` en la caja (siempre con tokens: `--exito`, `--error`). Acento en el borde **derecho**; nunca a la izquierda y nunca más de uno por tarjeta.
+- **Reglas de uso:**
+  - Un solo `h1` por página.
+  - Dentro de cajas de feedback, usar `color="heredar"` en títulos, subtítulos y textos; el subtítulo por defecto es gris neutro y desentona con el estado, y el apagado no cumple AA ahí.
+  - Todo componente nuevo se muestra en la galería, en ambos modos.
+- **Tarjeta de indicador** (`app-tarjeta-kpi`): informativa, no clickeable y sin gráficos. Apoyada en `app-caja` con `acento="derecha"`. Inputs: `etiqueta` (requerido), `valor`, `variacion` (`{ valor, positiva }`, opcional), `contexto` (opcional) y `estado` (`listo`, `cargando`, `sin-datos`, `error`; default `listo`). Sin ícono ni input `tono`: el color del acento es el de marca y pasa a `--exito`/`--error` con una variación; el estado `error` cambia la caja a la variante de feedback.
+
+### Galería de componentes
+- Ruta `/componentes`, con **15 secciones** (incluidas "Texto", "Cajas" y "Partida").
+- Las secciones de texto y cajas muestran **jugador y empresa a la vez** con contenedores `data-modo` propios; el resto usa el interruptor global de modo.
+- Simula movimiento reducido con `data-movimiento="reducido"` (afecta solo a CSS, no a GSAP).
+- El spec de la galería valida que la cantidad y el orden de las secciones coincidan entre `secciones.ts`, `galeria-componentes.ts` y `galeria-componentes.html`.
 
 ---
 
-## 4. Estructura de Directorios
+## 19. Estructura de Directorios
 
 ```
 FaltaUna-Frontend/
@@ -146,14 +414,17 @@ FaltaUna-Frontend/
 │   │   │   │   │   ├── landing/   → hero, carousel-marcas, acordeon-preguntas, faq-item, faq-section, team-section
 │   │   │   │   │   ├── empresa/   → stepper-suscripcion, plan-card, plans-section, tarjeta-plan, tarjeta-kpi, faq-item-empresa, faq-section-empresa
 │   │   │   │   │   ├── usuario/   → tarjeta-mision, panel-misiones, tarjeta-pity, tarjeta-recompensa
-│   │   │   │   │   └── feedback/  → badge, barra-progreso, info-tooltip
+│   │   │   │   │   ├── feedback/  → badge, barra-progreso, info-tooltip
+│   │   │   │   │   ├── textual/   → titulo, subtitulo, texto, sobretitulo (+ colores.ts)
+│   │   │   │   │   ├── contenedor/→ caja
+│   │   │   │   │   └── partida/   → barra-puntos, cupon-recurso, indicador-turno, jugador-chip, puntaje-zona, slot-carta
 │   │   │   │   ├── directivas/    → Directivas compartidas
 │   │   │   │   ├── ilustraciones/ → Ilustraciones y assets asociados
 │   │   │   │   ├── SVGs/          → Assets SVG (alias @svgs/*)
 │   │   │   │   └── utilidades/    → Utilidades compartidas
 │   │   │   ├── modelos/       → Interfaces TypeScript de dominio
-│   │   │   ├── servicios/     → Servicios HTTP y utilidades (usuario.service, gsap.service)
-│   │   │   ├── paginas/       → Páginas/vistas por ruta
+│   │   │   ├── servicios/     → Servicios HTTP y utilidades (api.service, usuario.service, gsap.service)
+│   │   │   ├── paginas/       → Páginas/vistas por ruta (incluye galeria-componentes)
 │   │   │   ├── guardias/      → Route guards (rol, auth, pago-aprobado)
 │   │   │   ├── interceptores/ → HTTP interceptors (auth)
 │   │   │   ├── datos/         → Datos estáticos (landing-empresa.data)
@@ -161,13 +432,6 @@ FaltaUna-Frontend/
 │   │   │   ├── app.html / ts  → Componente raíz
 │   │   │   └── app.routes.ts  → Definición de rutas
 │   │   ├── estilos/           → Sistema de diseño dividido por dominio (lo importa styles.css)
-│   │   │   ├── estilos-fundamentos/  → primitivos.css, base.css
-│   │   │   ├── estilos-roles/        → jugador.css, empresa.css
-│   │   │   ├── estilos-feedback/     → feedback.css, alertas.css, toast.css
-│   │   │   ├── estilos-componentes/  → botones.css, cartas.css, sobres.css
-│   │   │   ├── estilos-paginas/      → landing.css, layout.css
-│   │   │   ├── estilos-tailwind/     → tema.css, utilidades.css
-│   │   │   └── estilos-animaciones/  → animaciones.css
 │   │   ├── styles.css         → Índice: importa el sistema de diseño de src/estilos/
 │   │   └── styles.scss        → Importador maestro de estilos
 │   ├── angular.json           → Configuración de build y serve (puerto 4300)
@@ -179,21 +443,39 @@ FaltaUna-Frontend/
 
 ---
 
-## 5. Convenciones de Desarrollo Frontend
+## 20. Identidad de marca y copy
+
+- **Tono de voz:** voseo rioplatense, frases cortas e imperativas («Abrí tu sobre diario», «Comenzá a coleccionar», «Explorá el modo empresa»). Nunca infinitivo de manual ni formalidad de ustedes.
+- **Vocabulario de marca:** sobre diario, carta (rareza), álbum, colección, intercambio, mazo, partida, zona, cupón, marca, descuento. Evitar sinónimos inventados.
+- **Claim vigente en el login:** «Ganá descuentos coleccionando y jugando con cartas de tus marcas preferidas».
+- **Audiencias por modo:**
+  - `[data-modo="jugador"]` → coleccionistas: sobres diarios, álbumes, mazos, partidas, intercambios y cupones.
+  - `[data-modo="empresa"]` → marcas: publicar colecciones, gestionar el panel, métricas y validación de cupones por empleados.
+- **Gradiente de marca:** `--landing-gradiente-amarillo-verde` (amarillo-logo → teal-profundo) con utility `bg-landing-gradiente-amarillo-verde`. Exclusivo de bloques públicos y modo jugador; en modo empresa la landing usa superficie crema.
+- **Logos según fondo:** `Imagotipo_Alt.svg` (oscuro) sobre amarillo o gradiente claro; `Imagotipo_claro.svg` sobre fondos oscuros; `Imagotipo_Empresa.svg` en modo empresa.
+- **Pendiente — copy visible desactualizado:** la definición de producto de la landing y el copy de la landing de empresa (por ejemplo, el texto del panel de imagen del registro de empresa) todavía pueden mencionar fútbol, canchas, torneos y reservas. Auditar los textos visibles y reescribirlos con el dominio real. No se cambiaron en esta unificación.
+- **Open decisions de marca:** tagline oficial definitiva, propuesta de valor consolidada para empresas y guía de tono formal; no existen como documento en el repo.
+
+---
+
+## 21. Convenciones de Desarrollo Frontend
 
 1. **Componentes Standalone:** Todo componente nuevo debe ser `standalone: true` (comportamiento por defecto en Angular 20) e importar explícitamente solo lo que utiliza en su arreglo `imports`.
 2. **Angular Signals:** Priorizar el uso de Signals para estado e inputs (`input()`, `input.required()`, `output()`, `computed()`, `signal()`).
 3. **Change Detection:** Aplicar siempre `changeDetection: ChangeDetectionStrategy.OnPush`.
 4. **Separación de Responsabilidades:** Los componentes nunca realizan peticiones HTTP directas ni gestionan lógica de persistencia; delegan siempre en un archivo dentro de `servicios/`.
-5. **Ubicación de componentes compartidos:** Todo componente compartido nuevo va dentro de `compartidos/componentes/<tema>/` (controles, cartas, layout, landing, empresa, usuario, feedback). Si no encaja en ningún tema, preguntar antes de crear uno nuevo.
+5. **Ubicación de componentes compartidos:** Todo componente compartido nuevo va dentro de `compartidos/componentes/<tema>/` (controles, cartas, layout, landing, empresa, usuario, feedback, textual, contenedor, partida). Si no encaja en ningún tema, preguntar antes de crear uno nuevo.
 6. **Acceso al backend vía `ApiService`:** Todo consumo de la API pasa por `servicios/api.service.ts`, que centraliza `HttpClient` y `environment`. Es el **único** archivo de `servicios/` que inyecta `HttpClient` o importa `environment` para URLs. Los servicios de dominio llaman a `api.get/post/put/patch/delete` con **rutas relativas a `/api`** (por ejemplo `'Pagos/configuracion'`) y no arman URLs absolutas ni construyen `HttpParams` a mano. Para concatenar base y ruta usar la función pura exportada `unirUrl(base, ruta)`.
 7. **Accesibilidad (A11y):**
    - Todo botón o enlace sin texto visual debe incluir `aria-label` o `aria-labelledby`.
    - Mantener el foco visible con `:focus-visible`.
    - Respetar `prefers-reduced-motion` en animaciones.
+   - Jerarquía de encabezados correcta; contraste verificado en ambos modos.
 8. **Idiomas:**
-   - Código de negocio, modelos, variables y comentarios en **español** (`usuario`, `partido`, `boton`, `obtenerUsuarios`).
+   - Código de negocio, modelos, variables y comentarios en **español** (`usuario`, `carta`, `boton`, `obtenerCartas`).
    - Respetar nombres técnicos universales de librerías (`inject`, `computed`, `OnInit`).
+9. **Lógica sensible en el servidor:** las decisiones que el usuario podría manipular (qué carta sale de un sobre, resultados de partidas, límites diarios, canje de cupones, transferencia de cartas) se validan siempre en el backend.
+10. **Animaciones con GSAP y GSAP Draggable:** Las animaciones complejas y de arrastre usan GSAP y GSAP Draggable (sin dependencias adicionales). Al invocar `GsapService.crearContexto()` fuera de un contexto de inyección (por ejemplo en `ngAfterViewInit` o effects), se debe capturar `DestroyRef` como campo de clase (`private readonly destroyRef = inject(DestroyRef)`) y pasarlo como argumento al método para garantizar la reversión automática de tweens y listeners al destruirse el componente.
 
 ### Path aliases (tsconfig.json + jest.config.ts)
 
@@ -209,7 +491,7 @@ Regla: los imports entre carpetas usan alias; los imports dentro de la misma car
 
 ---
 
-## 6. Reglas Obligatorias para Claude (Instrucciones de AGENTS.md)
+## 22. Reglas Obligatorias para Claude (Instrucciones de AGENTS.md)
 
 Al interactuar con este repositorio y ejecutar tareas, Claude debe seguir estrictamente estas directivas:
 
@@ -232,6 +514,8 @@ Motivo: [una línea justificando la categoría]
 ### 3. Reglas de Ejecución y Calidad
 - **No instalar dependencias nuevas** sin consultar y justificar previamente.
 - **No modificar archivos fuera del alcance** solicitado sin aviso previo.
+- **No inventar reglas de negocio:** si una regla está marcada como **Pendiente**, **A confirmar** o **⚠️ Conflicto**, no resolverla por cuenta propia; avisar y pedir la decisión.
+- **Mantener este documento al día:** cuando una tarea cambie, defina o resuelva una regla de negocio, una decisión de diseño o un pendiente, actualizar `context.md` en la misma tarea: modificar la sección correspondiente, quitar o marcar como resuelto el ítem en la tabla de contradicciones (sección 12) y en el resumen de pendientes (sección 24), y agregar los pendientes nuevos que surjan. Incluir esa actualización en el `Resumen de cambios`. No modificar reglas de negocio en el documento si la decisión no fue confirmada por el equipo.
 - **Validación continua:** Al finalizar cambios en frontend, correr y verificar:
   - `npm run lint` en `frontend/` (0 advertencias/errores).
   - `npm test -- --watch=false` en `frontend/` (todas las pruebas pasando con Jest).
@@ -239,7 +523,7 @@ Motivo: [una línea justificando la categoría]
 
 ---
 
-## 7. Comandos Frecuentes
+## 23. Comandos Frecuentes
 
 ```bash
 # Frontend
@@ -258,3 +542,23 @@ docker compose up -d   # Iniciar MySQL 8.4 local
 docker compose ps      # Verificar estado y salud
 docker compose down    # Detener manteniendo datos
 ```
+
+---
+
+## 24. Resumen de pendientes
+
+1. Alcance de la entrega (TPI) frente a la visión futura.
+2. Resolver las contradicciones abiertas de la sección 12 (intercambio sincrónico o asincrónico, slots y cartas jugables por ronda, sobres populares, amistades) y el detalle de la victoria por 100 puntos (empate si ambos la superan en la misma ronda).
+3. Nombre alternativo para el recurso de juego (conflicto "cupón") y renombrado de `Mana` en el modelo.
+4. Probabilidades y valores de pity para sobres de categoría y marca.
+5. Planes: nombres, precios, cantidad de colecciones y duración del cooldown.
+6. Reglas exactas de reinicio de misiones diarias.
+7. Slots por lado y cartas jugables por ronda (las 2 zonas simultáneas fijas con rotación por turno quedaron resueltas).
+8. Definición de "intento" en intercambios.
+9. Cosméticos: globales o por carta.
+10. Métricas finales de la marca.
+11. Verificación de email y recuperación de contraseña.
+12. Reescribir el copy visible que todavía hable de fútbol.
+13. Corregir `--texto-apagado` del modo jugador.
+14. Alinear el modelo de datos (sección 16) y verificar qué respalda el backend.
+15. Regla de quién revela primero en cada ronda.

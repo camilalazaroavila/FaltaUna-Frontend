@@ -1,0 +1,21 @@
+<div [class]="clasesContenedor()">
+  <div class="flex items-center gap-3">
+    <span class="font-titulo text-subtitulo leading-titulo text-texto-secundario uppercase">
+      Turno {{ turno() }}/{{ totalTurnos() }}
+    </span>
+
+    <span [class]="clasesTiempo()" role="timer" [attr.aria-label]="etiqueta()">
+      @if (enAdvertencia()) {
+        <ng-icon name="phosphorWarningFill" size="18" aria-hidden="true" />
+      } @else {
+        <ng-icon name="phosphorHourglassMediumFill" size="18" aria-hidden="true" />
+      }
+
+      {{ segundosRestantes() }}s
+    </span>
+  </div>
+
+  <button type="button" app-boton variante="fantasma" tamanio="sm" (click)="rendirse.emit()">
+    Rendirse
+  </button>
+</div>

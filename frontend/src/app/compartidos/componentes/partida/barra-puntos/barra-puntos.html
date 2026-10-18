@@ -1,0 +1,29 @@
+<div [class]="clasesBase()">
+  <span class="font-titulo text-subtitulo leading-titulo text-texto-primario">{{ puntos() }}</span>
+
+  <div
+    class="relative h-6 w-full overflow-hidden rounded-pildora border-2 border-barra-puntos-borde bg-barra-puntos-fondo shadow-[0_3px_0_var(--barra-puntos-sombra)]"
+    role="progressbar"
+    [attr.aria-label]="etiqueta()"
+    aria-valuemin="0"
+    [attr.aria-valuemax]="maximo()"
+    [attr.aria-valuenow]="puntos()"
+    [attr.aria-valuetext]="puntos() + ' de ' + maximo() + ' puntos'"
+  >
+    <span
+      class="absolute inset-y-0.5 left-0.5 rounded-pildora transition-[width] duration-500 ease-out motion-reduce:transition-none"
+      [class]="clasesRelleno()"
+      [style.width]="'calc(' + porcentaje() + '% - 4px)'"
+      aria-hidden="true"
+    ></span>
+
+    <span
+      #deltaFlotante
+      class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 font-titulo text-menor text-texto-primario"
+      [class.opacity-0]="delta() === null"
+      aria-hidden="true"
+    >
+      {{ textoDelta() }}
+    </span>
+  </div>
+</div>

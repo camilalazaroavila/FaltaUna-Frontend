@@ -1,0 +1,10 @@
+@if (acento() === 'derecha') {
+  <span
+    class="caja-acento absolute inset-y-0 right-0 w-1.5"
+    style="background: var(--acento-caja, var(--marca-primaria))"
+    aria-hidden="true"
+  ></span>
+}
+<ng-content select="[slot='encabezado']" />
+<ng-content />
+<ng-content select="[slot='pie']" />

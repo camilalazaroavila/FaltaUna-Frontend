@@ -57,12 +57,50 @@
     animation: latidoReclamo 1.9s ease-out infinite;
 }
 
+/* Slot resaltado de la partida: el anillo se expande y se apaga para indicar
+   dónde se puede soltar una carta. Solo decorativo: el estado va también en
+   `data-slot-estado` y en el aria-label. */
+@keyframes pulsoSlot {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 var(--slot-resaltado-anillo);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px color-mix(in srgb, var(--slot-resaltado) 0%, transparent);
+    }
+}
+
+.animate-pulso-slot {
+    animation: pulsoSlot 1.6s ease-out infinite;
+}
+
+/* Badge de puntaje de zona que va ganando: late suavemente sin mover el layout. */
+@keyframes latidoZona {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.06);
+    }
+}
+
+.animate-latido-zona {
+    animation: latidoZona 1.6s ease-in-out infinite;
+}
+
 /* Respeto por preferencias de movimiento reducido (A11y) */
 @media (prefers-reduced-motion: reduce) {
 
     .animate-fade-in,
     .animate-slide-up,
-    .animate-latido-reclamo {
+    .animate-latido-reclamo,
+    .animate-pulso-slot,
+    .animate-latido-zona {
         animation: none;
         opacity: 1;
         transform: none;

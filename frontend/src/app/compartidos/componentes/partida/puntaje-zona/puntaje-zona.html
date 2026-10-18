@@ -1,0 +1,9 @@
+<span [class]="clases()">
+  <span #numero class="inline-block font-titulo text-subtitulo leading-titulo">
+    {{ puntos() }}
+  </span>
+
+  @if (estado() === 'ganando') {
+    <span class="font-titulo text-menor" aria-hidden="true">+</span>
+  }
+</span>

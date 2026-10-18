@@ -27,6 +27,19 @@ const ICONOS = {
   phosphorXFill: ICONO_PRUEBA,
   phosphorHeartFill: ICONO_PRUEBA,
   phosphorLockFill: ICONO_PRUEBA,
+  phosphorHourglassMediumFill: ICONO_PRUEBA,
+  phosphorUserFill: ICONO_PRUEBA,
+  phosphorCoinsFill: ICONO_PRUEBA,
+  phosphorTrendUpFill: ICONO_PRUEBA,
+  phosphorInfoFill: ICONO_PRUEBA,
+  phosphorArrowLeftFill: ICONO_PRUEBA,
+  phosphorChartDonutFill: ICONO_PRUEBA,
+  phosphorQrCodeFill: ICONO_PRUEBA,
+  phosphorBellFill: ICONO_PRUEBA,
+  phosphorGiftFill: ICONO_PRUEBA,
+  phosphorHouseFill: ICONO_PRUEBA,
+  phosphorSealCheckFill: ICONO_PRUEBA,
+  phosphorWarningCircleFill: ICONO_PRUEBA,
 };
 
 Object.defineProperty(window, 'matchMedia', {
@@ -67,8 +80,8 @@ describe('GaleriaComponentes', () => {
     document.documentElement.removeAttribute('data-movimiento');
   });
 
-  it('debe renderizar las doce secciones de la galeria', () => {
-    expect(SECCIONES.length).toBe(12);
+  it('debe renderizar las catorce secciones de la galeria', () => {
+    expect(SECCIONES.length).toBe(15);
 
     for (const seccion of SECCIONES) {
       expect(html().querySelector(`#${seccion.id}`)).not.toBeNull();

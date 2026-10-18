@@ -1,0 +1,172 @@
+<div class="space-y-8">
+  <header class="space-y-2">
+    <h2 class="font-titulo text-subtitulo text-texto-primario">Cajas</h2>
+    <p class="font-cuerpo text-sm text-texto-secundario">
+      Contenedor <code class="font-interfaz text-texto-primario">app-caja</code> con sus nueve
+      variantes, cuatro sombras, tres paddings, tres radios, la franja de acento a la derecha y los
+      slots de encabezado y pie. Los dos bloques de abajo muestran los dos modos a la vez: cada uno
+      fija su propio <code class="font-interfaz text-texto-primario">data-modo</code>, fondo de app
+      y color de texto.
+    </p>
+  </header>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    @for (modo of modos; track modo) {
+      <div
+        [attr.data-modo]="modo"
+        class="space-y-6 rounded-lg border border-borde-default bg-fondo-app p-4 text-texto-primario sm:p-6"
+      >
+        <h3 class="font-titulo text-cuerpo text-texto-primario">Modo {{ modo }}</h3>
+
+        <app-tarjeta-muestra
+          titulo="app-caja · variantes"
+          descripcion="Cuatro superficies (base, elevada, hundida, destacada) y las cinco de feedback. Las de feedback fijan su propio text-{estado}-texto, así que el texto interno puede heredarlo."
+        >
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            @for (variante of variantes; track variante) {
+              <app-caja [variante]="variante">
+                <p app-sobretitulo color="heredar">{{ variante }}</p>
+                <p app-texto variante="heredar">El texto hereda el color de la caja.</p>
+              </app-caja>
+            }
+          </div>
+
+          <div slot="nota" class="mt-4 space-y-3">
+            <div class="rounded-md border border-borde-default bg-hundido p-3">
+              <p app-texto variante="apagado">
+                Caso de contraste: texto apagado sobre superficie hundida.
+              </p>
+            </div>
+
+            <div class="rounded-md border-l-2 border-exito bg-exito-fondo px-3 py-2">
+              <p class="font-interfaz text-xs text-exito-texto">
+                Contraste: en modo empresa <code>--texto-apagado</code> ya cumple AA sobre las tres
+                superficies: hundido ≈4.56:1, fondo-app ≈5.44:1 y superficie ≈6.15:1 (mínimo 4.5:1
+                para texto normal). El token se oscureció de <code>#6B7D81</code> a
+                <code>#566467</code> solo en modo empresa.
+              </p>
+            </div>
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="acento · franja en el borde derecho"
+          descripcion="acento=&quot;derecha&quot; dibuja una franja fina a la derecha. El color por defecto es el de marca y se cambia con la custom property --acento-caja, siempre con tokens."
+        >
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <app-caja acento="derecha">
+              <p app-sobretitulo color="heredar">Marca (por defecto)</p>
+              <p app-texto variante="heredar">Franja en el borde derecho.</p>
+            </app-caja>
+
+            <app-caja acento="derecha" [style.--acento-caja]="'var(--exito)'">
+              <p app-sobretitulo color="heredar">Variación al alza</p>
+              <p app-texto variante="heredar">--acento-caja: var(--exito)</p>
+            </app-caja>
+
+            <app-caja acento="derecha" [style.--acento-caja]="'var(--error)'">
+              <p app-sobretitulo color="heredar">Variación a la baja</p>
+              <p app-texto variante="heredar">--acento-caja: var(--error)</p>
+            </app-caja>
+
+            <app-caja>
+              <p app-sobretitulo color="heredar">Sin acento</p>
+              <p app-texto variante="heredar">acento="ninguno", el valor por defecto.</p>
+            </app-caja>
+          </div>
+
+          <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+            <p class="font-interfaz text-xs text-info-texto">
+              Con <code>acento</code> la caja suma <code>relative overflow-hidden</code>, así la
+              franja queda recortada contra el radio y no empuja el ancho: sin scroll horizontal a
+              375 px. Sin acento no se agrega ningún recorte.
+            </p>
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="Sombras"
+          descripcion="ninguna, baja, media y alta. Las sombras usan los mismos tokens en ambos modos."
+        >
+          <div class="grid gap-4 sm:grid-cols-2">
+            @for (sombra of sombras; track sombra) {
+              <app-caja [sombra]="sombra">
+                <p app-texto variante="heredar">sombra="{{ sombra }}"</p>
+              </app-caja>
+            }
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="Paddings"
+          descripcion="sm (p-3), md (p-5) y lg (p-7), sobre la escala de espaciado de Tailwind."
+        >
+          <div class="space-y-4">
+            @for (padding of paddings; track padding) {
+              <app-caja [padding]="padding">
+                <p app-texto variante="heredar">padding="{{ padding }}"</p>
+              </app-caja>
+            }
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="Radios"
+          descripcion="sm, md y lg, resueltos con los tokens --radio-*."
+        >
+          <div class="grid gap-4 sm:grid-cols-3">
+            @for (radio of radios; track radio) {
+              <app-caja [radio]="radio">
+                <p app-texto variante="heredar">radio="{{ radio }}"</p>
+              </app-caja>
+            }
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="Slots encabezado y pie"
+          descripcion="El contenido sin slot se proyecta entre el encabezado y el pie; los dos slots son opcionales."
+        >
+          <app-caja variante="elevada" radio="lg" padding="lg">
+            <p app-sobretitulo slot="encabezado" color="heredar">Resumen del partido</p>
+            <p app-texto variante="heredar">
+              El cuerpo se proyecta sin slot y queda entre el encabezado y el pie.
+            </p>
+            <p app-texto variante="heredar" tamano="menor" slot="pie">
+              Actualizado hace un rato
+            </p>
+          </app-caja>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="Caja vacía y caja con contenido alto"
+          descripcion="La caja vacía conserva padding y borde; la de la derecha crece con el contenido sin recortarlo."
+        >
+          <div class="grid gap-4 sm:grid-cols-2">
+            <app-caja variante="hundida" />
+
+            <app-caja variante="elevada">
+              @for (linea of contenidoAlto; track $index) {
+                <p app-texto variante="heredar" tamano="menor">{{ linea }}</p>
+              }
+            </app-caja>
+          </div>
+        </app-tarjeta-muestra>
+
+        <app-tarjeta-muestra
+          titulo="Título y subtítulo dentro de cada caja de feedback"
+          descripcion="Título (app-titulo) y subtítulo (app-subtitulo) con color heredar: toman el color del estado que fija la caja. Valida que la combinación quede legible y coherente."
+        >
+          <div class="space-y-4">
+            @for (combinacion of combinaciones; track combinacion.variante) {
+              <app-caja [variante]="combinacion.variante">
+                <h4 app-titulo tamano="sm" color="heredar">{{ combinacion.titulo }}</h4>
+                <p app-subtitulo tamano="sm" color="heredar">{{ combinacion.detalle }}</p>
+              </app-caja>
+            }
+          </div>
+        </app-tarjeta-muestra>
+      </div>
+    }
+  </div>
+</div>
