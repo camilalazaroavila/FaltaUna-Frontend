@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   booleanAttribute,
   computed,
@@ -35,6 +36,7 @@ import { GsapService } from '@servicios/gsap.service';
 })
 export class BotonJugar implements AfterViewInit {
   private readonly gsapServicio = inject(GsapService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly elementoRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   private readonly referenciaBoton = viewChild.required<ElementRef<HTMLButtonElement>>('boton');
@@ -126,6 +128,6 @@ export class BotonJugar implements AfterViewInit {
           }
         );
       });
-    });
+    }, this.destroyRef);
   }
 }

@@ -1,0 +1,26 @@
+<div [class]="clases()">
+  @if (ocupado()) {
+    <ng-content />
+  } @else if (rivalOculto()) {
+    @if (avatarRival()) {
+      <img
+        class="h-full w-full object-cover opacity-80"
+        [src]="avatarRival()"
+        alt=""
+        aria-hidden="true"
+      />
+    } @else {
+      <ng-icon
+        name="phosphorUserFill"
+        size="28"
+        class="text-slot-borde/60"
+        aria-hidden="true"
+      />
+    }
+  } @else {
+    <span
+      class="h-8 w-8 rounded-pildora border-2 border-dashed border-slot-borde/40"
+      aria-hidden="true"
+    ></span>
+  }
+</div>

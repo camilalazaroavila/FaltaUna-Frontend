@@ -260,6 +260,25 @@
    --color-puntaje-zona-empate-fondo: var(--puntaje-zona-empate-fondo);
    --color-puntaje-zona-empate-texto: var(--puntaje-zona-empate-texto);
 
+   /* Cupón de recurso: ticket del recurso de juego de la pantalla de partida. */
+   --color-cupon-fondo: var(--cupon-fondo);
+   --color-cupon-borde: var(--cupon-borde);
+   --color-cupon-texto: var(--cupon-texto);
+   --color-cupon-perforacion: var(--cupon-perforacion);
+
+   /* Barra de puntos de la partida: relleno propio (verde) y rival (amarillo). */
+   --color-barra-puntos-fondo: var(--barra-puntos-fondo);
+   --color-barra-puntos-borde: var(--barra-puntos-borde);
+   --color-barra-puntos-sombra: var(--barra-puntos-sombra);
+   --color-barra-puntos-propio-relleno: var(--barra-puntos-propio-relleno);
+   --color-barra-puntos-texto-contorno: var(--barra-puntos-texto-contorno);
+
+  /* Etiquetas de lado de zona */
+  --color-etiqueta-lado-propio-fondo: var(--etiqueta-lado-propio-fondo);
+  --color-etiqueta-lado-propio-texto: var(--etiqueta-lado-propio-texto);
+  --color-etiqueta-lado-rival-fondo: var(--etiqueta-lado-rival-fondo);
+  --color-etiqueta-lado-rival-texto: var(--etiqueta-lado-rival-texto);
+
    --font-titulo: var(--fuente-titulo);
    --font-cuerpo: var(--fuente-cuerpo);
    --font-interfaz: var(--fuente-interfaz);

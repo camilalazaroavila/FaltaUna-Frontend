@@ -116,7 +116,7 @@
          color-mix(in srgb, var(--color-teal-superficie) 45%, var(--color-gris-teal)) 0%,
          var(--color-amarillo-logo) 100%);
 
-   /* Slots: el rival arriba (claro), el propio abajo (oscuro), como en tu Canva */
+   /* Slots: el rival arriba (claro), el propio abajo (oscuro), como en el diseño del tablero */
    --slot-rival-fondo: var(--color-amarillo-logo);
    --slot-propio-fondo: var(--color-teal-superficie);
    --slot-borde: var(--color-teal-profundo);
@@ -127,21 +127,35 @@
    --zona-marco: var(--color-teal-profundo);
    --zona-marco-destacado: var(--color-amarillo-logo);
 
-   /* Puntaje de zona (badge) */
-   --puntaje-zona-ganando-fondo: var(--marca-primaria);
-   --puntaje-zona-ganando-texto: var(--marca-sobre-primaria);
-   --puntaje-zona-perdiendo-fondo: var(--color-teal-elevado);
-   --puntaje-zona-perdiendo-texto: var(--texto-primario);
-   --puntaje-zona-empate-fondo: var(--color-amarillo-acento);
-   --puntaje-zona-empate-texto: var(--color-teal-profundo);
+    --etiqueta-lado-propio-fondo: color-mix(in srgb, var(--color-teal-superficie) 85%, black);
+    --etiqueta-lado-propio-texto: var(--texto-sobre-oscuro);
+    --etiqueta-lado-rival-fondo: color-mix(in srgb, var(--color-amarillo-logo) 95%, black);
+    --etiqueta-lado-rival-texto: var(--color-teal-profundo);
+
+   /* Cupón de recurso: ticket del recurso de juego. El naming sigue pendiente
+      (sección 4), pero el componente y los tokens conservan el nombre "cupón". */
+   --cupon-fondo: var(--color-amarillo-logo);
+   --cupon-borde: var(--color-teal-profundo);
+   --cupon-texto: var(--color-teal-profundo);
+   --cupon-perforacion: var(--color-teal-profundo);
+
+  /* Barra de puntos de la partida (hasta 100 por jugador) */
+  --barra-puntos-fondo: var(--color-teal-hundido);
+  --barra-puntos-borde: var(--color-teal-profundo);
+  --barra-puntos-sombra: var(--color-teal-profundo);
+  --barra-puntos-propio-relleno: var(--marca-primaria);
+  --barra-puntos-rival-relleno: var(--color-amarillo-logo);
+  --barra-puntos-texto-contorno: var(--color-teal-profundo);
 
    /* Sombras cartoon gruesas (sólidas, sin difuminar) */
    --sombra-cartoon: 4px 4px 0 var(--color-teal-profundo);
    --sombra-cartoon-gruesa: 7px 7px 0 var(--color-teal-profundo);
    --sombra-cartoon-clara: 7px 7px 0 var(--color-amarillo-logo);
 
-   /* Tiempos de animación de partida */
+   /* Tiempos de animación de partida. No se mapean a Tailwind: los lee
+      GsapService desde el estilo computado (`duracionPartida`). */
    --duracion-revelado-carta: 600ms;
    --duracion-cambio-zona: 900ms;
    --duracion-vuelo-carta: 450ms;
+   --duracion-micro: 300ms;
 }

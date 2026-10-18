@@ -93,4 +93,10 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     descripcion:
       'Contenedor de contenido con variantes, sombras, paddings, radios y slots, en modo jugador y empresa a la vez.',
   },
+  {
+    id: 'partida',
+    titulo: 'Partida',
+    descripcion:
+      'Átomos de la pantalla de partida: casilla, contador de cupones, barra de puntos, chip de jugador, cabecera de turno y puntaje por zona.',
+  },
 ] as const;

@@ -1,0 +1,26 @@
+<div
+  class="flex items-center gap-2"
+  [class.flex-row-reverse]="esRival()"
+  [attr.aria-label]="etiqueta()"
+  role="group"
+>
+  <span
+    class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-circulo border-2 border-zona-marco bg-marca-acento font-titulo text-cuerpo text-marca-sobre-acento"
+    aria-hidden="true"
+  >
+    @if (avatarUrl() && !falloImagen()) {
+      <img
+        class="h-full w-full object-cover"
+        [src]="avatarUrl()"
+        alt=""
+        (error)="falloImagen.set(true)"
+      />
+    } @else {
+      {{ inicial() }}
+    }
+  </span>
+
+  <span class="max-w-40 truncate font-titulo text-etiqueta tracking-etiqueta uppercase">
+    {{ nombre() }}
+  </span>
+</div>
