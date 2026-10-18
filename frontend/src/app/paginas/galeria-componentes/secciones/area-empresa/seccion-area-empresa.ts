@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { BarraRareza } from '../../../../compartidos/componentes/barra-rareza/barra-rareza';
-import { HeaderEmpresa } from '../../../../compartidos/componentes/header-empresa/header-empresa';
-import { TarjetaAlbum } from '../../../../compartidos/componentes/tarjeta-album/tarjeta-album';
-import { TarjetaKpi } from '../../../../compartidos/componentes/tarjeta-kpi/tarjeta-kpi';
-import { TarjetaRecompensa } from '../../../../compartidos/componentes/tarjeta-recompensa/tarjeta-recompensa';
+import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
+import { HeaderEmpresa } from '@compartidos/componentes/layout/header-empresa/header-empresa';
+import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarjeta-album';
+import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
+import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import {
   ALBUMES_EMPRESA,
   calcularResumenAlbum,
   type AlbumEmpresa,
   type ResumenAlbum,
   type TonoAlbum,
-} from '../../../../modelos/empresa.mock';
-import { TarjetaMuestra } from '../../tarjeta-muestra/tarjeta-muestra';
+} from '@modelos/empresa.mock';
+import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 
 /** Álbum de muestra con su resumen ya calculado, listo para la tarjeta. */
 interface AlbumMuestra {

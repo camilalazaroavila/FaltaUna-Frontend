@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.slot-vacio {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 5 / 7;
+  padding: 0.7rem 0.55rem;
+  border: 2px dashed var(--album-slot-borde);
+  border-radius: var(--radio-md);
+  background-color: var(--album-slot-fondo);
+  /* Ondas concéntricas uniformes: sin variantes decorativas por rareza. */
+  background-image: repeating-radial-gradient(circle at 50% 118%,
+      transparent 0 9%,
+      var(--album-slot-ondas) 9% 11.5%);
+  color: var(--album-slot-icono);
+  text-align: center;
+}
+
+/* El sobre ocupa la mayor parte de la casilla: da la ilusión de la carta ausente.
+   A color y atenuado, con contraste suficiente para no perderse con el fondo. */
+.slot-vacio__paquete {
+  width: 84%;
+  flex: 1 1 0;
+  min-height: 0;
+  object-fit: contain;
+  opacity: var(--album-slot-paquete-opacidad);
+}
+
+.slot-vacio__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  width: 100%;
+}
+
+.slot-vacio__nombre {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--album-slot-icono);
+  font-family: var(--fuente-titulo);
+  font-size: 0.8rem;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slot-vacio__estrellas {
+  display: flex;
+  justify-content: center;
+  gap: 0.12rem;
+}
+
+.slot-vacio__estrella {
+  width: 0.85rem;
+  height: 0.85rem;
+}

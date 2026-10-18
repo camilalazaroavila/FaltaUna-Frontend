@@ -4,9 +4,9 @@ import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { UsuarioDashboard } from './usuario-dashboard';
-import { AuthService } from '../../servicios/auth.service';
-import { SobresService } from '../../servicios/sobres.service';
-import { Usuario } from '../../modelos/usuario.model';
+import { AuthService } from '@servicios/auth.service';
+import { SobresService } from '@servicios/sobres.service';
+import { Usuario } from '@modelos/usuario.model';
 
 describe('UsuarioDashboard Component', () => {
   let component: UsuarioDashboard;
@@ -30,8 +30,13 @@ describe('UsuarioDashboard Component', () => {
       logout: jest.fn(),
     };
 
+    const signalSobres = signal({ actuales: 2, maximo: 2 });
     mockSobresService = {
       obtenerSobres: jest.fn().mockReturnValue(of([])),
+      sobresDisponibles: signalSobres,
+      consumirSobreGratuito: jest.fn().mockImplementation(() => {
+        signalSobres.update((s) => ({ ...s, actuales: Math.max(0, s.actuales - 1) }));
+      }),
     };
 
     await TestBed.configureTestingModule({

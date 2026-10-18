@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { AlbumRespuesta, CategoriaApi, CrearAlbumSolicitud } from '../modelos/album.model';
+import { environment } from '@environments/environment';
+import { AlbumRespuesta, CategoriaApi, CrearAlbumSolicitud } from '@modelos/album.model';
 
 /** Forma de cada colección tal como la devuelve el backend (ColeccionRespuesta). */
 interface ColeccionBackend {

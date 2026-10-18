@@ -61,6 +61,11 @@
     --landing-medida-cta: clamp(3rem, calc(0.5rem + 3.3333vw), 4.5rem);
     --landing-medida-sobres: clamp(28rem, calc(0.625rem + 35.4167vw), 43.125rem);
     --landing-medida-ilustracion: clamp(7rem, 10.4167vw, 12.5rem);
-    --landing-medida-avatar: clamp(3.5rem, 4.1667vw, 5rem);
+    /* Carta al costado del título de "¿Cómo funciona?": dimensionada para
+       quedar a la altura del bloque de dos líneas del título. */
+    --landing-medida-carta-titulo: clamp(4.5rem, 7vw, 8.75rem);
+    /* Avatar del equipo ("¿Quiénes somos?"): token propio, más grande que un
+       avatar genérico (piso 56px, 130px a 1440px y tope 168px). */
+    --landing-medida-avatar-equipo: clamp(3.5rem, 9vw, 10.5rem);
     --landing-espacio-columna: clamp(2rem, calc(-2rem + 6.6667vw), 6rem);
 }

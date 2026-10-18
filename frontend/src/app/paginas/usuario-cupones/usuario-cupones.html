@@ -5,6 +5,20 @@
 
   <div class="flex min-h-0 flex-1 flex-col px-4 pb-6 pt-2 sm:px-8">
     <!-- Encabezado -->
+  <div class="px-3 pt-4 sm:px-0">
+      <a routerLink="/usuario"
+        class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion">
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 6l-6 6 6 6" />
+        </svg>
+        Volver
+      </a>
+    </div>
+  <h1 class="mt-2 font-titulo text-3xl uppercase tracking-wide sm:text-5xl">Mis cupones</h1>
+
+  <div class="flex min-h-0 flex-1 flex-col px-4 pb-6 pt-2 sm:px-8">
+    <!-- Encabezado -->
     <div class="px-3 pt-4 sm:px-0">
       <a
         routerLink="/usuario"
@@ -280,6 +294,7 @@
       </main>
     </div>
   </div>
+</div>
 
   <!-- Modal del cupón -->
   @if (cuponSeleccionado(); as cupon) {

@@ -10,12 +10,12 @@ import {
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../servicios/auth.service';
-import { CuponesService } from '../../servicios/cupones.service';
-import { CanjeErrorRespuesta, CanjeExitosoRespuesta, CuponValidado } from '../../modelos/cupon.model';
-import { ModalResultado } from '../../compartidos/componentes/modal-resultado/modal-resultado';
+import { AuthService } from '@servicios/auth.service';
+import { CuponesService } from '@servicios/cupones.service';
+import { CanjeErrorRespuesta, CanjeExitosoRespuesta, CuponValidado } from '@modelos/cupon.model';
+import { ModalResultado } from '@compartidos/componentes/modal-resultado/modal-resultado';
 
-import urlLogo from '../../compartidos/SVGs/Imagotipo_claro.svg';
+import urlLogo from '@svgs/Imagotipo_claro.svg';
 
 const MENSAJE_CODIGO_INVALIDO = 'El código que ingresaste es incorrecto o está expirado';
 const MENSAJE_SIN_CONEXION = 'No pudimos conectarnos con el servidor. Probá de nuevo en un momento.';

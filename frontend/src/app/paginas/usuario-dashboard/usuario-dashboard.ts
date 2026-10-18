@@ -1,22 +1,22 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { SobresService } from '../../servicios/sobres.service';
-import { BotonNavegacionCircular } from '../../compartidos/componentes/boton-navegacion-circular/boton-navegacion-circular';
-import { FlujoAperturaSobres } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
-import { Header } from '../../compartidos/componentes/header/header';
-import { SobreMarca } from '../../compartidos/componentes/sobre-marca/sobre-marca';
-import { SobreRespuesta } from '../../modelos/sobre.model';
+import { SobresService } from '@servicios/sobres.service';
+import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
+import { FlujoAperturaSobres } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
+import { Header } from '@compartidos/componentes/layout/header/header';
+import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
+import { SobreRespuesta } from '@modelos/sobre.model';
 
-import urlSobreIzquierda from '../../compartidos/SVGs/PaqueteHuhDosColores.svg';
-import urlSobreCentro from '../../compartidos/SVGs/Paquete1.svg';
-import urlSobreDerecha from '../../compartidos/SVGs/Paquete2.svg';
-import urlIconPelea from '../../compartidos/SVGs/IconPelea.svg';
+import urlSobreIzquierda from '@svgs/PaqueteHuhDosColores.svg';
+import urlSobreCentro from '@svgs/Paquete1.svg';
+import urlSobreDerecha from '@svgs/Paquete2.svg';
+import urlIconPelea from '@svgs/IconPelea.svg';
 
-import urlIconoMisCartas from '../../compartidos/SVGs/Icon_misCartas.svg';
-import urlIconoAlbum from '../../compartidos/SVGs/Icon_Album.svg';
-import urlIconoIntercambios from '../../compartidos/SVGs/Icon_Intercambio.svg';
-import urlIconoQr from '../../compartidos/SVGs/Icon_Qr.svg';
-import urlIconoDescuento from '../../compartidos/SVGs/Icon_Descuento.svg';
+import urlIconoMisCartas from '@svgs/Icon_misCartas.svg';
+import urlIconoAlbum from '@svgs/Icon_Album.svg';
+import urlIconoIntercambios from '@svgs/Icon_Intercambio.svg';
+import urlIconoQr from '@svgs/Icon_Qr.svg';
+import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 
 export interface DestinoNavegacion {
   readonly id: string;
@@ -58,7 +58,7 @@ export class UsuarioDashboard implements OnInit {
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
     { id: 'misiones', nombre: 'Misiones', ruta: '/usuario/misiones', icono: 'phosphorTrophyFill' },
-    { id: 'album', nombre: 'Álbumes', urlIcono: urlIconoAlbum },
+    { id: 'album', nombre: 'Álbumes', ruta: '/usuario/albumes', urlIcono: urlIconoAlbum },
     { id: 'intercambios', nombre: 'Intercambio', urlIcono: urlIconoIntercambios },
     { id: 'qr', nombre: 'Canje', urlIcono: urlIconoQr },
     { id: 'cupones', nombre: 'Mis cupones', ruta: '/usuario/cupones', urlIcono: urlIconoDescuento },
@@ -97,7 +97,7 @@ export class UsuarioDashboard implements OnInit {
   /** Ninguna sección está activa por defecto: el dashboard no es ninguno de los destinos del dock. */
   protected readonly seccionActiva = signal<string | null>(null);
   protected readonly selectorSobresAbierto = signal<boolean>(false);
-  protected readonly sobresDisponibles = signal<{ actuales: number; maximo: number }>({
+  protected readonly sobresDisponibles = this.sobresService.sobresDisponibles ?? signal<{ actuales: number; maximo: number }>({
     actuales: 2,
     maximo: 2,
   });
@@ -118,10 +118,14 @@ export class UsuarioDashboard implements OnInit {
   }
 
   alCompletarApertura(): void {
-    this.sobresDisponibles.update((s) => ({
-      ...s,
-      actuales: Math.max(0, s.actuales - 1),
-    }));
+    if (this.sobresService.consumirSobreGratuito) {
+      this.sobresService.consumirSobreGratuito();
+    } else {
+      (this.sobresDisponibles as any).update?.((s: any) => ({
+        ...s,
+        actuales: Math.max(0, s.actuales - 1),
+      }));
+    }
   }
 
   seleccionarSeccion(id: string): void {
@@ -143,10 +147,14 @@ export class UsuarioDashboard implements OnInit {
   abrirSobre(opcion: SobreOpcion): void {
     if (!opcion.disponible) return;
     // Si quedan sobres disponibles se descuenta 1
-    this.sobresDisponibles.update((s) => ({
-      ...s,
-      actuales: Math.max(0, s.actuales - 1),
-    }));
+    if (this.sobresService.consumirSobreGratuito) {
+      this.sobresService.consumirSobreGratuito();
+    } else {
+      (this.sobresDisponibles as any).update?.((s: any) => ({
+        ...s,
+        actuales: Math.max(0, s.actuales - 1),
+      }));
+    }
     this.cerrarSelectorSobres();
   }
 }

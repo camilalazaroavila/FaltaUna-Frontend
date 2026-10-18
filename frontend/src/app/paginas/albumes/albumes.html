@@ -1,0 +1,210 @@
+<div
+  class="flow-root min-h-dvh bg-fondo-app bg-usuario-gradiente-amarillo-verde font-interfaz text-texto-primario"
+>
+  <app-header [logueado]="true" enlaceLogo="/usuario" />
+
+  <div class="mx-auto w-full max-w-screen-2xl px-5 pb-12 pt-6 sm:px-8">
+    <a
+      routerLink="/usuario"
+      class="inline-flex w-fit items-center gap-1.5 rounded-pildora px-1 py-1 font-interfaz text-xs font-bold uppercase tracking-[0.06em] text-texto-secundario transition-colors hover:text-texto-primario focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+    >
+      <ng-icon name="phosphorArrowLeftFill" size="16" aria-hidden="true" />
+      Volver
+    </a>
+
+    <h1 class="mt-2 font-titulo text-3xl tracking-[0.04em] text-marca-acento sm:text-3xl">
+      Álbumes
+    </h1>
+
+    <div class="mt-6 flex flex-col gap-6 md:flex-row md:items-start">
+      <!-- Listado de álbumes (con filtro por categoría y buscador) -->
+      <div
+        class="w-full md:block md:w-64 md:min-w-0 md:shrink-0"
+        [class.hidden]="albumSeleccionado()"
+      >
+        <app-filtros-categoria-album
+          [categorias]="categorias()"
+          [categoriaActiva]="categoriaActiva()"
+          (cambiar)="cambiarCategoria($event)"
+        />
+
+        <div class="relative mt-4">
+          <label class="sr-only" for="buscador-marcas">Buscar marca</label>
+          <ng-icon
+            name="phosphorMagnifyingGlassFill"
+            size="16"
+            class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-texto-apagado"
+            aria-hidden="true"
+          />
+          <input
+            id="buscador-marcas"
+            type="search"
+            aria-label="Buscar marca"
+            placeholder="Buscar marca"
+            autocomplete="off"
+            class="w-full rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie py-2 pr-3 pl-9 text-sm text-texto-primario placeholder:text-texto-apagado focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+            [value]="busqueda()"
+            (input)="buscar($event)"
+          />
+        </div>
+
+        <div class="mt-3">
+          @if (cargandoAlbumes()) {
+            <div class="flex flex-col gap-2" aria-hidden="true">
+              @for (fila of [1, 2, 3]; track fila) {
+                <div class="h-16 animate-pulse rounded-md bg-fondo-coleccion-superficie"></div>
+              }
+            </div>
+            <p class="sr-only" role="status">Cargando álbumes…</p>
+          } @else if (errorAlbumes()) {
+            <div class="rounded-md border border-error-borde bg-error-fondo p-3 text-sm text-error-texto">
+              <p>{{ errorAlbumes() }}</p>
+              <button
+                type="button"
+                class="mt-2 cursor-pointer rounded-pildora border border-error-borde px-4 py-1.5 text-xs font-bold uppercase tracking-[0.06em] text-error-texto transition-colors hover:bg-error hover:text-error-sobre"
+                (click)="reintentarAlbumes()">
+                Reintentar
+              </button>
+            </div>
+          } @else if (albumes().length === 0) {
+            <p class="rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie p-3 text-sm text-texto-apagado">
+              No hay álbumes en esta categoría.
+            </p>
+          } @else if (albumesVisibles().length === 0) {
+            <p class="rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie p-3 text-sm text-texto-apagado">
+              No encontramos marcas con ese nombre.
+            </p>
+          } @else {
+            <ul class="flex flex-col gap-2" aria-label="Álbumes disponibles">
+              @for (album of albumesVisibles(); track album.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="album-item"
+                    [class.album-item--activo]="albumSeleccionado()?.id === album.id"
+                    [attr.aria-current]="albumSeleccionado()?.id === album.id ? 'true' : null"
+                    (click)="seleccionarAlbum(album)"
+                  >
+                    @if (mostrarLogo(album)) {
+                      <img
+                        class="album-item__logo"
+                        [src]="album.logoUrl"
+                        [alt]="'Logo de ' + album.marcaNombre"
+                        (error)="alFallarLogo(album)"
+                      />
+                    } @else {
+                      <span class="album-item__inicial" aria-hidden="true">
+                        {{ album.marcaNombre.charAt(0).toUpperCase() }}
+                      </span>
+                    }
+
+                    <span class="min-w-0 flex-1">
+                      <span class="block truncate text-sm font-semibold text-texto-primario">
+                        {{ album.marcaNombre }}
+                      </span>
+                      <span class="mt-0.5 block text-xs text-texto-apagado">
+                        {{ album.obtenidas }} de {{ album.total }} cartas
+                      </span>
+                      <span
+                        class="album-item__progreso"
+                        role="progressbar"
+                        [attr.aria-label]="'Progreso del álbum ' + album.marcaNombre"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        [attr.aria-valuenow]="album.porcentaje"
+                      >
+                        <span
+                          class="album-item__progreso-relleno"
+                          [style.width.%]="album.porcentaje"
+                        ></span>
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+
+      <!-- Detalle del álbum seleccionado -->
+      <main
+        class="min-w-0 flex-1 md:block"
+        [class.hidden]="!albumSeleccionado()"
+      >
+        @if (albumSeleccionado(); as resumen) {
+          <button
+            type="button"
+            class="mb-4 inline-flex cursor-pointer items-center gap-2 rounded-pildora border border-borde-coleccion bg-fondo-coleccion-superficie px-4 py-2 text-xs font-bold uppercase tracking-[0.06em] text-texto-secundario transition-colors hover:text-texto-primario md:hidden"
+            (click)="volverALista()">
+            Volver a los álbumes
+          </button>
+
+          <app-encabezado-album
+            [album]="resumen"
+            [categoriaCupon]="categoriaCuponSeleccionada()"
+          />
+
+          @if (detalle(); as detalleAlbum) {
+            @if (detalleAlbum.cartas.length > 0) {
+              <div class="mt-4 flex flex-wrap items-center gap-1.5">
+                <p class="text-xs text-texto-apagado">
+                  Hacé doble click sobre una carta —o tocá su corazón— para guardarla en tus
+                  deseadas.
+                </p>
+                <app-tooltip
+                  [icono]="true"
+                  posicion="abajo-izquierda"
+                  etiqueta="Qué significa guardar en tus deseadas"
+                  texto="Marcá tus cartas deseadas para que, al intercambiar, el otro usuario vea cuáles querés y sepa qué ofrecerte."
+                />
+              </div>
+            }
+          }
+
+          <div class="mt-5">
+            @if (cargandoDetalle()) {
+              <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5" aria-hidden="true">
+                @for (celda of [1, 2, 3, 4, 5, 6, 7, 8]; track celda) {
+                  <div class="aspect-[5/7] animate-pulse rounded-md bg-fondo-coleccion-superficie"></div>
+                }
+              </div>
+              <p class="sr-only" role="status">Cargando el álbum…</p>
+            } @else if (errorDetalle()) {
+              <div class="rounded-md border border-error-borde bg-error-fondo p-4 text-sm text-error-texto">
+                <p>{{ errorDetalle() }}</p>
+                <button
+                  type="button"
+                  class="mt-2 cursor-pointer rounded-pildora border border-error-borde px-4 py-1.5 text-xs font-bold uppercase tracking-[0.06em] text-error-texto transition-colors hover:bg-error hover:text-error-sobre"
+                  (click)="reintentarDetalle()">
+                  Reintentar
+                </button>
+              </div>
+            } @else if (detalle(); as d) {
+              @if (d.cartas.length === 0) {
+                <p class="rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie p-6 text-center text-sm text-texto-apagado">
+                  Este álbum todavía no tiene cartas.
+                </p>
+              } @else {
+                <app-grilla-album
+                  [cartas]="d.cartas"
+                  [favoritas]="favoritas()"
+                  (alternar)="alternarFavorita($event)"
+                />
+              }
+            }
+          </div>
+        } @else {
+          <div class="flex flex-col items-center justify-center gap-2 px-8 py-20 text-center">
+            <p class="font-titulo text-lg text-texto-secundario">
+              Elegí un álbum para verlo.
+            </p>
+            <p class="text-sm text-texto-apagado">
+              Filtrá por categoría y tocá una marca del listado.
+            </p>
+          </div>
+        }
+      </main>
+    </div>
+  </div>
+</div>

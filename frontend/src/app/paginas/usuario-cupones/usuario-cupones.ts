@@ -10,17 +10,17 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
-import { Header } from '../../compartidos/componentes/header/header';
-import { CuponesService } from '../../servicios/cupones.service';
-import { CategoriaCupon, CuponDescuento, EstadoCupon } from '../../modelos/cupon.model';
+import { Header } from '@compartidos/componentes/layout/header/header';
+import { CuponesService } from '@servicios/cupones.service';
+import { CategoriaCupon, CuponDescuento, EstadoCupon } from '@modelos/cupon.model';
 
-import urlIconoGastro from '../../compartidos/SVGs/Icon_GastroInv.svg';
-import urlIconoDeco from '../../compartidos/SVGs/Icon_DecoInv.svg';
-import urlIconoCosme from '../../compartidos/SVGs/Icon_CosmeInv.svg';
-import urlIconoIndumentaria from '../../compartidos/SVGs/Icon_IndumentariaInv.svg';
-import urlIconoEntretenimiento from '../../compartidos/SVGs/Icon_EntretenimientoInv.svg';
-import urlIconoMusica from '../../compartidos/SVGs/Icon_MusicaINV.svg';
-import urlIconoTecno from '../../compartidos/SVGs/Icon_TecnoInv.svg';
+import urlIconoGastro from '@svgs/Icon_GastroInv.svg';
+import urlIconoDeco from '@svgs/Icon_DecoInv.svg';
+import urlIconoCosme from '@svgs/Icon_CosmeInv.svg';
+import urlIconoIndumentaria from '@svgs/Icon_IndumentariaInv.svg';
+import urlIconoEntretenimiento from '@svgs/Icon_EntretenimientoInv.svg';
+import urlIconoMusica from '@svgs/Icon_MusicaINV.svg';
+import urlIconoTecno from '@svgs/Icon_TecnoInv.svg';
 
 interface FiltroCategoria {
   readonly id: CategoriaCupon;

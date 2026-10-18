@@ -1,6 +1,6 @@
 
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideIcons } from '@ng-icons/core';
 import {
@@ -51,6 +51,7 @@ import {
   phosphorTrendUpFill,
   phosphorTagFill,
 } from '@ng-icons/phosphor-icons/fill';
+import { phosphorHeart } from '@ng-icons/phosphor-icons/regular';
 import {
   heroPlusSolid,
   heroCheckSolid,
@@ -68,14 +69,14 @@ import {
   heroSparklesSolid,
 } from '@ng-icons/heroicons/solid';
 import { routes } from './app.routes';
-import { authInterceptor } from './interceptores/auth.interceptor';
+import { authInterceptor } from '@app/interceptores/auth.interceptor';
 
 //test
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
     provideHttpClient(withInterceptors([authInterceptor])),
     ...provideIcons({
       phosphorPlusFill,
@@ -85,6 +86,7 @@ export const appConfig: ApplicationConfig = {
       phosphorInfoFill,
       phosphorStarFill,
       phosphorHeartFill,
+      phosphorHeart,
       phosphorTrophyFill,
       phosphorGiftFill,
       phosphorCoinsFill,

@@ -1,7 +1,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService } from '../servicios/auth.service';
-import { environment } from '../../environments/environment';
+import { AuthService } from '@servicios/auth.service';
+import { environment } from '@environments/environment';
 
 /**
  * Agrega el JWT como Bearer token a cada request que vaya hacia la API.

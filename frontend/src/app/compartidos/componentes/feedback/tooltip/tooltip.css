@@ -1,0 +1,123 @@
+:host {
+  display: inline-flex;
+}
+
+.tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tip__disparador {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--marca-primaria);
+  cursor: help;
+}
+
+.tip__disparador:focus-visible {
+  outline: 2px solid var(--borde-foco);
+  outline-offset: 2px;
+  border-radius: var(--radio-circulo);
+}
+
+.tip__icono {
+  font-size: 1.125rem;
+}
+
+.tip__objetivo {
+  display: inline-flex;
+  align-items: center;
+}
+
+.tip__objetivo:focus-visible {
+  outline: 2px solid var(--borde-foco);
+  outline-offset: 2px;
+  border-radius: var(--radio-sm);
+}
+
+.tip__globo {
+  position: absolute;
+  z-index: 40;
+  width: max-content;
+  max-width: 15rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--tip-borde);
+  border-radius: var(--radio-md);
+  background-color: var(--tip-fondo);
+  color: var(--tip-texto);
+  box-shadow: var(--tip-sombra);
+  font-family: var(--fuente-interfaz);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease;
+  pointer-events: none;
+}
+
+.tip:hover .tip__globo,
+.tip:focus-within .tip__globo {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Ubicación vertical del globo. */
+.tip--abajo .tip__globo {
+  top: calc(100% + 0.55rem);
+}
+
+.tip--arriba .tip__globo {
+  bottom: calc(100% + 0.55rem);
+}
+
+/* Alineación horizontal: "derecha" ancla a la izquierda y crece hacia la derecha. */
+.tip--derecha .tip__globo {
+  left: 0;
+}
+
+.tip--izquierda .tip__globo {
+  right: 0;
+}
+
+/* Flecha: cuadrado rotado 45° con los dos bordes que miran al disparador. */
+.tip__flecha {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--tip-flecha);
+  transform: rotate(45deg);
+}
+
+.tip--abajo .tip__flecha {
+  top: -0.3rem;
+  border-top: 1px solid var(--tip-borde);
+  border-left: 1px solid var(--tip-borde);
+}
+
+.tip--arriba .tip__flecha {
+  bottom: -0.3rem;
+  border-right: 1px solid var(--tip-borde);
+  border-bottom: 1px solid var(--tip-borde);
+}
+
+.tip--derecha .tip__flecha {
+  left: 0.85rem;
+}
+
+.tip--izquierda .tip__flecha {
+  right: 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tip__globo {
+    transition: none;
+  }
+}

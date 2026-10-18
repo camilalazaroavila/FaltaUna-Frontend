@@ -10,7 +10,7 @@ import {
   ConfiguracionPagoRespuesta,
   IniciarPagoRespuesta,
   PagoRespuesta,
-} from '../modelos/pago.model';
+} from '@modelos/pago.model';
 
 describe('PagosService', () => {
   let service: PagosService;

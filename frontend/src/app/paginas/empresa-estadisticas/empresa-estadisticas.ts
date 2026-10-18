@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
-import type { RarezaCarta } from '../../modelos/carta.model';
-import { ETIQUETA_RAREZA } from '../../modelos/carta.model';
+import type { RarezaCarta } from '@modelos/carta.model';
+import { ETIQUETA_RAREZA } from '@modelos/carta.model';
 import {
   ALBUMES_EMPRESA,
   CARTAS_EMPRESA,
@@ -10,7 +10,7 @@ import {
   ESTADISTICAS_CARTA,
   RAREZAS_ORDENADAS,
   TOTAL_USUARIOS_EMPRESA,
-} from '../../modelos/empresa.mock';
+} from '@modelos/empresa.mock';
 import { EVOLUCION_FAVORITOS, KPIS_EMPRESA } from './empresa-estadisticas.mock';
 
 /** Reparto de favoritos por rareza (tramo del donut). */

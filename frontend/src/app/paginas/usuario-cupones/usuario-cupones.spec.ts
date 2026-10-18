@@ -3,8 +3,8 @@ import { ActivatedRoute, ParamMap, convertToParamMap, provideRouter } from '@ang
 import { BehaviorSubject, of } from 'rxjs';
 
 import { UsuarioCupones } from './usuario-cupones';
-import { CuponesService } from '../../servicios/cupones.service';
-import type { CuponDescuento } from '../../modelos/cupon.model';
+import { CuponesService } from '@servicios/cupones.service';
+import type { CuponDescuento } from '@modelos/cupon.model';
 
 const CUPONES: CuponDescuento[] = [
   {
