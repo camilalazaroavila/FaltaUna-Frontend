@@ -10,13 +10,14 @@ import {
   input,
   viewChild,
 } from '@angular/core';
+import { NgIcon } from '@ng-icons/core';
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
-const CLASES_BASE = [
-  'relative isolate inline-flex items-center gap-2.5 border-2 border-cupon-borde bg-cupon-fondo',
-  'rounded-md px-4 py-2 font-titulo text-cupon-texto shadow-cartoon',
-].join(' ');
+const CLASES_CUERPO: Record<'completa' | 'compacta', string> = {
+  completa: 'gap-2.5 px-5 py-2',
+  compacta: 'gap-1.5 px-4 py-1.5',
+};
 
 /**
  * Ticket del recurso de juego: muestra cuántos cupones quedan disponibles.
@@ -25,16 +26,21 @@ const CLASES_BASE = [
  * (context.md, sección 4). Al subir el valor el número asciende; al bajar
  * (gasto) hace un sacudón corto. Ambas microinteracciones se saltan por
  * completo cuando el usuario pidió reducir el movimiento.
+ *
+ * `variante="compacta"` se usa en la franja del tablero: solo número y
+ * ticket, sin leyenda. El ingreso de la variante es interfaz (mock).
  */
 @Component({
   selector: 'app-cupon-recurso',
   templateUrl: './cupon-recurso.html',
+  styleUrl: './cupon-recurso.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '[class]': 'clases()',
-    role: 'status',
-    '[attr.aria-label]': 'etiqueta()',
-  },
+  imports: [NgIcon],
+host: {
+  class: 'inline-flex font-titulo text-cupon-texto cupon-contorno',
+  role: 'status',
+  '[attr.aria-label]': 'etiqueta()',
+},
 })
 export class CuponRecurso implements AfterViewInit {
   private readonly gsapServicio = inject(GsapService);
@@ -44,8 +50,10 @@ export class CuponRecurso implements AfterViewInit {
 
   readonly valor = input.required<number>();
   readonly maximo = input(6);
+  readonly variante = input<'completa' | 'compacta'>('completa');
 
-  protected readonly clases = computed(() => CLASES_BASE);
+protected readonly clasesCuerpo = computed(() => CLASES_CUERPO[this.variante()]);
+  protected readonly esCompacta = computed(() => this.variante() === 'compacta');
   protected readonly leyenda = computed(() => `cupones de ${this.maximo()}`);
   protected readonly etiqueta = computed(
     () => `Cupones disponibles: ${this.valor()} de ${this.maximo()}`,

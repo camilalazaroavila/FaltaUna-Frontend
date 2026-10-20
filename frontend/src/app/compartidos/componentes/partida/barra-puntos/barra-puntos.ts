@@ -15,8 +15,6 @@ import type { LadoPartida } from '@modelos/partida.model';
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
-const CLASES_BASE = 'flex items-center gap-3';
-
 const CLASES_RELLENO: Record<LadoPartida, string> = {
   propio: 'bg-barra-puntos-propio-relleno',
   rival: 'bg-barra-puntos-rival-relleno',
@@ -27,16 +25,23 @@ const NOMBRE_LADO: Record<LadoPartida, string> = {
   rival: 'del rival',
 };
 
+const ETIQUETA_LADO: Record<LadoPartida, string> = {
+  propio: 'Vos',
+  rival: 'Rival',
+};
+
 /**
- * Barra de puntos hacia los 100 de la partida (jugador a la izquierda, rival a
- * la derecha). El relleno anima el ancho con una transición CSS; el `delta`
+ * Barra vertical de puntos hacia los 100 de la partida (jugador a la izquierda,
+ * rival a la derecha). La barra propia se llena desde abajo y la del rival
+ * desde arriba; el relleno anima la altura con una transición CSS y el `delta`
  * muestra un "+5"/"-5" flotante que se apaga solo con GSAP.
  */
 @Component({
   selector: 'app-barra-puntos',
   templateUrl: './barra-puntos.html',
+  styleUrl: './barra-puntos.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'block w-full' },
+  host: { class: 'block h-full' },
 })
 export class BarraPuntos implements AfterViewInit {
   private readonly gsapServicio = inject(GsapService);
@@ -51,11 +56,32 @@ export class BarraPuntos implements AfterViewInit {
 
   protected readonly movimientoReducido = this.gsapServicio.movimientoReducido;
   protected readonly porcentaje = computed(() => porcentaje(this.puntos(), this.maximo()));
-  protected readonly clasesRelleno = computed(() => CLASES_RELLENO[this.lado()]);
   protected readonly esRival = computed(() => this.lado() === 'rival');
-  /** El rival invierte el orden: su número queda a la derecha de la barra. */
-  protected readonly clasesBase = computed(() =>
-    [CLASES_BASE, this.esRival() ? 'flex-row-reverse' : ''].join(' ').trim(),
+  protected readonly etiquetaLado = computed(() => ETIQUETA_LADO[this.lado()]);
+  /** La barra propia se llena desde abajo; la del rival, desde arriba. */
+  protected readonly clasesRelleno = computed(() =>
+    [
+      'absolute inset-x-0.5 rounded-pildora transition-[height] duration-500 ease-out motion-reduce:transition-none',
+      CLASES_RELLENO[this.lado()],
+      this.esRival() ? 'top-0.5' : 'bottom-0.5',
+    ].join(' '),
+  );
+  /**
+   * Número sobre la pastilla con `texto-contorno` y la misma tipografía
+   * `font-titulo` que la leyenda de `app-barra-progreso` (álbumes). Propio
+   * abajo, rival arriba, para leerse desde el lado de cada jugador.
+   */
+  protected readonly clasesNumero = computed(() =>
+    [
+      'absolute inset-x-0 flex justify-center overflow-hidden font-titulo text-menor tabular-nums texto-contorno text-texto-primario',
+      this.esRival() ? 'top-1.5' : 'bottom-1.5',
+    ].join(' '),
+  );
+  protected readonly clasesDelta = computed(() =>
+    [
+      'pointer-events-none h-5 text-center font-titulo text-menor tabular-nums texto-contorno text-texto-primario',
+      this.delta() === null ? 'opacity-0' : '',
+    ].join(' '),
   );
   protected readonly textoDelta = computed(() => {
     const delta = this.delta();

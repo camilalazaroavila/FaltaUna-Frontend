@@ -102,11 +102,36 @@ describe('IndicadorTurno Component', () => {
     expect(icono().name()).toBe('phosphorHourglassMediumFill');
   });
 
-  it('debe emitir rendirse al presionar el botón', () => {
-    const boton = indicador().querySelector('button') as HTMLButtonElement;
+  const botonPorTexto = (texto: string) =>
+    Array.from(indicador().querySelectorAll('button')).find((b) =>
+      b.textContent?.includes(texto),
+    ) as HTMLButtonElement;
 
-    boton.click();
+  it('no debe emitir rendirse al primer toque: pide confirmación', () => {
+    botonPorTexto('Rendirme').click();
+    fixture.detectChanges();
+
+    expect(indicador().querySelector('[role="alertdialog"]')).not.toBeNull();
+    expect(host.rendiciones).toEqual([]);
+  });
+
+  it('debe emitir rendirse solo tras confirmar', () => {
+    botonPorTexto('Rendirme').click();
+    fixture.detectChanges();
+    botonPorTexto('Sí, rendirme').click();
+    fixture.detectChanges();
 
     expect(host.rendiciones).toEqual(['rendirse']);
+    expect(indicador().querySelector('[role="alertdialog"]')).toBeNull();
+  });
+
+  it('debe cancelar sin emitir', () => {
+    botonPorTexto('Rendirme').click();
+    fixture.detectChanges();
+    botonPorTexto('Cancelar').click();
+    fixture.detectChanges();
+
+    expect(host.rendiciones).toEqual([]);
+    expect(indicador().querySelector('[role="alertdialog"]')).toBeNull();
   });
 });

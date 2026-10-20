@@ -81,7 +81,7 @@ describe('GaleriaComponentes', () => {
   });
 
   it('debe renderizar las catorce secciones de la galeria', () => {
-    expect(SECCIONES.length).toBe(15);
+    expect(SECCIONES.length).toBe(16);
 
     for (const seccion of SECCIONES) {
       expect(html().querySelector(`#${seccion.id}`)).not.toBeNull();

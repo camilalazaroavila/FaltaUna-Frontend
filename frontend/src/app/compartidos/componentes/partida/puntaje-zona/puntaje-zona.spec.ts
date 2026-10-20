@@ -106,28 +106,30 @@ describe('PuntajeZona Component', () => {
     expect(badge().classList.contains('bg-puntaje-zona-empate-fondo')).toBe(true);
   });
 
-  it('debe latir solo cuando va ganando', async () => {
-    const { fixture, host, badge } = await configurar();
+   it('debe latir una sola vez cuando sube y va ganando', async () => {
+    const { fixture, host, doble, cambiarPuntos } = await configurar();
 
     host.estado.set('ganando');
     fixture.detectChanges();
-    expect(badge().classList.contains('animate-latido-zona')).toBe(true);
+    cambiarPuntos(5);
 
-    host.estado.set('empate');
-    fixture.detectChanges();
-    expect(badge().classList.contains('animate-latido-zona')).toBe(false);
+    expect(doble.gsap.fromTo).toHaveBeenCalledWith(
+      expect.any(HTMLElement),
+      { scale: 1.12 },
+      expect.objectContaining({ scale: 1 }),
+    );
   });
 
-  it('debe mostrar el signo de ventaja solo cuando va ganando', async () => {
+  it('debe mostrar el símbolo de ventaja solo cuando va ganando', async () => {
     const { fixture, host, badge } = await configurar();
 
     host.estado.set('ganando');
     fixture.detectChanges();
-    expect(badge().textContent).toContain('+');
+    expect(badge().textContent).toContain('▲');
 
     host.estado.set('perdiendo');
     fixture.detectChanges();
-    expect(badge().textContent).not.toContain('+');
+    expect(badge().textContent).not.toContain('▲');
   });
 
   it('debe rebotar el número cuando suben los puntos', async () => {

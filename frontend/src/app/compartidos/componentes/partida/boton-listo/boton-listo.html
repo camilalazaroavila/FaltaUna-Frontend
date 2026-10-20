@@ -1,0 +1,12 @@
+<button
+  type="button"
+  app-boton
+  variante="primario"
+  tamanio="lg"
+  class="min-w-[clamp(7rem,22vw,11rem)]"
+  [disabled]="!activo()"
+  [cargando]="esperando() || resolviendo()"
+  (click)="pulsar()"
+>
+  {{ texto() }}
+</button>

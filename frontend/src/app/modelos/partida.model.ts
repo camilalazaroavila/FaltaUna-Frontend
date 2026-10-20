@@ -15,7 +15,7 @@
 export type LadoPartida = 'propio' | 'rival';
 
 /** Estado de un slot del tablero. */
-export type EstadoSlot = 'vacio' | 'resaltado' | 'ocupado' | 'rival-oculto';
+export type EstadoSlot = 'vacio' | 'resaltado' | 'ocupado';
 
 /** Resultado del puntaje de una zona, desde la perspectiva de un lado. */
 export type EstadoPuntajeZona = 'ganando' | 'perdiendo' | 'empate';

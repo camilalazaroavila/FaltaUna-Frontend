@@ -1,0 +1,46 @@
+:host {
+    container-type: inline-size;
+}
+
+/* Por defecto se ve la etiqueta completa, con o sin espacio de sobra. */
+.control-texto--corto {
+    display: none;
+}
+
+.control-boton {
+    max-width: 100%;
+}
+
+@container (max-width: 12rem) {
+    .control-boton {
+        width: 100%;
+        min-width: 0;
+        height: 2.75rem;
+        padding-inline: 0.5rem;
+    }
+
+    /* En columnas angostas el texto no se oculta: se acorta. */
+    .control-texto--largo {
+        display: none;
+    }
+
+    .control-texto--corto {
+        display: inline;
+    }
+
+    .control-tiempo {
+        justify-content: center;
+        gap: 0.15rem;
+        padding-inline: 0.25rem;
+    }
+
+    .control-tiempo ng-icon {
+        display: none;
+    }
+
+    .control-rendirse {
+        align-self: center;
+        max-width: 100%;
+        text-align: center;
+    }
+}
