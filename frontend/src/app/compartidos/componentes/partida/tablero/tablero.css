@@ -9,69 +9,83 @@
 .tablero {
     display: grid;
     width: 100%;
-    grid-template-columns: minmax(3rem, 9cqw) minmax(0, 1fr) minmax(3rem, 9cqw);
+    grid-template-columns:
+        minmax(3.25rem, 8cqw) minmax(0, 1fr) minmax(3.25rem, 8cqw);
     grid-template-rows: auto minmax(0, 1fr) auto;
-    grid-template-areas:
-        'barra-propia zonas barra-rival'
-        'barra-propia zonas barra-rival'
-        'propio       mano  control';
-    gap: clamp(0.6rem, 2.1cqw, 1.75rem);
+    column-gap: clamp(0.5rem, 2cqw, 1.75rem);
+    row-gap: clamp(0.4rem, 1.4cqw, 1.25rem);
     padding: clamp(0.75rem, 2.6cqw, 2rem);
     overflow-x: clip;
 }
 
-.area-barra-propia {
-    grid-area: barra-propia;
+/* ---- Rival: fila superior completa, alineada a la derecha ---- */
+/* ---- Rival: arriba a la derecha, en columna ---- */
+.area-rival {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: end;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: clamp(0.3rem, 1cqw, 0.6rem);
+    min-width: 0;
+}
+
+.area-rival>* {
+    flex-shrink: 0;
+}
+
+.rival-mano {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.35rem, 1.2cqw, 0.75rem);
+}
+
+.reverso-rival+.reverso-rival {
+    margin-left: clamp(-0.7rem, -1.2cqw, -0.3rem);
+}
+
+/* ---- Barras: tope de altura en el contenedor ---- */
+.area-barra-propia,
+.area-barra-rival {
+    grid-row: 2;
     display: flex;
     align-items: stretch;
     justify-content: center;
+    height: 100%;
+    max-height: clamp(11rem, 55cqw, 22rem);
     min-height: 0;
     min-width: 0;
 }
 
-.area-barra-propia app-barra-puntos {
-    width: 100%;
+/* Tuya: abajo a la izquierda, junto a tus slots */
+.area-barra-propia {
+    grid-column: 1;
+    align-self: end;
 }
 
+/* Rival: arriba a la derecha, junto a sus slots */
 .area-barra-rival {
-    grid-area: barra-rival;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: clamp(0.35rem, 1.5cqw, 0.75rem);
-    min-height: 0;
-    min-width: 0;
+    grid-column: 3;
+    align-self: start;
 }
 
+.area-barra-propia app-barra-puntos,
 .area-barra-rival app-barra-puntos {
-    flex: 1 1 auto;
     width: 100%;
 }
 
-.rival-identidad {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: clamp(0.25rem, 1cqw, 0.5rem);
-    min-width: 0;
-}
-
-.rival-identidad app-jugador-chip,
-.area-propio app-jugador-chip {
-    width: 100%;
-}
-
-.reverso-rival + .reverso-rival {
-    margin-left: clamp(-0.5rem, -1.2cqw, -0.15rem);
-}
-
+/* ---- Zonas: centradas, con aire y sin estirarse ---- */
 .area-zonas {
-    grid-area: zonas;
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: center;
+    width: 100%;
+    max-width: 64cqw;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: stretch;
-    gap: clamp(0.35rem, 1.4cqw, 1.25rem);
+    align-items: start;
+    column-gap: clamp(0.75rem, 5cqw, 4.5rem);
     min-width: 0;
 }
 
@@ -79,14 +93,26 @@
     min-width: 0;
 }
 
+/* ---- Fila de abajo: las tres piezas comparten fila y se superponen
+        solo en su caja, no en su contenido ---- */
 .area-mano {
-    grid-area: mano;
+    grid-column: 2;
+    grid-row: 3;
     align-self: end;
+    position: relative;
+    z-index: 10;
     min-width: 0;
+    margin-top: calc(-1 * clamp(0.75rem, 2.5cqw, 2rem));
 }
 
+/* Jugador propio: abajo a la izquierda, con el ancho de su contenido */
 .area-propio {
-    grid-area: propio;
+    grid-column: 1 / 3;
+    grid-row: 3;
+    justify-self: start;
+    align-self: end;
+    position: relative;
+    z-index: 20;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -94,17 +120,43 @@
     min-width: 0;
 }
 
-.area-propio app-cupon-recurso {
+.area-propio app-jugador-chip {
+    width: auto;
     max-width: 100%;
 }
 
+/* Control de turno: abajo a la derecha, con ancho mínimo para el botón */
 .area-control {
-    grid-area: control;
+    grid-column: 2 / 4;
+    grid-row: 3;
+    justify-self: end;
     align-self: end;
-    justify-self: stretch;
-    min-width: 0;
+    position: relative;
+    z-index: 20;
+    width: max-content;
+    min-width: 8.5rem;
+    padding-bottom: clamp(0.25rem, 1cqw, 0.75rem);
 }
 
 .area-control app-control-turno {
     width: 100%;
+}
+
+/* ---- Tablero angosto: la mano toma todo el ancho y chip + control
+        pasan a una fila propia debajo ---- */
+@container (max-width: 30rem) {
+    .area-mano {
+        grid-column: 1 / -1;
+        grid-row: 3;
+    }
+
+    .area-propio {
+        grid-column: 1 / 3;
+        grid-row: 4;
+    }
+
+    .area-control {
+        grid-column: 2 / 4;
+        grid-row: 4;
+    }
 }

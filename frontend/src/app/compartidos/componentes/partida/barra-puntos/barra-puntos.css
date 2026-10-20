@@ -11,6 +11,6 @@
 }
 
 .barra-cuerpo {
-    width: clamp(2rem, 70cqw, 3rem);
-    min-height: 10rem;
+    width: clamp(1rem, 50cqw, 2rem);
+    min-height: 6rem;
 }

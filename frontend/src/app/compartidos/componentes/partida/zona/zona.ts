@@ -27,7 +27,7 @@ import type { ZonaMock } from '@servicios/servicios-partida/zonas-mock.service';
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
-const IMAGEN_RESPALDO = 'imagenes/Sprite.png';
+const IMAGEN_RESPALDO = 'imagenes/grido local.png';
 
 /** Visibilidad en segundos del delta cuando no se anima (movimiento reducido). */
 const MS_DELTA_ESTATICO = 2000;

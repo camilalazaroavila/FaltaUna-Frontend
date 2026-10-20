@@ -17,5 +17,7 @@
 
     .chip-nombre {
         max-width: 100%;
+        min-width: 3rem;
+
     }
 }

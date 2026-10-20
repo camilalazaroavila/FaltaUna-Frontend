@@ -8,7 +8,7 @@
 .zona-contenido {
     display: flex;
     flex-direction: column;
-    gap: clamp(0.35rem, 2.6cqw, 0.75rem);
+    gap: clamp(0.35rem, 5.6cqw, 2.75rem);
 }
 
 .zona-slots {
@@ -18,7 +18,7 @@
 }
 
 .zona-foto {
-    width: clamp(3.5rem, 55cqw, 8rem);
+    width: clamp(5rem, 75cqw, 12rem);
     margin-inline: auto;
     margin-block: clamp(0.9rem, 4cqw, 2rem);
 }
@@ -27,4 +27,16 @@
     .zona-etiqueta {
         display: none;
     }
+}
+
+.marco-zona-irregular {
+    -webkit-mask-image: url('../../../SVGs/marco-zona-simetrico.svg');
+    mask-image: url('../../../SVGs/marco-zona-simetrico.svg');
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    clip-path: none;
 }
