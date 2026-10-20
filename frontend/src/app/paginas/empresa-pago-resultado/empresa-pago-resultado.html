@@ -1,13 +1,15 @@
 <main class="mx-auto w-full max-w-4xl px-4 pb-16 pt-4 sm:px-8">
-  <nav class="mb-4" aria-label="Navegación">
-    <a
-      routerLink="/empresa"
-      class="inline-flex items-center gap-2 font-interfaz text-xs font-bold uppercase text-texto-primario hover:text-marca-primaria"
-    >
-      <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-      Volver a planes
-    </a>
-  </nav>
+  @if (estadoVista() !== 'exito') {
+    <nav class="mb-4" aria-label="Navegación">
+      <a
+        routerLink="/empresa"
+        class="inline-flex items-center gap-2 font-interfaz text-xs font-bold uppercase text-texto-primario hover:text-marca-primaria"
+      >
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        Volver a planes
+      </a>
+    </nav>
+  }
 
   <div class="mb-8 grid items-start gap-6 md:grid-cols-[1fr_auto_1fr]">
     <h1 class="font-titulo text-3xl uppercase leading-[0.95] text-marca-primaria sm:text-4xl">
@@ -57,7 +59,7 @@
           </h2>
           <p class="max-w-xl font-cuerpo text-sm text-texto-primario sm:text-base">
             Tu suscripción para el plan <strong>{{ planNombre() }}</strong> ya está activa.
-            Ahora podés crear el álbum de tu marca. Te llevamos al siguiente paso en unos segundos…
+            Ahora podés crear el álbum de tu marca.
           </p>
         </header>
 
@@ -95,14 +97,6 @@
           </div>
 
           <footer class="flex flex-col items-center justify-end gap-3 sm:flex-row">
-            <a
-              app-boton
-              routerLink="/empresa"
-              variante="claro"
-              class="w-full sm:w-auto"
-            >
-              Ver planes
-            </a>
             <button
               app-boton
               type="button"
@@ -166,24 +160,26 @@
           </div>
 
           <footer class="flex flex-col items-center justify-end gap-3 sm:flex-row">
-            <button
+            <a
               app-boton
-              type="button"
+              routerLink="/empresa"
               variante="claro"
               class="w-full sm:w-auto"
-              (click)="reintentar()"
             >
-              Reintentar pago
-            </button>
-            <button
-              app-boton
-              type="button"
-              variante="primario"
-              class="w-full sm:w-auto"
-              (click)="irAlPanel()"
-            >
-              Ir a mi panel
-            </button>
+              Volver a los planes
+            </a>
+            @if (referenciaVerificacion()) {
+              <button
+                app-boton
+                type="button"
+                variante="primario"
+                class="w-full sm:w-auto"
+                (click)="verificarDeNuevo()"
+              >
+                Verificar de nuevo
+                <i class="fa-solid fa-rotate ml-1" aria-hidden="true"></i>
+              </button>
+            }
           </footer>
         </div>
       </article>

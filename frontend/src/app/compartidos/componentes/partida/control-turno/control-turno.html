@@ -1,0 +1,82 @@
+<div class="flex flex-col items-stretch gap-2">
+  @if (!resolviendo()) {
+    <div class="flex flex-col gap-1">
+      <span
+        class="control-tiempo"
+        [class]="clasesTiempo()"
+        role="timer"
+        [attr.aria-label]="etiquetaTiempo()"
+      >
+        @if (enAdvertencia()) {
+          <ng-icon name="phosphorWarningFill" size="16" aria-hidden="true" />
+        } @else {
+          <ng-icon name="phosphorHourglassMediumFill" size="16" aria-hidden="true" />
+        }
+        {{ segundosRestantes() }}s
+      </span>
+
+      <span class="block h-1.5 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
+        <span
+          class="block h-full rounded-pildora transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
+          [class]="clasesBarra()"
+          [style.width.%]="proporcion() * 100"
+        ></span>
+      </span>
+    </div>
+  }
+
+  <button
+    type="button"
+    app-boton
+    variante="primario"
+    tamanio="lg"
+    class="control-boton"
+    [attr.aria-label]="textoBoton()"
+    [disabled]="!activo()"
+    [cargando]="!activo()"
+    (click)="pulsarFinalizar()"
+  >
+    <ng-icon class="control-icono" name="phosphorCheckFill" size="20" aria-hidden="true" />
+    <span class="control-texto control-texto--largo">{{ textoBoton() }}</span>
+    <span class="control-texto control-texto--corto">{{ textoBotonCorto() }}</span>
+  </button>
+
+  @if (!resolviendo()) {
+    <button
+      type="button"
+      class="control-rendirse area-tactil self-end font-interfaz text-menor font-bold text-zona-marco underline underline-offset-2 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      (click)="pedirConfirmacion()"
+    >
+      Rendirme
+    </button>
+  }
+</div>
+
+@if (confirmando()) {
+  <div
+    class="fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
+    (click)="cancelar()"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    role="alertdialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="idConfirmacion"
+    class="fixed left-1/2 top-1/2 z-50 w-[min(90vw,22rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-cartoon-clara"
+    (keydown.escape)="cancelar()"
+  >
+    <p [id]="idConfirmacion" class="font-titulo text-subtitulo text-marca-acento uppercase">
+      ¿Rendirte?
+    </p>
+    <p class="mt-2 font-interfaz text-menor">Abandonar cuenta como derrota.</p>
+    <div class="mt-5 flex justify-center gap-3">
+      <button #botonCancelar type="button" app-boton variante="terciario" tamanio="md" (click)="cancelar()">
+        Seguir jugando
+      </button>
+      <button type="button" app-boton variante="peligro" tamanio="md" (click)="confirmar()">
+        Sí, rendirme
+      </button>
+    </div>
+  </div>
+}

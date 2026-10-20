@@ -1,0 +1,23 @@
+<div [class]="clases()">
+  @if (ocupado()) {
+    <ng-content />
+  }
+
+  <!-- Acción alternativa a arrastrar: un botón con el icono de jugar. -->
+  @if (resaltado()) {
+    <button
+      #botonJugar
+      type="button"
+      class="area-tactil absolute inset-0 flex items-center justify-center rounded-irregular-slot focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      [attr.aria-label]="etiquetaBotonJugar()"
+      (click)="jugar.emit()"
+    >
+      <ng-icon
+        class="drop-shadow-[0_2px_0_var(--slot-borde)]"
+        name="phosphorPlusFill"
+        size="32"
+        aria-hidden="true"
+      />
+    </button>
+  }
+</div>

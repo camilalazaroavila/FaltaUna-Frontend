@@ -111,6 +111,8 @@ export class EmpresaAlbumIdentidad {
       .subscribe({
         next: () => {
           b.limpiar();
+          // El alta quedó completa (álbum creado): el panel ya es accesible.
+          this.estado.marcarAltaCompletada();
           // El pago quedó consumido (un pago = un álbum): se descarta para no volver a usarlo.
           this.estado.ultimoPago.set(null);
           this.router.navigate(['/empresa/album/crear/listo']);

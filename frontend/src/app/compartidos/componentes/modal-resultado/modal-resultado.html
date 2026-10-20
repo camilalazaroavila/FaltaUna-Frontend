@@ -1,0 +1,55 @@
+<div
+  class="fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
+  (click)="cerrar.emit()"
+  aria-hidden="true"
+></div>
+
+<div
+  [attr.role]="rol()"
+  aria-modal="true"
+  aria-labelledby="titulo-modal-resultado"
+  aria-describedby="mensaje-modal-resultado"
+  class="fixed left-1/2 top-1/2 z-50 w-[min(92vw,31rem)] -translate-x-1/2 -translate-y-1/2"
+>
+  <!-- Tarjeta con sombra sólida amarilla desplazada (según el diseño) -->
+  <div
+    class="relative rounded-3xl bg-landing-oscuro-fondo px-6 pb-9 pt-7 text-center text-landing-oscuro-texto shadow-[14px_14px_0_0_var(--color-amarillo-logo)] sm:px-10"
+  >
+    <button
+      type="button"
+      (click)="cerrar.emit()"
+      aria-label="Cerrar"
+      class="absolute -right-2 -top-2 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-acento text-marca-primaria transition hover:bg-marca-acento-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+    >
+      <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" aria-hidden="true">
+        <path d="M5 5l14 14M19 5L5 19" />
+      </svg>
+    </button>
+
+    <h2
+      id="titulo-modal-resultado"
+      class="px-6 font-titulo text-4xl uppercase leading-none tracking-wide text-marca-primaria sm:text-5xl"
+    >
+      {{ titulo() }}
+    </h2>
+
+    <span
+      aria-hidden="true"
+      class="mx-auto mt-6 flex size-14 items-center justify-center rounded-circulo text-landing-oscuro-fondo"
+      [class.bg-marca-primaria]="esExito()"
+      [class.bg-error]="!esExito()"
+    >
+      <svg class="size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+        @if (esExito()) {
+          <path d="M5 12.5l4.5 4.5L19 7.5" />
+        } @else {
+          <path d="M6 6l12 12M18 6L6 18" />
+        }
+      </svg>
+    </span>
+
+    <p id="mensaje-modal-resultado" class="mt-6 font-interfaz text-sm sm:text-base">
+      {{ mensaje() }}
+    </p>
+  </div>
+</div>

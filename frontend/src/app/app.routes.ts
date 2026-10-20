@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { rolGuard } from '@app/guardias/rol.guard';
 import { pagoAprobadoGuard } from '@app/guardias/pago-aprobado.guard';
+import { empresaRegistradaGuard } from '@app/guardias/empresa-registrada.guard';
 
 /**
  * Rutas de la aplicación.
@@ -171,7 +172,10 @@ export const routes: Routes = [
       {
         // Panel de empresa: shell con dock lateral y las vistas internas.
         // `/empresa/panel` redirige a Estadísticas para no romper enlaces viejos.
+        // `empresaRegistradaGuard` impide entrar al dashboard sin haber terminado
+        // el alta (el logo del navbar apunta acá desde cualquier paso del flujo).
         path: 'panel',
+        canActivate: [empresaRegistradaGuard],
         title: 'Panel de empresa · Falta Una',
         loadComponent: () =>
           import('@paginas/empresa-panel/empresa-panel').then((m) => m.EmpresaPanel),

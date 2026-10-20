@@ -81,7 +81,7 @@
           class="inline-flex cursor-pointer items-center gap-2 rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-base font-black uppercase text-marca-sobre-primaria shadow-baja transition hover:bg-marca-primaria-hover disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
         >
           {{ enviando() ? 'Validando…' : 'Validar' }}
-          <span aria-hidden="true">→</span>
+          <span aria-hidden="true"></span>
         </button>
 
         @if (escanerDisponible) {
@@ -136,6 +136,15 @@
       aria-labelledby="titulo-validacion"
       class="fixed left-1/2 top-1/2 z-50 w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-alta"
     >
+      <button
+        type="button"
+        (click)="cancelarValidacion()"
+        aria-label="Cerrar"
+        class="absolute right-3 top-3 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-primaria font-bold text-marca-sobre-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      >
+        ✕
+      </button>
+
       <h2 id="titulo-validacion" class="font-titulo text-3xl uppercase text-marca-primaria">
         Cupón válido
       </h2>
@@ -150,7 +159,7 @@
         Vence el {{ cupon.vencimientoUtc | date: 'dd/MM/yy' : 'UTC' }}
       </p>
 
-      <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
+      <div class="mt-5 flex justify-center">
         <button
           type="button"
           (click)="confirmarCanje()"
@@ -158,62 +167,26 @@
         >
           Confirmar canje
         </button>
-        <button
-          type="button"
-          (click)="cancelarValidacion()"
-          class="cursor-pointer rounded-pildora bg-white/10 px-6 py-2 font-interfaz text-xs font-bold uppercase transition hover:bg-white/20 motion-reduce:transition-none"
-        >
-          Cancelar
-        </button>
       </div>
     </div>
   }
 
   <!-- Resultado del canje -->
   @if (resultado(); as res) {
-    <div
-      class="fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
-      (click)="cerrarResultado()"
-      aria-hidden="true"
-    ></div>
-
-    <div
-      role="alertdialog"
-      aria-modal="true"
-      aria-labelledby="titulo-resultado"
-      class="fixed left-1/2 top-1/2 z-50 w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-alta"
-    >
-      <button
-        type="button"
-        (click)="cerrarResultado()"
-        aria-label="Cerrar"
-        class="absolute right-3 top-3 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-primaria font-bold text-marca-sobre-primaria"
-      >
-        ✕
-      </button>
-
-      @if (res.tipo === 'exito') {
-        <h2 id="titulo-resultado" class="font-titulo text-3xl uppercase text-marca-primaria">
-          ¡Canjeo exitoso!
-        </h2>
-        <span
-          aria-hidden="true"
-          class="mx-auto mt-4 flex size-16 items-center justify-center rounded-circulo bg-marca-primaria text-4xl font-black text-marca-sobre-primaria"
-          >✓</span
-        >
-        <p class="mt-4 font-interfaz text-sm font-bold">{{ res.cupon.marca }} · {{ res.cupon.descripcion }}</p>
-        <p class="mt-1 font-interfaz text-sm">Ahora puedes reclamar las recompensas</p>
-      } @else {
-        <h2 id="titulo-resultado" class="font-titulo text-3xl uppercase text-marca-primaria">
-          Hubo un problema :(
-        </h2>
-        <span
-          aria-hidden="true"
-          class="mx-auto mt-4 flex size-16 items-center justify-center rounded-circulo bg-error text-4xl font-black text-error-sobre"
-          >✕</span
-        >
-        <p class="mt-4 font-interfaz text-sm">{{ res.mensaje }}</p>
-      }
-    </div>
+    @if (res.tipo === 'exito') {
+      <app-modal-resultado
+        tipo="exito"
+        titulo="¡Canjeo exitoso!"
+        mensaje="Ahora puedes reclamar las recompensas"
+        (cerrar)="cerrarResultado()"
+      />
+    } @else {
+      <app-modal-resultado
+        tipo="error"
+        titulo="Hubo un problema :("
+        [mensaje]="res.mensaje"
+        (cerrar)="cerrarResultado()"
+      />
+    }
   }
 </div>

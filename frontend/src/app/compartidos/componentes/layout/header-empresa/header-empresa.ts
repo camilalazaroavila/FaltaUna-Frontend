@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  input,
   output,
   signal,
 } from '@angular/core';
@@ -27,13 +28,20 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
       <div
         class="flex items-center justify-between gap-2 rounded-md bg-marca-primaria px-3 py-2 text-marca-sobre-primaria shadow-md sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
       >
-        <a
-          routerLink="/empresa/panel"
-          class="flex shrink-0 items-center"
-          aria-label="Ir al panel de empresa"
-        >
-          <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto sm:h-9 lg:h-[75px]" />
-        </a>
+        @if (destinoLogo(); as destino) {
+          <a
+            [routerLink]="destino"
+            class="flex shrink-0 items-center"
+            aria-label="Ir al panel de empresa"
+          >
+            <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto sm:h-9 lg:h-[75px]" />
+          </a>
+        } @else {
+          <!-- Alta en curso: el logo queda inerte para no interrumpir el formulario. -->
+          <span class="flex shrink-0 items-center" aria-hidden="true">
+            <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto sm:h-9 lg:h-[75px]" />
+          </span>
+        }
 
         <div class="relative shrink-0">
           <button
@@ -87,6 +95,8 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
 })
 export class HeaderEmpresa {
   private readonly auth = inject(AuthService);
+
+  readonly destinoLogo = input<string | null>(null);
 
   /** Imagotipo blanco: contrasta sobre el violeta de la barra. */
   protected readonly urlLogo = urlLogoBlanco;

@@ -1,0 +1,110 @@
+:host {
+    display: block;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    container-type: inline-size;
+}
+
+.tablero {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(3rem, 9cqw) minmax(0, 1fr) minmax(3rem, 9cqw);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        'barra-propia zonas barra-rival'
+        'barra-propia zonas barra-rival'
+        'propio       mano  control';
+    gap: clamp(0.6rem, 2.1cqw, 1.75rem);
+    padding: clamp(0.75rem, 2.6cqw, 2rem);
+    overflow-x: clip;
+}
+
+.area-barra-propia {
+    grid-area: barra-propia;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    min-height: 0;
+    min-width: 0;
+}
+
+.area-barra-propia app-barra-puntos {
+    width: 100%;
+}
+
+.area-barra-rival {
+    grid-area: barra-rival;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.35rem, 1.5cqw, 0.75rem);
+    min-height: 0;
+    min-width: 0;
+}
+
+.area-barra-rival app-barra-puntos {
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+.rival-identidad {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: clamp(0.25rem, 1cqw, 0.5rem);
+    min-width: 0;
+}
+
+.rival-identidad app-jugador-chip,
+.area-propio app-jugador-chip {
+    width: 100%;
+}
+
+.reverso-rival + .reverso-rival {
+    margin-left: clamp(-0.5rem, -1.2cqw, -0.15rem);
+}
+
+.area-zonas {
+    grid-area: zonas;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: clamp(0.35rem, 1.4cqw, 1.25rem);
+    min-width: 0;
+}
+
+.area-zonas app-zona {
+    min-width: 0;
+}
+
+.area-mano {
+    grid-area: mano;
+    align-self: end;
+    min-width: 0;
+}
+
+.area-propio {
+    grid-area: propio;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(0.25rem, 1cqw, 0.5rem);
+    min-width: 0;
+}
+
+.area-propio app-cupon-recurso {
+    max-width: 100%;
+}
+
+.area-control {
+    grid-area: control;
+    align-self: end;
+    justify-self: stretch;
+    min-width: 0;
+}
+
+.area-control app-control-turno {
+    width: 100%;
+}

@@ -1,0 +1,65 @@
+:host {
+    --ancho-carta: clamp(3rem, 9cqw, 6rem);
+    --escala-arrastre: 1.12;
+    display: block;
+    min-width: 0;
+    padding: clamp(3.25rem, 11cqw, 5.5rem) clamp(0.5rem, 2cqw, 1.5rem) 0;
+}
+
+.mano {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-width: 0;
+}
+
+.mano-carta {
+    position: relative;
+    width: var(--ancho-carta);
+    flex-shrink: 0;
+    transform-origin: bottom center;
+    transform: rotate(var(--angulo, 0deg)) translateY(var(--caida, 0rem));
+    transition: transform 200ms ease-out;
+    touch-action: none;
+}
+
+.mano-carta + .mano-carta {
+    margin-left: calc(
+        min(
+                calc(var(--ancho-carta) * 0.72),
+                calc((100% - var(--ancho-carta)) / var(--separaciones))
+            ) - var(--ancho-carta)
+    );
+}
+
+.mano-carta:hover,
+.mano-carta:focus-visible {
+    transform: translateY(-1.75rem) scale(1.5) rotate(0deg);
+}
+
+/* La carta que se arrastra se atenúa en su lugar: la acción pasa en el fantasma. */
+.mano-carta--arrastrando {
+    opacity: 0.4;
+    transform: rotate(0deg) translateY(-0.5rem);
+}
+
+/*
+ * Fantasma del arrastre: `position: fixed` lo saca de cualquier contenedor con
+ * overflow/container-type, así el tablero no lo recorta. Se centra bajo el
+ * puntero con un pequeño desplazamiento hacia arriba.
+ */
+.mano-fantasma {
+    position: fixed;
+    z-index: 60;
+    width: var(--ancho-carta);
+    pointer-events: none;
+    transform: translate(-50%, -115%) scale(var(--escala-arrastre));
+    transform-origin: center bottom;
+    filter: drop-shadow(0 0.5rem 0.75rem rgb(0 0 0 / 0.35));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mano-carta {
+        transition: none;
+    }
+}
