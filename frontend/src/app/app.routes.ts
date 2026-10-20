@@ -47,6 +47,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@paginas/usuario-dashboard/usuario-dashboard').then((m) => m.UsuarioDashboard),
   },
+  {
+    path: 'usuario/jugar',
+    title: 'Jugar · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('@paginas/pantalla-inicial-juego/pantalla-inicial-juego').then((m) => m.PantallaInicialJuego),
+  },
 
   {
     path: 'usuario/cupones',

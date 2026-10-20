@@ -12,14 +12,13 @@
    se actualicen dinámicamente en tiempo real al cambiar el atributo data-modo.
    ========================================================================== */
 @theme inline {
+   --color-combate-titulo: var(--combate-titulo);
+   
     --color-marca-primaria: var(--marca-primaria);
     --color-marca-primaria-hover: var(--marca-primaria-hover);
     --color-marca-primaria-activa: var(--marca-primaria-activa);
     --color-marca-primaria-suave: var(--marca-primaria-suave);
     --color-marca-sobre-primaria: var(--marca-sobre-primaria);
-
-    --color-zona-popup-recuadro-fondo: var(--zona-popup-recuadro-fondo);
-    --color-zona-popup-recuadro-texto: var(--zona-popup-recuadro-texto);
 
     --color-marca-acento: var(--marca-acento);
     --color-marca-acento-hover: var(--marca-acento-hover);
