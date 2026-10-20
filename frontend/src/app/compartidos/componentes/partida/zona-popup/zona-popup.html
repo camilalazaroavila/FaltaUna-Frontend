@@ -1,0 +1,48 @@
+<div
+  class="zona-popup__fondo fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
+  (click)="cerrar.emit()"
+  aria-hidden="true"
+></div>
+
+<div
+  #dialogo
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-labelledby]="idTitulo"
+  tabindex="-1"
+  class="zona-popup__dialogo fixed left-1/2 top-1/2 z-50 max-h-[92dvh] w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-cartoon-clara focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+  (keydown.tab)="alPresionarTab($event)"
+>
+  <button
+    type="button"
+    class="zona-popup__cerrar absolute top-3 right-3 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-primaria font-bold text-marca-sobre-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+    aria-label="Cerrar detalle de la zona"
+    (click)="cerrar.emit()"
+  >
+    ✕
+  </button>
+
+<div class="relative mx-auto aspect-[4/5] w-44 rounded-md bg-zona-marco-destacado">
+  <img
+    class="absolute inset-[8%] h-[84%] w-[84%] rounded-md object-cover"
+    [src]="imagen()"
+    alt=""
+    (error)="falloImagen.set(true)"
+  />
+  <span
+    class="marco-zona-irregular absolute inset-0 bg-zona-marco-destacado"
+    aria-hidden="true"
+  ></span>
+</div>
+
+  <h2 [id]="idTitulo" class="mt-4 font-titulo text-2xl uppercase text-marca-acento">
+    {{ nombre() }}
+  </h2>
+
+  <p
+    class="mt-4 rounded-md bg-zona-popup-recuadro-fondo px-4 py-3 font-interfaz text-base text-zona-popup-recuadro-texto"
+  >
+    +{{ efecto().bonus }} de poder por cada carta de
+    <strong>{{ categoriaEtiqueta() }}</strong> mientras esté en este lugar.
+  </p>
+</div>

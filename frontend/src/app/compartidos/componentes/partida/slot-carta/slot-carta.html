@@ -1,26 +1,23 @@
 <div [class]="clases()">
   @if (ocupado()) {
     <ng-content />
-  } @else if (rivalOculto()) {
-    @if (avatarRival()) {
-      <img
-        class="h-full w-full object-cover opacity-80"
-        [src]="avatarRival()"
-        alt=""
-        aria-hidden="true"
-      />
-    } @else {
+  }
+
+  <!-- Acción alternativa a arrastrar: un botón con el icono de jugar. -->
+  @if (resaltado()) {
+    <button
+      #botonJugar
+      type="button"
+      class="area-tactil absolute inset-0 flex items-center justify-center rounded-irregular-slot focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      [attr.aria-label]="etiquetaBotonJugar()"
+      (click)="jugar.emit()"
+    >
       <ng-icon
-        name="phosphorUserFill"
-        size="28"
-        class="text-slot-borde/60"
+        class="drop-shadow-[0_2px_0_var(--slot-borde)]"
+        name="phosphorPlusFill"
+        size="32"
         aria-hidden="true"
       />
-    }
-  } @else {
-    <span
-      class="h-8 w-8 rounded-pildora border-2 border-dashed border-slot-borde/40"
-      aria-hidden="true"
-    ></span>
+    </button>
   }
 </div>

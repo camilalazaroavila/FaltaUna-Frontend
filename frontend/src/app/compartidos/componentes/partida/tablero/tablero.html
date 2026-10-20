@@ -1,0 +1,112 @@
+<div class="tablero rounded-lg bg-tablero-fondo">
+  <div class="area-barra-propia">
+    <app-barra-puntos [puntos]="servicio.barraPropia()" lado="propio" />
+  </div>
+
+  <div class="area-barra-rival">
+    <div class="rival-identidad">
+      <app-jugador-chip
+        [nombre]="servicio.jugadores.rival.nombre"
+        [avatarUrl]="servicio.jugadores.rival.avatarUrl"
+        lado="rival"
+        tamanio="md"
+      />
+
+      <div
+        class="flex items-center gap-1"
+        role="img"
+        [attr.aria-label]="'El rival tiene ' + servicio.cartasManoRival() + ' cartas en la mano'"
+      >
+        <span class="flex" aria-hidden="true">
+          @for (n of reversosRival(); track n) {
+            <span
+              class="reverso-rival h-[clamp(0.9rem,4.5cqw,2rem)] w-[clamp(0.65rem,3.2cqw,1.5rem)] rounded-sm border-2 border-slot-borde bg-carta-reverso shadow-cartoon"
+            ></span>
+          }
+        </span>
+        <span
+          class="rounded-pildora border-2 border-zona-marco bg-hundido px-1.5 font-titulo text-menor tabular-nums text-texto-primario"
+          aria-hidden="true"
+        >
+          {{ servicio.cartasManoRival() }}
+        </span>
+      </div>
+    </div>
+
+    <app-barra-puntos [puntos]="servicio.barraRival()" lado="rival" />
+  </div>
+
+  <div class="area-zonas">
+    @for (lugar of lugares; track lugar) {
+      @let datos = servicio.lugares()[lugar];
+      @let puntaje = servicio.puntajes()[lugar];
+      @let delta = servicio.deltas()[lugar];
+
+      <app-zona
+        [lugar]="lugar"
+        [zona]="datos.zona"
+        [cartasRival]="datos.rival"
+        [cartasPropias]="datos.propio"
+        [puntajeRival]="puntaje.rival"
+        [puntajePropio]="puntaje.propio"
+        [estadoRival]="puntaje.estadoRival"
+        [estadoPropio]="puntaje.estadoPropio"
+        [deltaRival]="delta.rival"
+        [deltaPropio]="delta.propio"
+        [slotsResaltados]="resaltarSlots()"
+        (abrirPopup)="lugarAbierto.set(lugar)"
+        (jugarSlot)="alJugarEnSlot(lugar, $event)"
+      />
+    }
+  </div>
+
+  <div class="area-mano">
+    <app-mano
+      [cartas]="servicio.manoPropia()"
+      [referencia]="host"
+      (ver)="cartaAbierta.set($event)"
+      (arrastreInicio)="alIniciarArrastre($event)"
+      (arrastreFin)="alTerminarArrastre($event)"
+      (seleccion)="alSeleccionar($event)"
+    />
+  </div>
+
+  <div class="area-propio">
+    <app-jugador-chip
+      [nombre]="servicio.jugadores.propio.nombre"
+      [avatarUrl]="servicio.jugadores.propio.avatarUrl"
+      lado="propio"
+      tamanio="md"
+    />
+    <app-cupon-recurso
+      [valor]="servicio.cuponesPropio()"
+      [maximo]="servicio.turno()"
+      variante="compacta"
+    />
+  </div>
+
+  <div class="area-control">
+    <app-control-turno
+      [turno]="servicio.turno()"
+      [segundosRestantes]="servicio.segundosRestantes()"
+      [estado]="servicio.estadoRondaMock()"
+      (finalizar)="servicio.marcarListo()"
+      (rendirse)="rendirse.emit()"
+    />
+  </div>
+</div>
+
+@if (zonaAbierta(); as zona) {
+  <app-zona-popup
+    [nombre]="zona.nombre"
+    [imagenUrl]="zona.imagenUrl"
+    [efecto]="zona.efecto"
+    (cerrar)="lugarAbierto.set(null)"
+  />
+}
+
+@if (cartaAbierta(); as carta) {
+  <app-carta-popup [carta]="carta" (cerrar)="cartaAbierta.set(null)" />
+}
+
+<div class="sr-only" aria-live="polite">{{ servicio.anuncio() }}</div>

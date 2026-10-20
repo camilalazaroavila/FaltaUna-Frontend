@@ -109,19 +109,19 @@ describe('BarraPuntos Component', () => {
     expect(relleno('rival').classList.contains('bg-barra-puntos-rival-relleno')).toBe(true);
   });
 
-  it('debe animar el ancho del relleno con una transición CSS', async () => {
+  it('debe animar la altura del relleno con una transición CSS', async () => {
     const { fixture, relleno } = await configurar();
 
     const el = relleno('propia');
 
-    expect(el.classList.contains('transition-[width]')).toBe(true);
+    expect(el.classList.contains('transition-[height]')).toBe(true);
     expect(el.classList.contains('motion-reduce:transition-none')).toBe(true);
-    expect(el.style.width).toBe('calc(0% - 4px)');
+    expect(el.style.height).toBe('calc(0% - 4px)');
 
     fixture.componentInstance.puntos.set(50);
     fixture.detectChanges();
 
-    expect(relleno('propia').style.width).toBe('calc(50% - 4px)');
+    expect(relleno('propia').style.height).toBe('calc(50% - 4px)');
   });
 
   it('debe mostrar el signo del delta y lanzar su animación', async () => {

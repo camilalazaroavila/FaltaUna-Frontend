@@ -1,22 +1,14 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { NgIcon, provideIcons } from '@ng-icons/core';
 import type { EstadoSlot, LadoPartida } from '@modelos/partida.model';
 import { SlotCarta } from './slot-carta';
-
-const ICONO_PRUEBA = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
 
 @Component({
   standalone: true,
   imports: [SlotCarta],
   template: `
-    <app-slot-carta
-      id="slot"
-      [lado]="lado()"
-      [estado]="estado()"
-      [avatarRival]="avatarRival()"
-    >
+    <app-slot-carta id="slot" [lado]="lado()" [estado]="estado()">
       <span id="contenido">Carta jugada</span>
     </app-slot-carta>
   `,
@@ -24,7 +16,6 @@ const ICONO_PRUEBA = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
 class HostComponent {
   readonly lado = signal<LadoPartida>('propio');
   readonly estado = signal<EstadoSlot>('vacio');
-  readonly avatarRival = signal<string | null>(null);
 }
 
 describe('SlotCarta Component', () => {
@@ -42,7 +33,6 @@ describe('SlotCarta Component', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HostComponent],
-      providers: [provideIcons({ phosphorUserFill: ICONO_PRUEBA })],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HostComponent);
@@ -81,26 +71,6 @@ describe('SlotCarta Component', () => {
     expect(slot().querySelector('#contenido')?.textContent).toBe('Carta jugada');
   });
 
-  it('debe ocultar la carta del rival detrás de un ícono genérico', () => {
-    cambiarEstado('rival-oculto');
-
-    const icono = fixture.debugElement.query(By.css('#slot ng-icon')).componentInstance as NgIcon;
-
-    expect(slot().getAttribute('aria-label')).toBe('Carta oculta del rival del jugador');
-    expect(icono.name()).toBe('phosphorUserFill');
-    expect(slot().querySelector('#contenido')).toBeNull();
-  });
-
-  it('debe mostrar el avatar del rival cuando está disponible', () => {
-    host.avatarRival.set('https://ejemplo.com/rival.png');
-    cambiarEstado('rival-oculto');
-
-    const imagen = slot().querySelector('img');
-
-    expect(imagen?.getAttribute('src')).toBe('https://ejemplo.com/rival.png');
-    expect(slot().querySelector('ng-icon')).toBeNull();
-  });
-
   it('debe pintar la casilla con el fondo del lado rival cuando corresponde', () => {
     host.lado.set('rival');
     fixture.detectChanges();
@@ -108,5 +78,26 @@ describe('SlotCarta Component', () => {
     expect(slot().getAttribute('data-slot-lado')).toBe('rival');
     expect(marco().classList.contains('bg-slot-rival-fondo')).toBe(true);
     expect(slot().getAttribute('aria-label')).toBe('Casilla vacía del rival');
+  });
+
+  it('no debe mostrar el botón de jugar si la casilla no está resaltada', () => {
+    expect(slot().querySelector('button')).toBeNull();
+  });
+
+  it('debe emitir jugar al pulsar el botón de la casilla disponible', () => {
+    cambiarEstado('resaltado');
+
+    const boton = slot().querySelector('button') as HTMLButtonElement;
+    const emitir = jest.spyOn(
+      fixture.debugElement.query(By.css('#slot')).componentInstance.jugar,
+      'emit',
+    );
+
+    expect(boton).toBeTruthy();
+    expect(boton.getAttribute('aria-label')).toBe('Jugar carta en esta casilla del jugador');
+
+    boton.click();
+
+    expect(emitir).toHaveBeenCalled();
   });
 });

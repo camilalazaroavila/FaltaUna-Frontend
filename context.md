@@ -259,6 +259,15 @@ Cambios necesarios para alinearlo con las reglas de negocio:
 
 > El frontend ya tiene componentes de misiones, pity, apertura de sobres y suscripción de empresa (ver estructura en la sección 5). **A verificar:** qué parte de eso está respaldada por backend y base de datos, y qué está solo en la interfaz.
 
+### Estado del tablero de partida (mock de frontend)
+
+El tablero ([`frontend/src/app/compartidos/componentes/partida/`](frontend/src/app/compartidos/componentes/partida/)) es una maqueta funcional sin backend: todo el estado sale de `PartidaEstadoService` (mock) y no hay timers ni resolución de turno.
+
+- **Jugar una carta** pasa por una única vía, `PartidaEstadoService.jugarCarta(carta, lugar, indice)`, reutilizada por el arrastre y por el botón de cada casilla. Valida solo lo definido: es el turno del jugador (`estadoRonda === 'jugando'`), la carta sigue en la mano y el slot destino es propio y está vacío. Devuelve `true`/`false`.
+- **NO se valida** todavía el costo/cupón de la carta (el modelo `Carta` no tiene costo ni `CostoMana`, ver sección 4) ni el límite de cartas jugables por ronda (pendiente, sección 10). Documentado en el propio servicio.
+- **Dos formas de jugar:** arrastre con Pointer Events (mouse y táctil) y, como alternativa accesible, selección de la carta con la tecla **Espacio** (resalta las casillas propias vacías) y botón de la casilla; **Enter** mantiene el detalle de la carta.
+- El fantasma del arrastre es `position: fixed`; como el host del tablero tiene `container-type` (containing block), las coordenadas se corrigen restando el rect del tablero (se le pasa como `referencia` a `app-mano`).
+
 ---
 
 ## 17. Stack Tecnológico y Entorno de Ejecución
