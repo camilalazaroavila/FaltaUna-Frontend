@@ -80,20 +80,15 @@ describe('CuponRecurso Component', () => {
       expect(el.textContent).toContain('cupones de 9');
     });
 
-    it('debe dibujar las dos perforaciones laterales del ticket', () => {
-      const perforaciones = cupon().querySelectorAll('span[aria-hidden="true"]');
-
-      expect(perforaciones.length).toBe(2);
-      expect(perforaciones[0].classList.contains('bg-cupon-perforacion')).toBe(true);
-    });
 
     it('debe pintarse solo con tokens del cupón', () => {
       const el = cupon();
+      const cuerpo = el.querySelector('span') as HTMLElement;
 
-      expect(el.classList.contains('bg-cupon-fondo')).toBe(true);
-      expect(el.classList.contains('border-cupon-borde')).toBe(true);
       expect(el.classList.contains('text-cupon-texto')).toBe(true);
-      expect(el.classList.contains('shadow-cartoon')).toBe(true);
+      expect(el.classList.contains('cupon-contorno')).toBe(true);
+      expect(cuerpo.classList.contains('muesca-cupon')).toBe(true);
+      expect(cuerpo.classList.contains('bg-cupon-fondo')).toBe(true);
     });
 
     it('no debe animar en el render inicial', () => {

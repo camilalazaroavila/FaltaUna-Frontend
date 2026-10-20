@@ -87,6 +87,12 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     descripcion:
       'Directivas de contenido textual con todos sus tamaños, colores y etiquetas semánticas, en modo jugador y empresa a la vez.',
   },
+   {
+    id: 'tablero',
+    titulo: 'tablero',
+    descripcion:
+      'Pantalla de partida armada con los átomos. Todo es mock: las zonas, las cartas, los puntajes y las barras salen de PartidaEstadoService.',
+  },
   {
     id: 'cajas',
     titulo: 'Cajas',

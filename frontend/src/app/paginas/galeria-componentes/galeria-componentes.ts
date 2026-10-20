@@ -16,6 +16,7 @@ import { SeccionAreaEmpresa } from '@paginas/galeria-componentes/secciones/area-
 import { SeccionTexto } from '@paginas/galeria-componentes/secciones/texto/seccion-texto';
 import { SeccionCajas } from '@paginas/galeria-componentes/secciones/cajas/seccion-cajas';
 import { SeccionPartida } from '@paginas/galeria-componentes/secciones/partida/seccion-partida';
+import { SeccionTablero } from './secciones/tablero/seccion-tablero';
 
 export type ModoGaleria = 'jugador' | 'empresa';
 
@@ -38,6 +39,7 @@ export type ModoGaleria = 'jugador' | 'empresa';
     SeccionTexto,
     SeccionCajas,
     SeccionPartida,
+    SeccionTablero,
   ],
   templateUrl: './galeria-componentes.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

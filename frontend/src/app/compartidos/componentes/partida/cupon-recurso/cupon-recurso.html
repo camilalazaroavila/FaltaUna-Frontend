@@ -1,13 +1,9 @@
-<span
-  class="pointer-events-none absolute -left-1.5 top-1/2 size-3 -translate-y-1/2 rounded-circulo bg-cupon-perforacion"
-  aria-hidden="true"
-></span>
+<span class="cupon muesca-cupon inline-flex items-center rounded-md bg-cupon-fondo" [class]="clasesCuerpo()">
+  <span #numero class="block text-subtitulo leading-titulo tabular-nums">{{ valor() }}</span>
 
-<span
-  class="pointer-events-none absolute -right-1.5 top-1/2 size-3 -translate-y-1/2 rounded-circulo bg-cupon-perforacion"
-  aria-hidden="true"
-></span>
-
-<span #numero class="block text-subtitulo leading-titulo">{{ valor() }}</span>
-
-<span class="font-interfaz text-etiqueta uppercase tracking-etiqueta">{{ leyenda() }}</span>
+  @if (esCompacta()) {
+    <ng-icon name="phosphorTicketFill" size="16" aria-hidden="true" />
+  } @else {
+    <span class="font-interfaz text-etiqueta uppercase tracking-etiqueta">{{ leyenda() }}</span>
+  }
+</span>

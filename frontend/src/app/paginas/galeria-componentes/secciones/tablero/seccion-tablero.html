@@ -1,0 +1,46 @@
+<div class="space-y-8">
+  <header class="space-y-2">
+    <h2 class="font-titulo text-subtitulo text-texto-primario">Tablero</h2>
+    <p class="font-cuerpo text-sm text-texto-secundario">
+      Pantalla de partida armada con los átomos. Todo es mock: las zonas, las cartas, los puntajes y
+      las barras salen de <code class="font-interfaz text-texto-primario">PartidaEstadoService</code>.
+    </p>
+  </header>
+
+  <app-tarjeta-muestra
+    titulo="app-tablero"
+    descripcion="Vos abajo a la izquierda, el rival arriba a la derecha, las 2 zonas al centro y el botón de turno abajo a la derecha. Probalo a 375, 768 y 1280 px."
+  >
+    <div class="mb-4 flex flex-wrap gap-2">
+      <button type="button" app-boton variante="secundario" tamanio="sm" (click)="servicio.rotarZonas()">
+        Rotar zonas
+      </button>
+      <button
+        type="button"
+        app-boton
+        variante="terciario"
+        tamanio="sm"
+        [attr.aria-pressed]="agarrada()"
+        (click)="agarrada.set(!agarrada())"
+      >
+        Simular carta agarrada: {{ agarrada() ? 'sí' : 'no' }}
+      </button>
+      <button type="button" app-boton variante="terciario" tamanio="sm" (click)="servicio.marcarResolviendo()">
+        Resolviendo (mock)
+      </button>
+      <button type="button" app-boton variante="fantasma" tamanio="sm" (click)="servicio.reiniciarRonda()">
+        Reiniciar turno
+      </button>
+    </div>
+
+    <app-tablero [cartaAgarrada]="agarrada()" />
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        Al rotar las zonas las cartas no se mueven: cambian la foto, el marco y el puntaje, y aparece
+        el delta junto a cada badge. Con movimiento reducido el cambio es instantáneo y el delta se
+        queda 2 segundos como texto.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+</div>

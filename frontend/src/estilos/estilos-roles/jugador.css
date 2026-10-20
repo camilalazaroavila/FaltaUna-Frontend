@@ -127,10 +127,16 @@
    --zona-marco: var(--color-teal-profundo);
    --zona-marco-destacado: var(--color-amarillo-logo);
 
-    --etiqueta-lado-propio-fondo: color-mix(in srgb, var(--color-teal-superficie) 85%, black);
-    --etiqueta-lado-propio-texto: var(--texto-sobre-oscuro);
-    --etiqueta-lado-rival-fondo: color-mix(in srgb, var(--color-amarillo-logo) 95%, black);
-    --etiqueta-lado-rival-texto: var(--color-teal-profundo);
+   /* Marco del avatar del chip de jugador (máscara marco-imagen). */
+   --avatar-marco: var(--color-teal-profundo);
+
+   /* Forma irregular de los slots del tablero (radius por esquinas). */
+   --forma-irregular-slot: 0.35rem;
+
+   --etiqueta-lado-propio-fondo: color-mix(in srgb, var(--color-teal-superficie) 85%, black);
+   --etiqueta-lado-propio-texto: var(--texto-sobre-oscuro);
+   --etiqueta-lado-rival-fondo: color-mix(in srgb, var(--color-amarillo-logo) 95%, black);
+   --etiqueta-lado-rival-texto: var(--color-teal-profundo);
 
    /* Cupón de recurso: ticket del recurso de juego. El naming sigue pendiente
       (sección 4), pero el componente y los tokens conservan el nombre "cupón". */
@@ -139,18 +145,31 @@
    --cupon-texto: var(--color-teal-profundo);
    --cupon-perforacion: var(--color-teal-profundo);
 
-  /* Barra de puntos de la partida (hasta 100 por jugador) */
-  --barra-puntos-fondo: var(--color-teal-hundido);
-  --barra-puntos-borde: var(--color-teal-profundo);
-  --barra-puntos-sombra: var(--color-teal-profundo);
-  --barra-puntos-propio-relleno: var(--marca-primaria);
-  --barra-puntos-rival-relleno: var(--color-amarillo-logo);
-  --barra-puntos-texto-contorno: var(--color-teal-profundo);
+   /* Barra de puntos de la partida (hasta 100 por jugador) */
+   --barra-puntos-fondo: var(--color-teal-hundido);
+   --barra-puntos-borde: var(--color-teal-profundo);
+   --barra-puntos-sombra: var(--color-teal-profundo);
+   --barra-puntos-propio-relleno: var(--marca-primaria);
+   --barra-puntos-rival-relleno: var(--color-amarillo-logo);
+   --barra-puntos-texto-contorno: var(--color-teal-profundo);
+
+   /* Badge de puntaje por zona (fondo/texto por estado) */
+   --puntaje-zona-ganando-fondo: var(--marca-primaria);
+   --puntaje-zona-ganando-texto: var(--color-teal-profundo);
+   --puntaje-zona-perdiendo-fondo: var(--error);
+   --puntaje-zona-perdiendo-texto: var(--color-teal-profundo);
+   --puntaje-zona-empate-fondo: var(--color-amarillo-logo);
+   --puntaje-zona-empate-texto: var(--color-teal-profundo);
+
 
    /* Sombras cartoon gruesas (sólidas, sin difuminar) */
    --sombra-cartoon: 4px 4px 0 var(--color-teal-profundo);
    --sombra-cartoon-gruesa: 7px 7px 0 var(--color-teal-profundo);
    --sombra-cartoon-clara: 7px 7px 0 var(--color-amarillo-logo);
+
+   /* Recuadro crema del popup de zona (texto del efecto). */
+   --zona-popup-recuadro-fondo: var(--color-amarillo-logo);
+   --zona-popup-recuadro-texto: var(--color-teal-profundo);
 
    /* Tiempos de animación de partida. No se mapean a Tailwind: los lee
       GsapService desde el estilo computado (`duracionPartida`). */
