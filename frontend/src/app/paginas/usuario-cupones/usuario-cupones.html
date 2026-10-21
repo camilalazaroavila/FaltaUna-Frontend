@@ -4,284 +4,476 @@
   <app-header [logueado]="true" />
 
   <div class="flex min-h-0 flex-1 flex-col px-4 pb-6 pt-2 sm:px-8">
-    <!-- Encabezado -->
-    <div class="px-3 pt-4 sm:px-0">
-      <a
-        routerLink="/usuario"
-        class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion"
-      >
-        <svg
-          class="size-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
+    <div class="flex min-h-0 flex-1 flex-col px-4 pb-6 pt-2 sm:px-8">
+      <!-- Encabezado -->
+      <div class="px-3 pt-4 sm:px-0">
+        <a
+          routerLink="/usuario"
+          class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion"
         >
-          <path d="M15 6l-6 6 6 6" />
-        </svg>
-        Volver
-      </a>
-    </div>
-    <!-- Título + buscador y menú de filtros -->
-    <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <h1 class="font-titulo text-3xl uppercase tracking-wide sm:text-5xl">Mis cupones</h1>
-
-      <div class="flex items-center gap-2 px-3 sm:px-0" (click)="$event.stopPropagation()">
-        <!-- Buscador -->
-        <div class="relative min-w-0 flex-1 sm:w-80 sm:flex-none">
-          <label for="buscador-cupones" class="sr-only">Buscar cupones</label>
           <svg
-            class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-texto-apagado"
+            class="size-3.5"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2.5"
             stroke-linecap="round"
+            stroke-linejoin="round"
             aria-hidden="true"
           >
-            <circle cx="11" cy="11" r="7" />
-            <path d="M20 20l-3.5-3.5" />
+            <path d="M15 6l-6 6 6 6" />
           </svg>
-          <input
-            #buscador
-            id="buscador-cupones"
-            type="text"
-            [value]="busqueda()"
-            (input)="escribirBusqueda(buscador.value)"
-            placeholder="Buscar por marca o código"
-            autocomplete="off"
-            class="w-full rounded-pildora border-2 border-btn-juego-texto bg-btn-juego-bg py-2 pl-10 pr-9 font-interfaz text-sm font-bold shadow-sm transition placeholder:font-normal placeholder:text-texto-apagado focus-visible:border-marca-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
-          />
-          @if (busqueda()) {
-            <button
-              type="button"
-              (click)="escribirBusqueda(''); buscador.focus()"
-              aria-label="Borrar búsqueda"
-              class="absolute right-2.5 top-1/2 flex size-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-circulo bg-btn-juego-texto text-[10px] font-bold text-btn-juego-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
-            >
-              ✕
-            </button>
-          }
-        </div>
+          Volver
+        </a>
+      </div>
 
-        <!-- Menú hamburguesa: estado del cupón -->
-        <div class="relative shrink-0">
+      <!-- Título y selector de sección -->
+      <div class="mt-2 flex flex-col gap-3">
+        <h1 class="font-titulo text-3xl uppercase tracking-wide sm:text-5xl">
+          {{ vistaActiva() === 'mis-cupones' ? 'Mis cupones' : 'Beneficios públicos' }}
+        </h1>
+
+        <nav
+          aria-label="Sección de descuentos"
+          class="flex flex-wrap gap-2 px-3 sm:px-0"
+        >
           <button
             type="button"
-            (click)="alternarMenu()"
-            aria-haspopup="true"
-            [attr.aria-expanded]="menuAbierto()"
-            aria-controls="menu-filtros-cupones"
-            aria-label="Filtrar por estado"
-            class="relative flex size-10 cursor-pointer items-center justify-center rounded-pildora border-2 border-btn-juego-texto shadow-sm transition hover:bg-marca-primaria/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
-            [class.bg-marca-primaria]="menuAbierto() || estadoActivo() !== null"
+            (click)="cambiarVista('mis-cupones')"
+            [attr.aria-pressed]="vistaActiva() === 'mis-cupones'"
+            class="rounded-pildora border-2 border-btn-juego-texto px-4 py-2 font-interfaz text-xs font-bold uppercase transition"
+            [class.bg-marca-primaria]="vistaActiva() === 'mis-cupones'"
           >
-            <svg
-              class="size-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.75"
-              stroke-linecap="round"
-              aria-hidden="true"
-            >
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-            @if (estadoActivo() !== null) {
-              <span
-                aria-hidden="true"
-                class="absolute -right-1 -top-1 size-3 rounded-circulo border-2 border-btn-juego-bg bg-landing-oscuro-fondo"
-              ></span>
-            }
+            Mis cupones
           </button>
 
-          @if (menuAbierto()) {
-            <div
-              id="menu-filtros-cupones"
-              role="group"
-              aria-label="Filtros de cupones"
-              class="absolute right-0 top-full z-30 mt-2 w-56 rounded-2xl bg-landing-oscuro-fondo p-3 text-landing-oscuro-texto shadow-alta"
-            >
-              <p class="px-2 pb-2 font-interfaz text-[11px] font-bold uppercase tracking-[0.08em] text-texto-secundario">
-                Estado del cupón
+          <button
+            type="button"
+            (click)="cambiarVista('beneficios')"
+            [attr.aria-pressed]="vistaActiva() === 'beneficios'"
+            class="rounded-pildora border-2 border-btn-juego-texto px-4 py-2 font-interfaz text-xs font-bold uppercase transition"
+            [class.bg-marca-primaria]="vistaActiva() === 'beneficios'"
+          >
+            Beneficios públicos
+          </button>
+        </nav>
+      </div>
+
+      @if (vistaActiva() === 'mis-cupones') {
+        <!-- Buscador y filtros de cupones propios -->
+        <div
+          class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-end"
+        >
+          <div
+            class="flex items-center gap-2 px-3 sm:px-0"
+            (click)="$event.stopPropagation()"
+          >
+            <!-- Buscador -->
+            <div class="relative min-w-0 flex-1 sm:w-80 sm:flex-none">
+              <label for="buscador-cupones" class="sr-only">
+                Buscar cupones
+              </label>
+
+              <svg
+                class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-texto-apagado"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+
+              <input
+                #buscador
+                id="buscador-cupones"
+                type="text"
+                [value]="busqueda()"
+                (input)="escribirBusqueda(buscador.value)"
+                placeholder="Buscar por marca o código"
+                autocomplete="off"
+                class="w-full rounded-pildora border-2 border-btn-juego-texto bg-btn-juego-bg py-2 pl-10 pr-9 font-interfaz text-sm font-bold shadow-sm transition placeholder:font-normal placeholder:text-texto-apagado focus-visible:border-marca-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+              />
+
+              @if (busqueda()) {
+                <button
+                  type="button"
+                  (click)="escribirBusqueda(''); buscador.focus()"
+                  aria-label="Borrar búsqueda"
+                  class="absolute right-2.5 top-1/2 flex size-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-circulo bg-btn-juego-texto text-[10px] font-bold text-btn-juego-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+                >
+                  ✕
+                </button>
+              }
+            </div>
+
+            <!-- Menú de filtro por estado -->
+            <div class="relative shrink-0">
+              <button
+                type="button"
+                (click)="alternarMenu()"
+                aria-haspopup="true"
+                [attr.aria-expanded]="menuAbierto()"
+                aria-controls="menu-filtros-cupones"
+                aria-label="Filtrar por estado"
+                class="relative flex size-10 cursor-pointer items-center justify-center rounded-pildora border-2 border-btn-juego-texto shadow-sm transition hover:bg-marca-primaria/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+                [class.bg-marca-primaria]="menuAbierto() || estadoActivo() !== null"
+              >
+                <svg
+                  class="size-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.75"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+
+                @if (estadoActivo() !== null) {
+                  <span
+                    aria-hidden="true"
+                    class="absolute -right-1 -top-1 size-3 rounded-circulo border-2 border-btn-juego-bg bg-landing-oscuro-fondo"
+                  ></span>
+                }
+              </button>
+
+              @if (menuAbierto()) {
+                <div
+                  id="menu-filtros-cupones"
+                  role="group"
+                  aria-label="Filtros de cupones"
+                  class="absolute right-0 top-full z-30 mt-2 w-56 rounded-2xl bg-landing-oscuro-fondo p-3 text-landing-oscuro-texto shadow-alta"
+                >
+                  <p
+                    class="px-2 pb-2 font-interfaz text-[11px] font-bold uppercase tracking-[0.08em] text-texto-secundario"
+                  >
+                    Estado del cupón
+                  </p>
+
+                  <ul class="flex flex-col gap-1">
+                    @for (estado of estados; track estado) {
+                      <li>
+                        <button
+                          type="button"
+                          (click)="elegirEstado(estado)"
+                          [attr.aria-pressed]="estadoActivo() === estado"
+                          class="flex w-full cursor-pointer items-center gap-3 rounded-xl px-2 py-2 text-left font-interfaz text-sm font-bold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+                          [class.bg-white/10]="estadoActivo() === estado"
+                        >
+                          <span
+                            aria-hidden="true"
+                            class="size-2.5 shrink-0 rounded-circulo"
+                            [class.bg-marca-primaria]="estado === 'Disponible'"
+                            [class.bg-texto-secundario]="estado === 'Usado'"
+                            [class.bg-red-400]="estado === 'Vencido'"
+                          ></span>
+
+                          <span class="flex-1">{{ estado }}</span>
+
+                          @if (estadoActivo() === estado) {
+                            <span
+                              aria-hidden="true"
+                              class="text-marca-primaria"
+                            >
+                              ✓
+                            </span>
+                          }
+                        </button>
+                      </li>
+                    }
+                  </ul>
+
+                  <button
+                    type="button"
+                    (click)="limpiarFiltros()"
+                    [disabled]="!hayFiltros()"
+                    class="mt-3 w-full cursor-pointer rounded-pildora bg-marca-primaria px-4 py-2 font-interfaz text-xs font-bold uppercase text-marca-sobre-primaria transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
+                  >
+                    Limpiar filtros
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex min-h-0 flex-1 gap-3 sm:gap-6">
+          <!-- Filtro por categoría -->
+          <nav
+            aria-label="Categorías de cupones"
+            class="flex shrink-0 flex-col gap-3 sm:gap-4"
+          >
+            @for (categoria of categorias; track categoria.id) {
+              <div class="flex items-center gap-1">
+                <button
+                  type="button"
+                  (click)="elegirCategoria(categoria.id)"
+                  [attr.aria-label]="categoria.nombre"
+                  [attr.aria-pressed]="categoriaActiva() === categoria.id"
+                  [attr.title]="categoria.nombre"
+                  class="flex size-10 cursor-pointer items-center justify-center rounded-lg transition hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none sm:size-12"
+                  [class.bg-marca-primaria]="categoriaActiva() === categoria.id"
+                >
+                  <img
+                    [src]="categoria.urlIcono"
+                    alt=""
+                    class="size-6 object-contain sm:size-8"
+                  />
+                </button>
+
+                <span
+                  aria-hidden="true"
+                  class="text-xs"
+                  [class.invisible]="categoriaActiva() !== categoria.id"
+                  >◀</span
+                >
+              </div>
+            }
+          </nav>
+
+          <div
+            aria-hidden="true"
+            class="hidden w-1.5 shrink-0 rounded-pildora bg-marca-primaria sm:block"
+          ></div>
+
+          <!-- Grilla de cupones propios -->
+          <main class="zona-scroll min-w-0 flex-1 overflow-y-auto pr-2">
+            @if (cargando()) {
+              <p class="font-interfaz text-sm font-bold" role="status">
+                Cargando tus cupones…
               </p>
-              <ul class="flex flex-col gap-1">
-                @for (estado of estados; track estado) {
+            } @else if (error()) {
+              <div role="alert" class="font-interfaz text-sm">
+                <p class="font-bold">{{ error() }}</p>
+
+                <button
+                  type="button"
+                  (click)="cargarCupones()"
+                  class="mt-3 cursor-pointer rounded-pildora bg-landing-oscuro-fondo px-5 py-2 text-xs font-bold uppercase text-landing-oscuro-texto"
+                >
+                  Reintentar
+                </button>
+              </div>
+            } @else if (cuponesFiltrados().length === 0) {
+              <div class="font-interfaz text-sm font-bold">
+                @if (hayFiltros()) {
+                  <p>
+                    No encontramos cupones con esos filtros en esta categoría.
+                  </p>
+
+                  @if (categoriasConResultados().size > 0) {
+                    <p class="mt-2 text-xs font-normal">
+                      Hay resultados en:
+
+                      @for (cat of categorias; track cat.id) {
+                        @if (categoriasConResultados().has(cat.id)) {
+                          <button
+                            type="button"
+                            (click)="elegirCategoria(cat.id)"
+                            class="ml-1 cursor-pointer font-bold text-marca-primaria underline hover:opacity-80"
+                          >
+                            {{ cat.nombre }}
+                          </button>
+                        }
+                      }
+                    </p>
+                  }
+                } @else {
+                  <p>Todavía no tenés cupones en esta categoría.</p>
+                }
+              </div>
+            } @else {
+              <ul class="grid grid-cols-2 gap-4 p-1 md:grid-cols-3 xl:grid-cols-4">
+                @for (cupon of cuponesFiltrados(); track cupon.id) {
                   <li>
                     <button
                       type="button"
-                      (click)="elegirEstado(estado)"
-                      [attr.aria-pressed]="estadoActivo() === estado"
-                      class="flex w-full cursor-pointer items-center gap-3 rounded-xl px-2 py-2 text-left font-interfaz text-sm font-bold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
-                      [class.bg-white/10]="estadoActivo() === estado"
+                      (click)="abrirCupon(cupon)"
+                      [attr.aria-label]="'Ver cupón de ' + cupon.marca + ': ' + cupon.descripcion"
+                      class="sello group relative block aspect-[4/3] w-full cursor-pointer p-1.5 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+                      [class.opacity-55]="cupon.estado !== 'Disponible'"
                     >
                       <span
-                        aria-hidden="true"
-                        class="size-2.5 shrink-0 rounded-circulo"
-                        [class.bg-marca-primaria]="estado === 'Disponible'"
-                        [class.bg-texto-secundario]="estado === 'Usado'"
-                        [class.bg-red-400]="estado === 'Vencido'"
-                      ></span>
-                      <span class="flex-1">{{ estado }}</span>
-                      @if (estadoActivo() === estado) {
-                        <span aria-hidden="true" class="text-marca-primaria">✓</span>
+                        class="relative block size-full overflow-hidden bg-btn-juego-bg p-1.5"
+                      >
+                        <span
+                          class="relative block size-full overflow-hidden border-2 border-solid border-btn-juego-texto"
+                        >
+                          <svg
+                            class="absolute inset-0 size-full text-marca-primaria"
+                            viewBox="0 0 100 100"
+                            preserveAspectRatio="none"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="16"
+                            aria-hidden="true"
+                          >
+                            <path
+                              vector-effect="non-scaling-stroke"
+                              d="M-10 8 C 25 -12, 45 32, 110 6"
+                            />
+                            <path
+                              vector-effect="non-scaling-stroke"
+                              d="M-10 38 C 25 18, 45 62, 110 36"
+                            />
+                            <path
+                              vector-effect="non-scaling-stroke"
+                              d="M-10 68 C 25 48, 45 92, 110 66"
+                            />
+                            <path
+                              vector-effect="non-scaling-stroke"
+                              d="M-10 98 C 25 78, 45 122, 110 96"
+                            />
+                          </svg>
+
+                          <span
+                            class="relative flex size-full items-center justify-center px-1 text-center font-titulo text-sm uppercase leading-tight sm:text-lg"
+                          >
+                            <span class="bg-btn-juego-bg/70 px-1">
+                              {{ cupon.marca }}
+                            </span>
+                          </span>
+                        </span>
+                      </span>
+
+                      @if (cupon.estado !== 'Disponible') {
+                        <span
+                          class="absolute right-2 top-2 rounded-pildora bg-landing-oscuro-fondo px-2 py-0.5 font-interfaz text-[10px] font-bold uppercase text-landing-oscuro-texto"
+                        >
+                          {{ cupon.estado }}
+                        </span>
                       }
                     </button>
                   </li>
                 }
               </ul>
+            }
+          </main>
+        </div>
+      } @else {
+        <!-- Beneficios públicos: solo informativos -->
+        <section
+          class="mt-4 min-h-0 flex-1 px-1 sm:px-0"
+          aria-label="Beneficios públicos"
+        >
+          <p
+            class="mb-4 max-w-3xl font-interfaz text-sm text-texto-apagado"
+          >
+            Beneficios publicados por comercios o entidades. Confirmá las
+            condiciones y la vigencia con el comercio, banco o fuente enlazada.
+            Son informativos y no se canjean con el QR de FaltaUna.
+          </p>
+
+          @if (beneficiosCargando()) {
+            <p role="status" class="font-interfaz text-sm font-bold">
+              Cargando beneficios públicos…
+            </p>
+          } @else if (beneficiosError()) {
+            <div role="alert" class="font-interfaz text-sm">
+              <p class="font-bold">{{ beneficiosError() }}</p>
+
               <button
                 type="button"
-                (click)="limpiarFiltros()"
-                [disabled]="!hayFiltros()"
-                class="mt-3 w-full cursor-pointer rounded-pildora bg-marca-primaria px-4 py-2 font-interfaz text-xs font-bold uppercase text-marca-sobre-primaria transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
+                (click)="cargarBeneficiosPublicos()"
+                class="mt-3 rounded-pildora bg-landing-oscuro-fondo px-5 py-2 text-xs font-bold uppercase text-landing-oscuro-texto"
               >
-                Limpiar filtros
+                Reintentar
               </button>
             </div>
-          }
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-4 flex min-h-0 flex-1 gap-3 sm:gap-6">
-      <!-- Filtro por categoría -->
-      <nav aria-label="Categorías de cupones" class="flex shrink-0 flex-col gap-3 sm:gap-4">
-        @for (categoria of categorias; track categoria.id) {
-          <div class="flex items-center gap-1">
-            <button
-              type="button"
-              (click)="elegirCategoria(categoria.id)"
-              [attr.aria-label]="categoria.nombre"
-              [attr.aria-pressed]="categoriaActiva() === categoria.id"
-              [attr.title]="categoria.nombre"
-              class="flex size-10 cursor-pointer items-center justify-center rounded-lg transition hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none sm:size-12"
-              [class.bg-marca-primaria]="categoriaActiva() === categoria.id"
-            >
-              <img [src]="categoria.urlIcono" alt="" class="size-6 object-contain sm:size-8" />
-            </button>
-            <span
-              aria-hidden="true"
-              class="text-xs"
-              [class.invisible]="categoriaActiva() !== categoria.id"
-              >◀</span
-            >
-          </div>
-        }
-      </nav>
-
-      <div
-        aria-hidden="true"
-        class="hidden w-1.5 shrink-0 rounded-pildora bg-marca-primaria sm:block"
-      ></div>
-
-      <!-- Grilla de sellos -->
-      <main class="zona-scroll min-w-0 flex-1 overflow-y-auto pr-2">
-        @if (cargando()) {
-          <p class="font-interfaz text-sm font-bold" role="status">Cargando tus cupones…</p>
-        } @else if (error()) {
-          <div role="alert" class="font-interfaz text-sm">
-            <p class="font-bold">{{ error() }}</p>
-            <button
-              type="button"
-              (click)="cargarCupones()"
-              class="mt-3 cursor-pointer rounded-pildora bg-landing-oscuro-fondo px-5 py-2 text-xs font-bold uppercase text-landing-oscuro-texto"
-            >
-              Reintentar
-            </button>
-          </div>
-        } @else if (cuponesFiltrados().length === 0) {
-          <div class="font-interfaz text-sm font-bold">
-            @if (hayFiltros()) {
-              <p>No encontramos cupones con esos filtros en esta categoría.</p>
-              @if (categoriasConResultados().size > 0) {
-                <p class="mt-2 text-xs font-normal">
-                  Hay resultados en:
-                  @for (cat of categorias; track cat.id) {
-                    @if (categoriasConResultados().has(cat.id)) {
-                      <button
-                        type="button"
-                        (click)="elegirCategoria(cat.id)"
-                        class="ml-1 cursor-pointer font-bold text-marca-primaria underline hover:opacity-80"
-                      >
-                        {{ cat.nombre }}
-                      </button>
-                    }
-                  }
-                </p>
-              }
-            } @else {
-              <p>Todavía no tenés cupones en esta categoría.</p>
-            }
-          </div>
-        } @else {
-          <ul class="grid grid-cols-2 gap-4 p-1 md:grid-cols-3 xl:grid-cols-4">
-            @for (cupon of cuponesFiltrados(); track cupon.id) {
-              <li>
-                <button
-                  type="button"
-                  (click)="abrirCupon(cupon)"
-                  [attr.aria-label]="'Ver cupón de ' + cupon.marca + ': ' + cupon.descripcion"
-                  class="sello group relative block aspect-[4/3] w-full cursor-pointer p-1.5 transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
-                  [class.opacity-55]="cupon.estado !== 'Disponible'"
+          } @else if (beneficiosFiltrados().length === 0) {
+            <p class="font-interfaz text-sm font-bold">
+              No hay beneficios públicos vigentes que coincidan con tu búsqueda.
+            </p>
+          } @else {
+            <ul class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              @for (beneficio of beneficiosFiltrados(); track beneficio.id) {
+                <li
+                  class="rounded-2xl border-2 border-btn-juego-texto bg-white/5 p-4 shadow-sm"
                 >
-                  <span class="relative block size-full overflow-hidden bg-btn-juego-bg p-1.5">
-                    <span
-                      class="relative block size-full overflow-hidden border-2 border-solid border-btn-juego-texto"
-                    >
-                      <svg
-                        class="absolute inset-0 size-full text-marca-primaria"
-                        viewBox="0 0 100 100"
-                        preserveAspectRatio="none"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="16"
-                        aria-hidden="true"
-                      >
-                        <path
-                          vector-effect="non-scaling-stroke"
-                          d="M-10 8 C 25 -12, 45 32, 110 6"
-                        />
-                        <path
-                          vector-effect="non-scaling-stroke"
-                          d="M-10 38 C 25 18, 45 62, 110 36"
-                        />
-                        <path
-                          vector-effect="non-scaling-stroke"
-                          d="M-10 68 C 25 48, 45 92, 110 66"
-                        />
-                        <path
-                          vector-effect="non-scaling-stroke"
-                          d="M-10 98 C 25 78, 45 122, 110 96"
-                        />
-                      </svg>
+                  <article class="flex h-full flex-col gap-3">
+                    <div class="flex items-start justify-between gap-3">
+                      <div>
+                        <p
+                          class="font-interfaz text-xs font-bold uppercase tracking-wider text-texto-apagado"
+                        >
+                          {{ beneficio.marca }}
+                        </p>
+
+                        <h2
+                          class="mt-1 font-titulo text-xl uppercase leading-tight"
+                        >
+                          {{ beneficio.titulo }}
+                        </h2>
+                      </div>
+
                       <span
-                        class="relative flex size-full items-center justify-center px-1 text-center font-titulo text-sm uppercase leading-tight sm:text-lg"
+                        class="shrink-0 rounded-pildora px-2 py-1 font-interfaz text-[10px] font-black uppercase"
+                        [class.bg-marca-primaria]="beneficio.vigenteSegunFechaCargada"
+                        [class.bg-red-400]="!beneficio.vigenteSegunFechaCargada"
                       >
-                        <span class="bg-btn-juego-bg/70 px-1">{{ cupon.marca }}</span>
+                        {{
+                          beneficio.vigenteSegunFechaCargada
+                            ? 'Informativo'
+                            : 'Verificar vigencia'
+                        }}
                       </span>
-                    </span>
-                  </span>
-                  @if (cupon.estado !== 'Disponible') {
-                    <span
-                      class="absolute right-2 top-2 rounded-pildora bg-landing-oscuro-fondo px-2 py-0.5 font-interfaz text-[10px] font-bold uppercase text-landing-oscuro-texto"
+                    </div>
+
+                    <p class="font-interfaz text-sm leading-relaxed">
+                      {{ beneficio.descripcion }}
+                    </p>
+
+                    <p
+                      class="font-interfaz text-xs font-bold text-texto-apagado"
                     >
-                      {{ cupon.estado }}
-                    </span>
-                  }
-                </button>
-              </li>
-            }
-          </ul>
-        }
-      </main>
+                      Vigencia cargada hasta
+                      {{
+                        beneficio.vigenteHastaUtc
+                          | date: 'dd/MM/yyyy' : 'UTC'
+                      }}
+                    </p>
+
+                    <div class="mt-auto border-t border-white/15 pt-3">
+                      <p class="font-interfaz text-xs font-bold">
+                        No canjeable con QR de FaltaUna.
+                      </p>
+
+                      @if (!beneficio.vigenteSegunFechaCargada) {
+                        <p
+                          class="mt-1 font-interfaz text-xs font-bold text-red-300"
+                        >
+                          La vigencia cargada venció. Revisá la fuente antes de
+                          usar este beneficio.
+                        </p>
+                      }
+
+                      @if (beneficio.fuenteUrl) {
+                        <a
+                          [href]="beneficio.fuenteUrl"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="mt-2 inline-flex items-center gap-1 font-interfaz text-sm font-bold text-marca-primaria underline hover:opacity-80"
+                        >
+                          Consultar fuente y condiciones ↗
+                        </a>
+                      }
+                    </div>
+                  </article>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+      }
     </div>
   </div>
 
-  <!-- Modal del cupón -->
+  <!-- Modal del cupón personal -->
   @if (cuponSeleccionado(); as cupon) {
     <div
       class="fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
@@ -304,14 +496,24 @@
         ✕
       </button>
 
-      <h2 id="titulo-cupon" class="font-titulo text-3xl uppercase text-marca-acento">
+      <h2
+        id="titulo-cupon"
+        class="font-titulo text-3xl uppercase text-marca-acento"
+      >
         {{ cupon.marca }}
       </h2>
-      <p class="mt-2 font-interfaz text-base font-bold">{{ cupon.descripcion }}</p>
+
+      <p class="mt-2 font-interfaz text-base font-bold">
+        {{ cupon.descripcion }}
+      </p>
+
       <p class="mt-1 font-interfaz text-xs font-bold text-texto-secundario">
         Válido hasta el {{ cupon.vigenteHastaUtc | date: 'dd/MM/yy' : 'UTC' }}
       </p>
-      <p class="mt-1 font-interfaz text-xs text-texto-secundario">{{ cupon.detalles }}</p>
+
+      <p class="mt-1 font-interfaz text-xs text-texto-secundario">
+        {{ cupon.detalles }}
+      </p>
 
       @if (cuponUtilizable()) {
         <div class="relative mx-auto mt-4 size-48 rounded-lg bg-white p-2 sm:size-56">
@@ -335,6 +537,7 @@
               [alt]="'Código QR del cupón de ' + cupon.marca"
               class="size-full object-contain"
             />
+
             <button
               type="button"
               (click)="descargarQr()"
@@ -352,16 +555,22 @@
         >
           {{ cupon.codigo }}
         </p>
+
         @if (tokenQr(); as token) {
           <p class="mt-1 break-all font-interfaz text-xs text-texto-secundario">
             Token de canje: <span class="font-bold">{{ token }}</span>
           </p>
         }
+
         <p class="mt-3 font-interfaz text-sm font-bold text-marca-primaria">
-          Mostrá este QR al vendedor del negocio más cercano para conseguir los beneficios.
+          Mostrá este QR al vendedor del negocio más cercano para conseguir los
+          beneficios.
         </p>
       } @else {
-        <p class="mt-6 rounded-xl bg-white/10 p-4 font-interfaz text-sm font-bold" role="status">
+        <p
+          class="mt-6 rounded-xl bg-white/10 p-4 font-interfaz text-sm font-bold"
+          role="status"
+        >
           @if (cupon.estado === 'Usado') {
             Este cupón ya fue canjeado.
           } @else {

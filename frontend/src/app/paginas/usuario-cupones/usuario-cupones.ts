@@ -12,7 +12,12 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
 import { Header } from '../../compartidos/componentes/header/header';
 import { CuponesService } from '../../servicios/cupones.service';
-import { CategoriaCupon, CuponDescuento, EstadoCupon } from '../../modelos/cupon.model';
+import {
+  BeneficioPublico,
+  CategoriaCupon,
+  CuponDescuento,
+  EstadoCupon,
+} from '../../modelos/cupon.model';
 
 import urlIconoGastro from '../../compartidos/SVGs/Icon_GastroInv.svg';
 import urlIconoDeco from '../../compartidos/SVGs/Icon_DecoInv.svg';
@@ -29,8 +34,8 @@ interface FiltroCategoria {
 }
 
 /**
- * "Mis cupones" del jugador: grilla de sellos filtrable por categoría. Al elegir un
- * cupón disponible se muestra su QR y el código para que lo valide el empleado.
+ * Pantalla de cupones del usuario.
+ * Incluye los cupones propios con QR y una pestaña separada de beneficios públicos.
  */
 @Component({
   selector: 'app-usuario-cupones',
@@ -55,6 +60,7 @@ interface FiltroCategoria {
       background-position: 0 0, 0 100%, 0 0, 100% 0;
       background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
     }
+
     .zona-scroll {
       scrollbar-width: auto;
       scrollbar-color: var(--color-teal-profundo) transparent;
@@ -69,31 +75,52 @@ export class UsuarioCupones {
     { id: 'gastronomia', nombre: 'Gastronomía', urlIcono: urlIconoGastro },
     { id: 'deco', nombre: 'Deco', urlIcono: urlIconoDeco },
     { id: 'cosmetica', nombre: 'Cosmética', urlIcono: urlIconoCosme },
-    { id: 'indumentaria', nombre: 'Indumentaria', urlIcono: urlIconoIndumentaria },
-    { id: 'entretenimiento', nombre: 'Entretenimiento', urlIcono: urlIconoEntretenimiento },
+    {
+      id: 'indumentaria',
+      nombre: 'Indumentaria',
+      urlIcono: urlIconoIndumentaria,
+    },
+    {
+      id: 'entretenimiento',
+      nombre: 'Entretenimiento',
+      urlIcono: urlIconoEntretenimiento,
+    },
     { id: 'musica', nombre: 'Música', urlIcono: urlIconoMusica },
     { id: 'tecnologia', nombre: 'Tecnología', urlIcono: urlIconoTecno },
   ];
 
+  protected readonly vistaActiva = signal<'mis-cupones' | 'beneficios'>(
+    'mis-cupones',
+  );
+
   protected readonly cupones = signal<CuponDescuento[]>([]);
+  protected readonly beneficiosPublicos = signal<BeneficioPublico[]>([]);
+  protected readonly beneficiosCargando = signal(false);
+  protected readonly beneficiosError = signal<string | null>(null);
+
   protected readonly cargando = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly categoriaActiva = signal<CategoriaCupon>('gastronomia');
 
-  /** Texto del buscador (marca, nombre, descripción o código). */
+  /** Texto del buscador. */
   protected readonly busqueda = signal('');
-  /** Estado elegido en el filtro; null = todos. */
+
+  /** Estado elegido en el filtro; null significa todos. */
   protected readonly estadoActivo = signal<EstadoCupon | null>(null);
-  protected readonly estados: readonly EstadoCupon[] = ['Disponible', 'Usado', 'Vencido'];
-  /** Menú hamburguesa con los estados del cupón. */
+  protected readonly estados: readonly EstadoCupon[] = [
+    'Disponible',
+    'Usado',
+    'Vencido',
+  ];
+
   protected readonly menuAbierto = signal(false);
+
   protected readonly hayFiltros = computed(
     () => this.busqueda().trim() !== '' || this.estadoActivo() !== null,
   );
 
   protected readonly cuponSeleccionado = signal<CuponDescuento | null>(null);
   protected readonly urlQr = signal<string | null>(null);
-  /** Token que lleva el QR: es lo que el empleado usa para canjear. */
   protected readonly tokenQr = signal<string | null>(null);
   protected readonly qrCargando = signal(false);
   protected readonly qrError = signal(false);
@@ -104,17 +131,14 @@ export class UsuarioCupones {
     const texto = this.busqueda().trim().toLowerCase();
 
     return this.cupones().filter((c) => {
-      // 1. Filtro por categoría activa
       if (c.categoria !== categoria) {
         return false;
       }
 
-      // 2. Filtro por estado ('Disponible', 'Usado', 'Vencido')
       if (estado !== null && c.estado !== estado) {
         return false;
       }
 
-      // 3. Buscador por texto (marca, nombre/título, descripción, código o detalles)
       if (texto !== '') {
         const marca = (c.marca || '').toLowerCase();
         const titulo = (c.titulo || '').toLowerCase();
@@ -138,19 +162,40 @@ export class UsuarioCupones {
     });
   });
 
-  /** Categorías con cupones que coinciden con los filtros actuales (útil cuando la activa no tiene resultados). */
+  /** Beneficios públicos filtrados por el buscador. No tienen QR de FaltaUna. */
+  protected readonly beneficiosFiltrados = computed(() => {
+    const texto = this.busqueda().trim().toLowerCase();
+
+    return this.beneficiosPublicos().filter((beneficio) => {
+      if (!texto) {
+        return true;
+      }
+
+      return [
+        beneficio.marca,
+        beneficio.titulo,
+        beneficio.descripcion,
+        beneficio.codigo,
+      ].some((valor) => (valor || '').toLowerCase().includes(texto));
+    });
+  });
+
+  /** Categorías con cupones que coinciden con los filtros actuales. */
   protected readonly categoriasConResultados = computed(() => {
     const estado = this.estadoActivo();
     const texto = this.busqueda().trim().toLowerCase();
+
     if (!this.hayFiltros()) {
       return new Set<CategoriaCupon>();
     }
 
     const encontradas = new Set<CategoriaCupon>();
+
     for (const c of this.cupones()) {
       if (estado !== null && c.estado !== estado) {
         continue;
       }
+
       if (texto !== '') {
         const marca = (c.marca || '').toLowerCase();
         const titulo = (c.titulo || '').toLowerCase();
@@ -169,8 +214,10 @@ export class UsuarioCupones {
           continue;
         }
       }
+
       encontradas.add(c.categoria);
     }
+
     return encontradas;
   });
 
@@ -181,30 +228,74 @@ export class UsuarioCupones {
 
   constructor() {
     const destruir = inject(DestroyRef);
+
     destruir.onDestroy(() => this.liberarQr());
+
     this.escucharCategoriaDesdeUrl(destruir);
     this.cargarCupones();
+    this.cargarBeneficiosPublicos();
 
-    // Al escribir se espera un instante antes de consultar; el estado recarga al toque.
+    // Espera un instante después de escribir antes de consultar de nuevo.
     toObservable(this.busqueda)
-      .pipe(skip(1), debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(destruir))
-      .subscribe(() => this.cargarCupones());
+      .pipe(
+        skip(1),
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntilDestroyed(destruir),
+      )
+      .subscribe(() => {
+        if (this.vistaActiva() === 'mis-cupones') {
+          this.cargarCupones();
+        }
+      });
   }
 
   /**
-   * Preselecciona la categoría indicada por `?categoria=` (viene de un álbum) y
-   * reacciona a cambios posteriores del parámetro. Si falta o no es válida, se
-   * conserva la categoría actual.
+   * Preselecciona la categoría indicada por ?categoria=.
    */
   private escucharCategoriaDesdeUrl(destruir: DestroyRef): void {
     this.ruta.queryParamMap
       .pipe(takeUntilDestroyed(destruir))
       .subscribe((params) => {
         const categoria = params.get('categoria');
+
         if (categoria && this.categorias.some((c) => c.id === categoria)) {
           this.categoriaActiva.set(categoria as CategoriaCupon);
         }
       });
+  }
+
+  /** Cambia entre los cupones propios y los beneficios públicos. */
+  protected cambiarVista(
+    vista: 'mis-cupones' | 'beneficios',
+  ): void {
+    this.vistaActiva.set(vista);
+    this.menuAbierto.set(false);
+
+    if (vista === 'mis-cupones') {
+      this.cargarCupones();
+    } else {
+      this.cerrarCupon();
+    }
+  }
+
+  /** Obtiene los beneficios informativos desde el catálogo del backend. */
+  protected cargarBeneficiosPublicos(): void {
+    this.beneficiosCargando.set(true);
+    this.beneficiosError.set(null);
+
+    this.cuponesService.obtenerBeneficiosPublicos().subscribe({
+      next: (beneficios) => {
+        this.beneficiosPublicos.set(beneficios);
+        this.beneficiosCargando.set(false);
+      },
+      error: () => {
+        this.beneficiosError.set(
+          'No pudimos cargar los beneficios públicos. Verificá que el backend esté disponible.',
+        );
+        this.beneficiosCargando.set(false);
+      },
+    });
   }
 
   protected cargarCupones(): void {
@@ -212,17 +303,22 @@ export class UsuarioCupones {
     this.error.set(null);
 
     this.cuponesService
-      .obtenerMisCupones({ buscar: this.busqueda(), estado: this.estadoActivo() })
+      .obtenerMisCupones({
+        buscar: this.busqueda(),
+        estado: this.estadoActivo(),
+      })
       .subscribe({
-      next: (cupones) => {
-        this.cupones.set(cupones);
-        this.cargando.set(false);
-      },
-      error: () => {
-        this.error.set('No pudimos cargar tus cupones. Probá de nuevo en un rato.');
-        this.cargando.set(false);
-      },
-    });
+        next: (cupones) => {
+          this.cupones.set(cupones);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.error.set(
+            'No pudimos cargar tus cupones. Probá de nuevo en un rato.',
+          );
+          this.cargando.set(false);
+        },
+      });
   }
 
   protected elegirCategoria(id: CategoriaCupon): void {
@@ -243,7 +339,9 @@ export class UsuarioCupones {
 
   /** Volver a tocar el estado activo lo desactiva. */
   protected elegirEstado(estado: EstadoCupon): void {
-    this.estadoActivo.set(this.estadoActivo() === estado ? null : estado);
+    this.estadoActivo.set(
+      this.estadoActivo() === estado ? null : estado,
+    );
     this.menuAbierto.set(false);
     this.cargarCupones();
   }
@@ -260,13 +358,19 @@ export class UsuarioCupones {
     this.cuponSeleccionado.set(cupon);
     this.qrError.set(false);
 
-    if (cupon.estado !== 'Disponible') return;
+    if (cupon.estado !== 'Disponible') {
+      return;
+    }
 
     this.qrCargando.set(true);
+
     this.cuponesService.obtenerQr(cupon.id).subscribe({
       next: ({ imagen, token }) => {
-        // Si el usuario ya cerró o cambió de cupón, se descarta la respuesta.
-        if (this.cuponSeleccionado()?.id !== cupon.id) return;
+        // Si se cerró o cambió el cupón, se descarta la respuesta.
+        if (this.cuponSeleccionado()?.id !== cupon.id) {
+          return;
+        }
+
         this.tokenQr.set(token);
         this.urlQr.set(URL.createObjectURL(imagen));
         this.qrCargando.set(false);
@@ -287,17 +391,26 @@ export class UsuarioCupones {
   protected descargarQr(): void {
     const url = this.urlQr();
     const cupon = this.cuponSeleccionado();
-    if (!url || !cupon) return;
+
+    if (!url || !cupon) {
+      return;
+    }
 
     const enlace = document.createElement('a');
     enlace.href = url;
-    enlace.download = `cupon-${cupon.marca.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${cupon.codigo}.png`;
+    enlace.download = `cupon-${cupon.marca
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')}-${cupon.codigo}.png`;
     enlace.click();
   }
 
   private liberarQr(): void {
     const url = this.urlQr();
-    if (url) URL.revokeObjectURL(url);
+
+    if (url) {
+      URL.revokeObjectURL(url);
+    }
+
     this.urlQr.set(null);
     this.tokenQr.set(null);
   }

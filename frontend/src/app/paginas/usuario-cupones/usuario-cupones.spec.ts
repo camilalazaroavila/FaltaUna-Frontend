@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, ParamMap, convertToParamMap, provideRouter } from '@angular/router';
+import {
+  ActivatedRoute,
+  ParamMap,
+  convertToParamMap,
+  provideRouter,
+} from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 
 import { UsuarioCupones } from './usuario-cupones';
@@ -36,7 +41,11 @@ describe('UsuarioCupones', () => {
   let params: BehaviorSubject<ParamMap>;
 
   const montar = async (categoriaInicial: string | null): Promise<void> => {
-    params = new BehaviorSubject(convertToParamMap(categoriaInicial ? { categoria: categoriaInicial } : {}));
+    params = new BehaviorSubject(
+      convertToParamMap(
+        categoriaInicial ? { categoria: categoriaInicial } : {},
+      ),
+    );
 
     await TestBed.configureTestingModule({
       imports: [UsuarioCupones],
@@ -53,6 +62,7 @@ describe('UsuarioCupones', () => {
           provide: CuponesService,
           useValue: {
             obtenerMisCupones: jest.fn(() => of(CUPONES)),
+            obtenerBeneficiosPublicos: jest.fn(() => of([])),
             obtenerQr: jest.fn(),
           },
         },
@@ -63,7 +73,8 @@ describe('UsuarioCupones', () => {
     fixture.detectChanges();
   };
 
-  const activa = (): string => fixture.componentInstance['categoriaActiva']();
+  const activa = (): string =>
+    fixture.componentInstance['categoriaActiva']();
 
   it('preselecciona la categoría válida indicada en la URL', async () => {
     await montar('indumentaria');
@@ -87,7 +98,8 @@ describe('UsuarioCupones', () => {
 
   it('filtra los cupones según la categoría activa', async () => {
     await montar('indumentaria');
-    const filtrados = fixture.componentInstance['cuponesFiltrados']();
+    const filtrados =
+      fixture.componentInstance['cuponesFiltrados']();
 
     expect(filtrados).toHaveLength(1);
     expect(filtrados[0].marca).toBe('Zara');
@@ -99,10 +111,18 @@ describe('UsuarioCupones', () => {
     const componente = fixture.componentInstance as any;
 
     componente.elegirEstado('Usado');
-    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({ buscar: '', estado: 'Usado' });
+
+    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({
+      buscar: '',
+      estado: 'Usado',
+    });
 
     componente.elegirEstado('Usado');
-    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({ buscar: '', estado: null });
+
+    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({
+      buscar: '',
+      estado: null,
+    });
   });
 
   it('limpiarFiltros borra el texto y el estado', async () => {
@@ -111,9 +131,11 @@ describe('UsuarioCupones', () => {
 
     componente.escribirBusqueda('grido');
     componente.elegirEstado('Disponible');
+
     expect(componente.hayFiltros()).toBe(true);
 
     componente.limpiarFiltros();
+
     expect(componente.hayFiltros()).toBe(false);
   });
 
@@ -134,7 +156,6 @@ describe('UsuarioCupones', () => {
     await montar('gastronomia');
     const componente = fixture.componentInstance as any;
 
-    // Grido está 'Disponible'
     componente.elegirEstado('Disponible');
     expect(componente.cuponesFiltrados()).toHaveLength(1);
 
@@ -149,38 +170,53 @@ describe('UsuarioCupones', () => {
 
     expect(raiz.querySelector('#menu-filtros-cupones')).toBeNull();
 
-    (raiz.querySelector('button[aria-label="Filtrar por estado"]') as HTMLButtonElement).click();
+    (
+      raiz.querySelector(
+        'button[aria-label="Filtrar por estado"]',
+      ) as HTMLButtonElement
+    ).click();
+
     fixture.detectChanges();
 
-    const menu = raiz.querySelector('#menu-filtros-cupones') as HTMLElement;
+    const menu = raiz.querySelector(
+      '#menu-filtros-cupones',
+    ) as HTMLElement;
+
     expect(menu).not.toBeNull();
     expect(menu.querySelectorAll('ul button')).toHaveLength(3);
     expect(menu.textContent).toContain('Limpiar filtros');
 
     componente.elegirEstado('Usado');
     fixture.detectChanges();
+
     expect(raiz.querySelector('#menu-filtros-cupones')).toBeNull();
   });
 
-  it('el botón Limpiar filtros del menú está deshabilitado sin filtros y los borra al usarlo', async () => {
+  it('el botón Limpiar filtros está deshabilitado sin filtros y los borra al usarlo', async () => {
     await montar(null);
     const componente = fixture.componentInstance as any;
     const raiz: HTMLElement = fixture.nativeElement;
 
     componente.alternarMenu();
     fixture.detectChanges();
+
     const limpiar = () =>
-      Array.from(raiz.querySelectorAll('#menu-filtros-cupones button')).find((b) =>
+      Array.from(
+        raiz.querySelectorAll('#menu-filtros-cupones button'),
+      ).find((b) =>
         b.textContent?.includes('Limpiar filtros'),
       ) as HTMLButtonElement;
+
     expect(limpiar().disabled).toBe(true);
 
     componente.escribirBusqueda('grido');
     fixture.detectChanges();
+
     expect(limpiar().disabled).toBe(false);
 
     limpiar().click();
     fixture.detectChanges();
+
     expect(componente.hayFiltros()).toBe(false);
   });
 });

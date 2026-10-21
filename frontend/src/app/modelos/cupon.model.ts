@@ -80,7 +80,6 @@ export interface QrCuponApi {
   qrToken: string;
   qrDataUrl: string;
 }
-
 /** QR ya convertido a imagen, junto con el token que lleva adentro. */
 export interface QrCupon {
   imagen: Blob;
@@ -134,4 +133,34 @@ export interface CuponValidado {
   codigo: string;
   vencimientoUtc: string;
   usuario: string;
+}
+
+/** Beneficio público informativo devuelto por GET /api/Cupones/catalogo.
+ * No representa un cupón canjeable mediante el QR de FaltaUna. */
+export interface BeneficioPublico {
+  id: number;
+  marca: string;
+  titulo: string;
+  descripcion: string;
+  codigo: string;
+  porcentajeDescuento: number;
+  fechaInicioUtc: string;
+  vigenteHastaUtc: string;
+  fuenteUrl: string | null;
+  /** La fecha cargada no pasó; la fuente externa igualmente debe verificarse. */
+  vigenteSegunFechaCargada: boolean;
+}
+
+/** Forma cruda del catálogo público del backend. */
+export interface CatalogoCuponApi {
+  id: number;
+  marca: string;
+  nombre: string;
+  descripcion: string;
+  codigo: string;
+  porcentajeDescuento: number;
+  fechaInicio: string;
+  fechaVencimiento: string;
+  estado?: string;
+  fuenteUrl: string | null;
 }
