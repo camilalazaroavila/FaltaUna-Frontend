@@ -1,0 +1,32 @@
+.paso-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 1.8px solid #000000;
+  color: #000000;
+  font-family: var(--fuente-titulo, "Russo One", sans-serif);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 4px 3px 0 #3bd972;
+  user-select: none;
+  position: relative;
+  z-index: 1;
+}
+
+.paso-numero--crema {
+  background-color: var(--color-amarillo-logo, #f9f9b2);
+}
+
+@media (min-width: 768px) {
+  .paso-numero {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+  }
+}

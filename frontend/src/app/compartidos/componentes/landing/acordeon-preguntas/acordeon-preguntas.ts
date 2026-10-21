@@ -15,7 +15,10 @@ let contadorIds = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="acordeon overflow-hidden rounded-md border border-landing-oscuro-borde-control bg-landing-oscuro-fondo text-landing-oscuro-texto"
+      class="acordeon overflow-hidden border border-landing-oscuro-borde-control bg-landing-oscuro-fondo text-landing-oscuro-texto transition-all"
+      [class.rounded-md]="!pildora()"
+      [class.rounded-full]="pildora() && !abierto()"
+      [class.rounded-2xl]="pildora() && abierto()"
       [class.acordeon--abierto]="abierto()"
     >
       <button
@@ -28,7 +31,7 @@ let contadorIds = 0;
       >
         <span class="min-w-0 truncate">{{ pregunta() }}</span>
         <svg
-          class="acordeon__flecha size-3 shrink-0 text-landing-marca md:size-4 lg:size-5"
+          class="acordeon__flecha size-3.5 shrink-0 text-white md:size-4 lg:size-5"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -105,21 +108,30 @@ export class AcordeonPregunta {
   /** Versión reducida para el grid de dos columnas del FAQ. */
   readonly compacto = input(false, { transform: booleanAttribute });
 
-  protected readonly clasesCabecera = computed(() =>
-    [
+  /** Formato píldora redondeada para la landing de usuario. */
+  readonly pildora = input(false, { transform: booleanAttribute });
+
+  protected readonly clasesCabecera = computed(() => {
+    if (this.pildora()) {
+      return 'flex w-full items-center justify-between gap-3 text-left font-interfaz font-semibold text-landing-oscuro-texto transition-colors hover:text-landing-marca px-5 py-3 text-xs sm:text-sm md:text-base cursor-pointer';
+    }
+    return [
       'flex w-full items-center justify-between gap-2 text-left font-interfaz font-semibold text-landing-oscuro-texto transition-colors hover:text-landing-marca',
       this.compacto()
         ? 'px-2.5 py-2 text-[11px] md:px-3 md:py-3 md:text-sm lg:px-3.5 lg:py-3.5 lg:text-landing-faq'
         : 'px-4 py-2.5 text-sm',
-    ].join(' ')
-  );
+    ].join(' ');
+  });
 
-  protected readonly clasesContenido = computed(() =>
-    [
+  protected readonly clasesContenido = computed(() => {
+    if (this.pildora()) {
+      return 'acordeon__contenido font-cuerpo text-landing-oscuro-tenue px-6 text-xs sm:text-sm';
+    }
+    return [
       'acordeon__contenido font-cuerpo text-landing-oscuro-tenue',
       this.compacto() ? 'px-2.5 text-[11px] md:px-3 md:text-sm lg:px-3.5 lg:text-landing-faq' : 'px-4 text-sm',
-    ].join(' ')
-  );
+    ].join(' ');
+  });
 
   private readonly id = ++contadorIds;
   protected readonly idCabecera = `acordeon-cabecera-${this.id}`;

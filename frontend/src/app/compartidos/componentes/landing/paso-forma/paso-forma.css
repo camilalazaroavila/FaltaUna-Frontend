@@ -1,0 +1,74 @@
+:host {
+  display: inline-block;
+}
+
+.paso-forma-contenedor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.paso-forma-contenedor:hover {
+  transform: scale(1.05) rotate(-1.5deg);
+}
+
+.paso-forma-numero {
+  position: absolute;
+  top: -0.35rem;
+  left: -0.35rem;
+  z-index: 10;
+}
+
+.paso-forma-svg {
+  display: block;
+  width: 7.75rem;
+  height: 7rem;
+  overflow: visible;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+.paso-forma-imagen-svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+  user-select: none;
+}
+
+.paso-forma-contenido {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.paso-forma-contenido:empty {
+  display: none;
+}
+
+
+@media (min-width: 640px) {
+  .paso-forma-svg {
+    width: 8.75rem;
+    height: 8rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .paso-forma-svg {
+    width: 10.75rem;
+    height: 9.75rem;
+  }
+  .paso-forma-numero {
+    top: -0.5rem;
+    left: -0.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .paso-forma-svg {
+    width: 12.25rem;
+    height: 11rem;
+  }
+}

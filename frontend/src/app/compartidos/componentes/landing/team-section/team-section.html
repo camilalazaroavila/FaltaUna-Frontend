@@ -1,58 +1,89 @@
 <section
-  class="bg-landing-claro-fondo py-5 text-landing-claro-texto md:py-10 lg:py-16"
+  class="bg-landing-claro-fondo py-16 sm:py-20 md:py-24 lg:py-32 xl:py-36 text-landing-claro-texto"
   aria-labelledby="equipo-titulo"
 >
   <div class="contenedor-landing">
-    <h2
-      id="equipo-titulo"
-      class="font-titulo text-3xl leading-[0.9] md:text-4xl lg:text-5xl"
-    >
-      ¿Quiénes somos?
-    </h2>
+    <div class="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-14 xl:gap-20">
+      <!-- Columna izquierda: Título y Tarjeta descriptiva -->
+      <div class="flex flex-col gap-6 lg:w-[42%]">
+        <h2
+          id="equipo-titulo"
+          class="font-titulo font-bold text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl leading-[0.95] text-landing-claro-texto tracking-tight"
+        >
+          ¿QUIÉNES<br />SOMOS?
+        </h2>
 
-    <div
-      class="mt-5 flex flex-col gap-6 md:mt-8 md:gap-8 lg:flex-row lg:items-stretch lg:gap-12"
-    >
-      <div
-        class="grid w-full grid-cols-4 gap-x-3 gap-y-4 sm:gap-x-6 lg:w-1/2 lg:gap-x-4 lg:gap-y-6"
-      >
-        @for (integrante of integrantes(); track integrante.nombre) {
-          <div class="flex min-w-0 flex-col items-center gap-2 text-center">
-            @if (integrante.avatarUrl) {
-              <img
-                [src]="integrante.avatarUrl"
-                [alt]="integrante.nombre"
-                class="size-landing-avatar-equipo rounded-circulo border-[3px] border-landing-claro-texto object-cover"
-              />
-            } @else {
-              <span
-                class="grid size-landing-avatar-equipo place-items-center rounded-circulo border-[3px] border-landing-claro-texto bg-landing-panel font-interfaz text-lg font-bold md:text-3xl lg:text-4xl"
-              >
-                {{ iniciales(integrante.nombre) }}
-              </span>
-            }
-            <span
-              class="w-full whitespace-nowrap text-xs font-semibold leading-tight md:text-base lg:text-lg"
-            >
-              {{ integrante.nombre }}
-            </span>
-          </div>
-        }
+        <div
+          class="rounded-[2.5rem_1.5rem_2.5rem_1.5rem] bg-landing-panel p-6 sm:p-7 md:p-8 lg:p-9 xl:p-10 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl leading-relaxed text-landing-claro-texto font-cuerpo font-normal shadow-sm"
+        >
+          <p>
+            Somos un grupo de desarrolladores apasionados por el coleccionismo, con
+            una idea clara: crear una experiencia que vaya más allá de coleccionar,
+            divertirse y jugar.
+          </p>
+          <p class="mt-4 md:mt-5">
+            Queremos conectar empresas y usuarios en un espacio donde todos ganen,
+            ofreciendo beneficios reales, recompensas y un progreso que se sienta en
+            cada colección.
+          </p>
+        </div>
       </div>
 
-      <div
-        class="w-full rounded-[2rem_1rem_2.5rem_1.25rem] bg-landing-panel p-4 text-sm leading-relaxed text-landing-claro-texto md:p-6 md:text-base lg:w-1/2 lg:p-8 lg:text-landing-equipo"
-      >
-        <p>
-          Somos un grupo de desarrolladores apasionados por el coleccionismo, con
-          una idea clara: crear una experiencia que vaya más allá de coleccionar,
-          divertirse y jugar.
-        </p>
-        <p class="mt-3 md:mt-4">
-          Queremos conectar empresas y usuarios en un espacio donde todos ganen,
-          ofreciendo beneficios reales, recompensas y un progreso que se sienta en
-          cada colección.
-        </p>
+      <!-- Columna derecha: Avatares en 2 filas con nombres arriba -->
+      <div class="flex flex-col items-center gap-8 md:gap-10 lg:w-[54%]">
+        <!-- Fila 1: 4 integrantes -->
+        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-8 xl:gap-10">
+          @for (integrante of filaSuperior(); track integrante.nombre) {
+            <div class="flex min-w-0 flex-col items-center gap-2 text-center">
+              <span
+                class="whitespace-nowrap font-subtitulo font-bold text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-landing-claro-texto"
+              >
+                {{ integrante.nombre }}
+              </span>
+              @if (integrante.avatarUrl) {
+                <img
+                  [src]="integrante.avatarUrl"
+                  [alt]="integrante.nombre"
+                  class="size-16 rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto object-cover shadow-sm sm:size-20 md:size-24 lg:size-28 xl:size-32"
+                  loading="lazy"
+                />
+              } @else {
+                <span
+                  class="grid size-16 place-items-center rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto bg-landing-panel font-interfaz text-base font-bold text-landing-claro-texto sm:size-20 md:size-24 lg:size-28 xl:size-32 lg:text-2xl"
+                >
+                  {{ iniciales(integrante.nombre) }}
+                </span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Fila 2: 3 integrantes centrados -->
+        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-8 xl:gap-10">
+          @for (integrante of filaInferior(); track integrante.nombre) {
+            <div class="flex min-w-0 flex-col items-center gap-2 text-center">
+              <span
+                class="whitespace-nowrap font-subtitulo font-bold text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-landing-claro-texto"
+              >
+                {{ integrante.nombre }}
+              </span>
+              @if (integrante.avatarUrl) {
+                <img
+                  [src]="integrante.avatarUrl"
+                  [alt]="integrante.nombre"
+                  class="size-16 rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto object-cover shadow-sm sm:size-20 md:size-24 lg:size-28 xl:size-32"
+                  loading="lazy"
+                />
+              } @else {
+                <span
+                  class="grid size-16 place-items-center rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto bg-landing-panel font-interfaz text-base font-bold text-landing-claro-texto sm:size-20 md:size-24 lg:size-28 xl:size-32 lg:text-2xl"
+                >
+                  {{ iniciales(integrante.nombre) }}
+                </span>
+              }
+            </div>
+          }
+        </div>
       </div>
     </div>
   </div>

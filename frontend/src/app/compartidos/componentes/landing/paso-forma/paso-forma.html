@@ -1,0 +1,42 @@
+<div class="paso-forma-contenedor">
+  @if (numero() !== undefined && numero() !== null) {
+    <app-paso-numero [numero]="numero()!" class="paso-forma-numero" />
+  }
+
+  <svg
+    viewBox="0 0 200 180"
+    class="paso-forma-svg"
+    aria-hidden="true"
+  >
+    <defs>
+      <clipPath [attr.id]="clipId()">
+        <path [attr.d]="svgPath()" />
+      </clipPath>
+    </defs>
+
+    <path
+      class="paso-forma-blob"
+      [attr.d]="svgPath()"
+      [attr.fill]="fillColor()"
+      [attr.stroke]="strokeColor()"
+      stroke-width="2.5"
+    />
+
+    @if (imagenUrl()) {
+      <image
+        [attr.href]="imagenUrl()"
+        [attr.clip-path]="'url(#' + clipId() + ')'"
+        class="paso-forma-imagen-svg"
+        x="46"
+        y="42"
+        width="108"
+        height="96"
+        preserveAspectRatio="xMidYMid meet"
+      />
+    }
+  </svg>
+
+  <div class="paso-forma-contenido">
+    <ng-content />
+  </div>
+</div>
