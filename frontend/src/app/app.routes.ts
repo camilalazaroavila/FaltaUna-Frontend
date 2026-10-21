@@ -13,6 +13,9 @@ import { empresaRegistradaGuard } from '@app/guardias/empresa-registrada.guard';
  * `componentes` es el banco de pruebas visual del sistema de diseño y no forma
  * parte del flujo de producto.
  */
+const cargaJuego = () =>
+  import('./paginas/pantalla-carga-juego/pantalla-carga-juego').then((m) => m.PantallaCargaJuego);
+
 export const routes: Routes = [
   {
     path: '',
@@ -55,6 +58,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@paginas/pantalla-inicial-juego/pantalla-inicial-juego').then((m) => m.PantallaInicialJuego),
   },
+
+  /*Rutas para el modo del juego. PvP, Contra la IA o tutorial*/
+  { path: 'juego/jugador', loadComponent: cargaJuego, data: { modo: 'pvp' } },
+  { path: 'juego/ia', loadComponent: cargaJuego, data: { modo: 'ia' } },
+  { path: 'juego/tutorial', loadComponent: cargaJuego, data: { modo: 'tutorial' } },
 
   {
     path: 'usuario/cupones',

@@ -13,6 +13,9 @@
    ========================================================================== */
 @theme inline {
    --color-combate-titulo: var(--combate-titulo);
+
+   --color-combate-fondo-carga: var(--combate-fondo-carga);
+   --color-combate-texto: var(--combate-texto);
    
     --color-marca-primaria: var(--marca-primaria);
     --color-marca-primaria-hover: var(--marca-primaria-hover);

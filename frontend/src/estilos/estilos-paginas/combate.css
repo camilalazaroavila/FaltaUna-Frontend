@@ -7,7 +7,11 @@
   --combate-fondo-alto: #fbf9b5;
   --combate-fondo-bajo: #0b2e36;
   --combate-titulo: #12454f;
+
+  --combate-fondo-carga: var(--combate-fondo-bajo);
+  --combate-texto: var(--combate-fondo-alto);
 }
+
 
 /* Botones del menú invertidos respecto del resto de la app: cara azul petróleo,
    sombra y texto crema. Se sobrescriben los tokens del botón solo dentro de esta
