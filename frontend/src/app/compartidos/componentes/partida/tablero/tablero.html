@@ -15,9 +15,10 @@
     [attr.aria-label]="'El rival tiene ' + servicio.cartasManoRival() + ' cartas en la mano'"
   >
     <span class="flex items-center" aria-hidden="true">
-      @for (n of reversosRival(); track n) {
+      @for (reverso of reversosRival(); track reverso.indice) {
         <span
-          class="reverso-rival h-[clamp(1.6rem,5cqw,2.6rem)] w-[clamp(1.15rem,3.6cqw,1.9rem)] shrink-0 rounded-sm border-2 border-slot-borde bg-carta-reverso shadow-cartoon"
+          class="reverso-rival h-[clamp(2.2rem,6cqw,3.4rem)] aspect-[3/4] shrink-0 rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
+          [style.--angulo]="reverso.angulo"
         ></span>
       }
     </span>
@@ -58,6 +59,7 @@
         [slotsResaltados]="resaltarSlots()"
         (abrirPopup)="lugarAbierto.set(lugar)"
         (jugarSlot)="alJugarEnSlot(lugar, $event)"
+        (verCarta)="cartaAbierta.set($event)"
       />
     }
   </div>

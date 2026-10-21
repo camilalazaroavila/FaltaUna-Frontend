@@ -12,13 +12,13 @@ export const ZONAS_MOCK: readonly ZonaMock[] = [
   {
     id: 'z-grido',
     nombre: 'Grido',
-    imagenUrl: 'imagenes/grido.jpg',
+    imagenUrl: 'imagenes/grido-local.jpg',
     efecto: { categoria: 'gastronomia', bonus: 1 },
   },
   {
     id: 'z-zara',
-    nombre: 'Zara',
-    imagenUrl: 'imagenes/zara.jpg',
+    nombre: 'Lego',
+    imagenUrl: 'imagenes/LEGO.jpg.webp',
     efecto: { categoria: 'indumentaria', bonus: 1 },
   },
   {

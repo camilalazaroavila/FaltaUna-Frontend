@@ -20,12 +20,6 @@ const CLASES_INICIAL: Record<TamanioChip, string> = {
   lg: 'text-subtitulo',
 };
 
-const CLASES_NOMBRE: Record<TamanioChip, string> = {
-  sm: 'max-w-40 truncate rounded-pildora border-2 border-zona-marco bg-hundido px-2.5 py-0.5 font-titulo text-menor tracking-etiqueta text-texto-primario uppercase',
-  md: 'max-w-40 truncate rounded-pildora border-2 border-zona-marco bg-hundido px-2.5 py-0.5 font-titulo text-menor tracking-etiqueta text-texto-primario uppercase',
-  lg: 'max-w-56 truncate rounded-pildora border-2 border-zona-marco bg-hundido px-3 py-1 font-titulo text-cuerpo tracking-etiqueta text-texto-primario uppercase',
-};
-
 /**
  * Chip de identidad de un jugador dentro de la partida: avatar con marco
  * irregular (máscara `marco-imagen`) y nombre. Si la imagen no carga, cae a
@@ -49,7 +43,6 @@ export class JugadorChip {
 
   protected readonly clasesAvatar = computed(() => CLASES_AVATAR[this.tamanio()]);
   protected readonly clasesInicial = computed(() => CLASES_INICIAL[this.tamanio()]);
-  protected readonly clasesNombre = computed(() => CLASES_NOMBRE[this.tamanio()]);
 
   /** Se reinicia a `false` cada vez que cambia la URL del avatar. */
   protected readonly falloImagen = linkedSignal({

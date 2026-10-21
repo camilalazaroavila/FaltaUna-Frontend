@@ -22,6 +22,9 @@ import type { Carta } from '@modelos/carta.model';
 import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
 import type { NombreLugar } from '@servicios/servicios-partida/partida-estado.service';
 
+/** Grados del extremo del abanico que forman los reversos de la mano rival. */
+const ABANICO_RIVAL_GRADOS = 12;
+
 /** Datos del slot que se está sobrevolando durante el arrastre. */
 interface SlotSobrevolado {
   readonly lugar: NombreLugar;
@@ -57,7 +60,11 @@ interface SlotSobrevolado {
 export class Tablero {
   protected readonly servicio = inject(PartidaEstadoService);
   private readonly mano = viewChild(Mano);
-  /** Host del tablero: containing block del fantasma `fixed` de la mano. */
+  /**
+   * Host del tablero: referencia de coordenadas de la mano. El containing block
+   * del fantasma `fixed` es el div `.tablero` (`contain: layout`), que comparte
+   * origen con este host.
+   */
   protected readonly host: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
 
   /** `true` cuando el drag de la galería fuerza el resaltado (demo). */
@@ -87,9 +94,16 @@ export class Tablero {
     return lugar ? this.servicio.lugares()[lugar].zona : null;
   });
 
-  protected readonly reversosRival = computed(() =>
-    Array.from({ length: this.servicio.cartasManoRival() }, (_, i) => i),
-  );
+  /** Reversos de la mano rival, cada uno con su ángulo de abanico (-12°..12°). */
+  protected readonly reversosRival = computed(() => {
+    const total = this.servicio.cartasManoRival();
+    const paso = total > 1 ? (2 * ABANICO_RIVAL_GRADOS) / (total - 1) : 0;
+
+    return Array.from({ length: total }, (_, i) => ({
+      indice: i,
+      angulo: `${total > 1 ? i * paso - ABANICO_RIVAL_GRADOS : 0}deg`,
+    }));
+  });
 
   protected alIniciarArrastre(carta: Carta): void {
     this.cartaEnArrastre.set(carta);

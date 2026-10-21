@@ -30,9 +30,9 @@ export interface EfectoZona {
 }
 
 /**
- * Popup de detalle de una zona: foto con marco irregular, nombre y el texto
- * del efecto, armado desde datos. Misma estructura que `carta-popup`: se
- * instancia con `@if` y cierra por ✕, fondo o Escape.
+ * Popup de detalle de una zona: foto con marco redondeado horizontal, nombre
+ * y el texto del efecto, armado desde datos. Misma estructura que
+ * `carta-popup`: se instancia con `@if` y cierra por ✕, fondo o Escape.
  */
 @Component({
   selector: 'app-zona-popup',
@@ -75,7 +75,7 @@ export class ZonaPopupComponent implements AfterViewInit {
   }
 
   /** Trampa de Tab mínima: con un solo control (✕) el foco alterna con el diálogo. */
-protected alPresionarTab(evento: Event): void {
+  protected alPresionarTab(evento: Event): void {
     const dialogo = this.dialogo()?.nativeElement;
     const cerrarBtn = dialogo?.querySelector<HTMLElement>('.zona-popup__cerrar');
 

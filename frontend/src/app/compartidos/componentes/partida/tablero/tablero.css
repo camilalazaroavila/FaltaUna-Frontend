@@ -1,7 +1,10 @@
+/* Host: ocupa el alto que le dé la página (en la partida, h-dvh). En la
+   galería no hay alto definido y simplemente se ajusta al contenido. */
 :host {
     display: block;
     width: 100%;
-    max-width: 80rem;
+    height: 100%;
+    max-width: 160rem;
     margin-inline: auto;
     container-type: inline-size;
 }
@@ -9,25 +12,27 @@
 .tablero {
     display: grid;
     width: 100%;
+    height: 100%;
     grid-template-columns:
-        minmax(3.25rem, 8cqw) minmax(0, 1fr) minmax(3.25rem, 8cqw);
+        minmax(3rem, clamp(3rem, 6cqw, 7rem)) minmax(0, 1fr) minmax(3rem, clamp(3rem, 6cqw, 7rem));
     grid-template-rows: auto minmax(0, 1fr) auto;
-    column-gap: clamp(0.5rem, 2cqw, 1.75rem);
-    row-gap: clamp(0.4rem, 1.4cqw, 1.25rem);
-    padding: clamp(0.75rem, 2.6cqw, 2rem);
+    column-gap: clamp(0.5rem, 1.6cqw, 1.75rem);
+    row-gap: clamp(0.25rem, 1.2vh, 1rem);
+    padding: clamp(0.5rem, 1.6vh, 1.5rem) clamp(0.75rem, 2cqw, 2rem);
     overflow-x: clip;
+    /* Containing block determinístico del fantasma `fixed` de la mano. */
+    contain: layout;
 }
 
-/* ---- Rival: fila superior completa, alineada a la derecha ---- */
-/* ---- Rival: arriba a la derecha, en columna ---- */
+/* ---- Rival: arriba a la derecha, chip y mano en una fila ---- */
 .area-rival {
     grid-column: 1 / -1;
     grid-row: 1;
     justify-self: end;
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: clamp(0.3rem, 1cqw, 0.6rem);
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(0.5rem, 1.6cqw, 1.25rem);
     min-width: 0;
 }
 
@@ -41,33 +46,33 @@
     gap: clamp(0.35rem, 1.2cqw, 0.75rem);
 }
 
+.reverso-rival {
+    transform: rotate(var(--angulo, 0deg));
+    transform-origin: bottom center;
+}
+
 .reverso-rival+.reverso-rival {
     margin-left: clamp(-0.7rem, -1.2cqw, -0.3rem);
 }
 
-/* ---- Barras: tope de altura en el contenedor ---- */
+/* ---- Barras: ocupan el alto de la fila central, con un mínimo de respaldo ---- */
 .area-barra-propia,
 .area-barra-rival {
     grid-row: 2;
+    align-self: stretch;
     display: flex;
     align-items: stretch;
     justify-content: center;
-    height: 100%;
-    max-height: clamp(11rem, 55cqw, 22rem);
-    min-height: 0;
+    min-height: clamp(9rem, 32vh, 22rem);
     min-width: 0;
 }
 
-/* Tuya: abajo a la izquierda, junto a tus slots */
 .area-barra-propia {
     grid-column: 1;
-    align-self: end;
 }
 
-/* Rival: arriba a la derecha, junto a sus slots */
 .area-barra-rival {
     grid-column: 3;
-    align-self: start;
 }
 
 .area-barra-propia app-barra-puntos,
@@ -75,17 +80,16 @@
     width: 100%;
 }
 
-/* ---- Zonas: centradas, con aire y sin estirarse ---- */
+/* ---- Zonas: centradas en la fila del medio ---- */
 .area-zonas {
     grid-column: 2;
     grid-row: 2;
     justify-self: center;
+    align-self: center;
     width: 100%;
-    max-width: 64cqw;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
-    column-gap: clamp(0.75rem, 5cqw, 4.5rem);
+    column-gap: clamp(0.75rem, 3cqw, 3rem);
     min-width: 0;
 }
 
@@ -93,70 +97,48 @@
     min-width: 0;
 }
 
-/* ---- Fila de abajo: las tres piezas comparten fila y se superponen
-        solo en su caja, no en su contenido ---- */
+/* ---- Fila de abajo ---- */
 .area-mano {
     grid-column: 2;
     grid-row: 3;
     align-self: end;
     position: relative;
-    z-index: 10;
+    z-index: 20;
     min-width: 0;
-    margin-top: calc(-1 * clamp(0.75rem, 2.5cqw, 2rem));
+    margin-top: calc(-1 * clamp(0.5rem, 2vh, 1.5rem));
 }
 
-/* Jugador propio: abajo a la izquierda, con el ancho de su contenido */
 .area-propio {
     grid-column: 1 / 3;
     grid-row: 3;
     justify-self: start;
     align-self: end;
     position: relative;
-    z-index: 20;
+    z-index: 15;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: clamp(0.25rem, 1cqw, 0.5rem);
+    gap: clamp(0.25rem, 1vh, 0.5rem);
     min-width: 0;
 }
 
+.area-rival app-jugador-chip,
 .area-propio app-jugador-chip {
-    width: auto;
-    max-width: 100%;
+    color: var(--color-teal-profundo);
 }
 
-/* Control de turno: abajo a la derecha, con ancho mínimo para el botón */
 .area-control {
     grid-column: 2 / 4;
     grid-row: 3;
     justify-self: end;
     align-self: end;
     position: relative;
-    z-index: 20;
+    z-index: 15;
     width: max-content;
     min-width: 8.5rem;
-    padding-bottom: clamp(0.25rem, 1cqw, 0.75rem);
+    padding-bottom: clamp(0.25rem, 1vh, 0.75rem);
 }
 
 .area-control app-control-turno {
     width: 100%;
-}
-
-/* ---- Tablero angosto: la mano toma todo el ancho y chip + control
-        pasan a una fila propia debajo ---- */
-@container (max-width: 30rem) {
-    .area-mano {
-        grid-column: 1 / -1;
-        grid-row: 3;
-    }
-
-    .area-propio {
-        grid-column: 1 / 3;
-        grid-row: 4;
-    }
-
-    .area-control {
-        grid-column: 2 / 4;
-        grid-row: 4;
-    }
 }
