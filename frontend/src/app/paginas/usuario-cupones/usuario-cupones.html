@@ -30,36 +30,10 @@
       <!-- Título y selector de sección -->
       <div class="mt-2 flex flex-col gap-3">
         <h1 class="font-titulo text-3xl uppercase tracking-wide sm:text-5xl">
-          {{ vistaActiva() === 'mis-cupones' ? 'Mis cupones' : 'Beneficios públicos' }}
+          Mis cupones
         </h1>
-
-        <nav
-          aria-label="Sección de descuentos"
-          class="flex flex-wrap gap-2 px-3 sm:px-0"
-        >
-          <button
-            type="button"
-            (click)="cambiarVista('mis-cupones')"
-            [attr.aria-pressed]="vistaActiva() === 'mis-cupones'"
-            class="rounded-pildora border-2 border-btn-juego-texto px-4 py-2 font-interfaz text-xs font-bold uppercase transition"
-            [class.bg-marca-primaria]="vistaActiva() === 'mis-cupones'"
-          >
-            Mis cupones
-          </button>
-
-          <button
-            type="button"
-            (click)="cambiarVista('beneficios')"
-            [attr.aria-pressed]="vistaActiva() === 'beneficios'"
-            class="rounded-pildora border-2 border-btn-juego-texto px-4 py-2 font-interfaz text-xs font-bold uppercase transition"
-            [class.bg-marca-primaria]="vistaActiva() === 'beneficios'"
-          >
-            Beneficios públicos
-          </button>
-        </nav>
       </div>
 
-      @if (vistaActiva() === 'mis-cupones') {
         <!-- Buscador y filtros de cupones propios -->
         <div
           class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-end"
@@ -355,121 +329,6 @@
             }
           </main>
         </div>
-      } @else {
-        <!-- Beneficios públicos: solo informativos -->
-        <section
-          class="mt-4 min-h-0 flex-1 px-1 sm:px-0"
-          aria-label="Beneficios públicos"
-        >
-          <p
-            class="mb-4 max-w-3xl font-interfaz text-sm text-texto-apagado"
-          >
-            Beneficios publicados por comercios o entidades. Confirmá las
-            condiciones y la vigencia con el comercio, banco o fuente enlazada.
-            Son informativos y no se canjean con el QR de FaltaUna.
-          </p>
-
-          @if (beneficiosCargando()) {
-            <p role="status" class="font-interfaz text-sm font-bold">
-              Cargando beneficios públicos…
-            </p>
-          } @else if (beneficiosError()) {
-            <div role="alert" class="font-interfaz text-sm">
-              <p class="font-bold">{{ beneficiosError() }}</p>
-
-              <button
-                type="button"
-                (click)="cargarBeneficiosPublicos()"
-                class="mt-3 rounded-pildora bg-landing-oscuro-fondo px-5 py-2 text-xs font-bold uppercase text-landing-oscuro-texto"
-              >
-                Reintentar
-              </button>
-            </div>
-          } @else if (beneficiosFiltrados().length === 0) {
-            <p class="font-interfaz text-sm font-bold">
-              No hay beneficios públicos vigentes que coincidan con tu búsqueda.
-            </p>
-          } @else {
-            <ul class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              @for (beneficio of beneficiosFiltrados(); track beneficio.id) {
-                <li
-                  class="rounded-2xl border-2 border-btn-juego-texto bg-white/5 p-4 shadow-sm"
-                >
-                  <article class="flex h-full flex-col gap-3">
-                    <div class="flex items-start justify-between gap-3">
-                      <div>
-                        <p
-                          class="font-interfaz text-xs font-bold uppercase tracking-wider text-texto-apagado"
-                        >
-                          {{ beneficio.marca }}
-                        </p>
-
-                        <h2
-                          class="mt-1 font-titulo text-xl uppercase leading-tight"
-                        >
-                          {{ beneficio.titulo }}
-                        </h2>
-                      </div>
-
-                      <span
-                        class="shrink-0 rounded-pildora px-2 py-1 font-interfaz text-[10px] font-black uppercase"
-                        [class.bg-marca-primaria]="beneficio.vigenteSegunFechaCargada"
-                        [class.bg-red-400]="!beneficio.vigenteSegunFechaCargada"
-                      >
-                        {{
-                          beneficio.vigenteSegunFechaCargada
-                            ? 'Informativo'
-                            : 'Verificar vigencia'
-                        }}
-                      </span>
-                    </div>
-
-                    <p class="font-interfaz text-sm leading-relaxed">
-                      {{ beneficio.descripcion }}
-                    </p>
-
-                    <p
-                      class="font-interfaz text-xs font-bold text-texto-apagado"
-                    >
-                      Vigencia cargada hasta
-                      {{
-                        beneficio.vigenteHastaUtc
-                          | date: 'dd/MM/yyyy' : 'UTC'
-                      }}
-                    </p>
-
-                    <div class="mt-auto border-t border-white/15 pt-3">
-                      <p class="font-interfaz text-xs font-bold">
-                        No canjeable con QR de FaltaUna.
-                      </p>
-
-                      @if (!beneficio.vigenteSegunFechaCargada) {
-                        <p
-                          class="mt-1 font-interfaz text-xs font-bold text-red-300"
-                        >
-                          La vigencia cargada venció. Revisá la fuente antes de
-                          usar este beneficio.
-                        </p>
-                      }
-
-                      @if (beneficio.fuenteUrl) {
-                        <a
-                          [href]="beneficio.fuenteUrl"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="mt-2 inline-flex items-center gap-1 font-interfaz text-sm font-bold text-marca-primaria underline hover:opacity-80"
-                        >
-                          Consultar fuente y condiciones ↗
-                        </a>
-                      }
-                    </div>
-                  </article>
-                </li>
-              }
-            </ul>
-          }
-        </section>
-      }
     </div>
   </div>
 
@@ -563,9 +422,25 @@
         }
 
         <p class="mt-3 font-interfaz text-sm font-bold text-marca-primaria">
-          Mostrá este QR al vendedor del negocio más cercano para conseguir los
-          beneficios.
+          @if (cupon.enlace) {
+            Escaneá el QR para ir a la página de {{ cupon.marca }} con el
+            descuento y sus condiciones.
+          } @else {
+            Mostrá este QR al vendedor del negocio más cercano para conseguir
+            los beneficios.
+          }
         </p>
+
+        @if (cupon.enlace) {
+          <a
+            [href]="cupon.enlace"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-2 inline-flex items-center gap-1 font-interfaz text-sm font-bold text-marca-primaria underline hover:opacity-80"
+          >
+            Abrir la promo ↗
+          </a>
+        }
       } @else {
         <p
           class="mt-6 rounded-xl bg-white/10 p-4 font-interfaz text-sm font-bold"

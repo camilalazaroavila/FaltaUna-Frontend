@@ -10,10 +10,10 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
+import QRCode from 'qrcode';
 import { Header } from '../../compartidos/componentes/header/header';
 import { CuponesService } from '../../servicios/cupones.service';
 import {
-  BeneficioPublico,
   CategoriaCupon,
   CuponDescuento,
   EstadoCupon,
@@ -35,7 +35,7 @@ interface FiltroCategoria {
 
 /**
  * Pantalla de cupones del usuario.
- * Incluye los cupones propios con QR y una pestaña separada de beneficios públicos.
+ * Cada cupón disponible muestra un QR que lleva a la página de la marca con el descuento.
  */
 @Component({
   selector: 'app-usuario-cupones',
@@ -89,14 +89,7 @@ export class UsuarioCupones {
     { id: 'tecnologia', nombre: 'Tecnología', urlIcono: urlIconoTecno },
   ];
 
-  protected readonly vistaActiva = signal<'mis-cupones' | 'beneficios'>(
-    'mis-cupones',
-  );
-
   protected readonly cupones = signal<CuponDescuento[]>([]);
-  protected readonly beneficiosPublicos = signal<BeneficioPublico[]>([]);
-  protected readonly beneficiosCargando = signal(false);
-  protected readonly beneficiosError = signal<string | null>(null);
 
   protected readonly cargando = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -162,24 +155,6 @@ export class UsuarioCupones {
     });
   });
 
-  /** Beneficios públicos filtrados por el buscador. No tienen QR de FaltaUna. */
-  protected readonly beneficiosFiltrados = computed(() => {
-    const texto = this.busqueda().trim().toLowerCase();
-
-    return this.beneficiosPublicos().filter((beneficio) => {
-      if (!texto) {
-        return true;
-      }
-
-      return [
-        beneficio.marca,
-        beneficio.titulo,
-        beneficio.descripcion,
-        beneficio.codigo,
-      ].some((valor) => (valor || '').toLowerCase().includes(texto));
-    });
-  });
-
   /** Categorías con cupones que coinciden con los filtros actuales. */
   protected readonly categoriasConResultados = computed(() => {
     const estado = this.estadoActivo();
@@ -233,7 +208,6 @@ export class UsuarioCupones {
 
     this.escucharCategoriaDesdeUrl(destruir);
     this.cargarCupones();
-    this.cargarBeneficiosPublicos();
 
     // Espera un instante después de escribir antes de consultar de nuevo.
     toObservable(this.busqueda)
@@ -244,9 +218,7 @@ export class UsuarioCupones {
         takeUntilDestroyed(destruir),
       )
       .subscribe(() => {
-        if (this.vistaActiva() === 'mis-cupones') {
-          this.cargarCupones();
-        }
+        this.cargarCupones();
       });
   }
 
@@ -263,39 +235,6 @@ export class UsuarioCupones {
           this.categoriaActiva.set(categoria as CategoriaCupon);
         }
       });
-  }
-
-  /** Cambia entre los cupones propios y los beneficios públicos. */
-  protected cambiarVista(
-    vista: 'mis-cupones' | 'beneficios',
-  ): void {
-    this.vistaActiva.set(vista);
-    this.menuAbierto.set(false);
-
-    if (vista === 'mis-cupones') {
-      this.cargarCupones();
-    } else {
-      this.cerrarCupon();
-    }
-  }
-
-  /** Obtiene los beneficios informativos desde el catálogo del backend. */
-  protected cargarBeneficiosPublicos(): void {
-    this.beneficiosCargando.set(true);
-    this.beneficiosError.set(null);
-
-    this.cuponesService.obtenerBeneficiosPublicos().subscribe({
-      next: (beneficios) => {
-        this.beneficiosPublicos.set(beneficios);
-        this.beneficiosCargando.set(false);
-      },
-      error: () => {
-        this.beneficiosError.set(
-          'No pudimos cargar los beneficios públicos. Verificá que el backend esté disponible.',
-        );
-        this.beneficiosCargando.set(false);
-      },
-    });
   }
 
   protected cargarCupones(): void {
@@ -364,6 +303,24 @@ export class UsuarioCupones {
 
     this.qrCargando.set(true);
 
+    // Con enlace de la marca, el QR se genera acá y lleva directo a la página del descuento.
+    if (cupon.enlace) {
+      QRCode.toDataURL(cupon.enlace, { width: 320, margin: 1 })
+        .then((dataUrl: string) => {
+          if (this.cuponSeleccionado()?.id !== cupon.id) {
+            return;
+          }
+
+          this.urlQr.set(dataUrl);
+          this.qrCargando.set(false);
+        })
+        .catch(() => {
+          this.qrError.set(true);
+          this.qrCargando.set(false);
+        });
+      return;
+    }
+
     this.cuponesService.obtenerQr(cupon.id).subscribe({
       next: ({ imagen, token }) => {
         // Si se cerró o cambió el cupón, se descarta la respuesta.
@@ -407,7 +364,7 @@ export class UsuarioCupones {
   private liberarQr(): void {
     const url = this.urlQr();
 
-    if (url) {
+    if (url?.startsWith('blob:')) {
       URL.revokeObjectURL(url);
     }
 

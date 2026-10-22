@@ -22,6 +22,7 @@ const CUPONES: CuponDescuento[] = [
     codigo: 'GRIDO-1',
     vigenteHastaUtc: '2026-12-31T00:00:00Z',
     estado: 'Disponible',
+    enlace: null,
   },
   {
     id: 2,
@@ -33,6 +34,7 @@ const CUPONES: CuponDescuento[] = [
     codigo: 'ZARA-1',
     vigenteHastaUtc: '2026-12-31T00:00:00Z',
     estado: 'Disponible',
+    enlace: null,
   },
 ];
 
@@ -62,7 +64,6 @@ describe('UsuarioCupones', () => {
           provide: CuponesService,
           useValue: {
             obtenerMisCupones: jest.fn(() => of(CUPONES)),
-            obtenerBeneficiosPublicos: jest.fn(() => of([])),
             obtenerQr: jest.fn(),
           },
         },

@@ -3,8 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
-  BeneficioPublico,
-  CatalogoCuponApi,
   CanjeApi,
   CanjeExitosoRespuesta,
   CanjearCuponSolicitud,
@@ -40,6 +38,9 @@ const CATEGORIA_POR_MARCA: Record<string, CategoriaCupon> = {
   musimundo: 'tecnologia',
 };
 
+/** El seed deja el link de la promo al final de la descripción: "Fuente: https://...". */
+const REGEX_ENLACE = /\s*Fuente:\s*(https?:\/\/\S+)/i;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -68,53 +69,6 @@ export class CuponesService {
     return this.http
       .get<MiCuponApi[]>(`${this.apiUrl}/Cupones/mis-cupones`, { params })
       .pipe(map((cupones) => cupones.map((c) => this.aCuponDescuento(c))));
-  }
-
-  /**
-   * Beneficios públicos cargados en el seed.
-   * Se consultan desde el catálogo, pero se separan por el prefijo REAL-
-   * y nunca se tratan como cupones canjeables.
-   */
-  obtenerBeneficiosPublicos(): Observable<BeneficioPublico[]> {
-    return this.http
-      .get<CatalogoCuponApi[]>(`${this.apiUrl}/Cupones/catalogo`)
-      .pipe(
-        map((cupones) =>
-          cupones
-            .filter(
-              (c) =>
-                c.codigo?.toUpperCase().startsWith('REAL-') &&
-                c.estado?.toLowerCase() === 'activo',
-            )
-            .map((c) => {
-              const fuenteUrl =
-                /Fuente:\s*(https?:\/\/\S+)/i.exec(c.descripcion || '')?.[1] ??
-                null;
-
-              const descripcion = (c.descripcion || '')
-                .replace(
-                  /^BENEFICIO INFORMATIVO, NO CANJEABLE CON QR FALTAUNA\.\s*/i,
-                  '',
-                )
-                .replace(/\s*Fuente:\s*https?:\/\/\S+/i, '')
-                .trim();
-
-              return {
-                id: c.id,
-                marca: c.marca,
-                titulo: c.nombre,
-                descripcion,
-                codigo: c.codigo,
-                porcentajeDescuento: c.porcentajeDescuento,
-                fechaInicioUtc: c.fechaInicio,
-                vigenteHastaUtc: c.fechaVencimiento,
-                fuenteUrl,
-                vigenteSegunFechaCargada:
-                  new Date(c.fechaVencimiento).getTime() >= Date.now(),
-              };
-            }),
-        ),
-      );
   }
 
   /**
@@ -175,17 +129,21 @@ export class CuponesService {
   }
 
   private aCuponDescuento(c: MiCuponApi): CuponDescuento {
+    const textoOriginal = c.descripcion || c.nombre;
+    const enlace = REGEX_ENLACE.exec(textoOriginal)?.[1] ?? null;
+
     return {
       id: c.cuponId,
       marca: c.marca,
       categoria:
         CATEGORIA_POR_MARCA[c.marca.toLowerCase()] ?? 'gastronomia',
       titulo: c.nombre,
-      descripcion: c.descripcion || c.nombre,
+      descripcion: textoOriginal.replace(REGEX_ENLACE, '').trim(),
       detalles: `${c.porcentajeDescuento}% de descuento`,
       codigo: c.codigo,
       vigenteHastaUtc: c.fechaVencimiento,
       estado: this.estadoDe(c),
+      enlace,
     };
   }
 
