@@ -3,7 +3,6 @@ import { PasoNumero } from './paso-numero';
 
 describe('PasoNumero', () => {
   let fixture: ComponentFixture<PasoNumero>;
-  let component: PasoNumero;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -11,7 +10,6 @@ describe('PasoNumero', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(PasoNumero);
-    component = fixture.componentInstance;
   });
 
   it('debe crearse correctamente y mostrar el número', () => {

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { PasoNumero } from '../paso-numero/paso-numero';
+import { PasoNumero } from '@compartidos/componentes/landing/paso-numero/paso-numero';
 
 const FORMA_PATHS: Record<1 | 2 | 3, string> = {
   1: 'M58,22 C76,22 86,34 98,34 C110,34 126,22 144,22 C168,22 186,46 186,80 C186,116 165,148 130,158 C98,166 64,162 42,142 C20,120 14,88 20,60 C26,40 38,22 58,22 Z',

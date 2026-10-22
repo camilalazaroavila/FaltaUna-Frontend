@@ -41,11 +41,11 @@ export class Landing {
   protected readonly urlLogo = urlLogo;
 
   protected readonly marcas: MarcaCarrusel[] = [
-    { nombre: "Levi's", logoUrl: '/imagenes/logos-landing/levis.png' },
+    { nombre: 'Levi\'s', logoUrl: '/imagenes/logos-landing/levis.png' },
     { nombre: 'Adidas', logoUrl: '/imagenes/logos-landing/adidas.png' },
     { nombre: 'Converse', logoUrl: '/imagenes/logos-landing/converse.png' },
     { nombre: 'Tommy', logoUrl: '/imagenes/logos-landing/tommy.png' },
-    { nombre: "McDonald's", logoUrl: '/imagenes/logos-landing/mcdonalds.png' },
+    { nombre: 'McDonald\'s', logoUrl: '/imagenes/logos-landing/mcdonalds.png' },
     { nombre: 'Grido', logoUrl: '/imagenes/logos-landing/grido.png' },
   ];
 

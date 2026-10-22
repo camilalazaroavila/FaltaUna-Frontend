@@ -3,7 +3,6 @@ import { PasoForma } from './paso-forma';
 
 describe('PasoForma', () => {
   let fixture: ComponentFixture<PasoForma>;
-  let component: PasoForma;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -11,7 +10,6 @@ describe('PasoForma', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(PasoForma);
-    component = fixture.componentInstance;
   });
 
   it('debe crearse y renderizar un SVG con la imagen clipeada', () => {
