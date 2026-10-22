@@ -12,7 +12,8 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { injectModoAuth } from '@compartidos/componentes/layout/auth-layout/auth-modo';
 import { AuthService } from '@servicios/auth.service';
 import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
-import urlLogoAlt from '@svgs/Imagotipo_Negro.svg'; // NUEVO
+import urlLogoOscuro from '@svgs/Imagotipo_Negro.svg';
+import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
 
 @Component({
   selector: 'app-header',
@@ -23,7 +24,7 @@ import urlLogoAlt from '@svgs/Imagotipo_Negro.svg'; // NUEVO
   host: { class: 'block' },
   template: `
     @if (logueado()) {
-      <!-- VARIANTE LOGUEADO: sin cambios -->
+      <!-- VARIANTE LOGUEADO -->
       <header class="relative z-40 m-5">
         <div
           class="flex items-center justify-between gap-2 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
@@ -83,19 +84,21 @@ import urlLogoAlt from '@svgs/Imagotipo_Negro.svg'; // NUEVO
         </div>
       </header>
     } @else {
-      <!-- VARIANTES PÚBLICA (landing, opcionalmente amarilla) Y AUTH (login/registro) -->
+      <!-- VARIANTES PÚBLICA (landing, opcionalmente verde o amarilla) Y AUTH (login/registro) EN FORMA PASTILLA -->
       <header
-        class="m-5 flex items-center gap-2 rounded-md px-3 py-2 shadow-md sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
-        [class.bg-landing-oscuro-fondo]="!enAuth() && !fondoAmarillo()"
+        class="m-5 flex items-center gap-2 rounded-md px-3 py-2 shadow-md sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3 transition-colors"
+        [class.bg-landing-marca]="fondoVerde()"
+        [class.bg-landing-oscuro-fondo]="!enAuth() && !fondoAmarillo() && !fondoVerde()"
         [class.bg-marca-acento]="fondoAmarillo()"
         [class.bg-header-auth-fondo]="enAuth()"
-        [class.text-landing-oscuro-texto]="!fondoAmarillo()"
+        [class.text-landing-oscuro-texto]="!fondoAmarillo() && !fondoVerde()"
         [class.text-black]="fondoAmarillo()"
+        [class.text-white]="fondoVerde()"
       >
         <a [routerLink]="destinoLogo()" class="shrink-0" aria-label="Falta Una, ir al inicio">
           <img
-            [src]="fondoAmarillo() ? urlLogoOscuro : urlLogo"
-            alt=""
+            [src]="fondoVerde() ? urlLogoBlanco : (fondoAmarillo() ? urlLogoOscuro : urlLogo)"
+            alt="Falta Una"
             class="w-auto lg:h-[75px]"
             [class.h-8]="!enAuth()"
             [class.sm:h-9]="!enAuth()"
@@ -113,9 +116,11 @@ import urlLogoAlt from '@svgs/Imagotipo_Negro.svg'; // NUEVO
             [routerLinkActiveOptions]="{ exact: true }"
             queryParamsHandling="preserve"
             class="font-interfaz text-[10px] font-bold uppercase tracking-wide transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
-            [class.text-landing-oscuro-texto]="!fondoAmarillo()"
+            [class.text-white]="fondoVerde()"
+            [class.text-landing-oscuro-texto]="!fondoAmarillo() && !fondoVerde()"
             [class.text-black]="fondoAmarillo()"
-            [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo()"
+            [class.hover:text-landing-acento]="fondoVerde()"
+            [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo() && !fondoVerde()"
             [class.hover:text-landing-oscuro-fondo]="fondoAmarillo()"
             [class.hover:text-marca-primaria]="enAuth() && modo() === 'jugador'"
             [class.hover:text-landing-acento]="enAuth() && modo() === 'empresa'"
@@ -128,9 +133,11 @@ import urlLogoAlt from '@svgs/Imagotipo_Negro.svg'; // NUEVO
             [routerLinkActiveOptions]="{ exact: true }"
             queryParamsHandling="preserve"
             class="font-interfaz text-[10px] font-bold uppercase tracking-wide transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
-            [class.text-landing-oscuro-texto]="!fondoAmarillo()"
+            [class.text-white]="fondoVerde()"
+            [class.text-landing-oscuro-texto]="!fondoAmarillo() && !fondoVerde()"
             [class.text-black]="fondoAmarillo()"
-            [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo()"
+            [class.hover:text-landing-acento]="fondoVerde()"
+            [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo() && !fondoVerde()"
             [class.hover:text-landing-oscuro-fondo]="fondoAmarillo()"
             [class.hover:text-marca-primaria]="enAuth() && modo() === 'jugador'"
             [class.hover:text-landing-acento]="enAuth() && modo() === 'empresa'"
@@ -151,8 +158,11 @@ export class Header {
   /** Logo claro: para fondos oscuros (teal en jugador, marrón en empresa). */
   protected readonly urlLogo = urlLogoClaro;
 
-  /** NUEVO: logo oscuro, para el header amarillo de la landing. */
-  protected readonly urlLogoOscuro = urlLogoAlt;
+  /** Logo oscuro, para el header amarillo de la landing. */
+  protected readonly urlLogoOscuro = urlLogoOscuro;
+
+  /** Logo blanco, para el header verde de la landing. */
+  protected readonly urlLogoBlanco = urlLogoBlanco;
 
   protected readonly termino = signal('');
 
@@ -162,11 +172,14 @@ export class Header {
   /** Variante con sesión iniciada. Ignora `enAuth`. */
   readonly logueado = input(false);
 
-  /** NUEVO: header amarillo con texto y logo negros. Solo se usa en la landing. */
+  /** Header amarillo con texto y logo negros. */
   readonly amarillo = input(false);
 
-  /** NUEVO: el amarillo nunca se aplica en las vistas de auth. */
+  /** Header verde de la landing de usuario con logo blanco y texto blanco. */
+  readonly verde = input(false);
+
   protected readonly fondoAmarillo = computed(() => this.amarillo() && !this.enAuth());
+  protected readonly fondoVerde = computed(() => this.verde() && !this.enAuth());
 
   readonly enlaceLogo = input<string | null>(null);
 

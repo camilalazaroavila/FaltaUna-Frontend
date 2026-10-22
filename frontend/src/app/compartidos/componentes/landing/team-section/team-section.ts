@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { IntegranteEquipo } from '@modelos/landing-empresa.model';
 
 @Component({
@@ -11,6 +11,9 @@ import { IntegranteEquipo } from '@modelos/landing-empresa.model';
 })
 export class TeamSection {
   readonly integrantes = input.required<IntegranteEquipo[]>();
+
+  protected readonly filaSuperior = computed(() => this.integrantes().slice(0, 4));
+  protected readonly filaInferior = computed(() => this.integrantes().slice(4));
 
   protected iniciales(nombre: string): string {
     return nombre

@@ -1,0 +1,67 @@
+<main
+  class="grid min-h-dvh grid-cols-1 overflow-hidden bg-combate-fondo-carga text-combate-texto md:grid-cols-[60%_1fr]">
+  <!-- Columna de contenido: arriba queda fijo el título y abajo aparece el aviso, así nada salta de lugar -->
+  <section class="flex flex-col items-center gap-8 px-6 pt-16 text-center md:gap-10 md:pt-[12dvh]">
+    <h1
+      class="font-titulo text-3xl leading-tight whitespace-pre-line uppercase sm:text-4xl md:text-5xl lg:text-[max(3rem,4vw)]">
+      {{ textos.buscando }}
+    </h1>
+
+    <!-- Separador decorativo: línea, estrella de cuatro puntas, línea -->
+    <div class="flex w-4/5 items-center gap-3 md:w-2/3" aria-hidden="true">
+      <span class="h-0.5 flex-1 bg-combate-texto"></span>
+      <svg class="size-10 shrink-0 text-combate-texto md:size-12" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M12 0C12.9 7.2 16.8 11.1 24 12C16.8 12.9 12.9 16.8 12 24C11.1 16.8 7.2 12.9 0 12C7.2 11.1 11.1 7.2 12 0Z" />
+      </svg>
+      <span class="h-0.5 flex-1 bg-combate-texto"></span>
+    </div>
+
+    <!-- role="status": los lectores de pantalla anuncian el aviso cuando aparece -->
+    <div role="status" class="flex flex-col items-center gap-6">
+      @if (encontrado()) {
+        <div
+          class="flex flex-col items-center gap-6 transition-[opacity,translate] duration-500 starting:translate-y-3 starting:opacity-0 motion-reduce:transition-none">
+          <span class="flex size-24 items-center justify-center rounded-circulo bg-marca-primaria lg:size-28">
+            <svg
+              class="size-12 text-white lg:size-14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true">
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+          </span>
+          <!-- Es un h2 (y no un p) para que tome la misma fuente que el h1 de arriba -->
+          <h2
+            class="font-titulo text-3xl leading-tight whitespace-pre-line uppercase sm:text-4xl md:text-5xl lg:text-[max(3rem,4vw)]">
+            {{ textos.listo }}
+          </h2>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!--
+    Ilustración: cara dormida mientras se busca y cara despierta cuando se encuentra la partida.
+    Las dos ocupan el mismo lugar (grid de una celda) y se cruzan con un fundido.
+    Es decorativa (alt vacío); el estado ya lo anuncia el mensaje de la izquierda. Solo se ve desde md.-->
+ 
+  <div class="hidden items-end justify-end pr-12 pb-16 md:flex lg:pr-24 lg:pb-24">
+    <div class="grid w-2/3 max-w-md" aria-hidden="true">
+      <img
+        src="imagenes/pantalla-carga-juego/cara-dormida.png"
+        alt="cara-dormida"
+        class="col-start-1 row-start-1 w-full object-contain transition-opacity duration-500 motion-reduce:transition-none"
+        [class.opacity-0]="encontrado()" />
+      <img
+        src="imagenes/pantalla-carga-juego/cara-despierta.png"
+        alt="cara-despierta"
+        class="col-start-1 row-start-1 w-full object-contain transition-opacity duration-500 motion-reduce:transition-none"
+        [class.opacity-0]="!encontrado()" />
+    </div>
+  </div> 
+</main>
