@@ -44,9 +44,10 @@
 }
 
 /*
- * Fantasma del arrastre: `position: fixed` lo saca de cualquier contenedor con
- * overflow/container-type, así el tablero no lo recorta. Se centra bajo el
- * puntero con un pequeño desplazamiento hacia arriba.
+ * Fantasma del arrastre: `position: fixed` se ancla al containing block creado
+ * por `contain: layout` en el div .tablero, cuyo origen coincide con el host
+ * (por eso `aLocal` resta el rect del host). Se centra bajo el puntero con un
+ * pequeño desplazamiento hacia arriba.
  */
 .mano-fantasma {
     position: fixed;

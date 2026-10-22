@@ -18,16 +18,17 @@ import { PuntajeZona } from '@compartidos/componentes/partida/puntaje-zona/punta
 import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-carta';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import type { Carta } from '@modelos/carta.model';
-import type { EstadoPuntajeZona, EstadoSlot } from '@modelos/partida.model';
 import type {
+  EstadoPuntajeZona,
+  EstadoSlot,
   NombreLugar,
   SlotsLado,
-} from '@servicios/servicios-partida/partida-estado.service';
-import type { ZonaMock } from '@servicios/servicios-partida/zonas-mock.service';
+  ZonaTablero,
+} from '@modelos/partida.model';
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
-const IMAGEN_RESPALDO = 'imagenes/Sprite.png';
+const IMAGEN_RESPALDO = 'imagenes/grido.jpg';
 
 /** Visibilidad en segundos del delta cuando no se anima (movimiento reducido). */
 const MS_DELTA_ESTATICO = 2000;
@@ -86,13 +87,17 @@ export class Zona implements AfterViewInit {
   private readonly referenciaDeltaRival = viewChild<ElementRef<HTMLElement>>('refDeltaRival');
 
   readonly lugar = input<NombreLugar>('izquierda');
-  readonly zona = input.required<ZonaMock>();
+  readonly zona = input.required<ZonaTablero>();
   readonly cartasRival = input.required<SlotsLado>();
   readonly cartasPropias = input.required<SlotsLado>();
   readonly puntajeRival = input.required<number>();
   readonly puntajePropio = input.required<number>();
   readonly estadoRival = input<EstadoPuntajeZona>('empate');
   readonly estadoPropio = input<EstadoPuntajeZona>('empate');
+
+
+  readonly verCarta = output<Carta>();
+
   /** `true` mientras el jugador tiene una carta agarrada: resalta sus slots vacíos. */
   readonly slotsResaltados = input(false);
   /** Cuánto cambió el puntaje de cada lado en la última rotación (0 = nada). */
@@ -134,7 +139,7 @@ export class Zona implements AfterViewInit {
   protected readonly claseDeltaRival = computed(() => claseDelta(this.deltaRival()));
 
   private contexto?: ContextoGsap;
-  private zonaAnteriorId?: string;
+  private zonaAnteriorId?: number;
   private destacadoAnterior = false;
   private temporizador?: ReturnType<typeof setTimeout>;
 

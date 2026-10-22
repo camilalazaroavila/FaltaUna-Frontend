@@ -45,6 +45,70 @@ export const ETIQUETA_RAREZA: Record<RarezaCarta, string> = {
   legendaria: 'Legendaria',
 };
 
+/** Categoría que se usa cuando el backend no manda una categoría reconocible. */
+export const CATEGORIA_POR_DEFECTO: CategoriaCarta = 'gastronomia';
+
+/**
+ * Equivalencias entre el nombre de categoría del backend (`Categoria.Nombre`,
+ * texto libre en la base) y el valor de máquina del modelo de carta.
+ *
+ * La tabla `categoria` hoy se siembra con `Comida` y `Ropa`, así que esos dos
+ * nombres van primero. Los alias siguientes son previsibles del mismo rubro.
+ */
+const EQUIVALENCIAS_CATEGORIA: Readonly<Record<string, CategoriaCarta>> = {
+  comida: 'gastronomia',
+  alimentos: 'gastronomia',
+  bebida: 'gastronomia',
+  bebidas: 'gastronomia',
+  gastronomia: 'gastronomia',
+  gastronomico: 'gastronomia',
+  restaurante: 'gastronomia',
+  ropa: 'indumentaria',
+  moda: 'indumentaria',
+  vestimenta: 'indumentaria',
+  indumentaria: 'indumentaria',
+  decoracion: 'decoracion',
+  decoraciones: 'decoracion',
+  cosmeticos: 'cosmeticos',
+  cosmetica: 'cosmeticos',
+  belleza: 'cosmeticos',
+  cuidado_personal: 'cosmeticos',
+  entretenimiento: 'entretenimiento',
+  entretenimientos: 'entretenimiento',
+  musica: 'musica',
+  tecnologia: 'tecnologia',
+  tecnologias: 'tecnologia',
+  electronica: 'tecnologia',
+  tecno: 'tecnologia',
+};
+
+/**
+ * Traduce el nombre de categoría del backend al valor del modelo de carta.
+ *
+ * Deja el nombre comparable (minúsculas, sin tildes) antes de buscarlo, porque
+ * el backend guarda `varchar(50)` en `utf8mb4` y el mismo rubro puede venir
+ * escrito de varias formas. Ante un nombre desconocido devuelve
+ * `CATEGORIA_POR_DEFECTO`: la tabla acepta cualquier texto y la vista nunca
+ * puede quedarse sin categoría.
+ */
+export function categoriaCartaDesdeNombre(nombre: string | null | undefined): CategoriaCarta {
+  if (typeof nombre !== 'string') {
+    return CATEGORIA_POR_DEFECTO;
+  }
+
+  const limpio = nombre
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+  if (!limpio) {
+    return CATEGORIA_POR_DEFECTO;
+  }
+
+  return EQUIVALENCIAS_CATEGORIA[limpio] ?? CATEGORIA_POR_DEFECTO;
+}
+
 /** Etiqueta legible para cada categoría (sidebar y aria-labels). */
 export const ETIQUETA_CATEGORIA: Record<CategoriaCarta, string> = {
   gastronomia: 'Gastronomía',

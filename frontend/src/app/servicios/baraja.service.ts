@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, shareReplay, tap } from 'rxjs';
-import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
+import type { Carta, RarezaCarta } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre } from '@modelos/carta.model';
 import { ApiService } from './api.service';
 import type {
   CartaInventarioApi,
@@ -58,7 +59,7 @@ function mapearCartaInventario(carta: CartaInventarioApi): Carta {
     nombre: carta.nombre,
     imagenUrl: carta.imagenUrl ?? '',
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
-    categoria: mapearCategoria(carta.categoria),
+    categoria: categoriaCartaDesdeNombre(carta.categoria),
     atributoIzquierdo: carta.poder,
     atributoDerecho: carta.costoMana,
     obtenida: true,
@@ -70,7 +71,7 @@ function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {
     nombre: carta.nombre,
     imagenUrl: carta.imagenUrl ?? '',
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
-    categoria: mapearCategoria(''),
+    categoria: categoriaCartaDesdeNombre(''),
     atributoIzquierdo: carta.poder,
     atributoDerecho: carta.costoMana,
     obtenida: true,
@@ -97,17 +98,4 @@ function mapearRareza(valor: string, orden: number): RarezaCarta {
     default:
       return ({ 1: 'comun', 2: 'rara', 3: 'epicarta', 4: 'legendaria' } as const)[orden] ?? 'comun';
   }
-}
-function mapearCategoria(valor: string): CategoriaCarta {
-  const categoria = normalizar(valor);
-  const equivalencias: Record<string, CategoriaCarta> = {
-    gastronomia: 'gastronomia',
-    cosmeticos: 'cosmeticos',
-    decoracion: 'decoracion',
-    indumentaria: 'indumentaria',
-    entretenimiento: 'entretenimiento',
-    musica: 'musica',
-    tecnologia: 'tecnologia',
-  };
-  return equivalencias[categoria] ?? 'gastronomia';
 }

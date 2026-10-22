@@ -126,8 +126,9 @@
    --slot-resaltado-anillo: color-mix(in srgb, var(--marca-primaria) 45%, transparent);
 
    /* Zona */
-   --zona-marco: var(--color-teal-profundo);
+   --zona-marco: var(--color-amarillo-logo);
    --zona-marco-destacado: var(--color-amarillo-logo);
+   --zona-marco-sombra: var(--color-teal-profundo);
 
    /* Marco del avatar del chip de jugador (máscara marco-imagen). */
    --avatar-marco: var(--color-teal-profundo);

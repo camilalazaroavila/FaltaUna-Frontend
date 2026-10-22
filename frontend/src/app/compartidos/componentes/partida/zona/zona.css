@@ -8,19 +8,65 @@
 .zona-contenido {
     display: flex;
     flex-direction: column;
-    gap: clamp(0.35rem, 2.6cqw, 0.75rem);
+    gap: clamp(0.25rem, 1vh, 0.75rem);
 }
 
+/* Una sola fila de 6 slots por lado. El ancho máximo depende del alto de la
+   pantalla: así, en pantallas bajas, los slots no empujan hasta hacer scroll. */
+/* 3 columnas x 2 filas por lado. El ancho máximo depende del alto de la
+   pantalla para que las 4 filas de slots más la foto entren sin scroll. */
 .zona-slots {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(0.3rem, 2.2cqw, 0.65rem);
+    gap: clamp(0.2rem, 1.4cqw, 0.6rem);
+    width: 100%;
+    max-width: min(100%, 26vh);
+    margin-inline: auto;
 }
 
 .zona-foto {
-    width: clamp(3.5rem, 55cqw, 8rem);
+    position: relative;
+    width: clamp(5rem, min(45cqw, 18vh), 12rem);
     margin-inline: auto;
-    margin-block: clamp(0.9rem, 4cqw, 2rem);
+}
+
+.zona-celda {
+    position: relative;
+    min-width: 0;
+}
+
+/* La celda con la carta enfocada pasa por encima de sus vecinas para que el
+   zoom no quede tapado. */
+.zona-celda:hover,
+.zona-celda:focus-within {
+    z-index: 30;
+}
+
+.zona-celda-foto {
+    display: grid;
+    place-items: center;
+    padding-block: clamp(0.9rem, 2.5vh, 1.5rem);
+}
+
+
+.zona-foto>button {
+    filter: drop-shadow(3px 5px 0 var(--zona-marco-sombra));
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.zona-foto>button:hover {
+    transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .zona-foto>button {
+        transition: none;
+    }
+
+    .zona-foto>button:hover {
+        transform: none;
+    }
 }
 
 @container (max-width: 12rem) {

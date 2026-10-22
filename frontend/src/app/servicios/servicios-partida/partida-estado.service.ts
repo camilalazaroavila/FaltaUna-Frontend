@@ -1,38 +1,22 @@
 import { Injectable, computed, signal } from '@angular/core';
-import type { EstadoBotonListo } from '@compartidos/componentes/partida/boton-listo/boton-listo';
 import type { Carta } from '@modelos/carta.model';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
-import type { EstadoPuntajeZona } from '@modelos/partida.model';
+import type {
+  DeltaLugar,
+  EstadoPuntajeZona,
+  EstadoRondaPartida,
+  LugarPartida,
+  NombreLugar,
+  PorLugar,
+  PuntajeLugar,
+  SlotsLado,
+  ZonaTablero,
+} from '@modelos/partida.model';
 import { JUGADORES_MOCK, ZONAS_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
-import type { ZonaMock } from '@servicios/servicios-partida/zonas-mock.service';
 
-export type NombreLugar = 'izquierda' | 'derecha';
-
-/** Seis slots por lado; `null` = slot vacío. */
-export type SlotsLado = readonly (Carta | null)[];
-
-export interface LugarPartida {
-  readonly zona: ZonaMock;
-  readonly rival: SlotsLado;
-  readonly propio: SlotsLado;
-}
-
-export interface PuntajeLugar {
-  readonly propio: number;
-  readonly rival: number;
-  readonly estadoPropio: EstadoPuntajeZona;
-  readonly estadoRival: EstadoPuntajeZona;
-}
-
-export interface DeltaLugar {
-  readonly propio: number;
-  readonly rival: number;
-}
-
-type PorLugar<T> = Record<NombreLugar, T>;
+const SLOTS_POR_LADO = 6;
 
 const NOMBRES_LUGAR: readonly NombreLugar[] = ['izquierda', 'derecha'];
-const SLOTS_POR_LADO = 6;
 
 const cartaMock = (id: string): Carta => {
   const carta = CARTAS_MOCK.find((c) => c.id === id);
@@ -54,7 +38,7 @@ const estadoDe = (propio: number, rival: number): EstadoPuntajeZona =>
   propio > rival ? 'ganando' : propio < rival ? 'perdiendo' : 'empate';
 
 /** Poder de las cartas del lado, más el bonus por cada carta de la categoría del efecto. */
-const puntajeLado = (cartas: SlotsLado, zona: ZonaMock): number =>
+const puntajeLado = (cartas: SlotsLado, zona: ZonaTablero): number =>
   cartas.reduce((total, carta) => {
     if (!carta) {
       return total;
@@ -106,7 +90,7 @@ export class PartidaEstadoService {
   });
   private readonly estadoRotaciones = signal(0);
   private readonly estadoAnuncio = signal('');
-  private readonly estadoRonda = signal<EstadoBotonListo>('jugando');
+  private readonly estadoRonda = signal<EstadoRondaPartida>('jugando');
 
   readonly lugares = this.estadoLugares.asReadonly();
   readonly deltas = this.estadoDeltas.asReadonly();

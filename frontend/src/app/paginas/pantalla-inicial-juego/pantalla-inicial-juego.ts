@@ -9,7 +9,7 @@ interface OpcionJuego {
   readonly ruta: string;
 }
  
-// TODO: reemplazar las rutas inventadas por las reales cuando existan esas pantallas.
+// Las rutas de partida contra jugador y contra la IA ya existen; falta la pantalla de tutorial.
 const OPCIONES_JUEGO: readonly OpcionJuego[] = [
   { id: 'jugador', texto: 'Partida contra jugador', ruta: '/juego/jugador' },
   { id: 'ia', texto: 'Partida contra la IA', ruta: '/juego/ia' },

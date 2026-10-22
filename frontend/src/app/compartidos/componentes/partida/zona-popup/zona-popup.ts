@@ -11,8 +11,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import type { Carta } from '@modelos/carta.model';
 import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
+import type { EfectoZona } from '@modelos/partida.model';
 
 /** Imagen de respaldo si la foto de la zona no carga. */
 const IMAGEN_RESPALDO = 'imagenes/Sprite.png';
@@ -21,18 +21,9 @@ const IMAGEN_RESPALDO = 'imagenes/Sprite.png';
 const ID_TITULO = 'zona-popup-titulo';
 
 /**
- * Efecto de una zona, como datos. MOCK: los efectos reales los define el
- * equipo (context.md, sección 11).
- */
-export interface EfectoZona {
-  readonly categoria: Carta['categoria'];
-  readonly bonus: number;
-}
-
-/**
- * Popup de detalle de una zona: foto con marco irregular, nombre y el texto
- * del efecto, armado desde datos. Misma estructura que `carta-popup`: se
- * instancia con `@if` y cierra por ✕, fondo o Escape.
+ * Popup de detalle de una zona: foto con marco redondeado horizontal, nombre
+ * y el texto del efecto, armado desde datos. Misma estructura que
+ * `carta-popup`: se instancia con `@if` y cierra por ✕, fondo o Escape.
  */
 @Component({
   selector: 'app-zona-popup',
@@ -75,7 +66,7 @@ export class ZonaPopupComponent implements AfterViewInit {
   }
 
   /** Trampa de Tab mínima: con un solo control (✕) el foco alterna con el diálogo. */
-protected alPresionarTab(evento: Event): void {
+  protected alPresionarTab(evento: Event): void {
     const dialogo = this.dialogo()?.nativeElement;
     const cerrarBtn = dialogo?.querySelector<HTMLElement>('.zona-popup__cerrar');
 

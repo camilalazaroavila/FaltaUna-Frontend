@@ -1,19 +1,29 @@
 <div class="zona-contenido">
   <!-- Lado del rival (arriba) -->
   <span
-    class="zona-etiqueta self-center rounded-pildora border-2 border-slot-borde bg-etiqueta-lado-rival-fondo px-2.5 py-0.5 font-titulo text-etiqueta tracking-etiqueta text-etiqueta-lado-rival-texto uppercase"
+    class="zona-etiqueta self-center justify-self-center rounded-pildora border-2 border-slot-borde bg-etiqueta-lado-rival-fondo px-2.5 py-0.5 font-titulo text-etiqueta tracking-etiqueta text-etiqueta-lado-rival-texto uppercase"
   >
     Rival
   </span>
 
   <div class="zona-slots">
     @for (slot of slotsRival(); track slot.indice) {
-      <div [attr.data-lugar]="lugar()" data-lado="rival" [attr.data-indice]="slot.indice">
+      <div
+        class="zona-celda"
+        [attr.data-lugar]="lugar()"
+        data-lado="rival"
+        [attr.data-indice]="slot.indice"
+      >
         <app-slot-carta lado="rival" [estado]="slot.estado">
           @if (slot.carta; as carta) {
-            <div class="aspect-[5/7] h-full w-auto max-w-full">
+            <button
+              type="button"
+              class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
+              [attr.aria-label]="'Ver carta ' + carta.nombre"
+              (click)="verCarta.emit(carta)"
+            >
               <app-carta [carta]="carta" />
-            </div>
+            </button>
           }
         </app-slot-carta>
       </div>
@@ -21,74 +31,73 @@
   </div>
 
   <!-- Foto de la zona con sus dos puntajes -->
-  <div
-    class="zona-foto relative aspect-[4/5] rounded-md transition-colors duration-300 motion-reduce:transition-none"
-    [class]="clasesMarco()"
-  >
-    <button
-      type="button"
-      class="absolute inset-0 block cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-borde-foco"
-      [attr.aria-label]="etiquetaFoto()"
-      (click)="abrirPopup.emit()"
-    >
-      <img
-        #foto
-        class="absolute inset-[8%] h-[84%] w-[84%] rounded-md object-cover"
-        [src]="imagen()"
-        alt=""
-        (error)="falloImagen.set(true)"
-      />
-      <!-- Marco anterior: invisible hasta que cambia la zona y se desarma. -->
-      <span
-        #marcoViejo
-        class="marco-zona-irregular pointer-events-none absolute inset-0 opacity-0"
-        aria-hidden="true"
-      ></span>
-      <span
-        #marcoNuevo
-        class="marco-zona-irregular absolute inset-0 transition-colors duration-300 motion-reduce:transition-none"
-        [class]="clasesMarco()"
-        aria-hidden="true"
-      ></span>
-    </button>
-
-    <!-- Puntaje del rival: arriba de la foto -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <div class="relative">
-        <app-puntaje-zona [puntos]="puntajeRival()" [estado]="estadoRival()" lado="rival" />
+  <div class="zona-celda-foto">
+    <div class="zona-foto aspect-[5/4]">
+      <button
+        type="button"
+        class="absolute inset-0 block cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-borde-foco"
+        [attr.aria-label]="etiquetaFoto()"
+        (click)="abrirPopup.emit()"
+      >
+        <img
+          #foto
+          class="absolute inset-[8%] h-[84%] w-[84%] rounded-md object-cover"
+          [src]="imagen()"
+          alt=""
+          (error)="falloImagen.set(true)"
+        />
+        <!-- Marco anterior: invisible hasta que cambia la zona y se desarma. -->
         <span
-          class="pointer-events-none absolute top-1/2 left-full ml-1.5 -translate-y-1/2"
+          #marcoViejo
+          class="marco-zona-irregular pointer-events-none absolute inset-0 opacity-0"
           aria-hidden="true"
-        >
+        ></span>
+        <span
+          #marcoNuevo
+          class="marco-zona-irregular absolute inset-0 transition-colors duration-300 motion-reduce:transition-none"
+          [class]="clasesMarco()"
+          aria-hidden="true"
+        ></span>
+      </button>
+
+      <!-- Puntaje del rival: arriba de la foto -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div class="relative">
+          <app-puntaje-zona [puntos]="puntajeRival()" [estado]="estadoRival()" lado="rival" />
           <span
-            #refDeltaRival
-            [class]="claseDeltaRival()"
-            [class.opacity-0]="!deltaEstatico()"
-            [class.opacity-100]="deltaEstatico()"
+            class="pointer-events-none absolute top-1/2 left-full ml-1.5 -translate-y-1/2"
+            aria-hidden="true"
           >
-            {{ textoDeltaRival() }}
+            <span
+              #refDeltaRival
+              [class]="claseDeltaRival()"
+              [class.opacity-0]="!deltaEstatico()"
+              [class.opacity-100]="deltaEstatico()"
+            >
+              {{ textoDeltaRival() }}
+            </span>
           </span>
-        </span>
+        </div>
       </div>
-    </div>
 
-    <!-- Puntaje propio: abajo de la foto -->
-    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
-      <div class="relative">
-        <app-puntaje-zona [puntos]="puntajePropio()" [estado]="estadoPropio()" lado="propio" />
-        <span
-          class="pointer-events-none absolute top-1/2 left-full ml-1.5 -translate-y-1/2"
-          aria-hidden="true"
-        >
+      <!-- Puntaje propio: abajo de la foto -->
+      <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
+        <div class="relative">
+          <app-puntaje-zona [puntos]="puntajePropio()" [estado]="estadoPropio()" lado="propio" />
           <span
-            #refDeltaPropio
-            [class]="claseDeltaPropio()"
-            [class.opacity-0]="!deltaEstatico()"
-            [class.opacity-100]="deltaEstatico()"
+            class="pointer-events-none absolute top-1/2 left-full ml-1.5 -translate-y-1/2"
+            aria-hidden="true"
           >
-            {{ textoDeltaPropio() }}
+            <span
+              #refDeltaPropio
+              [class]="claseDeltaPropio()"
+              [class.opacity-0]="!deltaEstatico()"
+              [class.opacity-100]="deltaEstatico()"
+            >
+              {{ textoDeltaPropio() }}
+            </span>
           </span>
-        </span>
+        </div>
       </div>
     </div>
   </div>
@@ -96,12 +105,22 @@
   <!-- Lado propio (abajo) -->
   <div class="zona-slots">
     @for (slot of slotsPropios(); track slot.indice) {
-      <div [attr.data-lugar]="lugar()" data-lado="propio" [attr.data-indice]="slot.indice">
+      <div
+        class="zona-celda"
+        [attr.data-lugar]="lugar()"
+        data-lado="propio"
+        [attr.data-indice]="slot.indice"
+      >
         <app-slot-carta lado="propio" [estado]="slot.estado" (jugar)="jugarSlot.emit(slot.indice)">
           @if (slot.carta; as carta) {
-            <div class="aspect-[5/7] h-full w-auto max-w-full">
+            <button
+              type="button"
+              class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
+              [attr.aria-label]="'Ver carta ' + carta.nombre"
+              (click)="verCarta.emit(carta)"
+            >
               <app-carta [carta]="carta" />
-            </div>
+            </button>
           }
         </app-slot-carta>
       </div>
@@ -109,7 +128,7 @@
   </div>
 
   <span
-    class="zona-etiqueta self-center rounded-pildora border-2 border-slot-borde bg-etiqueta-lado-propio-fondo px-2.5 py-0.5 font-titulo text-etiqueta tracking-etiqueta text-etiqueta-lado-propio-texto uppercase"
+    class="zona-etiqueta self-center justify-self-center rounded-pildora border-2 border-slot-borde bg-etiqueta-lado-propio-fondo px-2.5 py-0.5 font-titulo text-etiqueta tracking-etiqueta text-etiqueta-lado-propio-texto uppercase"
   >
     Vos
   </span>

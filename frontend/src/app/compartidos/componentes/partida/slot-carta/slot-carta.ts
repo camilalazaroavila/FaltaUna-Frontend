@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { NgIcon } from '@ng-icons/core';
 import type { EstadoSlot, LadoPartida } from '@modelos/partida.model';
 
+/**
+ * Sin `overflow-hidden` en la base: lo decide el estado. Un slot ocupado deja
+ * desbordar para que el zoom de la carta no se recorte contra el borde.
+ */
 const CLASES_BASE =
-  'relative flex aspect-[3/4] w-full items-center justify-center overflow-hidden rounded-irregular-slot border-2 transition-[box-shadow,border-color] duration-200 motion-reduce:transition-none';
+  'relative flex aspect-[3/4] w-full items-center justify-center rounded-irregular-slot border-2 transition-[box-shadow,border-color] duration-200 motion-reduce:transition-none';
 
 const CLASES_FONDO: Record<LadoPartida, string> = {
   propio: 'bg-slot-propio-fondo',
@@ -22,10 +25,10 @@ const ETIQUETA_ESTADO: Record<EstadoSlot, string> = {
 };
 
 const CLASES_ESTADO: Record<EstadoSlot, string> = {
-  vacio: 'border-dashed border-slot-borde/60 shadow-cartoon',
-  ocupado: 'border-slot-borde shadow-cartoon',
+  vacio: 'overflow-hidden border-dashed border-slot-borde/60 shadow-cartoon',
+  ocupado: 'overflow-visible border-slot-borde shadow-cartoon',
   resaltado:
-    'border-marca-primaria ring-4 ring-slot-resaltado-anillo animate-pulso-slot shadow-brillo-verde',
+    'overflow-hidden border-marca-primaria ring-4 ring-slot-resaltado-anillo animate-pulso-slot shadow-brillo-verde',
 };
 
 /**
@@ -39,7 +42,6 @@ const CLASES_ESTADO: Record<EstadoSlot, string> = {
   selector: 'app-slot-carta',
   templateUrl: './slot-carta.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIcon],
   host: {
     class: 'block',
     role: 'group',

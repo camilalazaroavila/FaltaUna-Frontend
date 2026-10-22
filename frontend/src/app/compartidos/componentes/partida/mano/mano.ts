@@ -51,9 +51,10 @@ export interface PosicionArrastre {
 export class Mano {
   readonly cartas = input.required<readonly Carta[]>();
   /**
-   * Elemento que actúa como containing block del fantasma `position: fixed`
-   * (el host de `app-tablero`, que tiene `container-type`). Se usa para pasar
-   * las coordenadas del puntero a coordenadas locales y no desplazar el clon.
+   * Referencia para pasar coordenadas de viewport a coordenadas locales del
+   * tablero. El containing block real del fantasma `fixed` es el div `.tablero`
+   * (`contain: layout`); este host comparte origen con ese div (el host no tiene
+   * padding ni border), por eso se usa el host como referencia.
    */
   readonly referencia = input<HTMLElement | null>(null);
   readonly ver = output<Carta>();

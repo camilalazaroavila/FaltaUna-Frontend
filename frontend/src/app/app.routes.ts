@@ -108,6 +108,22 @@ export const routes: Routes = [
   },
 
   {
+    path: 'juego/ia',
+    title: 'Partida contra el bot · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () => import('@paginas/partida/partida').then((m) => m.Partida),
+  },
+  {
+    path: 'juego/jugador',
+    title: 'Partida contra jugador · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('@paginas/partida-jugador/partida-jugador').then((m) => m.PartidaJugador),
+  },
+
+  {
     path: 'empleado',
     title: 'Canje de cupones · Falta Una',
     canActivate: [rolGuard],
