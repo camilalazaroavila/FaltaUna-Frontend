@@ -23,17 +23,45 @@
         <div
           class="flex flex-col items-center gap-6 transition-[opacity,translate] duration-500 starting:translate-y-3 starting:opacity-0 motion-reduce:transition-none">
           <span class="flex size-24 items-center justify-center rounded-circulo bg-marca-primaria lg:size-28">
-            <svg class="size-12 text-white lg:size-14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path
-                d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" />
+            <svg
+              class="size-12 text-white lg:size-14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true">
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
             </svg>
           </span>
-          <p
+          <!-- Es un h2 (y no un p) para que tome la misma fuente que el h1 de arriba -->
+          <h2
             class="font-titulo text-3xl leading-tight whitespace-pre-line uppercase sm:text-4xl md:text-5xl lg:text-[max(3rem,4vw)]">
             {{ textos.listo }}
-          </p>
+          </h2>
         </div>
       }
     </div>
   </section>
+
+  <!--
+    Ilustración: cara dormida mientras se busca y cara despierta cuando se encuentra la partida.
+    Las dos ocupan el mismo lugar (grid de una celda) y se cruzan con un fundido.
+    Es decorativa (alt vacío); el estado ya lo anuncia el mensaje de la izquierda. Solo se ve desde md.-->
+ 
+  <div class="hidden items-end justify-end pr-12 pb-16 md:flex lg:pr-24 lg:pb-24">
+    <div class="grid w-2/3 max-w-md" aria-hidden="true">
+      <img
+        src="ilustraciones/cara-dormida.png"
+        alt="cara-dormida"
+        class="col-start-1 row-start-1 w-full object-contain transition-opacity duration-500 motion-reduce:transition-none"
+        [class.opacity-0]="encontrado()" />
+      <img
+        src="ilustraciones/cara-despierta.png"
+        alt="cara-despierta"
+        class="col-start-1 row-start-1 w-full object-contain transition-opacity duration-500 motion-reduce:transition-none"
+        [class.opacity-0]="!encontrado()" />
+    </div>
+  </div> 
 </main>
