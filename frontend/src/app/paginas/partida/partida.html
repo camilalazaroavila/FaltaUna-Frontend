@@ -1,0 +1,94 @@
+<div class="flex min-h-dvh flex-col overflow-x-hidden bg-fondo-app font-interfaz text-texto-primario">
+  <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario/jugar" />
+
+  <main class="flex flex-1 flex-col gap-4 px-4 pt-2 pb-6 sm:px-8 lg:px-12">
+    @if (enPartida()) {
+      <!-- Cabecera de la partida: volver, título y estado de la ronda -->
+      <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div class="flex flex-wrap items-center gap-3">
+          <a
+            routerLink="/usuario/jugar"
+            class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion">
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 6l-6 6 6 6" />
+            </svg>
+            Volver
+          </a>
+          <h1 app-titulo tamano="lg">Partida contra el bot</h1>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            class="rounded-pildora border border-borde-default bg-hundido px-3 py-1 font-interfaz text-etiqueta text-texto-secundario">
+            Ronda {{ servicio.turno() }} de 6
+          </span>
+          <button type="button" app-boton variante="fantasma" tamanio="sm" (click)="abandonar()">
+            Abandonar
+          </button>
+        </div>
+      </div>
+
+      <!-- Resultado de la última ronda resuelta -->
+      @if (resultado(); as res) {
+        <app-caja [variante]="varianteResultado()" acento="derecha" padding="sm">
+          <h2 slot="encabezado" app-titulo tamano="sm" color="heredar">
+            {{ tituloResultado() }}
+          </h2>
+
+          <ul class="flex flex-wrap gap-x-6 gap-y-1">
+            @for (zona of res.zonas; track zona.zonaPartidaId) {
+              <li class="font-interfaz text-sm">
+                <span class="font-bold">{{ zona.nombreZona }}</span>
+                <span class="text-texto-secundario"> · vos {{ zona.propio }} · bot {{ zona.rival }}</span>
+              </li>
+            }
+          </ul>
+
+          <p slot="pie" app-texto variante="heredar" tamano="menor">
+            Acumulado: vos {{ res.puntosPropio }} · bot {{ res.puntosRival }}
+          </p>
+        </app-caja>
+      }
+
+      <div class="area-tablero">
+        <app-tablero (rendirse)="servicio.rendirse()" />
+      </div>
+    } @else {
+      <!-- Antes de empezar: se crea la partida contra el bot -->
+      <div class="flex flex-1 items-center justify-center py-8">
+        <app-caja variante="elevada" sombra="media" padding="lg" radio="lg" class="max-w-2xl">
+          <h1 app-titulo tamano="lg">Partida contra el bot</h1>
+
+          <p app-texto variante="secundario">
+            Bajá tus cartas a las zonas, sumá poder y cerrá el turno antes de que se agoten los
+            40 segundos. El bot juega su turno cuando vos finalizás.
+          </p>
+
+          <p app-texto variante="secundario" tamano="menor">
+            Para arrancar necesitás un mazo guardado con 12 cartas tuyas. Si todavía no lo tenés,
+            armalo en “Mi baraja”.
+          </p>
+
+          @if (servicio.error(); as mensaje) {
+            <app-caja variante="error" padding="sm">
+              <p app-texto variante="heredar" tamano="menor">{{ mensaje }}</p>
+            </app-caja>
+          }
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              app-boton
+              variante="primario"
+              [cargando]="servicio.cargando()"
+              (click)="jugar()">
+              Jugar contra el bot
+            </button>
+            <a app-boton variante="fantasma" routerLink="/usuario/jugar">Volver al menú</a>
+          </div>
+        </app-caja>
+      </div>
+    }
+  </main>
+</div>

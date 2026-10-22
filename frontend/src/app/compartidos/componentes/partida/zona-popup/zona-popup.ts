@@ -11,23 +11,14 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import type { Carta } from '@modelos/carta.model';
 import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
+import type { EfectoZona } from '@modelos/partida.model';
 
 /** Imagen de respaldo si la foto de la zona no carga. */
 const IMAGEN_RESPALDO = 'imagenes/Sprite.png';
 
 /** Id del título del diálogo (usado por `aria-labelledby`). */
 const ID_TITULO = 'zona-popup-titulo';
-
-/**
- * Efecto de una zona, como datos. MOCK: los efectos reales los define el
- * equipo (context.md, sección 11).
- */
-export interface EfectoZona {
-  readonly categoria: Carta['categoria'];
-  readonly bonus: number;
-}
 
 /**
  * Popup de detalle de una zona: foto con marco redondeado horizontal, nombre

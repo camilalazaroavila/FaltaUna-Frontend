@@ -1,10 +1,10 @@
 <div class="tablero rounded-lg bg-tablero-fondo">
-  <!-- Rival: arriba a la derecha -->
-<!-- Rival: arriba a la derecha (chip arriba, mano oculta debajo) -->
-<div class="area-rival">
+  <!-- Rival: arriba a la derecha (chip arriba, mano oculta debajo) -->
+  <div class="area-rival">
+
   <app-jugador-chip
-    [nombre]="servicio.jugadores.rival.nombre"
-    [avatarUrl]="servicio.jugadores.rival.avatarUrl"
+    [nombre]="servicio.jugadores().rival.nombre"
+    [avatarUrl]="servicio.jugadores().rival.avatarUrl"
     lado="rival"
     tamanio="lg"
   />
@@ -77,8 +77,8 @@
 
   <div class="area-propio">
     <app-jugador-chip
-      [nombre]="servicio.jugadores.propio.nombre"
-      [avatarUrl]="servicio.jugadores.propio.avatarUrl"
+      [nombre]="servicio.jugadores().propio.nombre"
+      [avatarUrl]="servicio.jugadores().propio.avatarUrl"
       lado="propio"
       tamanio="lg"
     />
@@ -93,7 +93,7 @@
     <app-control-turno
       [turno]="servicio.turno()"
       [segundosRestantes]="servicio.segundosRestantes()"
-      [estado]="servicio.estadoRondaMock()"
+      [estado]="servicio.estadoRonda()"
       (finalizar)="servicio.marcarListo()"
       (rendirse)="rendirse.emit()"
     />

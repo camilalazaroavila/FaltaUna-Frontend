@@ -19,8 +19,8 @@ import type { PosicionArrastre } from '@compartidos/componentes/partida/mano/man
 import { Zona } from '@compartidos/componentes/partida/zona/zona';
 import { ZonaPopupComponent } from '@compartidos/componentes/partida/zona-popup/zona-popup';
 import type { Carta } from '@modelos/carta.model';
-import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
-import type { NombreLugar } from '@servicios/servicios-partida/partida-estado.service';
+import type { NombreLugar } from '@modelos/partida.model';
+import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
 
 /** Grados del extremo del abanico que forman los reversos de la mano rival. */
 const ABANICO_RIVAL_GRADOS = 12;
@@ -33,13 +33,16 @@ interface SlotSobrevolado {
 }
 
 /**
- * Pantalla de partida (MOCK: lee todo de `PartidaEstadoService`). Vos abajo a
- * la izquierda, el rival arriba a la derecha, el control de turno abajo a la
- * derecha, las 2 zonas al centro y tu mano abajo al centro.
+ * Pantalla de partida. Vos abajo a la izquierda, el rival arriba a la derecha,
+ * el control de turno abajo a la derecha, las 2 zonas al centro y tu mano abajo
+ * al centro.
+ *
+ * Los datos salen de `PartidaServicio`, que funciona en modo mock (galería) o
+ * contra el backend (partida contra el bot).
  *
  * El arrastre de cartas lo orquesta este componente: la mano emite el inicio,
- * el movimiento y el fin; acá se resuelve el slot bajo el puntero y se juega
- * la carta con `jugarCarta()`, la misma vía que el botón de cada slot.
+ * el movimiento y el fin; acá se resuelve el slot bajo el puntero y se juega la
+ * carta con `jugarCarta()`, la misma vía que el botón de cada slot.
  */
 @Component({
   selector: 'app-tablero',
@@ -58,7 +61,7 @@ interface SlotSobrevolado {
   ],
 })
 export class Tablero {
-  protected readonly servicio = inject(PartidaEstadoService);
+  protected readonly servicio = inject(PartidaServicio);
   private readonly mano = viewChild(Mano);
   /**
    * Host del tablero: referencia de coordenadas de la mano. El containing block

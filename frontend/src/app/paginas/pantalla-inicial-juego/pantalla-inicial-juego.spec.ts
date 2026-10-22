@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { PantallaInicialJuego } from './pantalla-inicial-juego';
 
@@ -8,7 +9,9 @@ describe('PantallaInicialJuego', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PantallaInicialJuego]
+      imports: [PantallaInicialJuego],
+      // La pantalla usa `routerLink` y el header consulta la ruta activa.
+      providers: [provideRouter([])],
     })
     .compileComponents();
 

@@ -1,0 +1,16 @@
+/* Alto disponible para el tablero: el resto de la pantalla es header + barra de
+   acciones. El tablero ya se ocupa de acomodar las zonas y los slots con su
+   propia grilla (tablero.css). */
+.area-tablero {
+    flex: 1 1 auto;
+    height: calc(100dvh - 11rem);
+    min-height: 30rem;
+    max-height: 74rem;
+}
+
+@media (max-height: 48rem) {
+    .area-tablero {
+        height: auto;
+        min-height: 26rem;
+    }
+}
