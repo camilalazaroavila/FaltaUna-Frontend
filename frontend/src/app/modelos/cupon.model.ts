@@ -2,6 +2,12 @@ import type { CategoriaCarta } from './carta.model';
 
 export type EstadoCupon = 'Disponible' | 'Usado' | 'Vencido';
 
+/** Filtros de "Mis cupones" que se envían al backend. */
+export interface FiltrosCupones {
+  buscar?: string;
+  estado?: EstadoCupon | null;
+}
+
 export type CategoriaCupon =
   | 'gastronomia'
   | 'deco'

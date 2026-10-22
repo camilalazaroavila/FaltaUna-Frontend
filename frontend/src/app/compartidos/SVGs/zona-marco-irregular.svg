@@ -1,0 +1,4 @@
+<!-- Marco de zona: contorno organico asimetrico con dientes sutiles (placeholder).
+     Se consume como mascara via la utilidad marco-zona-irregular; el color lo
+     pinta el componente con bg-zona-marco / bg-zona-marco-destacado. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" fill="currentColor"><path fill-rule="evenodd" d="M12,10C60,4 120,14 180,8C205,6 227,9 232,17C235,62 229,122 234,172C237,212 233,256 228,289C224,291 220,288 216,290C170,296 130,286 92,292L86,297L80,291C50,295 28,293 11,286C6,240 14,190 8,140C5,100 12,55 12,10ZM28,28C28,72 22,122 28,172C30,216 26,256 30,272C76,266 131,276 186,270C201,268 213,272 215,268C218,228 213,188 218,148C220,108 215,68 215,32C170,38 110,28 56,34C43,35 31,32 28,28Z"/></svg>

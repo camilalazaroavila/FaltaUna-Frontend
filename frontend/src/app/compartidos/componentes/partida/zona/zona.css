@@ -1,0 +1,30 @@
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    container-type: inline-size;
+}
+
+.zona-contenido {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.35rem, 2.6cqw, 0.75rem);
+}
+
+.zona-slots {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.3rem, 2.2cqw, 0.65rem);
+}
+
+.zona-foto {
+    width: clamp(3.5rem, 55cqw, 8rem);
+    margin-inline: auto;
+    margin-block: clamp(0.9rem, 4cqw, 2rem);
+}
+
+@container (max-width: 12rem) {
+    .zona-etiqueta {
+        display: none;
+    }
+}

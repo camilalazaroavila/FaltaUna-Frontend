@@ -1,0 +1,38 @@
+<div
+  class="mano"
+  role="group"
+  aria-label="Tu mano"
+  [style.--separaciones]="separaciones()"
+>
+  @for (item of disposicion(); track item.carta.id) {
+    <button
+      type="button"
+      class="mano-carta cursor-grab hover:z-20 focus-visible:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      [class.mano-carta--arrastrando]="arrastrando()?.id === item.carta.id"
+      [style.--angulo]="item.angulo"
+      [style.--caida]="item.caida"
+      [attr.aria-label]="'Ver carta ' + item.carta.nombre"
+      (pointerdown)="alPulsar(item.carta, $event)"
+      (pointermove)="alMover($event)"
+      (pointerup)="alSoltar($event)"
+      (pointercancel)="alCancelar($event)"
+      (keydown)="alTeclear(item.carta, $event)"
+      (blur)="seleccion.emit(null)"
+    >
+      <app-carta [carta]="item.carta" />
+    </button>
+  }
+</div>
+
+@if (arrastrando(); as carta) {
+  @if (puntero(); as pos) {
+    <div
+      class="mano-fantasma"
+      [style.left.px]="pos.x"
+      [style.top.px]="pos.y"
+      aria-hidden="true"
+    >
+      <app-carta [carta]="carta" />
+    </div>
+  }
+}

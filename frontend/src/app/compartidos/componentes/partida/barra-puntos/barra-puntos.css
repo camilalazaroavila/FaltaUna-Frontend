@@ -1,0 +1,16 @@
+:host {
+    container-type: inline-size;
+}
+
+.barra-etiqueta {
+    max-width: 100%;
+    overflow: hidden;
+    padding-inline: clamp(0.25rem, 6cqw, 0.625rem);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.barra-cuerpo {
+    width: clamp(2rem, 70cqw, 3rem);
+    min-height: 10rem;
+}

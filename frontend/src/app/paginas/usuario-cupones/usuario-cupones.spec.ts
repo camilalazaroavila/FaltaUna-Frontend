@@ -92,4 +92,95 @@ describe('UsuarioCupones', () => {
     expect(filtrados).toHaveLength(1);
     expect(filtrados[0].marca).toBe('Zara');
   });
+
+  it('pide al backend los cupones del estado elegido y lo desactiva al repetirlo', async () => {
+    await montar(null);
+    const servicio = TestBed.inject(CuponesService);
+    const componente = fixture.componentInstance as any;
+
+    componente.elegirEstado('Usado');
+    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({ buscar: '', estado: 'Usado' });
+
+    componente.elegirEstado('Usado');
+    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({ buscar: '', estado: null });
+  });
+
+  it('limpiarFiltros borra el texto y el estado', async () => {
+    await montar(null);
+    const componente = fixture.componentInstance as any;
+
+    componente.escribirBusqueda('grido');
+    componente.elegirEstado('Disponible');
+    expect(componente.hayFiltros()).toBe(true);
+
+    componente.limpiarFiltros();
+    expect(componente.hayFiltros()).toBe(false);
+  });
+
+  it('filtra los cupones reactivamente según el texto de búsqueda', async () => {
+    await montar('gastronomia');
+    const componente = fixture.componentInstance as any;
+
+    expect(componente.cuponesFiltrados()).toHaveLength(1);
+
+    componente.escribirBusqueda('grido');
+    expect(componente.cuponesFiltrados()).toHaveLength(1);
+
+    componente.escribirBusqueda('no-existe');
+    expect(componente.cuponesFiltrados()).toHaveLength(0);
+  });
+
+  it('filtra los cupones reactivamente según el estado seleccionado', async () => {
+    await montar('gastronomia');
+    const componente = fixture.componentInstance as any;
+
+    // Grido está 'Disponible'
+    componente.elegirEstado('Disponible');
+    expect(componente.cuponesFiltrados()).toHaveLength(1);
+
+    componente.elegirEstado('Usado');
+    expect(componente.cuponesFiltrados()).toHaveLength(0);
+  });
+
+  it('el menú hamburguesa se abre, lista los 3 estados y se cierra al elegir uno', async () => {
+    await montar(null);
+    const componente = fixture.componentInstance as any;
+    const raiz: HTMLElement = fixture.nativeElement;
+
+    expect(raiz.querySelector('#menu-filtros-cupones')).toBeNull();
+
+    (raiz.querySelector('button[aria-label="Filtrar por estado"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    const menu = raiz.querySelector('#menu-filtros-cupones') as HTMLElement;
+    expect(menu).not.toBeNull();
+    expect(menu.querySelectorAll('ul button')).toHaveLength(3);
+    expect(menu.textContent).toContain('Limpiar filtros');
+
+    componente.elegirEstado('Usado');
+    fixture.detectChanges();
+    expect(raiz.querySelector('#menu-filtros-cupones')).toBeNull();
+  });
+
+  it('el botón Limpiar filtros del menú está deshabilitado sin filtros y los borra al usarlo', async () => {
+    await montar(null);
+    const componente = fixture.componentInstance as any;
+    const raiz: HTMLElement = fixture.nativeElement;
+
+    componente.alternarMenu();
+    fixture.detectChanges();
+    const limpiar = () =>
+      Array.from(raiz.querySelectorAll('#menu-filtros-cupones button')).find((b) =>
+        b.textContent?.includes('Limpiar filtros'),
+      ) as HTMLButtonElement;
+    expect(limpiar().disabled).toBe(true);
+
+    componente.escribirBusqueda('grido');
+    fixture.detectChanges();
+    expect(limpiar().disabled).toBe(false);
+
+    limpiar().click();
+    fixture.detectChanges();
+    expect(componente.hayFiltros()).toBe(false);
+  });
 });

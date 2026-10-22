@@ -1,0 +1,14 @@
+:host {
+    max-width: 100%;
+}
+
+@media (max-width: 639px) {
+    .cupon {
+        gap: 0.15rem;
+        padding-inline: 0.4rem;
+    }
+
+    .cupon ng-icon {
+        display: none;
+    }
+}

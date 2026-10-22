@@ -148,58 +148,22 @@
 
 ---
 
-Sección 10 (Partidas):
-   - Hay exactamente 2 zonas a la vez, una a la izquierda y otra a la derecha.
-   - Cada turno rotan por zonas aleatorias distintas.
-   - Las cartas pertenecen al LUGAR (izquierda/derecha), no a la zona. Al rotar
-     la zona, las cartas se quedan donde estaban y solo cambian la foto, el
-     marco y el efecto, y se recalculan los puntajes. La idea es que de golpe
-     un jugador pase a tener ventaja o desventaja.
-   - Revelado: las cartas se revelan de a una, en orden. Primero la del
-     jugador que tiene el turno y después la del otro. Agregar como A confirmar
-     la regla exacta de quién revela primero en cada ronda.
-   - Dejar como A confirmar los 6 slots por lado y las cartas jugables por ronda.
-
-2. Sección 11 (Zonas): reflejar la rotación por turno y que las cartas
-   se mantienen en el lugar.
-
-3. Sección 12, tabla de contradicciones: marcar la #4 (Zonas simultáneas)
-   como ✅ Resuelto con el texto de arriba. La #3 (Tablero) queda abierta
-   solo por los slots y las cartas jugables por ronda.
-
-4. Sección 16 (Modelo de datos), fila "Revisar": agregar que ZonaPartida hoy
-   tiene ZonaId fijo y CartaPartida apunta a ZonaPartidaId. Para que las cartas
-   no se muevan, ZonaPartida debe representar el lugar y la zona activa debe
-   variar por ronda (ZonaRonda podría cubrirlo). Pendiente de revisión del
-   backend.
-
-5. Sección 24 (Resumen de pendientes): actualizar el ítem 2 y el ítem 7,
-   y agregar "regla de quién revela primero en cada ronda".
-
-6. Sección 18: agregar los tokens de partida (tablero, slots, zona,
-   puntaje-zona, sombras cartoon, duraciones) al dominio de jugador.css, y
-   registrar que los componentes de partida viven en
-   compartidos/componentes/partida/ (también en la sección 19 y en la
-   convención 5 de la sección 21).
-
-7. Sección 21: agregar que las animaciones de arrastre usan GSAP Draggable.
-
-
 ## 10. Partidas
 
 - **1 vs 1**, **6 rondas**, ambos jugadores actúan **a la vez** (estilo Marvel Snap). **Límite de 40 segundos por ronda.**
 - **Mano:** cada jugador empieza con **3 cartas** en mano y roba **1 carta por ronda**, empezando en la primera. Por eso en la primera ronda ya tiene 4.
 - **Recurso de juego ("cupón"):** empieza en 1 y sube 1 por ronda hasta 6. Determina qué cartas se pueden jugar según su costo.
-- **Zonas:** se asignan al azar y se revelan de inmediato. Cambian cada ronda. Tienen efectos que afectan a ambos lados, y las cartas tienen sus propios efectos. Cada zona representa un local real de una marca (ver sección 11).
-- **Puntaje:** los puntos de las cartas jugadas quedan en la zona. Al final de cada ronda se compara: el jugador con más puntos en la zona suma **la diferencia** (ej.: 6 contra 2, gana 4; 6 contra 5, gana 1 y el rival no suma). Los puntos del rival restan a los propios, para generar competencia entre cartas. Para impedir que el rival sume hay que tener **al menos los mismos puntos** que él en esa zona. La resolución ocurre al finalizar la ronda.
-- **Tablero (según el equipo):** cada zona tiene 6 slots por lado y las cartas se bajan desde la mano. **A confirmar** contra las reglas v1 (ver sección 12).
+- **Zonas:** hay exactamente **2 zonas a la vez** (una a la izquierda y otra a la derecha) que **rotan cada turno por zonas aleatorias distintas**. Las cartas pertenecen al **LUGAR** (izquierda/derecha), no a la zona: al rotar la zona, las cartas se quedan donde estaban y solo cambian la foto, el marco y el efecto, recalculándose los puntajes de inmediato (un jugador puede pasar de golpe a tener ventaja o desventaja). Tienen efectos que afectan a ambos lados, y las cartas tienen sus propios efectos. Cada zona representa un local real de una marca (ver sección 11).
+- **Revelado:** las cartas se revelan de a una, en orden; primero la del jugador que tiene el turno y luego la del rival.
+- **A confirmar (revelado):** la regla exacta de quién revela primero en cada ronda.
+- **Puntaje:** los puntos de las cartas jugadas quedan en el lugar/zona. Al final de cada ronda se compara: el jugador con más puntos en la zona suma **la diferencia** (ej.: 6 contra 2, gana 4; 6 contra 5, gana 1 y el rival no suma). Los puntos del rival restan a los propios, para generar competencia entre cartas. Para impedir que el rival sume hay que tener **al menos los mismos puntos** que él en esa zona. La resolución ocurre al finalizar la ronda.
+- **Tablero:** las cartas se bajan desde la mano hacia los slots de cada zona. **A confirmar:** si son 6 slots por lado y la cantidad de cartas jugables por ronda.
 - **Resultado:** victoria, empate o derrota. Ganás si sumaste más puntos que tu rival, empatás si sumaron lo mismo y perdés si sumaste menos. El empate no se resuelve.
 - **Condición de victoria (definida por el equipo):** la partida termina por una de dos vías. Gana quien llega primero a **100 puntos acumulados**, o, si nadie los alcanza, gana quien suma **más puntos tras las 6 rondas**. Si ambos suman lo mismo al final, es empate.
 - **A confirmar (detalle de la regla de 100 puntos):** qué pasa si ambos jugadores superan los 100 puntos en la misma ronda (por la resolución simultánea al final de la ronda), y si los 100 puntos son alcanzables dentro de las 6 rondas con el balance actual de cartas y zonas.
 - **Desconexión y abandono** cuentan como derrota. Hay botón de **rendirse**.
 - **Modos:** contra bot (práctica) y amistoso con otro usuario. Habrá **matchmaking** al final del proyecto, sin ranking ni ELO.
 - **Todo cálculo se valida en el servidor.**
-- **A confirmar:** cuántas zonas hay en el tablero a la vez (el modelo de datos tiene 2 por partida, pero el texto dice que cambian una a la vez), cuántas cartas se pueden jugar por ronda y qué pasa con la mano si se llega al máximo.
 
 ---
 
@@ -207,6 +171,7 @@ Sección 10 (Partidas):
 
 - Están **atadas a una marca real** (por ejemplo, un local de una marca adherida). La marca solo sube la foto de su local.
 - Si la marca se va, la zona se reemplaza por una genérica.
+- Hay exactamente **2 zonas simultáneas en el tablero** (izquierda y derecha) que **rotan por turno** por otras aleatorias. Las cartas jugadas pertenecen al lugar y se mantienen fijas en su posición al rotar la zona.
 - Tienen **efectos que potencian cartas**, creados por los desarrolladores. Se sortean al azar.
 - **Pendiente:** si conservan el bonus de poder por categoría (`ZonaCategoria`) o se reemplaza por efectos.
 
@@ -235,8 +200,8 @@ Sección 10 (Partidas):
 | --- | --- | --- | --- |
 | 1 | Condición de victoria | ✅ **Resuelto:** valen ambas (primero en llegar a 100 puntos, o más puntos tras 6 rondas). Queda por confirmar el desempate si ambos superan 100 en la misma ronda | — |
 | 2 | Tipo de intercambio | Sincrónico (ambos conectados) | Asincrónico, con vencimiento de 3 días |
-| 3 | Tablero | 6 slots por lado en cada zona (la mano ya quedó definida: 3 iniciales + 1 por ronda) | No define slots; cartas jugables por ronda pendiente |
-| 4 | Zonas simultáneas | Dos zonas con efectos | Cambian una a la vez; cantidad pendiente |
+| 3 | Tablero | Slots por lado y cartas jugables por ronda (la mano ya quedó definida: 3 iniciales + 1 por ronda) | A confirmar si son 6 slots por lado y cartas jugables por ronda |
+| 4 | Zonas simultáneas | ✅ **Resuelto:** exactamente 2 zonas a la vez (izquierda y derecha) que rotan cada turno por otras aleatorias; las cartas pertenecen al lugar y se mantienen al rotar | — |
 | 5 | Sobres populares al ingresar | Se muestran los 3 más populares | No lo menciona |
 | 6 | Solicitud de amistad | Posible tras un intercambio | No existe en el alcance |
 | 7 | Nombre del recurso de juego | "Maná" como cuponcito | Se llama "cupón" y choca con los cupones de marca |
@@ -290,9 +255,18 @@ Cambios necesarios para alinearlo con las reglas de negocio:
 | --- | --- |
 | **Eliminar** | `Usuario.Oro`, `Usuario.MonedasIntercambio`, tabla `IntercambioMoneda`; `JugadorPartida.Vida`; `DanioJugador1/2` en `ResultadoZona`. |
 | **Agregar** | `Marca`, `Plan`, `Mision` y progreso por usuario, favoritas por usuario, progreso de pity por tipo de sobre, inventario de sobres, local/sucursal por colección, rol de usuario y su empresa, visibilidad del perfil, icono de perfil. |
-| **Revisar** | `Cupon` hoy cuelga de `Coleccion`; debe vincularse a `Marca` e hitos. `Intercambio` necesita fecha de vencimiento y reserva de cartas. `Carta` con una sola colección (hoy `ColeccionCarta` es N:N). Cartas de bienvenida marcadas como no intercambiables. `Ronda.FechaFin` es obligatoria y debería ser opcional. Renombrar `Mana` según la decisión de naming (sección 4). |
+| **Revisar** | `Cupon` hoy cuelga de `Coleccion`; debe vincularse a `Marca` e hitos. `Intercambio` necesita fecha de vencimiento y reserva de cartas. `Carta` con una sola colección (hoy `ColeccionCarta` es N:N). Cartas de bienvenida marcadas como no intercambiables. `Ronda.FechaFin` es obligatoria y debería ser opcional. Renombrar `Mana` según la decisión de naming (sección 4). `ZonaPartida` hoy tiene `ZonaId` fijo y `CartaPartida` apunta a `ZonaPartidaId`: para que las cartas no se muevan al rotar, `ZonaPartida` debe representar el lugar físico y la zona activa debe variar por ronda (`ZonaRonda` podría cubrirlo); pendiente de revisión del backend. |
 
 > El frontend ya tiene componentes de misiones, pity, apertura de sobres y suscripción de empresa (ver estructura en la sección 5). **A verificar:** qué parte de eso está respaldada por backend y base de datos, y qué está solo en la interfaz.
+
+### Estado del tablero de partida (mock de frontend)
+
+El tablero ([`frontend/src/app/compartidos/componentes/partida/`](frontend/src/app/compartidos/componentes/partida/)) es una maqueta funcional sin backend: todo el estado sale de `PartidaEstadoService` (mock) y no hay timers ni resolución de turno.
+
+- **Jugar una carta** pasa por una única vía, `PartidaEstadoService.jugarCarta(carta, lugar, indice)`, reutilizada por el arrastre y por el botón de cada casilla. Valida solo lo definido: es el turno del jugador (`estadoRonda === 'jugando'`), la carta sigue en la mano y el slot destino es propio y está vacío. Devuelve `true`/`false`.
+- **NO se valida** todavía el costo/cupón de la carta (el modelo `Carta` no tiene costo ni `CostoMana`, ver sección 4) ni el límite de cartas jugables por ronda (pendiente, sección 10). Documentado en el propio servicio.
+- **Dos formas de jugar:** arrastre con Pointer Events (mouse y táctil) y, como alternativa accesible, selección de la carta con la tecla **Espacio** (resalta las casillas propias vacías) y botón de la casilla; **Enter** mantiene el detalle de la carta.
+- El fantasma del arrastre es `position: fixed`; como el host del tablero tiene `container-type` (containing block), las coordenadas se corrigen restando el rect del tablero (se le pasa como `referencia` a `app-mano`).
 
 ---
 
@@ -385,13 +359,21 @@ Definida en `estilos-roles/jugador.css` (empresa hereda) y mapeada a Tailwind en
 - **Radios:** `--radio-sm` (`0.375rem`), `--radio-md` (`0.75rem`), `--radio-lg` (`1.25rem`), `--radio-pildora` (`9999px`), `--radio-circulo` (`50%`).
 - **Sombras:** `--sombra-baja`, `--sombra-media`, `--sombra-alta`, `--sombra-brillo-verde` (adaptadas automáticamente al modo oscuro o claro; misma intensidad en ambos modos).
 
+### Tokens de partida
+Definidos en `estilos-roles/jugador.css` (la partida es exclusiva del dominio de jugador y no lleva bloque en empresa) y mapeados en `estilos-tailwind/tema.css`:
+- **Tablero y slots:** `--background-image-tablero-fondo: var(--tablero-fondo)`, `--color-slot-rival-fondo`, `--color-slot-propio-fondo`, `--color-slot-borde`, `--color-slot-resaltado`, `--color-slot-resaltado-anillo`.
+- **Zonas y puntajes:** `--color-zona-marco`, `--color-zona-marco-destacado`, `--color-puntaje-zona-{ganando,perdiendo,empate}-{fondo,texto}`.
+- **Recursos y barras:** cupón de recurso (`--color-cupon-{fondo,borde,texto,perforacion}`), barra de puntos (`--color-barra-puntos-{fondo,borde,sombra,propio-relleno,rival-relleno}`).
+- **Sombras cartoon:** `--shadow-cartoon`, `--shadow-cartoon-gruesa`, `--shadow-cartoon-clara` (sólidas, sin difuminar).
+- **Tiempos de animación:** duraciones en CSS (`--duracion-revelado-carta`, `--duracion-cambio-zona`, `--duracion-vuelo-carta`, `--duracion-micro: 300ms`), no mapeadas a Tailwind; las lee `GsapService` mediante `duracionPartida()`.
+
 ### Contraste del texto apagado
 - Empresa: `--texto-apagado` es `#566467` y cumple AA (≥ 4.5:1) sobre fondo-app, superficie, elevado y hundido.
 - Jugador: `--texto-apagado` es `#7A9F9B` y **no** alcanza AA sobre fondo-app, superficie ni elevado (solo sobre hundido). **Pendiente de corrección.**
 - **Regla de uso:** no usar texto apagado sobre superficies elevadas.
 
 ### Componentes base de contenido
-Ubicación: `compartidos/componentes/textual/` y `compartidos/componentes/contenedor/`.
+Ubicación: `compartidos/componentes/textual/`, `compartidos/componentes/contenedor/` y `compartidos/componentes/partida/`.
 
 - **Textuales** (directivas de atributo que se aplican sobre etiquetas nativas; el nivel semántico lo da la etiqueta y el nivel visual lo da el input):
   - `app-titulo` (h1–h6): `tamano` (display, lg, md, sm; default md) y `color` (default heredar).
@@ -408,7 +390,7 @@ Ubicación: `compartidos/componentes/textual/` y `compartidos/componentes/conten
 - **Tarjeta de indicador** (`app-tarjeta-kpi`): informativa, no clickeable y sin gráficos. Apoyada en `app-caja` con `acento="derecha"`. Inputs: `etiqueta` (requerido), `valor`, `variacion` (`{ valor, positiva }`, opcional), `contexto` (opcional) y `estado` (`listo`, `cargando`, `sin-datos`, `error`; default `listo`). Sin ícono ni input `tono`: el color del acento es el de marca y pasa a `--exito`/`--error` con una variación; el estado `error` cambia la caja a la variante de feedback.
 
 ### Galería de componentes
-- Ruta `/componentes`, con **14 secciones** (incluidas "Texto" y "Cajas").
+- Ruta `/componentes`, con **15 secciones** (incluidas "Texto", "Cajas" y "Partida").
 - Las secciones de texto y cajas muestran **jugador y empresa a la vez** con contenedores `data-modo` propios; el resto usa el interruptor global de modo.
 - Simula movimiento reducido con `data-movimiento="reducido"` (afecta solo a CSS, no a GSAP).
 - El spec de la galería valida que la cantidad y el orden de las secciones coincidan entre `secciones.ts`, `galeria-componentes.ts` y `galeria-componentes.html`.
@@ -443,7 +425,8 @@ FaltaUna-Frontend/
 │   │   │   │   │   ├── usuario/   → tarjeta-mision, panel-misiones, tarjeta-pity, tarjeta-recompensa
 │   │   │   │   │   ├── feedback/  → badge, barra-progreso, info-tooltip
 │   │   │   │   │   ├── textual/   → titulo, subtitulo, texto, sobretitulo (+ colores.ts)
-│   │   │   │   │   └── contenedor/→ caja
+│   │   │   │   │   ├── contenedor/→ caja
+│   │   │   │   │   └── partida/   → barra-puntos, cupon-recurso, indicador-turno, jugador-chip, puntaje-zona, slot-carta
 │   │   │   │   ├── directivas/    → Directivas compartidas
 │   │   │   │   ├── ilustraciones/ → Ilustraciones y assets asociados
 │   │   │   │   ├── SVGs/          → Assets SVG (alias @svgs/*)
@@ -490,7 +473,7 @@ FaltaUna-Frontend/
 2. **Angular Signals:** Priorizar el uso de Signals para estado e inputs (`input()`, `input.required()`, `output()`, `computed()`, `signal()`).
 3. **Change Detection:** Aplicar siempre `changeDetection: ChangeDetectionStrategy.OnPush`.
 4. **Separación de Responsabilidades:** Los componentes nunca realizan peticiones HTTP directas ni gestionan lógica de persistencia; delegan siempre en un archivo dentro de `servicios/`.
-5. **Ubicación de componentes compartidos:** Todo componente compartido nuevo va dentro de `compartidos/componentes/<tema>/` (controles, cartas, layout, landing, empresa, usuario, feedback, textual, contenedor). Si no encaja en ningún tema, preguntar antes de crear uno nuevo.
+5. **Ubicación de componentes compartidos:** Todo componente compartido nuevo va dentro de `compartidos/componentes/<tema>/` (controles, cartas, layout, landing, empresa, usuario, feedback, textual, contenedor, partida). Si no encaja en ningún tema, preguntar antes de crear uno nuevo.
 6. **Acceso al backend vía `ApiService`:** Todo consumo de la API pasa por `servicios/api.service.ts`, que centraliza `HttpClient` y `environment`. Es el **único** archivo de `servicios/` que inyecta `HttpClient` o importa `environment` para URLs. Los servicios de dominio llaman a `api.get/post/put/patch/delete` con **rutas relativas a `/api`** (por ejemplo `'Pagos/configuracion'`) y no arman URLs absolutas ni construyen `HttpParams` a mano. Para concatenar base y ruta usar la función pura exportada `unirUrl(base, ruta)`.
 7. **Accesibilidad (A11y):**
    - Todo botón o enlace sin texto visual debe incluir `aria-label` o `aria-labelledby`.
@@ -501,6 +484,7 @@ FaltaUna-Frontend/
    - Código de negocio, modelos, variables y comentarios en **español** (`usuario`, `carta`, `boton`, `obtenerCartas`).
    - Respetar nombres técnicos universales de librerías (`inject`, `computed`, `OnInit`).
 9. **Lógica sensible en el servidor:** las decisiones que el usuario podría manipular (qué carta sale de un sobre, resultados de partidas, límites diarios, canje de cupones, transferencia de cartas) se validan siempre en el backend.
+10. **Animaciones con GSAP y GSAP Draggable:** Las animaciones complejas y de arrastre usan GSAP y GSAP Draggable (sin dependencias adicionales). Al invocar `GsapService.crearContexto()` fuera de un contexto de inyección (por ejemplo en `ngAfterViewInit` o effects), se debe capturar `DestroyRef` como campo de clase (`private readonly destroyRef = inject(DestroyRef)`) y pasarlo como argumento al método para garantizar la reversión automática de tweens y listeners al destruirse el componente.
 
 ### Path aliases (tsconfig.json + jest.config.ts)
 
@@ -573,12 +557,12 @@ docker compose down    # Detener manteniendo datos
 ## 24. Resumen de pendientes
 
 1. Alcance de la entrega (TPI) frente a la visión futura.
-2. Resolver las contradicciones abiertas de la sección 12 (intercambio sincrónico o asincrónico, tablero, zonas, sobres populares, amistades) y el detalle de la victoria por 100 puntos (empate si ambos la superan en la misma ronda).
+2. Resolver las contradicciones abiertas de la sección 12 (intercambio sincrónico o asincrónico, slots y cartas jugables por ronda, sobres populares, amistades) y el detalle de la victoria por 100 puntos (empate si ambos la superan en la misma ronda).
 3. Nombre alternativo para el recurso de juego (conflicto "cupón") y renombrado de `Mana` en el modelo.
 4. Probabilidades y valores de pity para sobres de categoría y marca.
 5. Planes: nombres, precios, cantidad de colecciones y duración del cooldown.
 6. Reglas exactas de reinicio de misiones diarias.
-7. Zonas por partida y cartas jugables por ronda.
+7. Slots por lado y cartas jugables por ronda (las 2 zonas simultáneas fijas con rotación por turno quedaron resueltas).
 8. Definición de "intento" en intercambios.
 9. Cosméticos: globales o por carta.
 10. Métricas finales de la marca.
@@ -586,3 +570,4 @@ docker compose down    # Detener manteniendo datos
 12. Reescribir el copy visible que todavía hable de fútbol.
 13. Corregir `--texto-apagado` del modo jugador.
 14. Alinear el modelo de datos (sección 16) y verificar qué respalda el backend.
+15. Regla de quién revela primero en cada ronda.
