@@ -30,3 +30,14 @@
     font-size: 1.25rem;
   }
 }
+
+/* Acompaña el tamaño más grande de la forma en pantallas de ~1880px o más */
+@media (min-width: 1880px) {
+  .paso-numero {
+    width: 3.25rem;
+    height: 3.25rem;
+    font-size: 1.625rem;
+    border-width: 2.2px;
+    box-shadow: 5px 4px 0 #3bd972;
+  }
+}

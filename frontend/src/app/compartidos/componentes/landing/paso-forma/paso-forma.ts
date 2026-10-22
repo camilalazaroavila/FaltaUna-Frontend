@@ -7,6 +7,17 @@ const FORMA_PATHS: Record<1 | 2 | 3, string> = {
   3: 'M102,18 C134,18 166,32 180,56 C192,76 182,96 166,108 C152,118 165,136 174,146 C182,156 162,166 134,166 C98,166 54,162 34,140 C14,116 14,74 38,46 C56,26 78,18 102,18 Z',
 };
 
+/**
+ * Ajuste fino de la imagen dentro de cada forma, en unidades del viewBox
+ * (200x180). Positivo en x = a la derecha; positivo en y = hacia abajo.
+ * Sirve para centrar ópticamente la imagen en siluetas asimétricas.
+ */
+const IMAGEN_OFFSET: Record<1 | 2 | 3, { x: number; y: number }> = {
+  1: { x: 0, y: 0 },
+  2: { x: 7, y: 9 },
+  3: { x: 0, y: 0 },
+};
+
 @Component({
   selector: 'app-paso-forma',
   standalone: true,
@@ -23,6 +34,10 @@ export class PasoForma {
   readonly forma = input<1 | 2 | 3>(1);
 
   readonly svgPath = computed(() => FORMA_PATHS[this.forma()]);
+
+  /** Posición de la imagen: base (46, 42) más el ajuste de la forma. */
+  readonly imagenX = computed(() => 46 + IMAGEN_OFFSET[this.forma()].x);
+  readonly imagenY = computed(() => 42 + IMAGEN_OFFSET[this.forma()].y);
 
   readonly clipId = computed(
     () => `clip-paso-${this.numero() ?? 'x'}-${this.variante()}`

@@ -1,27 +1,25 @@
-<section
-  class="bg-landing-claro-fondo py-16 sm:py-20 md:py-24 lg:py-32 xl:py-36 text-landing-claro-texto"
-  aria-labelledby="equipo-titulo"
->
+<section class="bg-landing-claro-fondo py-14 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40 text-landing-claro-texto"
+  aria-labelledby="equipo-titulo">
   <div class="contenedor-landing">
-    <div class="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-14 xl:gap-20">
-      <!-- Columna izquierda: Título y Tarjeta descriptiva -->
-      <div class="flex flex-col gap-6 lg:w-[42%]">
-        <h2
-          id="equipo-titulo"
-          class="font-titulo font-bold text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl leading-[0.95] text-landing-claro-texto tracking-tight"
-        >
-          ¿QUIÉNES<br />SOMOS?
-        </h2>
+    <!-- Título centrado en todos los tamaños -->
+    <h2 id="equipo-titulo"
+      class="font-titulo font-bold text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl min-[1920px]:text-7xl text-landing-claro-texto text-center tracking-tight text-balance">
+      ¿QUIÉNES SOMOS?
+    </h2>
 
+    <!-- Tarjeta descriptiva + avatares: alineados entre sí desde 1024px -->
+    <div
+      class="mt-10 sm:mt-12 md:mt-16 lg:mt-20 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-14 xl:gap-20">
+      <!-- Columna izquierda: Tarjeta descriptiva -->
+      <div class="lg:w-[42%]">
         <div
-          class="rounded-[2.5rem_1.5rem_2.5rem_1.5rem] bg-landing-panel p-6 sm:p-7 md:p-8 lg:p-9 xl:p-10 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl leading-relaxed text-landing-claro-texto font-cuerpo font-normal shadow-sm"
-        >
-          <p>
+          class="rounded-[2.5rem_1.5rem_2.5rem_1.5rem] bg-landing-panel p-6 sm:p-7 md:p-8 lg:p-9 xl:p-10 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl leading-relaxed text-landing-claro-texto font-cuerpo font-normal shadow-sm">
+          <p class="font-bold">
             Somos un grupo de desarrolladores apasionados por el coleccionismo, con
             una idea clara: crear una experiencia que vaya más allá de coleccionar,
             divertirse y jugar.
           </p>
-          <p class="mt-4 md:mt-5">
+          <p class="mt-4 md:mt-5 font-bold">
             Queremos conectar empresas y usuarios en un espacio donde todos ganen,
             ofreciendo beneficios reales, recompensas y un progreso que se sienta en
             cada colección.
@@ -34,54 +32,44 @@
         <!-- Fila 1: 4 integrantes -->
         <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-8 xl:gap-10">
           @for (integrante of filaSuperior(); track integrante.nombre) {
-            <div class="flex min-w-0 flex-col items-center gap-2 text-center">
-              <span
-                class="whitespace-nowrap font-subtitulo font-bold text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-landing-claro-texto"
-              >
-                {{ integrante.nombre }}
-              </span>
-              @if (integrante.avatarUrl) {
-                <img
-                  [src]="integrante.avatarUrl"
-                  [alt]="integrante.nombre"
-                  class="size-16 rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto object-cover shadow-sm sm:size-20 md:size-24 lg:size-28 xl:size-32"
-                  loading="lazy"
-                />
-              } @else {
-                <span
-                  class="grid size-16 place-items-center rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto bg-landing-panel font-interfaz text-base font-bold text-landing-claro-texto sm:size-20 md:size-24 lg:size-28 xl:size-32 lg:text-2xl"
-                >
-                  {{ iniciales(integrante.nombre) }}
-                </span>
-              }
-            </div>
+          <div class="flex min-w-0 flex-col items-center gap-2 text-center">
+            <span
+              class="whitespace-nowrap font-subtitulo font-bold text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-landing-claro-texto">
+              {{ integrante.nombre }}
+            </span>
+            @if (integrante.avatarUrl) {
+            <img [src]="integrante.avatarUrl" [alt]="integrante.nombre"
+              class="size-16 rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto object-cover shadow-sm sm:size-20 md:size-24 lg:size-28 xl:size-32"
+              loading="lazy" />
+            } @else {
+            <span
+              class="grid size-16 place-items-center rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto bg-landing-panel font-interfaz text-base font-bold text-landing-claro-texto sm:size-20 md:size-24 lg:size-28 xl:size-32 lg:text-2xl">
+              {{ iniciales(integrante.nombre) }}
+            </span>
+            }
+          </div>
           }
         </div>
 
         <!-- Fila 2: 3 integrantes centrados -->
         <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-8 xl:gap-10">
           @for (integrante of filaInferior(); track integrante.nombre) {
-            <div class="flex min-w-0 flex-col items-center gap-2 text-center">
-              <span
-                class="whitespace-nowrap font-subtitulo font-bold text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-landing-claro-texto"
-              >
-                {{ integrante.nombre }}
-              </span>
-              @if (integrante.avatarUrl) {
-                <img
-                  [src]="integrante.avatarUrl"
-                  [alt]="integrante.nombre"
-                  class="size-16 rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto object-cover shadow-sm sm:size-20 md:size-24 lg:size-28 xl:size-32"
-                  loading="lazy"
-                />
-              } @else {
-                <span
-                  class="grid size-16 place-items-center rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto bg-landing-panel font-interfaz text-base font-bold text-landing-claro-texto sm:size-20 md:size-24 lg:size-28 xl:size-32 lg:text-2xl"
-                >
-                  {{ iniciales(integrante.nombre) }}
-                </span>
-              }
-            </div>
+          <div class="flex min-w-0 flex-col items-center gap-2 text-center">
+            <span
+              class="whitespace-nowrap font-subtitulo font-bold text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-landing-claro-texto">
+              {{ integrante.nombre }}
+            </span>
+            @if (integrante.avatarUrl) {
+            <img [src]="integrante.avatarUrl" [alt]="integrante.nombre"
+              class="size-16 rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto object-cover shadow-sm sm:size-20 md:size-24 lg:size-28 xl:size-32"
+              loading="lazy" />
+            } @else {
+            <span
+              class="grid size-16 place-items-center rounded-full border-[3px] sm:border-[4px] border-landing-claro-texto bg-landing-panel font-interfaz text-base font-bold text-landing-claro-texto sm:size-20 md:size-24 lg:size-28 xl:size-32 lg:text-2xl">
+              {{ iniciales(integrante.nombre) }}
+            </span>
+            }
+          </div>
           }
         </div>
       </div>

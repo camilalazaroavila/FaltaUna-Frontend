@@ -14,13 +14,7 @@ let contadorIds = 0;
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div
-      class="acordeon overflow-hidden border border-landing-oscuro-borde-control bg-landing-oscuro-fondo text-landing-oscuro-texto transition-all"
-      [class.rounded-md]="!pildora()"
-      [class.rounded-full]="pildora() && !abierto()"
-      [class.rounded-2xl]="pildora() && abierto()"
-      [class.acordeon--abierto]="abierto()"
-    >
+    <div [class]="clasesContenedor()">
       <button
         type="button"
         [class]="clasesCabecera()"
@@ -29,9 +23,9 @@ let contadorIds = 0;
         [attr.aria-controls]="idPanel"
         (click)="alternar()"
       >
-        <span class="min-w-0 truncate">{{ pregunta() }}</span>
+        <span [class]="clasesTextoCabecera()">{{ pregunta() }}</span>
         <svg
-          class="acordeon__flecha size-3.5 shrink-0 text-white md:size-4 lg:size-5"
+          [class]="clasesFlecha()"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -77,10 +71,11 @@ let contadorIds = 0;
       min-height: 0;
       overflow: hidden;
       line-height: 1.5;
+      overflow-wrap: anywhere;
     }
 
     .acordeon--abierto .acordeon__contenido {
-      padding-block: 0.25rem 0.75rem;
+      padding-block: 0.25rem 1rem;
     }
 
     .acordeon__flecha {
@@ -111,21 +106,47 @@ export class AcordeonPregunta {
   /** Formato píldora redondeada para la landing de usuario. */
   readonly pildora = input(false, { transform: booleanAttribute });
 
+  protected readonly clasesContenedor = computed(() => {
+    const base =
+      'acordeon overflow-hidden border border-landing-oscuro-borde-control bg-landing-oscuro-fondo text-landing-oscuro-texto transition-all';
+    const abierto = this.abierto();
+    const estado = abierto ? 'acordeon--abierto' : '';
+
+    if (!this.pildora()) {
+      return `${base} rounded-md ${estado}`;
+    }
+
+    // En móvil la pregunta puede ocupar 2+ líneas: rounded-full se ve deformado,
+    // así que usamos esquinas grandes y desde sm la píldora completa.
+    const forma = abierto ? 'rounded-2xl' : 'rounded-3xl sm:rounded-full';
+    return `${base} ${forma} ${estado}`;
+  });
+
   protected readonly clasesCabecera = computed(() => {
     if (this.pildora()) {
-      return 'flex w-full items-center justify-between gap-3 text-left font-interfaz font-semibold text-landing-oscuro-texto transition-colors hover:text-landing-marca px-5 py-3 text-xs sm:text-sm md:text-base cursor-pointer';
+      // Texto centrado; el padding lateral reserva lugar para la flecha absoluta.
+      return 'relative flex w-full min-h-11 items-center justify-center text-center font-interfaz font-semibold text-landing-oscuro-texto transition-colors hover:text-landing-marca pl-10 pr-10 sm:pl-12 sm:pr-12 py-3 text-sm sm:text-base lg:text-lg cursor-pointer';
     }
     return [
-      'flex w-full items-center justify-between gap-2 text-left font-interfaz font-semibold text-landing-oscuro-texto transition-colors hover:text-landing-marca',
+      'flex w-full items-center justify-between gap-2 text-left font-interfaz font-semibold text-landing-oscuro-texto transition-colors hover:text-landing-marca cursor-pointer',
       this.compacto()
         ? 'px-2.5 py-2 text-[11px] md:px-3 md:py-3 md:text-sm lg:px-3.5 lg:py-3.5 lg:text-landing-faq'
         : 'px-4 py-2.5 text-sm',
     ].join(' ');
   });
 
+  protected readonly clasesTextoCabecera = computed(() =>
+    this.pildora() ? 'min-w-0 break-words' : 'min-w-0 flex-1 break-words',
+  );
+
+  protected readonly clasesFlecha = computed(() => {
+    const base = 'acordeon__flecha size-4 shrink-0 text-white md:size-5';
+    return this.pildora() ? `${base} absolute right-4 sm:right-5 inset-y-0 my-auto` : base;
+  });
+
   protected readonly clasesContenido = computed(() => {
     if (this.pildora()) {
-      return 'acordeon__contenido font-cuerpo text-landing-oscuro-tenue px-6 text-xs sm:text-sm';
+      return 'acordeon__contenido font-cuerpo text-landing-oscuro-tenue text-center px-5 sm:px-8 text-sm sm:text-base';
     }
     return [
       'acordeon__contenido font-cuerpo text-landing-oscuro-tenue',

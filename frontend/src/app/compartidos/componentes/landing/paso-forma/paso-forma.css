@@ -72,3 +72,23 @@
     height: 11rem;
   }
 }
+
+/* Escalón intermedio para que el salto a pantallas grandes no sea brusco */
+@media (min-width: 1536px) {
+  .paso-forma-svg {
+    width: 13.5rem;
+    height: 12.125rem;
+  }
+}
+
+/* Pantallas de ~1880px o más: pasos más grandes */
+@media (min-width: 1880px) {
+  .paso-forma-svg {
+    width: 16rem;
+    height: 14.4rem;
+  }
+  .paso-forma-numero {
+    top: -0.75rem;
+    left: -0.75rem;
+  }
+}
