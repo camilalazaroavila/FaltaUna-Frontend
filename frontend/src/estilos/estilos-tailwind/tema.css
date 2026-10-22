@@ -265,6 +265,10 @@
     --color-puntaje-zona-empate-fondo: var(--puntaje-zona-empate-fondo);
     --color-puntaje-zona-empate-texto: var(--puntaje-zona-empate-texto);
 
+   --font-titulo: var(--fuente-titulo);
+   --font-subtitulo: var(--fuente-subtitulo);
+   --font-cuerpo: var(--fuente-cuerpo);
+   --font-interfaz: var(--fuente-interfaz);
     /* Cupón de recurso: ticket del recurso de juego de la pantalla de partida. */
     --color-cupon-fondo: var(--cupon-fondo);
     --color-cupon-borde: var(--cupon-borde);

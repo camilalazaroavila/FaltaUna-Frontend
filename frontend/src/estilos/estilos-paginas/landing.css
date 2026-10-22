@@ -3,15 +3,8 @@
    Superficies alternadas oscuras/claras de la landing, marca, acentos y la
    escala fluida (--landing-tipografia-*, --landing-medida-*, espacios).
    No depende de data-modo, por eso vive en `:root`.
-   Origen: antiguo bloque "LANDING PUBLICA" de styles.css.
    ========================================================================== */
 
-/* ==========================================================================
-   CAPA 2 — TOKENS SEMÁNTICOS · LANDING PÚBLICA
-   La landing alterna bloques oscuros y claros y no depende de `data-modo`:
-   estos tokens viven en `:root` para que su superficie nunca cambie con el
-   tema de la aplicación. Consumen primitivos de la Capa 1 (regla de oro).
-   ========================================================================== */
 :root {
     /* Bloques oscuros (deportivo / nocturno) */
     --landing-oscuro-fondo: var(--color-teal-base);
@@ -29,8 +22,8 @@
             color-mix(in srgb, var(--color-amarillo-logo) 15%, transparent) 12%,
             transparent 50%);
 
-    /* Bloques claros (crema editorial) */
-    --landing-claro-fondo: var(--color-crema-fondo);
+    /* Bloques claros: amarillo claro de la landing de usuario */
+    --landing-claro-fondo: var(--color-amarillo-logo);
     --landing-claro-superficie: var(--color-crema-superficie);
     --landing-claro-texto: var(--color-teal-profundo);
     --landing-claro-borde: var(--color-crema-borde);
@@ -46,9 +39,7 @@
     /* Panel orgánico de "¿Quiénes somos?" */
     --landing-panel: var(--color-verde-lima);
 
-    /* Escala fluida de la landing.
-       Cada clamp está anclado a 1440px y 1920px y su piso replica el valor `md`
-       vigente, de modo que 375px y 768px conservan su tamaño actual. */
+    /* Escala fluida de la landing. */
     --landing-tipografia-hero: clamp(1rem, calc(0.125rem + 1.25vw), 1.625rem);
     --landing-tipografia-titulo: clamp(3rem, calc(-0.25rem + 4.1667vw), 4.75rem);
     --landing-tipografia-lista: clamp(1rem, 1.25vw, 1.5rem);
@@ -61,11 +52,69 @@
     --landing-medida-cta: clamp(3rem, calc(0.5rem + 3.3333vw), 4.5rem);
     --landing-medida-sobres: clamp(28rem, calc(0.625rem + 35.4167vw), 43.125rem);
     --landing-medida-ilustracion: clamp(7rem, 10.4167vw, 12.5rem);
-    /* Carta al costado del título de "¿Cómo funciona?": dimensionada para
-       quedar a la altura del bloque de dos líneas del título. */
     --landing-medida-carta-titulo: clamp(4.5rem, 7vw, 8.75rem);
-    /* Avatar del equipo ("¿Quiénes somos?"): token propio, más grande que un
-       avatar genérico (piso 56px, 130px a 1440px y tope 168px). */
     --landing-medida-avatar-equipo: clamp(3.5rem, 9vw, 10.5rem);
     --landing-espacio-columna: clamp(2rem, calc(-2rem + 6.6667vw), 6rem);
+}
+
+
+/* ==========================================================================
+   LANDING DE USUARIO — REGLAS VISUALES Y COMPONENTES
+   ========================================================================== */
+
+/* Botón píldora verde vibrante sin halo ni resplandor */
+.landing-btn-pildora {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--color-verde-jugador, #3bd972);
+  color: #072326;
+  font-family: var(--fuente-titulo, "Changa", sans-serif);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.875rem 2rem;
+  border-radius: 9999px;
+  box-shadow: none;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .landing-btn-pildora {
+    font-size: 1.0625rem;
+    padding: 1rem 2.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .landing-btn-pildora {
+    font-size: 1.1875rem;
+    padding: 1.125rem 3rem;
+  }
+}
+
+.landing-btn-pildora:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.08);
+  box-shadow: none;
+}
+
+.landing-btn-pildora:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.hero-marco-cuadro {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  border-radius: 1.50rem;
+  overflow: hidden;
+  box-shadow: none;
+  border: none;
+  background-color: transparent;
 }

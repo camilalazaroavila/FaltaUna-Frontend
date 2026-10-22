@@ -5,6 +5,9 @@ import { ModoAuth } from '@compartidos/componentes/layout/auth-layout/auth-modo'
 import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
 import urlLogoOscuro from '@svgs/Imagotipo_Alt.svg';
 
+/** TODO: reemplazar por la URL real del Instagram de Falta Una. */
+const URL_INSTAGRAM = 'https://www.instagram.com/falta__una/';
+
 interface EnlaceFooter {
   etiqueta: string;
   ruta: string;
@@ -23,8 +26,8 @@ interface EnlaceFooter {
  * oscuras y claras ya definidas para la landing, independientes de data-modo):
  * el componente selecciona el juego de tokens que corresponde a su `modo`.
  *
- * El bloque de redes sociales y los enlaces legales/de ayuda se omiten a
- * propósito: todavía no existen URLs ni rutas reales (Open Decision).
+ * Los enlaces legales/de ayuda se omiten a propósito: todavía no existen
+ * rutas reales (Open Decision).
  */
 @Component({
   selector: 'app-footer',
@@ -43,6 +46,8 @@ export class Footer {
   protected readonly urlLogo = computed(() =>
     this.esEmpresa() ? urlLogoOscuro : urlLogoClaro,
   );
+
+  protected readonly urlInstagram = URL_INSTAGRAM;
 
   protected readonly anio = new Date().getFullYear();
 

@@ -87,9 +87,10 @@
        `--fuente-interfaz` (system-ui) queda como excepción reservada a los
        controles de UI: botones, inputs, badges, tablas y datos técnicos.
        El modo empresa hereda estas mismas familias. */
-   --fuente-titulo: "Russo One", ui-sans-serif, system-ui, sans-serif;
-   --fuente-cuerpo: "Merriweather", Georgia, "Times New Roman", serif;
-   --fuente-interfaz: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+   --fuente-titulo: "Changa", ui-sans-serif, system-ui, sans-serif;
+   --fuente-subtitulo: "Poppins", ui-sans-serif, system-ui, sans-serif;
+   --fuente-cuerpo: "Poppins", system-ui, sans-serif;
+   --fuente-interfaz: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
    /* --- Escala Tipográfica Semántica (compartida por ambos modos) ---
        Tamaños y pesos por rol, para que los componentes no usen valores
@@ -102,7 +103,8 @@
    --tipografia-menor: 0.875rem;
    --tipografia-etiqueta: 0.75rem;
 
-   --peso-titular: 400;
+   --peso-titular: 700;
+   --peso-subtitulo: 700;
    --peso-lectura: 400;
    --peso-etiqueta: 700;
 

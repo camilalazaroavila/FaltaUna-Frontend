@@ -1,135 +1,192 @@
-<div class="w-full">
-  <div class="flow-root bg-landing-oscuro-fondo">
-    <app-header [amarillo]="true" />
+<div class="w-full overflow-x-clip">
+  <!-- SECCIÓN SUPERIOR: HEADER FLOTANTE EN FORMA PASTILLA Y HERO -->
+  <div class="bg-landing-oscuro-fondo flow-root">
+    <app-header [verde]="true" />
 
-    <!-- HERO -->
-    <section class="overflow-hidden py-5 text-landing-oscuro-texto md:py-10 lg:py-12">
-      <div class="contenedor-landing flex w-full items-center justify-between gap-4 md:gap-6">
-        <div class="min-w-0 flex-1 md:w-[45%] md:flex-none">
-          <img [src]="urlLogo" alt="Falta Una" class="h-16 w-auto md:h-40 lg:h-landing-logo" />
+    <!-- HERO SECTION -->
+    <section
+      class="pt-6 pb-12 sm:pt-8 sm:pb-16 md:pt-10 md:pb-20 lg:pt-14 lg:pb-24 xl:pt-16 xl:pb-28 2xl:pt-20 2xl:pb-32 text-landing-oscuro-texto">
+      <div
+        class="contenedor-landing flex flex-col md:flex-row items-center justify-between gap-10 sm:gap-12 md:gap-8 lg:gap-12 xl:gap-16 2xl:gap-24">
+        <!-- Columna Izquierda -->
+        <div class="w-full md:w-1/2 lg:w-[48%] min-w-0 max-w-xl 2xl:max-w-2xl text-center md:text-left">
+          <h1
+            class="font-titulo font-black text-[1.75rem] min-[400px]:text-3xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl min-[1920px]:text-7xl leading-[1.05] tracking-tight">
+            <span class="text-landing-acento">COLECCIONÁ.</span><br />
+            <span class="text-white">JUGÁ.</span><br />
+            <span class="text-landing-acento sm:whitespace-nowrap">GANÁ DESCUENTOS.</span>
+          </h1>
           <p
-            class="mt-4 max-w-[28rem] font-interfaz text-xs font-bold uppercase leading-snug text-landing-claro-fondo md:mt-6 md:text-base lg:mt-8 lg:text-landing-hero">
-            Ganá descuentos coleccionando y jugando con cartas de tus marcas preferidas
+            class="mt-4 md:mt-6 font-cuerpo font-normal text-sm sm:text-base md:text-sm lg:text-base xl:text-lg 2xl:text-xl text-white leading-relaxed max-w-lg 2xl:max-w-xl mx-auto md:mx-0 text-pretty">
+            Conseguí cartas de tus marcas favoritas y descubrí todos sus beneficios.
           </p>
-          <div class="mt-4 md:mt-6 lg:mt-8">
-            <a app-boton routerLink="/registro" tamanio="sm"
-              class="inline-flex items-center gap-2 md:h-12 md:px-8 md:text-base lg:h-landing-cta lg:text-landing-ui">
-              Abrir mi primer sobre
-              <ng-icon name="phosphorArrowRightFill" class="shrink-0" aria-hidden="true" />
+          <div class="mt-6 md:mt-8 flex justify-center md:justify-start">
+            <a routerLink="/registro" class="landing-btn-pildora max-w-full text-center">
+              Abrí tu primer sobre &rarr;
             </a>
           </div>
         </div>
 
-        <div
-          class="abanico-sobres relative aspect-[16/10] w-[42%] max-w-[190px] shrink-0 md:w-[46%] md:max-w-none lg:w-landing-sobres"
-          aria-hidden="true">
-          <div class="sobre-carrusel sobre-carrusel--gastronomia">
-            <img [src]="urlSobreIzquierda" alt="" class="h-full w-full object-contain" />
-          </div>
-          <div class="sobre-carrusel sobre-carrusel--lego">
-            <img [src]="urlSobreDerecha" alt="" class="h-full w-full object-contain" />
-          </div>
-          <div class="sobre-carrusel sobre-carrusel--general">
-            <img [src]="urlSobreCentro" alt="" class="h-full w-full object-contain" />
+        <!-- Columna Derecha -->
+        <div class="relative w-full md:w-1/2 lg:w-[48%] flex justify-center md:justify-end min-w-0">
+          <div
+            class="relative w-full max-w-[300px] min-[400px]:max-w-[340px] sm:max-w-[420px] md:max-w-[380px] lg:max-w-[480px] xl:max-w-[560px] 2xl:max-w-[640px] min-[1920px]:max-w-[720px] md:-translate-y-3 lg:-translate-y-5 xl:-translate-y-7 2xl:-translate-y-9">
+            <div class="hero-marco-cuadro">
+              <img src="/imagenes/landing-usuario/parque_centenario.png" alt="Parque Centenario"
+                class="absolute inset-0 h-full w-full object-cover" />
+            </div>
           </div>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- MARCAS (franja estática) -->
-  <app-carrusel-marcas [marcas]="marcas" [animado]="true" [duracionSegundos]="38" />
+  <!-- CARRUSEL DE MARCAS-->
+  <app-carrusel-marcas [marcas]="marcas" [animado]="true" [duracionSegundos]="35" />
+
+  <!-- ONDA -->
+  <div class="landing-onda bg-landing-oscuro-fondo" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path d="M0,0 L1440,0 L1440,35 C1160,110 880,-10 580,85 C340,140 160,15 0,60 Z" fill="#F9F9B2" />
+    </svg>
+  </div>
 
   <!-- ¿CÓMO FUNCIONA? -->
-  <section class="bg-landing-oscuro-fondo py-5 text-landing-oscuro-texto md:py-10 lg:py-16">
-    <div
-      class="contenedor-landing grid items-start gap-x-6 gap-y-5 lg:grid-cols-2 lg:items-center lg:gap-x-landing-columna">
-      <div class="flex items-center gap-3 md:gap-5 lg:gap-6">
-        <h2 class="font-titulo text-4xl leading-[0.9] text-landing-acento md:text-5xl lg:text-landing-titulo">
-          ¿Cómo<br />funciona?
-        </h2>
+  <section
+    class="bg-landing-oscuro-fondo py-14 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40 text-landing-oscuro-texto">
+    <div class="contenedor-landing flex flex-col items-center">
+      <h2
+        class="font-titulo font-bold text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl min-[1920px]:text-7xl text-landing-acento text-center tracking-tight text-balance">
+        ¿CÓMO FUNCIONA?
+      </h2>
 
-        <img [src]="urlSobre" alt="" class="h-landing-carta-titulo w-auto shrink-0 -rotate-6" aria-hidden="true" />
+      <!-- Grid de los 4 pasos-->
+      <div
+        class="mt-10 sm:mt-12 md:mt-16 lg:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:gap-x-10 lg:gap-x-8 xl:gap-x-12 w-full max-w-6xl 2xl:max-w-7xl justify-items-center">
+        @for (paso of pasosFunciona; track paso.numero) {
+        <div
+          class="flex flex-col items-center text-center w-full max-w-[160px] min-[400px]:max-w-[190px] sm:max-w-[230px] lg:max-w-[260px] 2xl:max-w-[290px]">
+          <app-paso-forma [numero]="paso.numero" [imagenUrl]="paso.imagenUrl" [altTexto]="paso.alt" [forma]="paso.forma"
+            variante="claro" />
+          <p
+            class="mt-4 font-subtitulo font-bold text-sm sm:text-base lg:text-lg 2xl:text-xl text-white leading-snug text-balance">
+            {{ paso.texto }}
+          </p>
+        </div>
+        }
       </div>
 
-      <div class="flex flex-col gap-3">
-        <ul
-          class="min-w-0 space-y-1.5 text-xs leading-snug text-landing-oscuro-tenue md:space-y-2.5 md:text-base lg:space-y-3 lg:text-landing-lista">
-          @for (paso of pasos; track paso) {
-          <li class="flex gap-2">
-            <span class="mt-1.5 size-1.5 shrink-0 rounded-circulo bg-landing-marca"></span>
-            <span>{{ paso }}</span>
-          </li>
-          }
-        </ul>
-
-        <div class="mt-1 lg:mt-6">
-          <a app-boton routerLink="/login" tamanio="sm" class="lg:h-landing-cta lg:text-landing-ui">Comenzá a
-            coleccionar</a>
-        </div>
+      <!-- Botón Comenzá a coleccionar -->
+      <div class="mt-16 sm:mt-20 md:mt-24 lg:mt-24 2xl:mt-28 text-center">
+        <a routerLink="/login" class="landing-btn-pildora max-w-full">
+          Comenzá a coleccionar &rarr;
+        </a>
       </div>
     </div>
   </section>
+
+  <!-- ONDA -->
+  <div class="landing-onda bg-landing-claro-fondo" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path d="M0,0 L1440,0 L1440,40 C1200,120 920,0 640,90 C400,140 180,20 0,70 Z" fill="#0D3B40" />
+    </svg>
+  </div>
 
   <!-- ¿Y SI SOY UN NEGOCIO? -->
-  <section class="bg-landing-claro-fondo py-5 text-landing-claro-texto md:py-10 lg:py-16">
-    <div
-      class="contenedor-landing grid items-start gap-x-6 gap-y-5 lg:grid-cols-2 lg:items-center lg:gap-x-landing-columna">
-      <div class="flex items-center gap-3 md:gap-5 lg:gap-6">
-        <h2 class="font-titulo text-4xl leading-[0.9] md:text-5xl lg:text-landing-titulo">
-          ¿Y si soy un<br />negocio?
-        </h2>
+  <section class="bg-landing-claro-fondo py-14 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40 text-landing-claro-texto">
+    <div class="contenedor-landing flex flex-col items-center">
+      <h2
+        class="font-titulo font-bold text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl min-[1920px]:text-7xl text-landing-claro-texto text-center tracking-tight text-balance">
+        ¿Y SI SOY UN NEGOCIO?
+      </h2>
 
-        <app-ilustracion-tienda class="w-landing-carta-titulo shrink-0 text-landing-claro-texto" />
+      <!-- Grid de los 4 pasos -->
+      <div
+        class="mt-10 sm:mt-12 md:mt-16 lg:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:gap-x-10 lg:gap-x-8 xl:gap-x-12 w-full max-w-6xl 2xl:max-w-7xl justify-items-center">
+        @for (paso of pasosNegocio; track paso.numero) {
+        <div
+          class="flex flex-col items-center text-center w-full max-w-[160px] min-[400px]:max-w-[190px] sm:max-w-[230px] lg:max-w-[260px] 2xl:max-w-[290px]">
+          <app-paso-forma [numero]="paso.numero" [imagenUrl]="paso.imagenUrl" [altTexto]="paso.alt" [forma]="paso.forma"
+            variante="oscuro">
+            @if (paso.numero === 3 && !paso.imagenUrl) {
+            <svg viewBox="0 0 64 64" class="w-12 h-12 sm:w-14 sm:h-14 lg:w-20 lg:h-20" fill="none" aria-hidden="true">
+              <path d="M28 16 C28 10 52 10 52 24 C52 32 44 36 38 36 L38 42 L32 36 C29 36 28 34 28 31 Z"
+                fill="#F9F9B2" />
+              <line x1="33" y1="21" x2="47" y2="21" stroke="#0D3B40" stroke-width="2.5" stroke-linecap="round" />
+              <line x1="33" y1="27" x2="43" y2="27" stroke="#0D3B40" stroke-width="2.5" stroke-linecap="round" />
+              <path d="M10 26 C10 18 32 18 32 31 C32 40 24 44 19 44 L15 50 L15 44 C11 44 10 41 10 38 Z"
+                fill="#F9F9B2" />
+              <path
+                d="M21 29 C19.5 27 16.5 27.5 16 29.5 C15.5 31.5 18.5 34.5 21 36 C23.5 34.5 26.5 31.5 26 29.5 C25.5 27.5 22.5 27 21 29 Z"
+                fill="#3BD972" />
+              <circle cx="36" cy="46" r="3" fill="#F9F9B2" />
+            </svg>
+            }
+          </app-paso-forma>
+          <p
+            class="mt-4 font-subtitulo font-bold text-sm sm:text-base lg:text-lg 2xl:text-xl text-landing-claro-texto leading-snug text-balance">
+            {{ paso.texto }}
+          </p>
+        </div>
+        }
       </div>
 
-      <div class="flex flex-col gap-3">
-        <ul
-          class="min-w-0 space-y-1.5 text-xs leading-snug text-landing-claro-texto md:space-y-2.5 md:text-base lg:space-y-3 lg:text-landing-lista">
-          @for (beneficio of beneficios; track beneficio) {
-          <li class="flex gap-2">
-            <span class="mt-1.5 size-1.5 shrink-0 rounded-circulo bg-landing-marca"></span>
-            <span>{{ beneficio }}</span>
-          </li>
-          }
-        </ul>
-
-        <div class="mt-1 lg:mt-6">
-          <a app-boton routerLink="/empresa/landing" tamanio="sm" class="lg:h-landing-cta lg:text-landing-ui">Explorá el
-            modo empresa</a>
-        </div>
+      <!-- Botón Explorar modo empresa -->
+      <div class="mt-16 sm:mt-20 md:mt-24 lg:mt-24 2xl:mt-28 text-center">
+        <a routerLink="/empresa/landing" class="landing-btn-pildora max-w-full">
+          Explorá el modo empresa &rarr;
+        </a>
       </div>
     </div>
   </section>
 
+  <!-- ONDA -->
+  <div class="landing-onda bg-landing-oscuro-fondo" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path d="M0,0 L1440,0 L1440,35 C1160,110 880,-10 580,85 C340,140 160,15 0,60 Z" fill="#F9F9B2" />
+    </svg>
+  </div>
+
   <!-- PREGUNTAS FRECUENTES -->
-  <section class="relative overflow-hidden bg-landing-oscuro-fondo py-5 text-landing-oscuro-texto md:py-10 lg:py-16"
+  <section class="bg-landing-oscuro-fondo py-14 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40 text-landing-oscuro-texto"
     aria-labelledby="faq-titulo">
-    <div class="contenedor-landing relative">
-      <div class="relative z-10">
-        <h2 id="faq-titulo" class="text-center font-titulo text-2xl text-landing-acento md:text-3xl lg:text-4xl">
-          Preguntas frecuentes
+    <div class="contenedor-landing flex flex-col items-center">
+      <!-- Este bloque mide lo mismo que el título (más su padding lateral).
+           La lista usa w-0 min-w-full: no ensancha el bloque, pero lo ocupa completo. -->
+      <div class="w-fit max-w-full">
+        <h2 id="faq-titulo"
+          class="px-3 sm:px-8 lg:px-12 xl:px-16 font-titulo font-bold text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl min-[1920px]:text-7xl text-landing-acento text-center tracking-tight text-balance">
+          PREGUNTAS FRECUENTES
         </h2>
 
-        <div class="mt-4 grid w-full grid-cols-2 items-start gap-2 md:gap-3 lg:mt-8 lg:gap-4">
+        <div class="mt-8 sm:mt-10 md:mt-14 flex flex-col gap-3 sm:gap-4 w-0 min-w-full">
           @for (item of preguntas; track item.pregunta) {
-          <app-acordeon-pregunta [pregunta]="item.pregunta" [compacto]="true">
+          <app-acordeon-pregunta [pregunta]="item.pregunta" [pildora]="true">
             {{ item.respuesta }}
           </app-acordeon-pregunta>
           }
         </div>
       </div>
-
-      <div class="pointer-events-none absolute -bottom-8 -right-8 z-0 flex" aria-hidden="true">
-        <img [src]="urlCartaIzquierda" alt="" class="w-20 rotate-12 md:w-32 lg:w-44" />
-        <img [src]="urlCartaCentro" alt="" class="-ml-8 w-24 -rotate-3 md:w-36 lg:w-52" />
-        <img [src]="urlCartaDerecha" alt="" class="-ml-8 w-20 -rotate-[18deg] md:w-32 lg:w-44" />
-      </div>
     </div>
   </section>
+
+  <!-- ONDA -->
+  <div class="landing-onda bg-landing-claro-fondo" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path d="M0,0 L1440,0 L1440,40 C1200,120 920,0 640,90 C400,140 180,20 0,70 Z" fill="#0D3B40" />
+    </svg>
+  </div>
 
   <!-- ¿QUIÉNES SOMOS? -->
   <app-team-section [integrantes]="equipo" />
 
+  <!-- ONDA -->
+  <div class="landing-onda bg-landing-oscuro-fondo" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path d="M0,0 L1440,0 L1440,35 C1160,110 880,-10 580,85 C340,140 160,15 0,60 Z" fill="#F9F9B2" />
+    </svg>
+  </div>
+
+  <!-- FOOTER INSTITUCIONAL -->
   <app-footer />
 </div>
