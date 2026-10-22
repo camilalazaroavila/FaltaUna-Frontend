@@ -8,23 +8,23 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input } from '@an
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section
-      class="contenedor-pista bg-landing-marcas-fondo py-3 md:py-5 lg:py-7"
+      class="contenedor-pista bg-landing-marcas-fondo py-4 md:py-6 lg:py-8"
       [ngClass]="animado() ? 'overflow-hidden' : 'franja-estatica overflow-x-auto'"
       aria-label="Marcas participantes"
     >
       <div class="contenedor-landing">
         <ul
           class="flex items-center"
-          [ngClass]="animado() ? 'w-max mx-auto pista-animada' : 'w-full justify-between gap-0.5'"
+          [ngClass]="animado() ? 'w-max mx-auto pista-animada' : 'w-full justify-between gap-4'"
           [style.--duracion.s]="duracionSegundos()"
         >
           @for (marca of marcas(); track $index) {
-            <li class="flex items-center" [ngClass]="animado() ? 'px-6 md:px-10 lg:px-14' : 'px-0.5 shrink-0'">
+            <li class="flex items-center px-8 sm:px-10 md:px-12 lg:px-16 shrink-0">
               @if (marca.logoUrl) {
                 <img
                   [src]="marca.logoUrl"
                   [alt]="marca.nombre"
-                  class="h-6 w-auto md:h-10 lg:h-14"
+                  class="h-9 w-auto object-contain sm:h-11 md:h-14 lg:h-16 max-w-[140px] md:max-w-[190px] lg:max-w-[240px]"
                   loading="lazy"
                 />
               } @else {
@@ -32,8 +32,8 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input } from '@an
                   class="whitespace-nowrap font-titulo uppercase leading-none text-landing-claro-texto/80"
                   [ngClass]="
                     animado()
-                      ? 'text-lg md:text-2xl lg:text-landing-wordmark'
-                      : 'text-[10px] tracking-tighter min-[400px]:text-[11px] sm:text-xs md:text-2xl lg:text-3xl'
+                      ? 'text-xl md:text-2xl lg:text-landing-wordmark'
+                      : 'text-xs md:text-2xl lg:text-3xl'
                   "
                 >
                   {{ marca.nombre }}
@@ -43,13 +43,18 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input } from '@an
           }
 
           @if (animado()) {
-            <!-- Copia decorativa para lograr el bucle continuo -->
+            <!-- Copia decorativa para lograr el bucle continuo idéntico -->
             @for (marca of marcas(); track $index) {
-              <li class="copia flex items-center px-6 md:px-10 lg:px-14" aria-hidden="true">
+              <li class="copia flex items-center px-8 sm:px-10 md:px-12 lg:px-16 shrink-0" aria-hidden="true">
                 @if (marca.logoUrl) {
-                  <img [src]="marca.logoUrl" alt="" class="h-6 w-auto md:h-10 lg:h-14" loading="lazy" />
+                  <img
+                    [src]="marca.logoUrl"
+                    alt=""
+                    class="h-9 w-auto object-contain sm:h-11 md:h-14 lg:h-16 max-w-[140px] md:max-w-[190px] lg:max-w-[240px]"
+                    loading="lazy"
+                  />
                 } @else {
-                  <span class="whitespace-nowrap font-titulo text-lg uppercase leading-none text-landing-claro-texto/80 md:text-2xl lg:text-landing-wordmark">
+                  <span class="whitespace-nowrap font-titulo text-xl uppercase leading-none text-landing-claro-texto/80 md:text-2xl lg:text-landing-wordmark">
                     {{ marca.nombre }}
                   </span>
                 }
@@ -67,11 +72,6 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input } from '@an
 
     .pista-animada {
       animation: desplazar var(--duracion, 30s) linear infinite;
-    }
-
-    section:hover .pista-animada,
-    section:focus-within .pista-animada {
-      animation-play-state: paused;
     }
 
     @keyframes desplazar {
