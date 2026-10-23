@@ -36,9 +36,52 @@ const CATEGORIA_POR_MARCA: Record<string, CategoriaCupon> = {
   cinemark: 'entretenimiento',
   samsung: 'tecnologia',
   musimundo: 'tecnologia',
+
+  // Marcas ficticias del seed de demostración (5 por categoría).
+  'sabor criollo': 'gastronomia',
+  'don luigi pizzería': 'gastronomia',
+  'la parrilla del sur': 'gastronomia',
+  'café aromo': 'gastronomia',
+  'heladería copo': 'gastronomia',
+  'casa nogal': 'deco',
+  'hogar lumbre': 'deco',
+  'rincón textil': 'deco',
+  'luz & madera': 'deco',
+  'verde interior': 'deco',
+  'bella aurora': 'cosmetica',
+  'piel serena': 'cosmetica',
+  'esencia lunar': 'cosmetica',
+  'brillo natural': 'cosmetica',
+  'aura beauty': 'cosmetica',
+  'urbano norte': 'indumentaria',
+  'hilo sur': 'indumentaria',
+  'trama denim': 'indumentaria',
+  'paso ligero': 'indumentaria',
+  'cima outdoor': 'indumentaria',
+  'cine estelar': 'entretenimiento',
+  'parque aventura sol': 'entretenimiento',
+  'escape room enigma': 'entretenimiento',
+  'strike zone bowling': 'entretenimiento',
+  'teatro telón': 'entretenimiento',
+  'acorde estudio': 'musica',
+  'vinilo vivo': 'musica',
+  'sonora instrumentos': 'musica',
+  'ritmo academia': 'musica',
+  'entrada fest': 'musica',
+  'byte market': 'tecnologia',
+  'conecta hogar': 'tecnologia',
+  'pixel store': 'tecnologia',
+  'nodo gadgets': 'tecnologia',
+  'circuito tech': 'tecnologia',
 };
 
 /** El seed deja el link de la promo al final de la descripción: "Fuente: https://...". */
+/**
+ * Demo: muestra todos los cupones como "Disponible" sin importar el estado que mande el backend.
+ * Poner en `false` para respetar Usado / Vencido.
+ */
+const FORZAR_CUPONES_DISPONIBLES = true;
+
 const REGEX_ENLACE = /\s*Fuente:\s*(https?:\/\/\S+)/i;
 
 @Injectable({
@@ -144,10 +187,15 @@ export class CuponesService {
       vigenteHastaUtc: c.fechaVencimiento,
       estado: this.estadoDe(c),
       enlace,
+      porcentajeDescuento: c.porcentajeDescuento,
     };
   }
 
   private estadoDe(c: MiCuponApi): EstadoCupon {
+    if (FORZAR_CUPONES_DISPONIBLES) {
+      return 'Disponible';
+    }
+
     const estado = c.estado.toUpperCase();
 
     if (estado === 'USADO' || estado === 'CANJEADO') {

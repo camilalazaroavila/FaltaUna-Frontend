@@ -48,6 +48,8 @@ export interface CuponDescuento {
   estado: EstadoCupon;
   /** Página de la marca con el descuento. Es a donde apunta el QR. */
   enlace: string | null;
+  /** Porcentaje de descuento, si el backend lo informa (se muestra como "20% OFF"). */
+  porcentajeDescuento?: number;
 }
 
 /** El backend identifica el cupón del usuario por el token de su QR (no por el código del cupón). */

@@ -3,8 +3,11 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
+  viewChild,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -12,6 +15,8 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
 import QRCode from 'qrcode';
 import { Header } from '../../compartidos/componentes/header/header';
+import { Confeti } from '../../compartidos/componentes/confeti/confeti';
+import { LineaGastada } from '../../compartidos/componentes/linea-gastada/linea-gastada';
 import { CuponesService } from '../../servicios/cupones.service';
 import {
   CategoriaCupon,
@@ -40,7 +45,7 @@ interface FiltroCategoria {
 @Component({
   selector: 'app-usuario-cupones',
   standalone: true,
-  imports: [RouterLink, DatePipe, Header],
+  imports: [RouterLink, DatePipe, Header, LineaGastada, Confeti],
   templateUrl: './usuario-cupones.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -48,17 +53,169 @@ interface FiltroCategoria {
     '(document:click)': 'cerrarMenu()',
   },
   styles: `
+    /* Sello postal: borde ondulado fino (perforaciones) alrededor de un fondo crema. */
     .sello {
-      --perforacion: var(--btn-juego-bg);
-      background-color: var(--color-teal-profundo);
+      --perf: 3.5px;
+      --linea: 2px;
+      --tinta: var(--color-teal-profundo);
+      --papel: var(--btn-juego-bg);
+      position: relative;
+      background-color: var(--tinta);
       background-image:
-        radial-gradient(circle at 6px 0, var(--perforacion) 3.5px, transparent 4px),
-        radial-gradient(circle at 6px 8px, var(--perforacion) 3.5px, transparent 4px),
-        radial-gradient(circle at 0 6px, var(--perforacion) 3.5px, transparent 4px),
-        radial-gradient(circle at 8px 6px, var(--perforacion) 3.5px, transparent 4px);
+        radial-gradient(circle at 6px 0, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px)),
+        radial-gradient(circle at 6px 8px, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px)),
+        radial-gradient(circle at 0 6px, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px)),
+        radial-gradient(circle at 8px 6px, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px));
       background-size: 12px 8px, 12px 8px, 8px 12px, 8px 12px;
       background-position: 0 0, 0 100%, 0 0, 100% 0;
       background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    }
+
+    /* Hoja crema interior: deja a la vista solo una línea fina de tinta en el borde. */
+    .sello__hoja {
+      position: absolute;
+      inset: var(--linea);
+      background-color: var(--papel);
+      background-image:
+        radial-gradient(circle at calc(6px - var(--linea)) calc(0px - var(--linea)), transparent var(--perf), var(--tinta) var(--perf), var(--tinta) calc(var(--perf) + var(--linea)), transparent calc(var(--perf) + var(--linea) + 0.5px)),
+        radial-gradient(circle at calc(6px - var(--linea)) calc(8px + var(--linea)), transparent var(--perf), var(--tinta) var(--perf), var(--tinta) calc(var(--perf) + var(--linea)), transparent calc(var(--perf) + var(--linea) + 0.5px)),
+        radial-gradient(circle at calc(0px - var(--linea)) calc(6px - var(--linea)), transparent var(--perf), var(--tinta) var(--perf), var(--tinta) calc(var(--perf) + var(--linea)), transparent calc(var(--perf) + var(--linea) + 0.5px)),
+        radial-gradient(circle at calc(8px + var(--linea)) calc(6px - var(--linea)), transparent var(--perf), var(--tinta) var(--perf), var(--tinta) calc(var(--perf) + var(--linea)), transparent calc(var(--perf) + var(--linea) + 0.5px));
+      background-size: 12px 8px, 12px 8px, 8px 12px, 8px 12px;
+      background-position: 0 0, 0 100%, 0 0, 100% 0;
+      background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    }
+
+    .titulo-cupones {
+      text-shadow: 3px 3px 0 var(--color-verde-jugador);
+    }
+
+    .vista-cupones {
+      --r-disco: 20rem;
+      --visible: 11rem;
+      --r-icono: calc(var(--r-disco) - 4.5rem);
+      --tam-icono: 3.25rem;
+      --ang-activo: -35deg;
+    }
+
+    @media (max-width: 639px) {
+      .vista-cupones {
+        --r-disco: 13rem;
+        --visible: 5.5rem;
+        --r-icono: calc(var(--r-disco) - 2.6rem);
+        --tam-icono: 2.5rem;
+        --ang-activo: -38deg;
+      }
+    }
+
+    .disco-marco {
+      width: var(--visible);
+    }
+
+    /* En pantallas angostas la página es muy alta: el disco queda arriba, con altura propia. */
+    @media (max-width: 639px) {
+      .disco-marco {
+        bottom: auto;
+        height: 30rem;
+      }
+    }
+
+    /* Disco de vinilo: ruido fino + surcos concéntricos. Gira junto con las categorías. */
+    .disco {
+      --giro: 0deg;
+      position: absolute;
+      top: 50%;
+      left: calc(var(--visible) - var(--r-disco) * 2);
+      width: calc(var(--r-disco) * 2);
+      height: calc(var(--r-disco) * 2);
+      margin-top: calc(var(--r-disco) * -1);
+      border-radius: 50%;
+      background-color: color-mix(in srgb, var(--color-teal-profundo) 82%, #8fa39d);
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 -.38'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .5' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 -.42'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E"),
+        repeating-radial-gradient(circle at center, transparent 0 0.9rem, rgb(0 0 0 / 0.07) 0.9rem 0.95rem);
+      box-shadow: inset 0 0 0 0.3rem rgb(255 255 255 / 0.05);
+      transform: rotate(var(--giro));
+      transition: transform 0.85s cubic-bezier(0.5, 0, 0.2, 1);
+      will-change: transform;
+    }
+
+    /* Punto fijo desde el que se cuelgan los íconos: el centro del disco. */
+    .disco-eje {
+      position: absolute;
+      top: 50%;
+      left: calc(var(--visible) - var(--r-disco));
+      width: 0;
+      height: 0;
+    }
+
+    .disco-icono {
+      --ang: 0deg;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: var(--tam-icono);
+      height: var(--tam-icono);
+      margin: calc(var(--tam-icono) / -2) 0 0 calc(var(--tam-icono) / -2);
+      transform: rotate(var(--ang)) translateX(var(--r-icono));
+      transition:
+        transform 0.85s cubic-bezier(0.5, 0, 0.2, 1),
+        opacity 0.5s ease,
+        filter 0.3s ease;
+    }
+
+    .disco-icono:hover {
+      filter: brightness(1.08);
+    }
+
+    /* Categoría elegida: se ilumina y late una vez al activarse. */
+    .disco-icono--activo {
+      background-color: color-mix(in srgb, var(--color-verde-jugador) 38%, var(--btn-juego-bg));
+      box-shadow:
+        0 0 0 2px var(--color-verde-jugador),
+        0 0 1.3rem 0.25rem color-mix(in srgb, var(--color-verde-jugador) 70%, transparent);
+      filter: brightness(1.08);
+      animation: disco-latido 0.9s ease-out;
+    }
+
+    @keyframes disco-latido {
+      0% { box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 0 0 color-mix(in srgb, var(--color-verde-jugador) 80%, transparent); }
+      60% { box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 2.2rem 0.6rem color-mix(in srgb, var(--color-verde-jugador) 80%, transparent); }
+      100% { box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 1.3rem 0.25rem color-mix(in srgb, var(--color-verde-jugador) 70%, transparent); }
+    }
+
+    /* Cupón: al pasar el mouse o enfocarlo se ilumina. */
+    .sello:hover,
+    .sello:focus-visible {
+      filter: brightness(1.07) saturate(1.15)
+        drop-shadow(0 0 0.7rem color-mix(in srgb, var(--color-verde-jugador) 85%, transparent));
+    }
+
+    .disco-icono--lejos {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Triángulo fijo que marca la categoría elegida (no gira con el disco). */
+    .disco-puntero {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0.8rem;
+      height: 1.1rem;
+      margin: -0.55rem 0 0 -0.4rem;
+      background: var(--color-verde-jugador);
+      clip-path: polygon(100% 0, 0 50%, 100% 100%);
+      transform: rotate(var(--ang-activo)) translateX(calc(var(--r-icono) - var(--tam-icono) / 2 - 0.9rem));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .disco,
+      .disco-icono {
+        transition: none;
+        animation: none;
+      }
     }
 
     .zona-scroll {
@@ -74,20 +231,22 @@ export class UsuarioCupones {
   protected readonly categorias: readonly FiltroCategoria[] = [
     { id: 'gastronomia', nombre: 'Gastronomía', urlIcono: urlIconoGastro },
     { id: 'deco', nombre: 'Deco', urlIcono: urlIconoDeco },
-    { id: 'cosmetica', nombre: 'Cosmética', urlIcono: urlIconoCosme },
     {
       id: 'indumentaria',
       nombre: 'Indumentaria',
       urlIcono: urlIconoIndumentaria,
     },
+    { id: 'tecnologia', nombre: 'Tecnología', urlIcono: urlIconoTecno },
+    { id: 'cosmetica', nombre: 'Cosmética', urlIcono: urlIconoCosme },
+    { id: 'musica', nombre: 'Música', urlIcono: urlIconoMusica },
     {
       id: 'entretenimiento',
       nombre: 'Entretenimiento',
       urlIcono: urlIconoEntretenimiento,
     },
-    { id: 'musica', nombre: 'Música', urlIcono: urlIconoMusica },
-    { id: 'tecnologia', nombre: 'Tecnología', urlIcono: urlIconoTecno },
   ];
+
+  private readonly confeti = viewChild(Confeti);
 
   protected readonly cupones = signal<CuponDescuento[]>([]);
 
@@ -196,6 +355,11 @@ export class UsuarioCupones {
     return encontradas;
   });
 
+  /** Cupones disponibles (los que todavía se pueden usar). */
+  protected readonly cuponesActivos = computed(
+    () => this.cupones().filter((c) => c.estado === 'Disponible').length,
+  );
+
   /** Solo un cupón disponible tiene QR para mostrar. */
   protected readonly cuponUtilizable = computed(
     () => this.cuponSeleccionado()?.estado === 'Disponible',
@@ -205,6 +369,12 @@ export class UsuarioCupones {
     const destruir = inject(DestroyRef);
 
     destruir.onDestroy(() => this.liberarQr());
+
+    // Cada cambio de categoría (click o URL) hace girar el disco.
+    effect(() => {
+      const indice = this.indiceActivo();
+      untracked(() => this.girarHasta(indice));
+    });
 
     this.escucharCategoriaDesdeUrl(destruir);
     this.cargarCupones();
@@ -260,6 +430,102 @@ export class UsuarioCupones {
       });
   }
 
+  /** Texto de la franja inferior del sello: "20% OFF". */
+  protected etiquetaDescuento(cupon: CuponDescuento): string {
+    const porcentaje =
+      cupon.porcentajeDescuento ??
+      Number(
+        /(\d{1,3})\s*%/.exec(
+          `${cupon.titulo} ${cupon.detalles} ${cupon.descripcion}`,
+        )?.[1],
+      );
+
+    return Number.isFinite(porcentaje) && porcentaje > 0
+      ? `${porcentaje}% OFF`
+      : 'Ver cupón';
+  }
+
+  /** Grados entre un ícono y el siguiente sobre el borde del disco. */
+  private readonly pasoGrados = 14;
+  /** Posición (grados desde el eje horizontal) donde queda la categoría elegida. */
+  private readonly anguloActivo = -35;
+  /** Cuántas categorías se ven por encima de la elegida antes de que den la vuelta por atrás. */
+  private readonly lugaresArriba = 1;
+
+  protected readonly indiceActivo = computed(() =>
+    Math.max(
+      0,
+      this.categorias.findIndex((c) => c.id === this.categoriaActiva()),
+    ),
+  );
+
+  /**
+   * Ángulo acumulado de cada ícono. No se reinicia nunca: una categoría que sale por
+   * arriba sigue girando por detrás del disco y reaparece abajo, como en espiral.
+   */
+  protected readonly angulos = signal<number[]>(this.angulosPara(0));
+
+  /** Giro acumulado de la superficie del disco. */
+  protected readonly giroDisco = signal(0);
+
+  private indicePrevio = 0;
+
+  /** Lugar de un ícono respecto del elegido, en el ciclo de categorías. */
+  private lugar(indice: number, activo: number): number {
+    const n = this.categorias.length;
+    return (
+      ((((indice - activo + this.lugaresArriba) % n) + n) % n) -
+      this.lugaresArriba
+    );
+  }
+
+  private angulosPara(activo: number): number[] {
+    return this.categorias.map(
+      (_, i) => this.anguloActivo + this.lugar(i, activo) * this.pasoGrados,
+    );
+  }
+
+  /** Gira el disco por el camino más corto hasta dejar `nuevo` en la posición activa. */
+  private girarHasta(nuevo: number): void {
+    const previo = this.indicePrevio;
+
+    if (nuevo === previo) {
+      return;
+    }
+
+    const n = this.categorias.length;
+    let pasos = (((nuevo - previo) % n) + n) % n;
+
+    if (pasos > n / 2) {
+      pasos -= n;
+    }
+
+    this.angulos.update((actuales) =>
+      actuales.map((angulo, i) => {
+        const salto = this.lugar(i, nuevo) - this.lugar(i, previo);
+        let giro = salto * this.pasoGrados;
+
+        // El ícono que da la vuelta por atrás recorre el resto de la circunferencia.
+        if (salto === -pasos + n) {
+          giro -= 360;
+        } else if (salto === -pasos - n) {
+          giro += 360;
+        }
+
+        return angulo + giro;
+      }),
+    );
+
+    this.giroDisco.update((g) => g - pasos * this.pasoGrados);
+    this.indicePrevio = nuevo;
+  }
+
+  /** Solo se ven los íconos que están sobre la parte visible del disco. */
+  protected fueraDeVista(indice: number): boolean {
+    const normalizado = ((((this.angulos()[indice] + 180) % 360) + 360) % 360) - 180;
+    return normalizado < -72 || normalizado > 72;
+  }
+
   protected elegirCategoria(id: CategoriaCupon): void {
     this.categoriaActiva.set(id);
   }
@@ -292,7 +558,9 @@ export class UsuarioCupones {
     this.cargarCupones();
   }
 
-  protected abrirCupon(cupon: CuponDescuento): void {
+  protected abrirCupon(cupon: CuponDescuento, evento?: MouseEvent): void {
+    this.confeti()?.lanzarDesdeEvento(evento);
+
     this.liberarQr();
     this.cuponSeleccionado.set(cupon);
     this.qrError.set(false);
@@ -305,19 +573,7 @@ export class UsuarioCupones {
 
     // Con enlace de la marca, el QR se genera acá y lleva directo a la página del descuento.
     if (cupon.enlace) {
-      QRCode.toDataURL(cupon.enlace, { width: 320, margin: 1 })
-        .then((dataUrl: string) => {
-          if (this.cuponSeleccionado()?.id !== cupon.id) {
-            return;
-          }
-
-          this.urlQr.set(dataUrl);
-          this.qrCargando.set(false);
-        })
-        .catch(() => {
-          this.qrError.set(true);
-          this.qrCargando.set(false);
-        });
+      this.generarQrLocal(cupon, cupon.enlace);
       return;
     }
 
@@ -332,11 +588,30 @@ export class UsuarioCupones {
         this.urlQr.set(URL.createObjectURL(imagen));
         this.qrCargando.set(false);
       },
-      error: () => {
+      // Si el backend no entrega el QR, se genera uno acá con el código del cupón.
+      error: () => this.generarQrLocal(cupon, cupon.codigo),
+    });
+  }
+
+  /** Dibuja el QR en el navegador; así todos los cupones tienen QR aunque falle el backend. */
+  private generarQrLocal(cupon: CuponDescuento, contenido: string): void {
+    QRCode.toDataURL(contenido, {
+      width: 320,
+      margin: 1,
+      errorCorrectionLevel: 'M',
+    })
+      .then((dataUrl: string) => {
+        if (this.cuponSeleccionado()?.id !== cupon.id) {
+          return;
+        }
+
+        this.urlQr.set(dataUrl);
+        this.qrCargando.set(false);
+      })
+      .catch(() => {
         this.qrError.set(true);
         this.qrCargando.set(false);
-      },
-    });
+      });
   }
 
   protected cerrarCupon(): void {
