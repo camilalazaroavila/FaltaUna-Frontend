@@ -24,7 +24,7 @@ function varias(rareza: RarezaCarta, cantidad: number): Carta[] {
 describe('modelo de baraja', () => {
   it('define un tamaño de baraja de 12 y la composición del backend', () => {
     expect(TAMANIO_BARAJA).toBe(12);
-    expect(LIMITES_BARAJA).toEqual({ comun: 2, rara: 5, epicarta: 3, legendaria: 2 });
+    expect(LIMITES_BARAJA).toEqual({ comun: 5, rara: 4, epicarta: 2, legendaria: 1 });
   });
   it('cuenta las cartas por rareza en orden, incluyendo las que están en cero', () => {
     const conteos = contarPorRareza([...varias('comun', 2), ...varias('epicarta', 1)]);
@@ -45,10 +45,10 @@ describe('modelo de baraja', () => {
   });
   it('marca la baraja como completa y confirmable con la composición válida', () => {
     const estado = calcularEstadoBaraja([
-      ...varias('comun', 2),
-      ...varias('rara', 5),
-      ...varias('epicarta', 3),
-      ...varias('legendaria', 2),
+      ...varias('comun', 5),
+      ...varias('rara', 4),
+      ...varias('epicarta', 2),
+      ...varias('legendaria', 1),
     ]);
     expect(estado.total).toBe(12);
     expect(estado.completa).toBe(true);
@@ -71,7 +71,7 @@ describe('modelo de baraja', () => {
       const seleccion = varias('legendaria', LIMITES_BARAJA.legendaria);
       const resultado = puedeSeleccionar(carta('otra', 'legendaria'), seleccion);
       expect(resultado.permitido).toBe(false);
-      expect(resultado.motivo).toContain('legendarias');
+      expect(resultado.motivo).toContain('legendaria');
     });
     it('bloquea cualquier carta cuando la baraja ya tiene 12', () => {
       const resultado = puedeSeleccionar(carta('otra', 'comun'), varias('comun', 12));
