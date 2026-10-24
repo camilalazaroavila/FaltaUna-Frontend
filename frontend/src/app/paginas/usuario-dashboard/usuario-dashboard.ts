@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SobresService } from '@servicios/sobres.service';
+import { AuthService } from '@servicios/auth.service';
 import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
 import { FlujoAperturaSobres } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
 import { Header } from '@compartidos/componentes/layout/header/header';
@@ -46,6 +47,7 @@ export interface SobreOpcion {
 export class UsuarioDashboard implements OnInit {
   private readonly router = inject(Router);
   private readonly sobresService = inject(SobresService);
+  private readonly authService = inject(AuthService);
   protected readonly juegoHabilitado = true;
   protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
   protected readonly urlSobreIzquierda = urlSobreIzquierda;
@@ -103,6 +105,7 @@ export class UsuarioDashboard implements OnInit {
 
   ngOnInit(): void {
     this.cargarSobres();
+    this.cargarEstadoDiario();
   }
 
   private cargarSobres(): void {
@@ -116,15 +119,17 @@ export class UsuarioDashboard implements OnInit {
     });
   }
 
+  private cargarEstadoDiario(): void {
+    const usuarioId = this.authService.usuarioActual()?.id ?? 1;
+    this.sobresService.cargarEstadoDiario(usuarioId).subscribe({
+      error: () => {
+        // Mantener estado por defecto si falla
+      },
+    });
+  }
+
   alCompletarApertura(): void {
-    if (this.sobresService.consumirSobreGratuito) {
-      this.sobresService.consumirSobreGratuito();
-    } else {
-      (this.sobresDisponibles as any).update?.((s: any) => ({
-        ...s,
-        actuales: Math.max(0, s.actuales - 1),
-      }));
-    }
+    this.cargarEstadoDiario();
   }
 
   seleccionarSeccion(id: string): void {
@@ -149,15 +154,6 @@ export class UsuarioDashboard implements OnInit {
 
   abrirSobre(opcion: SobreOpcion): void {
     if (!opcion.disponible) return;
-    // Si quedan sobres disponibles se descuenta 1
-    if (this.sobresService.consumirSobreGratuito) {
-      this.sobresService.consumirSobreGratuito();
-    } else {
-      (this.sobresDisponibles as any).update?.((s: any) => ({
-        ...s,
-        actuales: Math.max(0, s.actuales - 1),
-      }));
-    }
     this.cerrarSelectorSobres();
   }
 }

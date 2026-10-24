@@ -25,6 +25,7 @@ import {
   SobreRespuesta,
 } from '@modelos/sobre.model';
 import type { Carta, CategoriaCarta } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre, rarezaDesdeNombre } from '@modelos/carta.model';
 import { categoriaDesdeNombre } from '@modelos/categoria.model';
 import type { CategoriaSobre } from '@modelos/categoria.model';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
@@ -525,34 +526,29 @@ export class FlujoAperturaSobres {
     llamada$.subscribe({
       next: (resp) => {
         this.cargandoApertura.set(false);
+        this.errorApertura.set(null);
 
-        // El backend define CUÁNTAS cartas trae el sobre; cuáles se ven lo define el front.
-        this.mostrarCartas(this.cantidadDeCartas(resp?.cartas ?? [], sobre), sobre);
+        const cartasBackend = resp?.cartas ?? [];
+        if (cartasBackend.length > 0) {
+          this.mostrarCartasDesdeBackend(cartasBackend);
+        } else {
+          this.mostrarCartas(this.cantidadDeCartas(cartasBackend, sobre), sobre);
+        }
         this.indiceCartaActual.set(0);
         this.aperturaRealizada.emit(resp);
 
-        // Transición fluida a revelación
         setTimeout(() => {
           this.fase.set('revelacion');
         }, 400);
       },
-      error: () => {
-        // Si el backend falla, se abre igual con la cantidad que indica el sobre
+      error: (err) => {
         this.cargandoApertura.set(false);
-        this.mostrarCartas(this.cantidadDeCartas([], sobre), sobre);
-        this.indiceCartaActual.set(0);
-
-        const aperturaRespaldo: AperturaSobreRespuesta = {
-          id: Date.now(),
-          sobreId: typeof sobre?.id === 'number' ? sobre.id : 1,
-          fecha: new Date().toISOString(),
-          cartas: this.cartasObtenidas(),
-        };
-        this.aperturaRealizada.emit(aperturaRespaldo);
-
-        setTimeout(() => {
-          this.fase.set('revelacion');
-        }, 400);
+        const mensaje =
+          err?.error?.mensaje ||
+          err?.error?.message ||
+          err?.message ||
+          'No se pudo abrir el sobre. Intentá nuevamente.';
+        this.errorApertura.set(mensaje);
       },
     });
   }
@@ -592,6 +588,42 @@ export class FlujoAperturaSobres {
   cerrarFlujo(): void {
     this.fase.set('cerrado');
     this.cerrar.emit();
+  }
+
+  private mostrarCartasDesdeBackend(cartasBackend: readonly CartaObtenidaRespuesta[]): void {
+    const cartasUI: Carta[] = [];
+
+    for (const cartaBackend of cartasBackend) {
+      const cantidad = Math.max(1, cartaBackend.cantidad ?? 1);
+      for (let i = 0; i < cantidad; i++) {
+        cartasUI.push({
+          id: `${cartaBackend.cartaId}-${i}`,
+          cartaId: cartaBackend.cartaId,
+          nombre: cartaBackend.nombre,
+          imagenUrl: cartaBackend.imagenUrl ?? '',
+          rareza: rarezaDesdeNombre(cartaBackend.rareza),
+          categoria: categoriaCartaDesdeNombre(cartaBackend.categoria),
+          atributoIzquierdo: cartaBackend.poder ?? 0,
+          atributoDerecho: cartaBackend.costoMana ?? 0,
+          obtenida: true,
+        });
+      }
+    }
+
+    this.cartasUI.set(cartasUI);
+    this.marcarRepetidas(cartasUI);
+    this.cartasObtenidas.set(
+      cartasBackend.map((c) => ({
+        cartaId: c.cartaId,
+        nombre: c.nombre,
+        cantidad: c.cantidad,
+        imagenUrl: c.imagenUrl,
+        rareza: c.rareza,
+        poder: c.poder,
+        costoMana: c.costoMana,
+        categoria: c.categoria,
+      })),
+    );
   }
 
   /** Sortea las cartas del sobre y las deja listas para `app-carta`. */
