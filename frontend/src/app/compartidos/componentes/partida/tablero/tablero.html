@@ -71,6 +71,11 @@
         (verCarta)="cartaAbierta.set($event)"
       />
     }
+        <app-cupon-recurso
+      [valor]="servicio.cuponesPropio()"
+      [maximo]="servicio.cuponMaximo()"
+      variante="completa"
+    />
   </div>
 
   <div class="area-mano">
@@ -85,17 +90,16 @@
   </div>
 
   <div class="area-propio">
+
+
+    
     <app-jugador-chip
       [nombre]="servicio.jugadores().propio.nombre"
       [avatarUrl]="servicio.jugadores().propio.avatarUrl"
       lado="propio"
       tamanio="lg"
     />
-    <app-cupon-recurso
-      [valor]="servicio.cuponesPropio()"
-      [maximo]="servicio.cuponMaximo()"
-      variante="compacta"
-    />
+
   </div>
 
   <div class="area-control">

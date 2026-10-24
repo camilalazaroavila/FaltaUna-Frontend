@@ -61,16 +61,19 @@ export class ControlTurno {
     return total > 0 ? Math.min(1, Math.max(0, this.segundosRestantes() / total)) : 0;
   });
   protected readonly textoBoton = computed(() => {
-    const progreso = `${this.turno()}/${this.totalTurnos()}`;
+    const turno = this.turno();
+    const total = this.totalTurnos();
 
-    switch (this.estado()) {
-      case 'jugando':
-        return `Finalizar turno ${progreso}`;
-      case 'esperando':
-        return `Esperando… ${progreso}`;
-      default:
-        return `Realizando turno ${progreso}`;
+    if (this.estado() === 'jugando') {
+      if (turno >= total) {
+        return `Ronda final (${turno} de ${total})`;
+      }
+      return `Finalizar ${turno} de ${total}`;
     }
+    if (this.estado() === 'esperando') {
+      return `Esperando… ${turno} de ${total}`;
+    }
+    return `Realizando turno ${turno} de ${total}`;
   });
   /**
    * Versión corta para columnas angostas: el texto SIEMPRE queda visible, en
@@ -98,7 +101,7 @@ export class ControlTurno {
     this.enAdvertencia() ? 'bg-advertencia' : 'bg-marca-primaria',
   );
   protected readonly etiquetaTiempo = computed(
-    () => `Turno ${this.turno()} de ${this.totalTurnos()}, quedan ${this.segundosRestantes()} segundos`,
+    () => `Ronda ${this.turno()} de ${this.totalTurnos()}, quedan ${this.segundosRestantes()} segundos`,
   );
 
   constructor() {

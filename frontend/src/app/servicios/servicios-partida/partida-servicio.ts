@@ -751,6 +751,18 @@ export class PartidaServicio {
     this.partidaApi
       .finalizar(partidaId, rondaActual, clave)
       .pipe(
+        tap((respuesta) => {
+          if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+            try {
+              console.info('[PartidaDiag] POST /Partidas/%d/finalizar respuesta cruda', partidaId, {
+                ronda: rondaActual,
+                respuesta: JSON.parse(JSON.stringify(respuesta)),
+              });
+            } catch {
+              console.info('[PartidaDiag] POST /Partidas/%d/finalizar respuesta cruda', partidaId, respuesta);
+            }
+          }
+        }),
         switchMap((respuesta) => {
           if (!this.esEpocaActual(epoca) || !this.esPartidaActual(partidaId)) {
             return EMPTY;
@@ -767,11 +779,39 @@ export class PartidaServicio {
           };
 
           if (esEstadoCompleto(respuesta)) {
+            if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+              try {
+                console.info('[PartidaDiag] POST /Partidas/%d/finalizar devolvió EstadoPartidaApi completo', partidaId, {
+                  ronda: (respuesta as EstadoPartidaApi).ronda,
+                  cartasEnMesa: (respuesta as EstadoPartidaApi).cartasEnMesa,
+                  zonas: (respuesta as EstadoPartidaApi).zonas?.map((z) => ({ zonaPartidaId: z.zonaPartidaId, lugar: z.lugar, puntajePropio: z.puntajePropio, puntajeRival: z.puntajeRival })),
+                  puntosPropio: (respuesta as EstadoPartidaApi).jugadorPropio?.puntosTotales,
+                  puntosRival: (respuesta as EstadoPartidaApi).rival?.puntosTotales,
+                });
+              } catch {
+                // ignorar
+              }
+            }
             return of({ tipo: 'estado' as const, estado: respuesta });
           }
 
           // 200 con ResultadoRondaApi: obtener estado completo para sincronizar
           return this.partidaApi.obtenerEstado(partidaId).pipe(
+            tap((estadoCompleto) => {
+              if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+                try {
+                  console.info('[PartidaDiag] GET /Partidas/%d (tras finalizar) respuesta cruda', partidaId, {
+                    ronda: estadoCompleto.ronda,
+                    cartasEnMesa: estadoCompleto.cartasEnMesa,
+                    zonas: estadoCompleto.zonas?.map((z) => ({ zonaPartidaId: z.zonaPartidaId, lugar: z.lugar, puntajePropio: z.puntajePropio, puntajeRival: z.puntajeRival })),
+                    puntosPropio: estadoCompleto.jugadorPropio?.puntosTotales,
+                    puntosRival: estadoCompleto.rival?.puntosTotales,
+                  });
+                } catch {
+                  // ignorar
+                }
+              }
+            }),
             map((estadoCompleto) => ({ tipo: 'estado' as const, estado: estadoCompleto })),
           );
         }),
@@ -830,6 +870,21 @@ export class PartidaServicio {
         actual: anterior.ronda,
       });
       return;
+    }
+
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      try {
+        console.info('[PartidaDiag] aplicarEstado: cartasEnMesa, zonas[] y puntos', {
+          partidaId: estado.partidaId,
+          ronda: estado.ronda,
+          cartasEnMesa: estado.cartasEnMesa,
+          zonas: estado.zonas?.map((z) => ({ zonaPartidaId: z.zonaPartidaId, lugar: z.lugar, puntajePropio: z.puntajePropio, puntajeRival: z.puntajeRival })),
+          puntosPropio: estado.jugadorPropio?.puntosTotales,
+          puntosRival: estado.rival?.puntosTotales,
+        });
+      } catch {
+        // ignorar
+      }
     }
 
     const cambioDeRonda = !anterior || anterior.ronda !== estado.ronda;
@@ -930,6 +985,7 @@ export class PartidaServicio {
         this.cartaDesdeApi(item.carta, {
           cartaPartidaId: item.cartaPartidaId,
           jugable: item.jugable,
+          poderBase: item.carta.poder,
         }),
       ),
       cartasMesa: cartasEnMesaProcesadas.map((item) => this.cartaMesaDesdeApi(item)),
@@ -1118,6 +1174,7 @@ export class PartidaServicio {
         : this.cartaDesdeApi(item.carta, {
             cartaPartidaId: item.cartaPartidaId,
             poderActual: item.poderActual,
+            poderBase: item.carta.poder,
           });
 
     return {
@@ -1133,9 +1190,13 @@ export class PartidaServicio {
     opciones: {
       readonly cartaPartidaId?: number;
       readonly poderActual?: number | null;
+      readonly poderBase?: number | null;
       readonly jugable?: boolean;
     } = {},
   ): Carta {
+    const poderBase = opciones.poderBase ?? carta.poder;
+    const poderActual = opciones.poderActual ?? carta.poder;
+
     return {
       id:
         opciones.cartaPartidaId !== undefined
@@ -1147,8 +1208,9 @@ export class PartidaServicio {
       imagenUrl: carta.imagenUrl ?? '',
       rareza: this.rarezaDesdeNombre(carta.rareza),
       categoria: categoriaCartaDesdeNombre(carta.categoria),
-      atributoIzquierdo: opciones.poderActual ?? carta.poder,
-      atributoDerecho: carta.costoCupon,
+      atributoIzquierdo: carta.costoCupon,
+      atributoDerecho: poderActual,
+      poderBase,
       obtenida: true,
       jugable: opciones.jugable,
     };

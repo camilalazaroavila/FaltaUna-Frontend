@@ -141,7 +141,7 @@ describe('CartaComponent', () => {
 
   it('debe describir la carta en el aria-label sin filtrar el nombre si no está obtenida', () => {
     expect(carta('obtenida').getAttribute('aria-label')).toBe(
-      'Carta Danonino, Común, Gastronomía, obtenida',
+      'Carta Danonino, Común, Gastronomía, costo 12, poder 8, obtenida',
     );
     expect(carta('bloqueada').getAttribute('aria-label')).toBe(
       'Carta no obtenida, Legendaria, Gastronomía',

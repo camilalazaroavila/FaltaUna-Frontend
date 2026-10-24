@@ -44,6 +44,10 @@ export class Partida implements OnInit, OnDestroy {
 
   /** Hay una partida real en curso (no la maqueta). */
   protected readonly enPartida = computed(() => this.servicio.partidaId() !== null);
+  /** Evita mostrar header global mientras reconecta y aún no hay partida. */
+  protected readonly mostrarHeader = computed(
+    () => !this.enPartida() && !this.servicio.cargando(),
+  );
   protected readonly resultado = this.servicio.resultadoRonda;
   protected readonly terminada = this.servicio.terminada;
   protected readonly gane = this.servicio.gane;
