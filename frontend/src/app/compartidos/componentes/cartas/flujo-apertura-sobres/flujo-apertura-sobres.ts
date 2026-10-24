@@ -519,7 +519,9 @@ export class FlujoAperturaSobres {
 
     this.cargandoApertura.set(true);
 
-    const llamada$ = sobre?.esDiario
+    const esDiario = sobre?.esDiario === true || String(sobre?.id).startsWith('diario');
+
+    const llamada$ = esDiario
       ? this.sobresService.reclamarSobreDiario(usuarioId)
       : this.sobresService.abrirSobre(Number(sobre?.id), usuarioId);
 
