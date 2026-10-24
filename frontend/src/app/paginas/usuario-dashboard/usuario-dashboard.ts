@@ -160,6 +160,8 @@ export class UsuarioDashboard implements OnInit {
   }
 
   abrirSelectorSobres(): void {
+    this.cargarInventarioSobres();
+    this.cargarEstadoDiario();
     this.selectorSobresAbierto.set(true);
   }
 

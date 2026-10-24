@@ -273,24 +273,24 @@ export class FlujoAperturaSobres {
     for (const inv of inventario) {
       if (!inv || inv.cantidad <= 0) continue;
       const sobreCatalogo = catalogo.find((s) => s.id === inv.sobreId);
-      const tipo = (sobreCatalogo?.tipo ?? (inv.tipo === 'GENERAL' ? 'GENERAL' : inv.tipo)) as 'GENERAL' | 'CATEGORIA' | 'MARCA';
-      if (tipo === 'GENERAL') {
-        continue;
-      }
+      const tipo = (sobreCatalogo?.tipo ?? inv.tipo) as 'GENERAL' | 'CATEGORIA' | 'MARCA';
       const etiqueta = sobreCatalogo?.marca ?? sobreCatalogo?.categoria ?? inv.nombre;
-      items.push({
-        id: inv.sobreId,
-        nombre: inv.nombre,
-        etiqueta: etiqueta.toUpperCase(),
-        tipo,
-        precio: sobreCatalogo?.precio ?? 0,
-        cantidadCartas: sobreCatalogo?.cantidadCartas ?? (tipo === 'MARCA' ? 1 : tipo === 'CATEGORIA' ? 3 : 5),
-        esDiario: false,
-        disponible: inv.cantidad > 0,
-        categoria: sobreCatalogo?.categoria ?? null,
-        marca: sobreCatalogo?.marca ?? null,
-        logoUrl: sobreCatalogo?.logoUrl ?? null,
-      });
+      const cantidad = inv.cantidad;
+      for (let i = 0; i < cantidad; i++) {
+        items.push({
+          id: inv.sobreId,
+          nombre: inv.nombre,
+          etiqueta: etiqueta.toUpperCase(),
+          tipo,
+          precio: sobreCatalogo?.precio ?? 0,
+          cantidadCartas: sobreCatalogo?.cantidadCartas ?? (tipo === 'MARCA' ? 1 : tipo === 'CATEGORIA' ? 3 : 5),
+          esDiario: false,
+          disponible: true,
+          categoria: sobreCatalogo?.categoria ?? null,
+          marca: sobreCatalogo?.marca ?? null,
+          logoUrl: sobreCatalogo?.logoUrl ?? null,
+        });
+      }
     }
 
     return items;
@@ -610,7 +610,7 @@ export class FlujoAperturaSobres {
           id: `${cartaBackend.cartaId}-${i}`,
           cartaId: cartaBackend.cartaId,
           nombre: cartaBackend.nombre,
-          imagenUrl: cartaBackend.imagenUrl ?? '',
+          imagenUrl: cartaBackend.imagenUrl,
           rareza: rarezaDesdeNombre(cartaBackend.rareza),
           categoria: categoriaCartaDesdeNombre(cartaBackend.categoria),
           atributoIzquierdo: cartaBackend.poder ?? 0,
