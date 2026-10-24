@@ -1,5 +1,5 @@
 :host {
-    --ancho-carta: clamp(3rem, 9cqw, 6rem);
+    --ancho-carta: clamp(7rem, 13cqw, 10rem);
     --escala-arrastre: 1.12;
     display: block;
     min-width: 0;
@@ -23,13 +23,9 @@
     touch-action: none;
 }
 
-.mano-carta + .mano-carta {
-    margin-left: calc(
-        min(
-                calc(var(--ancho-carta) * 0.72),
-                calc((100% - var(--ancho-carta)) / var(--separaciones))
-            ) - var(--ancho-carta)
-    );
+.mano-carta+.mano-carta {
+    margin-left: calc(min(calc(var(--ancho-carta) * 0.72),
+                calc((100% - var(--ancho-carta)) / var(--separaciones))) - var(--ancho-carta));
 }
 
 .mano-carta:hover,
@@ -39,7 +35,7 @@
 
 /* La carta que se arrastra se atenúa en su lugar: la acción pasa en el fantasma. */
 .mano-carta--arrastrando {
-    opacity: 0.4;
+    opacity: 0.3;
     transform: rotate(0deg) translateY(-0.5rem);
 }
 
@@ -56,7 +52,7 @@
     pointer-events: none;
     transform: translate(-50%, -115%) scale(var(--escala-arrastre));
     transform-origin: center bottom;
-    filter: drop-shadow(0 0.5rem 0.75rem rgb(0 0 0 / 0.35));
+    filter: drop-shadow(0 0.5rem 0.75rem rgb(0 0 0 / 0.25));
 }
 
 @media (prefers-reduced-motion: reduce) {

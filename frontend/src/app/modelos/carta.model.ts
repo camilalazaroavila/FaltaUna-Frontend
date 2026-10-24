@@ -26,8 +26,10 @@ export interface Carta {
   readonly categoria: CategoriaCarta;
   readonly atributoIzquierdo: number;
   readonly atributoDerecho: number;
+  /** Poder base de la carta (solo relevante en mesa). */
+  readonly poderBase?: number;
   readonly obtenida: boolean;
-  /** Id de la carta en el catálogo cuando viene de una partida. */
+  /** Id de la carta en el catálogos cuando viene de una partida. */
   readonly cartaId?: number;
   /** Id de la instancia en la partida: distingue copias repetidas en la mano. */
   readonly cartaPartidaId?: number;

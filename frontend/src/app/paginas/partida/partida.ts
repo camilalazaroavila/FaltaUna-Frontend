@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
 
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { Caja } from '@compartidos/componentes/contenedor/caja/caja';
@@ -44,6 +45,10 @@ export class Partida implements OnInit, OnDestroy {
 
   /** Hay una partida real en curso (no la maqueta). */
   protected readonly enPartida = computed(() => this.servicio.partidaId() !== null);
+  /** Evita mostrar header global mientras reconecta y aún no hay partida. */
+  protected readonly mostrarHeader = computed(
+    () => !this.enPartida() && !this.servicio.cargando(),
+  );
   protected readonly resultado = this.servicio.resultadoRonda;
   protected readonly terminada = this.servicio.terminada;
   protected readonly gane = this.servicio.gane;
@@ -138,9 +143,34 @@ export class Partida implements OnInit, OnDestroy {
     this.servicio.iniciarContraBot(mazoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
-  /** Cierra la partida local y vuelve al menú de juego. */
-  protected abandonar(): void {
-    this.servicio.abandonarPartida();
+  /** Solicita confirmación antes de abandonar la partida (o sale directamente si ya finalizó). */
+  protected async abandonar(): Promise<void> {
+    if (this.servicio.terminada()) {
+      this.servicio.abandonar();
+      return;
+    }
+
+    const resultado = await Swal.fire({
+      title: '¿Abandonar la partida?',
+      text: 'Si abandonás, la partida se dará por terminada por desconexión y se registrará tu salida.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, abandonar',
+      cancelButtonText: 'No, volver',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#4b5563',
+      background: '#1a1f2c',
+      color: '#f3f4f6',
+      customClass: {
+        popup: 'rounded-2xl border border-borde-default shadow-cartoon',
+        confirmButton: 'font-titulo font-bold tracking-wide uppercase',
+        cancelButton: 'font-interfaz font-bold',
+      },
+    });
+
+    if (resultado.isConfirmed) {
+      this.servicio.abandonar();
+    }
   }
 
   protected seleccionarMazo(evento: Event): void {

@@ -7,6 +7,12 @@
     max-width: 160rem;
     margin-inline: auto;
     container-type: inline-size;
+    /* Alto de pantalla que NO ocupan los slots: cabecera, fila del rival,
+       mano, etiquetas y foto de la zona. Si la zona pisa la mano, subilo;
+       si sobra lugar, bajalo. */
+    --tablero-alto-fijo: 36rem;
+    /* Tope absoluto del ancho de un slot (pantallas muy grandes). */
+    --slot-ancho-max: 9rem;
 }
 
 .tablero {
@@ -14,7 +20,7 @@
     width: 100%;
     height: 100%;
     grid-template-columns:
-        minmax(3rem, clamp(3rem, 6cqw, 7rem)) minmax(0, 1fr) minmax(3rem, clamp(3rem, 6cqw, 7rem));
+        minmax(3rem, clamp(4rem, 7cqw, 8rem)) minmax(0, 1fr) minmax(4rem, clamp(4rem, 7cqw, 8rem));
     grid-template-rows: auto minmax(0, 1fr) auto;
     column-gap: clamp(0.5rem, 1.6cqw, 1.75rem);
     row-gap: clamp(0.25rem, 1.2vh, 1rem);
@@ -29,6 +35,8 @@
     grid-column: 1 / -1;
     grid-row: 1;
     justify-self: end;
+    position: relative;
+    z-index: 25;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -87,6 +95,7 @@
     justify-self: center;
     align-self: center;
     width: 100%;
+    max-height: 100%;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: clamp(0.75rem, 3cqw, 3rem);
@@ -105,7 +114,7 @@
     position: relative;
     z-index: 20;
     min-width: 0;
-    margin-top: calc(-1 * clamp(0.5rem, 2vh, 1.5rem));
+    margin-top: calc(-1 * clamp(1rem, 3vh, 2rem));
 }
 
 .area-propio {
@@ -118,7 +127,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: clamp(0.25rem, 1vh, 0.5rem);
+    gap: clamp(0.5rem, 2vh, 1rem);
     min-width: 0;
 }
 
@@ -136,7 +145,7 @@
     z-index: 15;
     width: max-content;
     min-width: 8.5rem;
-    padding-bottom: clamp(0.25rem, 1vh, 0.75rem);
+    padding-bottom: clamp(0.5rem, 3vh, 1rem);
 }
 
 .area-control app-control-turno {

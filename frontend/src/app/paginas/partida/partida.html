@@ -1,84 +1,68 @@
 <div
-  class="flex min-h-dvh flex-col overflow-x-hidden bg-fondo-app font-interfaz text-texto-primario"
+  class="flex min-h-[100dvh] h-[100dvh] flex-col overflow-x-hidden overflow-y-hidden bg-fondo-app font-interfaz text-texto-primario"
 >
   @if (enPartida()) {
     <!-- Partida activa: pantalla completa sin header global -->
-    <main class="partida-activa flex flex-1 flex-col gap-2 px-3 pt-2 pb-3 sm:px-4">
-      <!-- Cabecera compacta: volver, título y ronda -->
-      <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-        <div class="flex flex-wrap items-center gap-2">
-          <a
-            routerLink="/usuario/jugar"
-            class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion"
+    <main class="partida-activa flex flex-1 min-h-0 flex-col gap-2 px-3 pt-2 pb-3 sm:px-4 overflow-hidden">
+    <!-- Cabecera compacta: volver, título y ronda -->
+    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+      <div class="flex flex-wrap items-center gap-2">
+        <a
+          routerLink="/usuario/jugar"
+          class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion"
+        >
+          <svg
+            class="size-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
           >
-            <svg
-              class="size-3.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M15 6l-6 6 6 6" />
-            </svg>
-            Volver
-          </a>
-          <h1 app-titulo tamano="sm">Partida contra el bot</h1>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <span
-            class="rounded-pildora border border-borde-default bg-hundido px-3 py-1 font-interfaz text-etiqueta text-texto-secundario"
-            [class.text-advertencia-texto]="servicio.turno() === servicio.rondasTotales()"
-          >
-            @if (servicio.turno() === servicio.rondasTotales()) {
-              Ronda final ({{ servicio.turno() }} de {{ servicio.rondasTotales() }})
-            } @else {
-              Ronda {{ servicio.turno() }} de {{ servicio.rondasTotales() }}
-            }
-          </span>
-          <button type="button" app-boton variante="fantasma" tamanio="sm" (click)="abandonar()">
-            Abandonar
-          </button>
-        </div>
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
+          Volver
+        </a>
+        <h1 app-titulo tamano="sm">Partida contra el bot</h1>
       </div>
 
-      <!-- Resultado de la última ronda resuelta -->
-      @if (resultado(); as res) {
-        <app-caja [variante]="varianteResultado()" acento="derecha" padding="sm">
-          <h2 slot="encabezado" app-titulo tamano="sm" color="heredar">
-            {{ tituloResultado() }}
-          </h2>
+      <div class="flex flex-wrap items-center gap-2">
+        <span
+          class="rounded-pildora border border-borde-default bg-hundido px-3 py-1 font-interfaz text-etiqueta text-texto-secundario"
+          [class.text-advertencia-texto]="servicio.turno() >= servicio.rondasTotales()"
+        >
+          @if (servicio.terminada()) {
+            Partida finalizada
+          } @else if (servicio.turno() >= servicio.rondasTotales()) {
+            Ronda final ({{ servicio.turno() }} de {{ servicio.rondasTotales() }})
+          } @else {
+            Ronda {{ servicio.turno() }} de {{ servicio.rondasTotales() }}
+          }
+        </span>
+        <button
+          type="button"
+          app-boton
+          [variante]="servicio.terminada() ? 'primario' : 'fantasma'"
+          tamanio="sm"
+          (click)="abandonar()"
+        >
+          {{ servicio.terminada() ? 'Salir' : 'Abandonar' }}
+        </button>
+      </div>
+    </div>
 
-          <ul class="flex flex-wrap gap-x-6 gap-y-1">
-            @for (zona of res.zonas; track zona.zonaPartidaId) {
-              <li class="font-interfaz text-sm">
-                <span class="font-bold">{{ zona.nombreZona }}</span>
-                <span class="text-texto-secundario">
-                  · vos {{ zona.propio }} · bot {{ zona.rival }}</span
-                >
-              </li>
-            }
-          </ul>
-
-          <p slot="pie" app-texto variante="heredar" tamano="menor">
-            Acumulado: vos {{ res.puntosPropio }} · bot {{ res.puntosRival }}
-            @if (textoMotivo(); as motivo) {
-              <span class="block">{{ motivo }}</span>
-            }
-          </p>
-        </app-caja>
-      }
-
-      <div class="area-tablero">
+      
+      <div class="area-tablero min-h-0 flex-1">
         <app-tablero (rendirse)="servicio.rendirse()" />
       </div>
     </main>
   } @else {
     <!-- Sin partida activa: mostrar header global y pantalla de selección de mazo -->
-    <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario/jugar" />
+    @if (mostrarHeader()) {
+      <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario/jugar" />
+    }
     <main class="flex flex-1 flex-col gap-4 px-4 pt-2 pb-6 sm:px-8 lg:px-12">
       <!-- Antes de empezar: se elige un mazo y se crea la partida contra el bot -->
       <div class="flex flex-1 items-center justify-center py-8">
@@ -86,7 +70,7 @@
           <h1 app-titulo tamano="lg">Partida contra el bot</h1>
 
           <p app-texto variante="secundario">
-            Bajá tus cartas a las zonas, sumá poder y cerrá el turno antes de que se agoten los 40
+            Bajá tus cartas a las zonas, sumá poder y cerrá el turno antes de que se agoten los 60
             segundos. El bot juega su turno cuando vos finalizás.
           </p>
 

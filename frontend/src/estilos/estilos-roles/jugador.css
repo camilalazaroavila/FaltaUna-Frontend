@@ -178,6 +178,6 @@
       GsapService desde el estilo computado (`duracionPartida`). */
    --duracion-revelado-carta: 600ms;
    --duracion-cambio-zona: 900ms;
-   --duracion-vuelo-carta: 450ms;
-   --duracion-micro: 300ms;
+   --duracion-vuelo-carta: 200ms;
+   --duracion-micro: 200ms;
 }

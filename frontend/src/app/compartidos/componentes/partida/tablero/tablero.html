@@ -66,11 +66,18 @@
         [deltaRival]="delta.rival"
         [deltaPropio]="delta.propio"
         [slotsResaltados]="resaltarSlots()"
+        [esProvisionalFn]="esProvisionalFn"
         (abrirPopup)="lugarAbierto.set(lugar)"
         (jugarSlot)="alJugarEnSlot(lugar, $event)"
+        (retirarCarta)="alRetirarCarta($event)"
         (verCarta)="cartaAbierta.set($event)"
       />
     }
+        <app-cupon-recurso
+      [valor]="servicio.cuponesPropio()"
+      [maximo]="servicio.cuponMaximo()"
+      variante="completa"
+    />
   </div>
 
   <div class="area-mano">
@@ -85,17 +92,16 @@
   </div>
 
   <div class="area-propio">
+
+
+    
     <app-jugador-chip
       [nombre]="servicio.jugadores().propio.nombre"
       [avatarUrl]="servicio.jugadores().propio.avatarUrl"
       lado="propio"
       tamanio="lg"
     />
-    <app-cupon-recurso
-      [valor]="servicio.cuponesPropio()"
-      [maximo]="servicio.cuponMaximo()"
-      variante="compacta"
-    />
+
   </div>
 
   <div class="area-control">
@@ -104,7 +110,8 @@
       [segundosRestantes]="servicio.segundosRestantes()"
       [estado]="servicio.estadoRonda()"
       (finalizar)="servicio.marcarListo()"
-      (rendirse)="rendirse.emit()"
+      (abandonar)="servicio.abandonar()"
+      (rendirse)="servicio.rendirse()"
     />
   </div>
 </div>
@@ -119,7 +126,12 @@
 }
 
 @if (cartaAbierta(); as carta) {
-  <app-carta-popup [carta]="carta" (cerrar)="cartaAbierta.set(null)" />
+  <app-carta-popup
+    [carta]="carta"
+    [esProvisional]="servicio.esCartaProvisional(carta)"
+    (retirar)="alRetirarCarta(carta)"
+    (cerrar)="cartaAbierta.set(null)"
+  />
 }
 
 <div class="sr-only" aria-live="polite">{{ servicio.anuncio() }}</div>
