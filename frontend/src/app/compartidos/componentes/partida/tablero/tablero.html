@@ -66,8 +66,10 @@
         [deltaRival]="delta.rival"
         [deltaPropio]="delta.propio"
         [slotsResaltados]="resaltarSlots()"
+        [esProvisionalFn]="esProvisionalFn"
         (abrirPopup)="lugarAbierto.set(lugar)"
         (jugarSlot)="alJugarEnSlot(lugar, $event)"
+        (retirarCarta)="alRetirarCarta($event)"
         (verCarta)="cartaAbierta.set($event)"
       />
     }
@@ -108,7 +110,8 @@
       [segundosRestantes]="servicio.segundosRestantes()"
       [estado]="servicio.estadoRonda()"
       (finalizar)="servicio.marcarListo()"
-      (rendirse)="rendirse.emit()"
+      (abandonar)="servicio.abandonar()"
+      (rendirse)="servicio.rendirse()"
     />
   </div>
 </div>
@@ -123,7 +126,12 @@
 }
 
 @if (cartaAbierta(); as carta) {
-  <app-carta-popup [carta]="carta" (cerrar)="cartaAbierta.set(null)" />
+  <app-carta-popup
+    [carta]="carta"
+    [esProvisional]="servicio.esCartaProvisional(carta)"
+    (retirar)="alRetirarCarta(carta)"
+    (cerrar)="cartaAbierta.set(null)"
+  />
 }
 
 <div class="sr-only" aria-live="polite">{{ servicio.anuncio() }}</div>

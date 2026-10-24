@@ -144,6 +144,7 @@ describe('PartidaServicio', () => {
       obtenerEstado: jest.fn(),
       enviarLatido: jest.fn().mockReturnValue(of({ ahora: '2026-10-22T00:00:00Z' })),
       jugarCarta: jest.fn(),
+      retirarCarta: jest.fn(),
       finalizar: jest.fn(),
       rendirse: jest.fn(),
       abandonar: jest.fn(),
@@ -270,16 +271,16 @@ describe('PartidaServicio', () => {
       expect(carta?.atributoIzquierdo).toBe(0);
     });
 
-    it('no aplica la jugada de forma optimista: espera el estado del servidor', () => {
+    it('aplica la jugada de forma optimista y la confirma con el estado del servidor', () => {
       iniciar();
 
       const respuesta = new Subject<EstadoPartidaApi>();
       partidaApi.jugarCarta.mockReturnValue(respuesta);
 
       expect(servicio.jugarCarta(cartaDeMano(), 'izquierda', 2)).toBe(true);
-      expect(servicio.lugares().izquierda.propio[2]).toBeNull();
-      expect(servicio.manoPropia()).toHaveLength(2);
-      expect(servicio.enviandoCarta()).toBe(true);
+      expect(servicio.lugares().izquierda.propio[2]?.cartaId).toBe(100);
+      expect(servicio.manoPropia()).toHaveLength(1);
+      expect(servicio.cuponesPropio()).toBe(1);
 
       respuesta.next(
         estadoApi({
@@ -304,6 +305,47 @@ describe('PartidaServicio', () => {
       expect(servicio.manoPropia()).toHaveLength(1);
       expect(servicio.cuponesPropio()).toBe(1);
       expect(servicio.enviandoCarta()).toBe(false);
+    });
+
+    it('permite retirar una carta provisional antes de finalizar', () => {
+      iniciar();
+      const respuesta = new Subject<EstadoPartidaApi>();
+      partidaApi.jugarCarta.mockReturnValue(respuesta);
+      partidaApi.retirarCarta.mockReturnValue(of(estadoApi()));
+
+      servicio.jugarCarta(cartaDeMano(), 'izquierda', 2);
+      expect(servicio.lugares().izquierda.propio[2]?.cartaId).toBe(100);
+
+      const cartaEnMesa = servicio.lugares().izquierda.propio[2]!;
+      expect(servicio.esCartaProvisional(cartaEnMesa)).toBe(true);
+
+      const res = servicio.retirarCarta(cartaEnMesa);
+      expect(res).toBe(true);
+      expect(partidaApi.retirarCarta).toHaveBeenCalledWith(
+        7,
+        11,
+        expect.stringMatching(/^retirar-/),
+      );
+    });
+
+    it('no permite retirar una carta del rival o confirmada', () => {
+      iniciar();
+      const cartaRival = {
+        id: 999,
+        cartaPartidaId: 999,
+        nombre: 'Rival Card',
+        descripcion: '',
+        imagenUrl: '',
+        costoCupon: 1,
+        poderBase: 3,
+        jugable: false,
+        lado: 'rival' as const,
+        oculta: false,
+      };
+
+      expect(servicio.esCartaProvisional(cartaRival as any)).toBe(false);
+      expect(servicio.retirarCarta(cartaRival as any)).toBe(false);
+      expect(partidaApi.retirarCarta).not.toHaveBeenCalled();
     });
 
     it('envía la jugada con ids, zona, slot, ronda e idempotencia', () => {
@@ -707,6 +749,245 @@ describe('PartidaServicio', () => {
       expect(servicio.modoReal()).toBe(false);
       expect(servicio.partidaId()).toBeNull();
       expect(localStorage.getItem('faltauna_partida_activa')).toBeNull();
+    });
+
+    it('abandonar() limpia el estado local y localStorage para permitir una nueva partida', () => {
+      iniciar();
+      partidaApi.abandonar.mockReturnValue(of({}));
+
+      servicio.abandonar();
+
+      expect(partidaApi.abandonar).toHaveBeenCalledWith(7, expect.stringMatching(/^abandonar-/));
+      expect(servicio.modoReal()).toBe(false);
+      expect(servicio.partidaId()).toBeNull();
+      expect(localStorage.getItem('faltauna_partida_activa')).toBeNull();
+    });
+
+    it('reconectar() no reconecta a una partida ya finalizada y limpia localStorage', () => {
+      localStorage.setItem('faltauna_partida_activa', '7');
+      partidaApi.obtenerEstado.mockReturnValue(of(estadoApi({ estado: 'finalizada' })));
+
+      let reconectado = true;
+      servicio.reconectar().subscribe((resultado) => {
+        reconectado = resultado;
+      });
+
+      expect(reconectado).toBe(false);
+      expect(servicio.modoReal()).toBe(false);
+      expect(servicio.partidaId()).toBeNull();
+      expect(localStorage.getItem('faltauna_partida_activa')).toBeNull();
+    });
+
+    describe('Fusión y revelado de cartas (fixtures no verificados contra el backend real)', () => {
+      it('1. revelada que solo viene en cartasReveladas aparece en el slot correcto', () => {
+        const estado = estadoApi({
+          cartasEnMesa: [], // no viene en cartasEnMesa
+          ultimoResultado: resultadoApi({
+            cartasReveladas: [
+              {
+                cartaPartidaId: 88,
+                zonaPartidaId: 10, // zona 10 es 'izquierda'
+                indice: 2,
+                lado: 'rival',
+                oculta: false,
+                carta: cartaApi({ cartaId: 301, nombre: 'Carta Solo Revelada' }),
+                poderActual: 8,
+              },
+            ],
+          }),
+        });
+
+        iniciar(estado);
+
+        const cartaRival = servicio.lugares().izquierda.rival[2];
+        expect(cartaRival).toBeTruthy();
+        expect(cartaRival?.nombre).toBe('Carta Solo Revelada');
+        expect(cartaRival?.oculta).toBeFalsy();
+        expect(cartaRival?.atributoDerecho).toBe(8);
+      });
+
+      it('2. revelada que reemplaza una oculta existente', () => {
+        const estado = estadoApi({
+          cartasEnMesa: [
+            {
+              cartaPartidaId: 99,
+              zonaPartidaId: 10,
+              indice: 1,
+              lado: 'rival',
+              oculta: true,
+              carta: null,
+              poderActual: null,
+            },
+          ],
+          ultimoResultado: resultadoApi({
+            cartasReveladas: [
+              {
+                cartaPartidaId: 99,
+                zonaPartidaId: 10,
+                indice: 1,
+                lado: 'rival',
+                oculta: false,
+                carta: cartaApi({ cartaId: 302, nombre: 'Carta Revelada Reemplazo' }),
+                poderActual: 7,
+              },
+            ],
+          }),
+        });
+
+        iniciar(estado);
+
+        const slot = servicio.lugares().izquierda.rival[1];
+        expect(slot).toBeTruthy();
+        expect(slot?.oculta).toBeFalsy();
+        expect(slot?.nombre).toBe('Carta Revelada Reemplazo');
+        expect(slot?.atributoDerecho).toBe(7);
+      });
+
+      it('3. carta con zonaPartidaId desconocido no rompe y registra warn', () => {
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const estado = estadoApi({
+          cartasEnMesa: [
+            {
+              cartaPartidaId: 105,
+              zonaPartidaId: 9999, // zona desconocida, no existe en zonas ni en resultado
+              indice: 0,
+              lado: 'rival',
+              oculta: false,
+              carta: cartaApi({ cartaId: 303, nombre: 'Zona Fantasma' }),
+              poderActual: 5,
+            },
+          ],
+        });
+
+        expect(() => {
+          iniciar(estado);
+          servicio.lugares();
+        }).not.toThrow();
+
+        expect(warnSpy).toHaveBeenCalledWith(
+          expect.stringContaining('[PartidaServicio] Carta con zonaPartidaId desconocido'),
+          expect.objectContaining({ zonaPartidaId: 9999 }),
+        );
+        const izqSlots = servicio.lugares().izquierda.rival;
+        const derSlots = servicio.lugares().derecha.rival;
+        expect(izqSlots.some((c) => c?.nombre === 'Zona Fantasma')).toBe(false);
+        expect(derSlots.some((c) => c?.nombre === 'Zona Fantasma')).toBe(false);
+        warnSpy.mockRestore();
+      });
+
+      it('4. carta con indice: null cae al primer slot libre y registra warn', () => {
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const estado = estadoApi({
+          cartasEnMesa: [
+            {
+              cartaPartidaId: 106,
+              zonaPartidaId: 10,
+              indice: null as unknown as number,
+              lado: 'rival',
+              oculta: false,
+              carta: cartaApi({ cartaId: 304, nombre: 'Carta Indice Null' }),
+              poderActual: 4,
+            },
+          ],
+        });
+
+        iniciar(estado);
+        const lugares = servicio.lugares();
+
+        expect(warnSpy).toHaveBeenCalledWith(
+          expect.stringContaining('[PartidaServicio] Carta con índice null u ocupado, asignando primer slot libre'),
+          expect.objectContaining({ cartaPartidaId: 106, slotAsignado: 0 }),
+        );
+        expect(lugares.izquierda.rival[0]?.nombre).toBe('Carta Indice Null');
+        warnSpy.mockRestore();
+      });
+
+      it('5. no duplica cartas ni modifica las propias', () => {
+        const cartaPropiaOriginal = {
+          cartaPartidaId: 11,
+          zonaPartidaId: 10,
+          indice: 0,
+          lado: 'propio' as const,
+          oculta: false,
+          carta: cartaApi({ cartaId: 100, nombre: 'Mi Carta Intacta' }),
+          poderActual: 9,
+        };
+        const estado = estadoApi({
+          cartasEnMesa: [
+            cartaPropiaOriginal,
+            {
+              cartaPartidaId: 55,
+              zonaPartidaId: 10,
+              indice: 1,
+              lado: 'rival',
+              oculta: false,
+              carta: cartaApi({ cartaId: 305, nombre: 'Rival Original' }),
+              poderActual: 3,
+            },
+          ],
+          ultimoResultado: resultadoApi({
+            cartasReveladas: [
+              {
+                cartaPartidaId: 11,
+                zonaPartidaId: 10,
+                indice: 0,
+                lado: 'rival',
+                oculta: false,
+                carta: cartaApi({ cartaId: 999, nombre: 'Impostor' }),
+                poderActual: 1,
+              },
+              {
+                cartaPartidaId: 55,
+                zonaPartidaId: 10,
+                indice: 1,
+                lado: 'rival',
+                oculta: false,
+                carta: cartaApi({ cartaId: 305, nombre: 'Rival Duplicado' }),
+                poderActual: 3,
+              },
+            ],
+          }),
+        });
+
+        iniciar(estado);
+
+        const propia = servicio.lugares().izquierda.propio[0];
+        expect(propia?.nombre).toBe('Mi Carta Intacta');
+        expect(propia?.cartaPartidaId).toBe(11);
+
+        const rivalesEnZona = servicio.lugares().izquierda.rival.filter((c) => c !== null);
+        expect(rivalesEnZona.filter((c) => c.cartaPartidaId === 55).length).toBe(1);
+      });
+
+      it('6. ResultadoRonda.cartasReveladasRival contiene nombre, poder y zona', () => {
+        const estado = estadoApi({
+          ultimoResultado: resultadoApi({
+            ronda: 1,
+            cartasReveladas: [
+              {
+                cartaPartidaId: 201,
+                zonaPartidaId: 10, // zona 10 tiene nombre 'Grido'
+                indice: 0,
+                lado: 'rival',
+                oculta: false,
+                carta: cartaApi({ cartaId: 501, nombre: 'Messi Bot', poder: 10 }),
+                poderActual: 12,
+              },
+            ],
+          }),
+        });
+
+        iniciar(estado);
+
+        const res = servicio.resultadoRonda();
+        expect(res).not.toBeNull();
+        expect(res?.cartasReveladasRival).toHaveLength(1);
+        expect(res?.cartasReveladasRival[0]).toEqual({
+          nombre: 'Messi Bot',
+          poder: 12,
+          nombreZona: 'Grido',
+        });
+      });
     });
   });
 });

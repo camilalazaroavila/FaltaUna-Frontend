@@ -300,6 +300,13 @@ export interface ResultadoZonaRonda {
   readonly puntosGanadosRival: number;
 }
 
+/** Carta jugada por el rival revelada al resolver la ronda. */
+export interface CartaReveladaRival {
+  readonly nombre: string;
+  readonly poder: number;
+  readonly nombreZona: string;
+}
+
 /** Resultado de la ronda, listo para mostrar. */
 export interface ResultadoRonda {
   readonly numero: number;
@@ -314,4 +321,6 @@ export interface ResultadoRonda {
   readonly motivo: string | null;
   /** `null` cuando la partida sigue en curso o terminó empatada. */
   readonly gane: boolean | null;
+  /** Cartas reveladas del rival en esta resolución. */
+  readonly cartasReveladasRival: readonly CartaReveladaRival[];
 }

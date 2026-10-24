@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import Swal from 'sweetalert2';
 
 import { ControlTurno } from './control-turno';
 
@@ -44,4 +45,84 @@ describe('ControlTurno', () => {
     const boton = fixture.nativeElement.querySelector('button[app-boton]') as HTMLButtonElement;
     expect(boton.disabled).toBe(true);
   });
+
+  it('muestra los botones de Abandonar y Rendirme debajo del botón principal', () => {
+    const botones = fixture.nativeElement.querySelectorAll('button');
+    const textos = Array.from(botones).map((b) => (b as HTMLButtonElement).textContent?.trim());
+    expect(textos).toContain('Abandonar');
+    expect(textos).toContain('Rendirme');
+  });
+
+  it('al confirmar abandonar en SweetAlert, emite el evento abandonar', async () => {
+    const swalSpy = jest.spyOn(Swal, 'fire').mockResolvedValue({
+      isConfirmed: true,
+      isDenied: false,
+      isDismissed: false,
+    } as any);
+    const abandonarSpy = jest.fn();
+    component.abandonar.subscribe(abandonarSpy);
+
+    await component.pedirConfirmacionAbandonar();
+
+    expect(swalSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '¿Abandonar la partida?',
+        showCancelButton: true,
+      }),
+    );
+    expect(abandonarSpy).toHaveBeenCalled();
+    swalSpy.mockRestore();
+  });
+
+  it('al cancelar abandonar en SweetAlert, no emite abandonar', async () => {
+    const swalSpy = jest.spyOn(Swal, 'fire').mockResolvedValue({
+      isConfirmed: false,
+      isDenied: false,
+      isDismissed: true,
+    } as any);
+    const abandonarSpy = jest.fn();
+    component.abandonar.subscribe(abandonarSpy);
+
+    await component.pedirConfirmacionAbandonar();
+
+    expect(abandonarSpy).not.toHaveBeenCalled();
+    swalSpy.mockRestore();
+  });
+
+  it('al confirmar rendirse en SweetAlert, emite el evento rendirse', async () => {
+    const swalSpy = jest.spyOn(Swal, 'fire').mockResolvedValue({
+      isConfirmed: true,
+      isDenied: false,
+      isDismissed: false,
+    } as any);
+    const rendirseSpy = jest.fn();
+    component.rendirse.subscribe(rendirseSpy);
+
+    await component.pedirConfirmacionRendirse();
+
+    expect(swalSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '¿Rendirte?',
+        showCancelButton: true,
+      }),
+    );
+    expect(rendirseSpy).toHaveBeenCalled();
+    swalSpy.mockRestore();
+  });
+
+  it('al cancelar rendirse en SweetAlert, no emite rendirse', async () => {
+    const swalSpy = jest.spyOn(Swal, 'fire').mockResolvedValue({
+      isConfirmed: false,
+      isDenied: false,
+      isDismissed: true,
+    } as any);
+    const rendirseSpy = jest.fn();
+    component.rendirse.subscribe(rendirseSpy);
+
+    await component.pedirConfirmacionRendirse();
+
+    expect(rendirseSpy).not.toHaveBeenCalled();
+    swalSpy.mockRestore();
+  });
 });
+

@@ -1,15 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   computed,
-  effect,
   input,
   output,
-  signal,
-  viewChild,
 } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
+import Swal from 'sweetalert2';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import type { EstadoBotonListo } from '@compartidos/componentes/partida/boton-listo/boton-listo';
 
@@ -18,14 +15,9 @@ const SEGUNDOS_ADVERTENCIA = 10;
 const CLASES_TIEMPO_BASE =
   'inline-flex items-center gap-1.5 rounded-pildora border-2 bg-hundido px-3 py-0.5 font-titulo text-cuerpo leading-titulo tabular-nums';
 
-/** Cada instancia necesita su propio id para aria-labelledby. */
-let instancias = 0;
-
 /**
- * Control del turno: un solo botón que muestra el turno y lo finaliza, con el
- * tiempo restante arriba y "Rendirme" aparte (con alerta de confirmación).
- * Es presentacional: no maneja timer ni decide cuándo se resuelve el turno
- * (A confirmar, §10).
+ * Control del turno: botón principal "Finalizar turno" y acciones secundarias
+ * "Abandonar" y "Rendirme" con cuadro de confirmación SweetAlert.
  */
 @Component({
   selector: 'app-control-turno',
@@ -39,16 +31,14 @@ export class ControlTurno {
   readonly turno = input.required<number>();
   readonly totalTurnos = input(6);
   readonly segundosRestantes = input.required<number>();
-  readonly segundosTotales = input(40);
+  readonly segundosTotales = input(60);
   readonly estado = input<EstadoBotonListo>('jugando');
 
   readonly finalizar = output<void>();
+  readonly abandonar = output<void>();
   readonly rendirse = output<void>();
 
-  protected readonly idConfirmacion = `control-turno-confirmar-${++instancias}`;
-  protected readonly confirmando = signal(false);
-
-  private readonly refCancelar = viewChild('botonCancelar', { read: ElementRef });
+  private procesandoAccion = false;
 
   protected readonly activo = computed(() => this.estado() === 'jugando');
   protected readonly resolviendo = computed(() => this.estado() === 'resolviendo');
@@ -77,7 +67,7 @@ export class ControlTurno {
   });
   /**
    * Versión corta para columnas angostas: el texto SIEMPRE queda visible, en
-   * contenedores chicos cambia el largo, no la presencia (context.md, tablero).
+   * contenedores chicos cambia el largo, no la presencia.
    */
   protected readonly textoBotonCorto = computed(() => {
     switch (this.estado()) {
@@ -104,29 +94,69 @@ export class ControlTurno {
     () => `Ronda ${this.turno()} de ${this.totalTurnos()}, quedan ${this.segundosRestantes()} segundos`,
   );
 
-  constructor() {
-    // Al abrir la alerta, el foco va a "Cancelar" (la opción segura).
-    effect(() => {
-      this.refCancelar()?.nativeElement.focus();
-    });
-  }
-
   protected pulsarFinalizar(): void {
     if (this.activo()) {
       this.finalizar.emit();
     }
   }
 
-  protected pedirConfirmacion(): void {
-    this.confirmando.set(true);
+  async pedirConfirmacionAbandonar(): Promise<void> {
+    if (this.procesandoAccion) return;
+
+    const resultado = await Swal.fire({
+      title: '¿Abandonar la partida?',
+      text: 'Si abandonás, la partida se dará por terminada por desconexión y se registrará tu salida.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, abandonar',
+      cancelButtonText: 'No, volver',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#4b5563',
+      background: '#1a1f2c',
+      color: '#f3f4f6',
+      customClass: {
+        popup: 'rounded-2xl border border-borde-default shadow-cartoon',
+        confirmButton: 'font-titulo font-bold tracking-wide uppercase',
+        cancelButton: 'font-interfaz font-bold',
+      },
+    });
+
+    if (resultado.isConfirmed) {
+      this.procesandoAccion = true;
+      this.abandonar.emit();
+      setTimeout(() => {
+        this.procesandoAccion = false;
+      }, 1000);
+    }
   }
 
-  protected cancelar(): void {
-    this.confirmando.set(false);
-  }
+  async pedirConfirmacionRendirse(): Promise<void> {
+    if (this.procesandoAccion) return;
 
-  protected confirmar(): void {
-    this.confirmando.set(false);
-    this.rendirse.emit();
+    const resultado = await Swal.fire({
+      title: '¿Rendirte?',
+      text: 'Si te rendís, se le otorgará la victoria a tu rival y la partida finalizará como derrota.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, rendirme',
+      cancelButtonText: 'No, volver',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#4b5563',
+      background: '#1a1f2c',
+      color: '#f3f4f6',
+      customClass: {
+        popup: 'rounded-2xl border border-borde-default shadow-cartoon',
+        confirmButton: 'font-titulo font-bold tracking-wide uppercase',
+        cancelButton: 'font-interfaz font-bold',
+      },
+    });
+
+    if (resultado.isConfirmed) {
+      this.procesandoAccion = true;
+      this.rendirse.emit();
+      setTimeout(() => {
+        this.procesandoAccion = false;
+      }, 1000);
+    }
   }
 }

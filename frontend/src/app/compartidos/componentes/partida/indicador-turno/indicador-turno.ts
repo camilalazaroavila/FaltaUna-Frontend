@@ -39,7 +39,7 @@ export class IndicadorTurno {
   readonly totalTurnos = input(6);
   readonly segundosRestantes = input.required<number>();
   /** Duración total del turno, para dibujar la barra de tiempo. */
-  readonly segundosTotales = input(40);
+  readonly segundosTotales = input(60);
 
   readonly rendirse = output<void>();
 

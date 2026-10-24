@@ -33,45 +33,27 @@
           class="rounded-pildora border border-borde-default bg-hundido px-3 py-1 font-interfaz text-etiqueta text-texto-secundario"
           [class.text-advertencia-texto]="servicio.turno() >= servicio.rondasTotales()"
         >
-          @if (servicio.turno() >= servicio.rondasTotales()) {
+          @if (servicio.terminada()) {
+            Partida finalizada
+          } @else if (servicio.turno() >= servicio.rondasTotales()) {
             Ronda final ({{ servicio.turno() }} de {{ servicio.rondasTotales() }})
           } @else {
             Ronda {{ servicio.turno() }} de {{ servicio.rondasTotales() }}
           }
         </span>
-        <button type="button" app-boton variante="fantasma" tamanio="sm" (click)="abandonar()">
-          Abandonar
+        <button
+          type="button"
+          app-boton
+          [variante]="servicio.terminada() ? 'primario' : 'fantasma'"
+          tamanio="sm"
+          (click)="abandonar()"
+        >
+          {{ servicio.terminada() ? 'Salir' : 'Abandonar' }}
         </button>
       </div>
     </div>
 
-      <!-- Resultado de la última ronda resuelta 
-      @if (resultado(); as res) {
-        <app-caja [variante]="varianteResultado()" acento="derecha" padding="sm">
-          <h2 slot="encabezado" app-titulo tamano="sm" color="heredar">
-            {{ tituloResultado() }}
-          </h2>
-
-          <ul class="flex flex-wrap gap-x-6 gap-y-1">
-            @for (zona of res.zonas; track zona.zonaPartidaId) {
-              <li class="font-interfaz text-sm">
-                <span class="font-bold">{{ zona.nombreZona }}</span>
-                <span class="text-texto-secundario">
-                  · vos {{ zona.propio }} · bot {{ zona.rival }}</span
-                >
-              </li>
-            }
-          </ul>
-
-          <p slot="pie" app-texto variante="heredar" tamano="menor">
-            Acumulado: vos {{ res.puntosPropio }} · bot {{ res.puntosRival }}
-            @if (textoMotivo(); as motivo) {
-              <span class="block">{{ motivo }}</span>
-            }
-          </p>
-        </app-caja>
-      }
--->
+      
       <div class="area-tablero min-h-0 flex-1">
         <app-tablero (rendirse)="servicio.rendirse()" />
       </div>
@@ -88,7 +70,7 @@
           <h1 app-titulo tamano="lg">Partida contra el bot</h1>
 
           <p app-texto variante="secundario">
-            Bajá tus cartas a las zonas, sumá poder y cerrá el turno antes de que se agoten los 40
+            Bajá tus cartas a las zonas, sumá poder y cerrá el turno antes de que se agoten los 60
             segundos. El bot juega su turno cuando vos finalizás.
           </p>
 
