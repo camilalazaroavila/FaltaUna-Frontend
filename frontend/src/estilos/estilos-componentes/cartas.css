@@ -8,7 +8,7 @@
 :root,
 [data-modo="jugador"] {
     /* --- Cartas de Colección y Jugadores --- */
-    --carta-reverso: var(--color-teal-elevado);
+    --carta-reverso: var(--color-teal-profundo);
     --carta-desconocida: var(--color-amarillo-acento);
     --carta-bloqueada: rgba(244, 250, 246, 0.22);
     --rareza-1: #8FAF9A;

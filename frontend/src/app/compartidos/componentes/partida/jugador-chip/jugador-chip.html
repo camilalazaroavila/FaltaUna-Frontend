@@ -1,5 +1,5 @@
 <div
-  class="chip flex items-center gap-2"
+  class="chip w-max flex items-center gap-2"
   [class.chip--rival]="esRival()"
   [class.flex-row-reverse]="esRival()"
   [attr.aria-label]="etiqueta()"
@@ -25,7 +25,7 @@
     <span class="marco-imagen absolute inset-0 bg-avatar-marco" aria-hidden="true"></span>
   </span>
 
-  <span class="chip-nombre" [class]="clasesNombre()">
-    {{ nombre() }}
-  </span>
+<span class="whitespace-nowrap font-titulo text-etiqueta tracking-etiqueta uppercase">
+  {{ nombre() }}
+</span>
 </div>

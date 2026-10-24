@@ -55,8 +55,8 @@ export interface CartaAlbum {
   readonly categoria: CategoriaCarta;
   /** `Carta.Poder` del backend (atributo izquierdo del componente `app-carta`). */
   readonly poder: number;
-  /** `Carta.CostoMana` del backend (atributo derecho del componente `app-carta`). */
-  readonly costoMana: number;
+  /** `Carta.costoCupon` del backend (atributo derecho del componente `app-carta`). */
+  readonly costoCupon: number;
   readonly obtenida: boolean;
   readonly cantidad: number;
   /** Si el jugador la marcó como "carta que quiero". */
@@ -119,7 +119,7 @@ export function cartaAlbumACarta(carta: CartaAlbum): Carta {
     rareza: carta.rareza,
     categoria: carta.categoria,
     atributoIzquierdo: carta.poder,
-    atributoDerecho: carta.costoMana,
+    atributoDerecho: carta.costoCupon,
     obtenida: carta.obtenida,
   };
 }

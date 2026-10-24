@@ -15,12 +15,12 @@ import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
 const CLASES_BASE =
-  'inline-flex min-w-[clamp(2.75rem,16cqw,4.5rem)] items-center justify-center gap-1 rounded-pildora border-2 border-zona-marco px-[clamp(0.4rem,2cqw,0.75rem)] py-[clamp(0.1rem,1cqw,0.25rem)] shadow-cartoon';
+  'inline-flex min-w-[clamp(3.5rem,18cqw,5.75rem)] items-center justify-center gap-1.5 rounded-pildora border-2 px-[clamp(0.4rem,2cqw,0.75rem)] py-[clamp(0.1rem,1cqw,0.25rem)] shadow-cartoon transition-all duration-200';
 
 const CLASES_ESTADO: Record<EstadoPuntajeZona, string> = {
-  ganando: 'bg-puntaje-zona-ganando-fondo text-puntaje-zona-ganando-texto',
-  perdiendo: 'bg-puntaje-zona-perdiendo-fondo text-puntaje-zona-perdiendo-texto',
-  empate: 'bg-puntaje-zona-empate-fondo text-puntaje-zona-empate-texto',
+  ganando: 'bg-puntaje-zona-ganando-fondo text-puntaje-zona-ganando-texto border-exito shadow-[0_0_10px_rgba(59,217,114,0.35)]',
+  perdiendo: 'bg-puntaje-zona-perdiendo-fondo text-puntaje-zona-perdiendo-texto border-error/70',
+  empate: 'bg-puntaje-zona-empate-fondo text-puntaje-zona-empate-texto border-zona-marco',
 };
 
 /** La forma comunica el estado aunque no se perciba el color. */
@@ -32,9 +32,7 @@ const SIMBOLO_ESTADO: Record<EstadoPuntajeZona, string> = {
 
 /**
  * Badge con el puntaje de una zona para un lado del tablero. El estado se
- * indica con color Y con un símbolo (▲ ▼ ●). Cada cambio de puntos da UNA
- * pasada de animación GSAP: rebote del número y, si el lado sube y va
- * ganando, un latido del badge. No hay animaciones continuas.
+ * indica con color, símbolo (▲ ▼ ●) y margen de diferencia.
  */
 @Component({
   selector: 'app-puntaje-zona',
@@ -56,15 +54,24 @@ export class PuntajeZona implements AfterViewInit {
   readonly puntos = input.required<number>();
   readonly estado = input<EstadoPuntajeZona>('empate');
   readonly lado = input<LadoPartida>('propio');
+  readonly diferencia = input<number>(0);
 
   protected readonly movimientoReducido = this.gsapServicio.movimientoReducido;
   protected readonly simbolo = computed(() => SIMBOLO_ESTADO[this.estado()]);
   protected readonly clases = computed(() =>
     [CLASES_BASE, CLASES_ESTADO[this.estado()]].join(' '),
   );
-  protected readonly etiqueta = computed(
-    () => `Puntaje ${this.lado()}: ${this.puntos()}, ${this.estado()}`,
-  );
+  protected readonly etiqueta = computed(() => {
+    const rol = this.lado() === 'propio' ? 'Puntaje propio' : 'Puntaje rival';
+    const dif = this.diferencia();
+    const detalle =
+      dif > 0
+        ? this.estado() === 'ganando'
+          ? `, ganando por ${dif}`
+          : `, perdiendo por ${dif}`
+        : `, ${this.estado()}`;
+    return `${rol}: ${this.puntos()}${detalle}`;
+  });
 
   private contexto?: ContextoGsap;
   private puntosAnteriores?: number;

@@ -84,23 +84,25 @@ describe('MiBaraja', () => {
   });
   it('no permite pasar del máximo de cartas', () => {
     const validas = [
-      ...comunes().slice(0, 2),
-      ...coleccion().filter((carta) => carta.rareza === 'rara').slice(0, 5),
-      ...coleccion().filter((carta) => carta.rareza === 'epicarta').slice(0, 3),
-      ...coleccion().filter((carta) => carta.rareza === 'legendaria').slice(0, 2),
+      ...comunes().slice(0, 5),
+      ...coleccion().filter((carta) => carta.rareza === 'rara').slice(0, 4),
+      ...coleccion().filter((carta) => carta.rareza === 'epicarta').slice(0, 2),
+      ...coleccion().filter((carta) => carta.rareza === 'legendaria').slice(0, 1),
     ];
     validas.forEach(alternar);
     const rara = coleccion().find((carta) => carta.rareza === 'rara' && !seleccion().includes(carta)) as Carta;
-    alternar(rara);
+    if (rara) {
+      alternar(rara);
+    }
     expect(seleccion().length).toBe(TAMANIO_BARAJA);
     expect(componente['aviso']()).toContain('12');
   });
   it('marca la baraja como completa y habilita el guardado con la composición válida', () => {
     [
-      ...comunes().slice(0, 2),
-      ...coleccion().filter((carta) => carta.rareza === 'rara').slice(0, 5),
-      ...coleccion().filter((carta) => carta.rareza === 'epicarta').slice(0, 3),
-      ...coleccion().filter((carta) => carta.rareza === 'legendaria').slice(0, 2),
+      ...comunes().slice(0, 5),
+      ...coleccion().filter((carta) => carta.rareza === 'rara').slice(0, 4),
+      ...coleccion().filter((carta) => carta.rareza === 'epicarta').slice(0, 2),
+      ...coleccion().filter((carta) => carta.rareza === 'legendaria').slice(0, 1),
     ].forEach(alternar);
     expect(estado().total).toBe(TAMANIO_BARAJA);
     expect(estado().puedeConfirmar).toBe(true);
@@ -108,10 +110,10 @@ describe('MiBaraja', () => {
   });
   it('guarda la baraja cuando está completa', () => {
     [
-      ...comunes().slice(0, 2),
-      ...coleccion().filter((carta) => carta.rareza === 'rara').slice(0, 5),
-      ...coleccion().filter((carta) => carta.rareza === 'epicarta').slice(0, 3),
-      ...coleccion().filter((carta) => carta.rareza === 'legendaria').slice(0, 2),
+      ...comunes().slice(0, 5),
+      ...coleccion().filter((carta) => carta.rareza === 'rara').slice(0, 4),
+      ...coleccion().filter((carta) => carta.rareza === 'epicarta').slice(0, 2),
+      ...coleccion().filter((carta) => carta.rareza === 'legendaria').slice(0, 1),
     ].forEach(alternar);
     componente['guardar']();
     fixture.detectChanges();

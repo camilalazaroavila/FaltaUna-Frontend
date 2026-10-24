@@ -59,9 +59,7 @@ export const routes: Routes = [
       import('@paginas/pantalla-inicial-juego/pantalla-inicial-juego').then((m) => m.PantallaInicialJuego),
   },
 
-  /*Rutas para el modo del juego. PvP, Contra la IA o tutorial*/
-  { path: 'juego/jugador', loadComponent: cargaJuego, data: { modo: 'pvp' } },
-  { path: 'juego/ia', loadComponent: cargaJuego, data: { modo: 'ia' } },
+  /*Ruta del tutorial. PvP y contra la IA tienen su propia pantalla más abajo.*/
   { path: 'juego/tutorial', loadComponent: cargaJuego, data: { modo: 'tutorial' } },
 
   {
@@ -105,6 +103,22 @@ export const routes: Routes = [
     data: { rolesPermitidos: ['Usuario'] },
     loadComponent: () =>
       import('./paginas/albumes/albumes').then((m) => m.Albumes),
+  },
+
+  {
+    path: 'juego/ia',
+    title: 'Partida contra el bot · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () => import('@paginas/partida/partida').then((m) => m.Partida),
+  },
+  {
+    path: 'juego/jugador',
+    title: 'Partida contra jugador · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('@paginas/partida-jugador/partida-jugador').then((m) => m.PartidaJugador),
   },
 
   {

@@ -1,41 +1,55 @@
-import type { EfectoZona } from '@compartidos/componentes/partida/zona-popup/zona-popup';
+import type { ZonaTablero } from '@modelos/partida.model';
 
-/** MOCK: zonas de ejemplo. Los efectos reales los define el equipo (context.md, sección 11). */
-export interface ZonaMock {
-  readonly id: string;
-  readonly nombre: string;
-  readonly imagenUrl: string;
-  readonly efecto: EfectoZona;
-}
-
-export const ZONAS_MOCK: readonly ZonaMock[] = [
+/**
+ * Zonas de ejemplo para la galería y el tablero mock.
+ *
+ * Los efectos reales los define el equipo (context.md, sección 11) y llegan
+ * del backend con el bonus por categoría.
+ */
+export const ZONAS_MOCK: readonly ZonaTablero[] = [
   {
-    id: 'z-grido',
+    id: 1,
+    zonaPartidaId: 1,
     nombre: 'Grido',
-    imagenUrl: 'imagenes/grido.jpg',
+    imagenUrl: 'imagenes/grido-local.jpg',
     efecto: { categoria: 'gastronomia', bonus: 1 },
+    poderPropio: 0,
+    poderRival: 0,
+    bonusPorCategoria: {},
   },
   {
-    id: 'z-zara',
-    nombre: 'Zara',
-    imagenUrl: 'imagenes/zara.jpg',
+    id: 2,
+    zonaPartidaId: 2,
+    nombre: 'Lego',
+    imagenUrl: 'imagenes/LEGO.jpg.webp',
     efecto: { categoria: 'indumentaria', bonus: 1 },
+    poderPropio: 0,
+    poderRival: 0,
+    bonusPorCategoria: {},
   },
   {
-    id: 'z-mcdonalds',
+    id: 3,
+    zonaPartidaId: 3,
     nombre: 'McDonald\'s',
     imagenUrl: 'imagenes/McDonalds.jpg',
     efecto: { categoria: 'gastronomia', bonus: 1 },
+    poderPropio: 0,
+    poderRival: 0,
+    bonusPorCategoria: {},
   },
   {
-    id: 'z-sony',
+    id: 4,
+    zonaPartidaId: 4,
     nombre: 'Sony',
     imagenUrl: 'imagenes/sony.png',
     efecto: { categoria: 'tecnologia', bonus: 1 },
+    poderPropio: 0,
+    poderRival: 0,
+    bonusPorCategoria: {},
   },
 ];
 
-/** MOCK: avatares de jugador (carpeta `public/imagenes/iconos-jugador/`). */
+/** Avatares de jugador de ejemplo (carpeta `public/imagenes/iconos-jugador/`). */
 export const JUGADORES_MOCK = {
   propio: { nombre: 'Gonzamirko', avatarUrl: 'imagenes/iconos-jugador/batman.png' },
   rival: { nombre: 'Pedrope', avatarUrl: 'imagenes/iconos-jugador/ps5.jpg' },

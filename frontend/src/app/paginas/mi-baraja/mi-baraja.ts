@@ -6,14 +6,16 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import type { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { toast } from 'ngx-sonner';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { CartaSeleccionableComponent } from '@compartidos/componentes/cartas/carta-seleccionable/carta-seleccionable';
 import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup/carta-popup';
 import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
-import { BarajaService } from '@servicios/baraja.service';
+import { BarajaService, mapearCartaMazo } from '@servicios/baraja.service';
 import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
 import { ETIQUETA_CATEGORIA, ETIQUETA_RAREZA } from '@modelos/carta.model';
 import {
@@ -184,6 +186,7 @@ export class MiBaraja {
           return;
         }
         this.nombreBaraja.set(mazo.nombre);
+        this.seleccion.set(mazo.cartas.map(mapearCartaMazo));
         this.seleccion.set(
           mazo.cartas.map((carta) => ({
             id: String(carta.cartaId),
@@ -195,7 +198,7 @@ export class MiBaraja {
               ] ?? 'comun',
             categoria: 'gastronomia',
             atributoIzquierdo: carta.poder,
-            atributoDerecho: carta.costoMana,
+            atributoDerecho: carta.costoCupon,
             obtenida: true,
           })),
         );
@@ -250,11 +253,27 @@ export class MiBaraja {
           this.guardando.set(false);
           this.guardado.set(true);
           this.aviso.set(null);
+          toast.success('Baraja guardada');
         },
-        error: () => {
-          this.guardando.set(false);
-          this.aviso.set('No se pudo guardar la baraja. Intentá de nuevo.');
-        },
+error: (error: HttpErrorResponse) => {
+  console.error('[MiBaraja] Falló guardarBaraja', {
+    estado: error.status,
+    url: error.url,
+    respuestaDelBack: error.error,
+    enviado: {
+      nombre: this.nombreBaraja().trim(),
+      cartasIds: this.seleccion().map((carta) => Number(carta.id)),
+    },
+  });
+  this.guardando.set(false);
+  const mensajeError =
+    error.error?.mensaje ??
+    error.error?.message ??
+    error.error?.title ??
+    'No se pudo guardar la baraja. Intentá de nuevo.';
+  this.aviso.set(mensajeError);
+  toast.error(mensajeError);
+},
       });
   }
   protected actualizarNombre(evento: Event): void {

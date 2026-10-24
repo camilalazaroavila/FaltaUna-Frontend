@@ -15,25 +15,23 @@
 >
   <button
     type="button"
-    class="zona-popup__cerrar absolute top-3 right-3 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-primaria font-bold text-marca-sobre-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+    class="zona-popup__cerrar absolute top-3 right-3 z-10 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-primaria font-bold text-marca-sobre-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
     aria-label="Cerrar detalle de la zona"
     (click)="cerrar.emit()"
   >
     ✕
   </button>
 
-<div class="relative mx-auto aspect-[4/5] w-44 rounded-md bg-zona-marco-destacado">
-  <img
-    class="absolute inset-[8%] h-[84%] w-[84%] rounded-md object-cover"
-    [src]="imagen()"
-    alt=""
-    (error)="falloImagen.set(true)"
-  />
-  <span
-    class="marco-zona-irregular absolute inset-0 bg-zona-marco-destacado"
-    aria-hidden="true"
-  ></span>
-</div>
+  <div
+    class="relative mx-auto mt-6 aspect-[5/4] w-full overflow-hidden rounded-lg bg-zona-marco-destacado p-3"
+  >
+    <img
+      class="h-full w-full rounded-md object-cover"
+      [src]="imagen()"
+      alt=""
+      (error)="falloImagen.set(true)"
+    />
+  </div>
 
   <h2 [id]="idTitulo" class="mt-4 font-titulo text-2xl uppercase text-marca-acento">
     {{ nombre() }}
@@ -42,7 +40,11 @@
   <p
     class="mt-4 rounded-md bg-zona-popup-recuadro-fondo px-4 py-3 font-interfaz text-base text-zona-popup-recuadro-texto"
   >
-    +{{ efecto().bonus }} de poder por cada carta de
-    <strong>{{ categoriaEtiqueta() }}</strong> mientras esté en este lugar.
+    @if (efecto().texto; as texto) {
+      {{ texto }}
+    } @else {
+      +{{ efecto().bonus }} de poder por cada carta de
+      <strong>{{ categoriaEtiqueta() }}</strong> mientras esté en este lugar.
+    }
   </p>
 </div>

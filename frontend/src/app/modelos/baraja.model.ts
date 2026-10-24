@@ -7,10 +7,10 @@ export const RAREZAS_BARAJA: readonly RarezaCarta[] = ['comun', 'rara', 'epicart
  * Composición obligatoria definida por el backend.
  */
 export const LIMITES_BARAJA: Record<RarezaCarta, number> = {
-  comun: 2,
-  rara: 5,
-  epicarta: 3,
-  legendaria: 2,
+  comun: 5,
+  rara: 4,
+  epicarta: 2,
+  legendaria: 1,
 };
 /** Plural legible por rareza, para los mensajes de límite. */
 const PLURAL_RAREZA: Record<RarezaCarta, string> = {

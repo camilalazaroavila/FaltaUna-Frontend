@@ -1,12 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, shareReplay, tap } from 'rxjs';
-import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
+import type { Carta, RarezaCarta } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre } from '@modelos/carta.model';
 import { ApiService } from './api.service';
-import type {
-  CartaInventarioApi,
-  GuardarMazoRequest,
-  MazoApi,
-} from '@modelos/mazo.model';
+import type { CartaInventarioApi, GuardarMazoRequest, MazoApi } from '@modelos/mazo.model';
 /**
  * Servicio de mazos del jugador.
  *
@@ -21,11 +18,19 @@ export class BarajaService {
   obtenerCartasDisponibles(): Observable<Carta[]> {
     return this.api
       .get<CartaInventarioApi[]>('Mazos/cartas-disponibles')
-      .pipe(map((cartas) => cartas.filter((carta) => carta.cantidad > 0).map(mapearCartaInventario)));
+      .pipe(
+        map((cartas) => cartas.filter((carta) => carta.cantidad > 0).map(mapearCartaInventario)),
+      );
+  }
+  /** Lista todos los mazos guardados del jugador. */
+  obtenerMazos(): Observable<MazoApi[]> {
+    return this.api
+      .get<MazoApi[]>('Mazos')
+      .pipe(tap((mazos) => (this.mazoActual = mazos[0] ?? null)));
   }
   /** Devuelve el primer mazo del usuario, o `null` si todavía no creó ninguno. */
   obtenerMazoActual(): Observable<MazoApi | null> {
-    return this.api.get<MazoApi[]>('Mazos').pipe(
+    return this.obtenerMazos().pipe(
       map((mazos) => mazos[0] ?? null),
       tap((mazo) => (this.mazoActual = mazo)),
       shareReplay({ bufferSize: 1, refCount: true }),
@@ -58,21 +63,21 @@ function mapearCartaInventario(carta: CartaInventarioApi): Carta {
     nombre: carta.nombre,
     imagenUrl: carta.imagenUrl ?? '',
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
-    categoria: mapearCategoria(carta.categoria),
-    atributoIzquierdo: carta.poder,
-    atributoDerecho: carta.costoMana,
+    categoria: categoriaCartaDesdeNombre(carta.categoria),
+    atributoDerecho: carta.poder,
+    atributoIzquierdo: carta.costoCupon,
     obtenida: true,
   };
 }
-function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {
+export function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {
   return {
     id: String(carta.cartaId),
     nombre: carta.nombre,
     imagenUrl: carta.imagenUrl ?? '',
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
-    categoria: mapearCategoria(''),
+    categoria: categoriaCartaDesdeNombre(''),
     atributoIzquierdo: carta.poder,
-    atributoDerecho: carta.costoMana,
+    atributoDerecho: carta.costoCupon,
     obtenida: true,
   };
 }
@@ -83,7 +88,7 @@ function normalizar(valor: string): string {
     .trim()
     .toLowerCase();
 }
-function mapearRareza(valor: string, orden: number): RarezaCarta {
+export function mapearRareza(valor: string, orden: number): RarezaCarta {
   switch (normalizar(valor)) {
     case 'comun':
       return 'comun';
@@ -97,17 +102,4 @@ function mapearRareza(valor: string, orden: number): RarezaCarta {
     default:
       return ({ 1: 'comun', 2: 'rara', 3: 'epicarta', 4: 'legendaria' } as const)[orden] ?? 'comun';
   }
-}
-function mapearCategoria(valor: string): CategoriaCarta {
-  const categoria = normalizar(valor);
-  const equivalencias: Record<string, CategoriaCarta> = {
-    gastronomia: 'gastronomia',
-    cosmeticos: 'cosmeticos',
-    decoracion: 'decoracion',
-    indumentaria: 'indumentaria',
-    entretenimiento: 'entretenimiento',
-    musica: 'musica',
-    tecnologia: 'tecnologia',
-  };
-  return equivalencias[categoria] ?? 'gastronomia';
 }

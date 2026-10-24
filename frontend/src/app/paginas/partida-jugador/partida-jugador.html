@@ -1,0 +1,20 @@
+<div class="flex min-h-dvh flex-col overflow-x-hidden bg-fondo-combate font-interfaz text-texto-primario">
+  <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario/jugar" />
+
+  <main class="flex flex-1 items-center justify-center px-4 py-8 sm:px-8 bg-fondo-combate">
+    <app-caja variante="elevada" sombra="media" padding="lg" radio="lg" class="max-w-2xl">
+      <h1 app-titulo tamano="lg">Partida contra otro jugador</h1>
+
+      <p app-texto variante="secundario">
+        Todavía no está disponible. El backend sólo expone el flujo de partida contra el bot: para
+        jugar contra otra persona falta el endpoint que confirma el fin de ronda y la espera de la
+        confirmación del rival.
+      </p>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <a app-boton variante="primario" routerLink="/juego/ia">Jugar contra el bot</a>
+        <a app-boton variante="fantasma" routerLink="/usuario/jugar">Volver al menú</a>
+      </div>
+    </app-caja>
+  </main>
+</div>

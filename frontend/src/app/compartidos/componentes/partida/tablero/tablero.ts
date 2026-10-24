@@ -19,8 +19,11 @@ import type { PosicionArrastre } from '@compartidos/componentes/partida/mano/man
 import { Zona } from '@compartidos/componentes/partida/zona/zona';
 import { ZonaPopupComponent } from '@compartidos/componentes/partida/zona-popup/zona-popup';
 import type { Carta } from '@modelos/carta.model';
-import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
-import type { NombreLugar } from '@servicios/servicios-partida/partida-estado.service';
+import type { NombreLugar } from '@modelos/partida.model';
+import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
+
+/** Grados del extremo del abanico que forman los reversos de la mano rival. */
+const ABANICO_RIVAL_GRADOS = 12;
 
 /** Datos del slot que se está sobrevolando durante el arrastre. */
 interface SlotSobrevolado {
@@ -30,13 +33,16 @@ interface SlotSobrevolado {
 }
 
 /**
- * Pantalla de partida (MOCK: lee todo de `PartidaEstadoService`). Vos abajo a
- * la izquierda, el rival arriba a la derecha, el control de turno abajo a la
- * derecha, las 2 zonas al centro y tu mano abajo al centro.
+ * Pantalla de partida. Vos abajo a la izquierda, el rival arriba a la derecha,
+ * el control de turno abajo a la derecha, las 2 zonas al centro y tu mano abajo
+ * al centro.
+ *
+ * Los datos salen de `PartidaServicio`, que funciona en modo mock (galería) o
+ * contra el backend (partida contra el bot).
  *
  * El arrastre de cartas lo orquesta este componente: la mano emite el inicio,
- * el movimiento y el fin; acá se resuelve el slot bajo el puntero y se juega
- * la carta con `jugarCarta()`, la misma vía que el botón de cada slot.
+ * el movimiento y el fin; acá se resuelve el slot bajo el puntero y se juega la
+ * carta con `jugarCarta()`, la misma vía que el botón de cada slot.
  */
 @Component({
   selector: 'app-tablero',
@@ -55,13 +61,18 @@ interface SlotSobrevolado {
   ],
 })
 export class Tablero {
-  protected readonly servicio = inject(PartidaEstadoService);
+  protected readonly servicio = inject(PartidaServicio);
   private readonly mano = viewChild(Mano);
-  /** Host del tablero: containing block del fantasma `fixed` de la mano. */
+  /**
+   * Host del tablero: referencia de coordenadas de la mano. El containing block
+   * del fantasma `fixed` es el div `.tablero` (`contain: layout`), que comparte
+   * origen con este host.
+   */
   protected readonly host: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
 
   /** `true` cuando el drag de la galería fuerza el resaltado (demo). */
   readonly cartaAgarrada = input(false);
+  readonly abandonar = output<void>();
   readonly rendirse = output<void>();
 
   protected readonly lugares: readonly NombreLugar[] = ['izquierda', 'derecha'];
@@ -87,9 +98,16 @@ export class Tablero {
     return lugar ? this.servicio.lugares()[lugar].zona : null;
   });
 
-  protected readonly reversosRival = computed(() =>
-    Array.from({ length: this.servicio.cartasManoRival() }, (_, i) => i),
-  );
+  /** Reversos de la mano rival, cada uno con su ángulo de abanico (-12°..12°). */
+  protected readonly reversosRival = computed(() => {
+    const total = this.servicio.cartasManoRival();
+    const paso = total > 1 ? (2 * ABANICO_RIVAL_GRADOS) / (total - 1) : 0;
+
+    return Array.from({ length: total }, (_, i) => ({
+      indice: i,
+      angulo: `${total > 1 ? i * paso - ABANICO_RIVAL_GRADOS : 0}deg`,
+    }));
+  });
 
   protected alIniciarArrastre(carta: Carta): void {
     this.cartaEnArrastre.set(carta);
@@ -101,13 +119,13 @@ export class Tablero {
 
   protected alTerminarArrastre(posicion: PosicionArrastre): void {
     const carta = this.cartaEnArrastre();
-    this.cartaEnArrastre.set(null);
 
     if (!carta) {
       return;
     }
 
     const slot = this.slotEnPosicion(posicion);
+    this.cartaEnArrastre.set(null);
 
     if (slot && this.servicio.jugarCarta(carta, slot.lugar, slot.indice)) {
       this.mano()?.volarHacia(slot.elemento.getBoundingClientRect());
@@ -116,6 +134,16 @@ export class Tablero {
 
     this.mano()?.cancelarArrastre();
     this.servicio.anunciar(`No se puede jugar ${carta.nombre} ahí. La carta vuelve a tu mano.`);
+  }
+
+  protected readonly esProvisionalFn = (carta: Carta): boolean =>
+    this.servicio.esCartaProvisional(carta);
+
+  protected alRetirarCarta(carta: Carta): void {
+    this.servicio.retirarCarta(carta);
+    if (this.cartaAbierta()?.id === carta.id) {
+      this.cartaAbierta.set(null);
+    }
   }
 
   /** Jugar con el botón de un slot disponible (alternativa accesible al drag). */
@@ -129,13 +157,18 @@ export class Tablero {
 
   /**
    * Devuelve el slot propio vacío que está bajo el puntero, o `null` si no hay
-   * ninguno: así el drag solo juega sobre zonas realmente válidas.
+   * ninguno o está ocupado.
    */
   private slotEnPosicion(posicion: PosicionArrastre): SlotSobrevolado | null {
     const elemento = document.elementFromPoint(posicion.x, posicion.y);
     const slot = elemento?.closest<HTMLElement>('[data-slot-lado="propio"]');
 
-    if (!slot || slot.getAttribute('data-slot-estado') !== 'resaltado') {
+    if (!slot) {
+      return null;
+    }
+
+    const estado = slot.getAttribute('data-slot-estado');
+    if (estado === 'ocupado') {
       return null;
     }
 
