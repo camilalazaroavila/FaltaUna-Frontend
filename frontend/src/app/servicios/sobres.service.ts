@@ -8,6 +8,13 @@ import {
   SobreRespuesta,
 } from '@modelos/sobre.model';
 
+export interface SobreInventarioUsuario {
+  readonly sobreId: number;
+  readonly nombre: string;
+  readonly tipo: string;
+  readonly cantidad: number;
+}
+
 export interface SobresDisponiblesEstado {
   readonly actuales: number;
   readonly maximo: number;
@@ -61,5 +68,10 @@ export class SobresService {
         // El estado se refrescará desde el componente tras la apertura
       }),
     );
+  }
+
+  /** Obtiene los sobres que el usuario tiene en su inventario */
+  obtenerInventarioSobres(usuarioId: number): Observable<SobreInventarioUsuario[]> {
+    return this.api.get<SobreInventarioUsuario[]>(`Sobres/inventario/${usuarioId}`);
   }
 }

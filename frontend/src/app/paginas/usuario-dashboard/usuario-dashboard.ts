@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { SobresService } from '@servicios/sobres.service';
+import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
 import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
 import { FlujoAperturaSobres } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
@@ -50,6 +50,7 @@ export class UsuarioDashboard implements OnInit {
   private readonly authService = inject(AuthService);
   protected readonly juegoHabilitado = true;
   protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
+  protected readonly sobresInventario = signal<readonly SobreInventarioUsuario[]>([]);
   protected readonly urlSobreIzquierda = urlSobreIzquierda;
   protected readonly urlSobreCentro = urlSobreCentro;
   protected readonly urlSobreDerecha = urlSobreDerecha;
@@ -106,6 +107,7 @@ export class UsuarioDashboard implements OnInit {
   ngOnInit(): void {
     this.cargarSobres();
     this.cargarEstadoDiario();
+    this.cargarInventarioSobres();
   }
 
   private cargarSobres(): void {
@@ -115,6 +117,18 @@ export class UsuarioDashboard implements OnInit {
       },
       error: () => {
         // En caso de que el backend no responda, mantiene catálogo vacío
+      },
+    });
+  }
+
+  private cargarInventarioSobres(): void {
+    const usuarioId = this.authService.usuarioActual()?.id ?? 1;
+    this.sobresService.obtenerInventarioSobres(usuarioId).subscribe({
+      next: (inventario) => {
+        this.sobresInventario.set(inventario);
+      },
+      error: () => {
+        // Mantener inventario vacío si falla
       },
     });
   }
@@ -130,6 +144,7 @@ export class UsuarioDashboard implements OnInit {
 
   alCompletarApertura(): void {
     this.cargarEstadoDiario();
+    this.cargarInventarioSobres();
   }
 
   seleccionarSeccion(id: string): void {

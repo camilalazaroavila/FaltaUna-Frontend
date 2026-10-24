@@ -14,6 +14,7 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { SobresService } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
+import type { SobreInventarioUsuario } from '@servicios/sobres.service';
 import { PanelDesplazable } from '@compartidos/componentes/controles/panel-desplazable/panel-desplazable';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
@@ -125,6 +126,7 @@ export class FlujoAperturaSobres {
   readonly abierto = input<boolean>(false);
   readonly sobresCatalogo = input<readonly SobreRespuesta[]>([]);
   readonly sobresDiariosDisponibles = input<number>(2);
+  readonly sobresInventario = input<readonly SobreInventarioUsuario[]>([]);
   /** Sobre con el que abrir directamente (reclamo de misión). `null` = grilla normal. */
   readonly sobreInicial = input<SobreInicialApertura | null>(null);
 
@@ -248,6 +250,7 @@ export class FlujoAperturaSobres {
   protected readonly listaSobresUI = computed<SobreItemUI[]>(() => {
     const catalogo = this.sobresCatalogo();
     const diarios = this.sobresDiariosDisponibles();
+    const inventario = this.sobresInventario();
 
     const items: SobreItemUI[] = [];
 
@@ -267,21 +270,26 @@ export class FlujoAperturaSobres {
       });
     }
 
-    // Sobres provenientes del backend
-    for (const s of catalogo) {
-      const etiqueta = s.marca ?? s.categoria ?? (s.tipo === 'GENERAL' ? 'CLÁSICO' : s.nombre);
+    for (const inv of inventario) {
+      if (!inv || inv.cantidad <= 0) continue;
+      const sobreCatalogo = catalogo.find((s) => s.id === inv.sobreId);
+      const tipo = (sobreCatalogo?.tipo ?? (inv.tipo === 'GENERAL' ? 'GENERAL' : inv.tipo)) as 'GENERAL' | 'CATEGORIA' | 'MARCA';
+      if (tipo === 'GENERAL') {
+        continue;
+      }
+      const etiqueta = sobreCatalogo?.marca ?? sobreCatalogo?.categoria ?? inv.nombre;
       items.push({
-        id: s.id,
-        nombre: s.nombre,
+        id: inv.sobreId,
+        nombre: inv.nombre,
         etiqueta: etiqueta.toUpperCase(),
-        tipo: s.tipo,
-        precio: s.precio,
-        cantidadCartas: s.cantidadCartas,
+        tipo,
+        precio: sobreCatalogo?.precio ?? 0,
+        cantidadCartas: sobreCatalogo?.cantidadCartas ?? (tipo === 'MARCA' ? 1 : tipo === 'CATEGORIA' ? 3 : 5),
         esDiario: false,
-        disponible: true,
-        categoria: s.categoria ?? null,
-        marca: s.marca ?? null,
-        logoUrl: s.logoUrl ?? null,
+        disponible: inv.cantidad > 0,
+        categoria: sobreCatalogo?.categoria ?? null,
+        marca: sobreCatalogo?.marca ?? null,
+        logoUrl: sobreCatalogo?.logoUrl ?? null,
       });
     }
 
