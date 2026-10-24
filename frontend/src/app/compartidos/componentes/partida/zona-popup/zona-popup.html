@@ -40,7 +40,11 @@
   <p
     class="mt-4 rounded-md bg-zona-popup-recuadro-fondo px-4 py-3 font-interfaz text-base text-zona-popup-recuadro-texto"
   >
-    +{{ efecto().bonus }} de poder por cada carta de
-    <strong>{{ categoriaEtiqueta() }}</strong> mientras esté en este lugar.
+    @if (efecto().texto; as texto) {
+      {{ texto }}
+    } @else {
+      +{{ efecto().bonus }} de poder por cada carta de
+      <strong>{{ categoriaEtiqueta() }}</strong> mientras esté en este lugar.
+    }
   </p>
 </div>

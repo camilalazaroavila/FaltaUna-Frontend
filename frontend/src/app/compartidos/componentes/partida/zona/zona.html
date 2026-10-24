@@ -16,14 +16,22 @@
       >
         <app-slot-carta lado="rival" [estado]="slot.estado">
           @if (slot.carta; as carta) {
-            <button
-              type="button"
-              class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
-              [attr.aria-label]="'Ver carta ' + carta.nombre"
-              (click)="verCarta.emit(carta)"
-            >
-              <app-carta [carta]="carta" />
-            </button>
+            @if (carta.oculta) {
+              <span
+                class="block aspect-[5/7] h-full max-w-full rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
+                role="img"
+                aria-label="Carta oculta del rival"
+              ></span>
+            } @else {
+              <button
+                type="button"
+                class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
+                [attr.aria-label]="'Ver carta ' + carta.nombre"
+                (click)="verCarta.emit(carta)"
+              >
+                <app-carta [carta]="carta" />
+              </button>
+            }
           }
         </app-slot-carta>
       </div>

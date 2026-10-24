@@ -70,14 +70,13 @@
 
   <!-- ICONO FLOTANTE DE JUGAR -->
 
-  @if (juegoHabilitado) {
   <aside
     class="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6 lg:bottom-8 lg:right-8 xl:bottom-10 xl:right-10 2xl:bottom-14 2xl:right-14 z-20 cursor-pointer transition-transform hover:scale-110 active:scale-95"
-    (click)="abrirSelectorSobres()" title="Abrir sobres y jugar">
+    (click)="irAJugar()" title="jugar">
     <img [src]="urlIconPelea" alt="Abrir sobre"
       class="pointer-events-none size-12 sm:size-16 md:size-20 lg:size-24 xl:size-32 2xl:size-40 select-none drop-shadow-xl" />
   </aside>
-  }
+  
 
   <app-flujo-apertura-sobres [abierto]="selectorSobresAbierto()" [sobresCatalogo]="sobresCatalogo()"
     [sobresDiariosDisponibles]="sobresDisponibles().actuales" (cerrar)="cerrarSelectorSobres()"

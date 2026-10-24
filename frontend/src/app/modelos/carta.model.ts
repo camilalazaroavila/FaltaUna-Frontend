@@ -27,6 +27,14 @@ export interface Carta {
   readonly atributoIzquierdo: number;
   readonly atributoDerecho: number;
   readonly obtenida: boolean;
+  /** Id de la carta en el catálogo cuando viene de una partida. */
+  readonly cartaId?: number;
+  /** Id de la instancia en la partida: distingue copias repetidas en la mano. */
+  readonly cartaPartidaId?: number;
+  /** El servidor ya resolvió si la carta se puede jugar en esta ronda. */
+  readonly jugable?: boolean;
+  /** Carta del rival que todavía no fue revelada. */
+  readonly oculta?: boolean;
 }
 
 /** Cantidad de estrellas según rareza (orden ascendente de poder). */

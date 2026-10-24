@@ -103,8 +103,13 @@ export class Mano {
 
   protected readonly cartaArrastradaVisible = computed(() => this.arrastrando() !== null);
 
+  /** Identifica copias repetidas de una misma carta dentro de la partida. */
+  protected idCarta(carta: Carta): string {
+    return carta.cartaPartidaId !== undefined ? `cp-${carta.cartaPartidaId}` : carta.id;
+  }
+
   protected alPulsar(carta: Carta, evento: PointerEvent): void {
-    if (evento.button !== 0 && evento.pointerType === 'mouse') {
+    if (carta.jugable === false || (evento.button !== 0 && evento.pointerType === 'mouse')) {
       return;
     }
 
@@ -185,6 +190,11 @@ export class Mano {
   protected alTeclear(carta: Carta, evento: KeyboardEvent): void {
     if (evento.key === ' ') {
       evento.preventDefault();
+
+      if (carta.jugable === false) {
+        return;
+      }
+
       this.seleccion.emit(this.arrastrando()?.id === carta.id ? null : carta);
       return;
     }

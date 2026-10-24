@@ -46,14 +46,13 @@ export interface SobreOpcion {
 export class UsuarioDashboard implements OnInit {
   private readonly router = inject(Router);
   private readonly sobresService = inject(SobresService);
+  protected readonly juegoHabilitado = true;
   protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
   protected readonly urlSobreIzquierda = urlSobreIzquierda;
   protected readonly urlSobreCentro = urlSobreCentro;
   protected readonly urlSobreDerecha = urlSobreDerecha;
   protected readonly urlIconPelea = urlIconPelea;
 
-  /** pal mvp2 puse inhabilitado el jugar, para que aparezca nomas se pone en true, o se saca esta linea y el if del html q encierra el icono */
-  protected readonly juegoHabilitado = false;
 
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
@@ -134,6 +133,10 @@ export class UsuarioDashboard implements OnInit {
     if (destino?.ruta) {
       this.router.navigateByUrl(destino.ruta);
     }
+  }
+
+  irAJugar(): void {
+    this.router.navigateByUrl('/usuario/jugar');
   }
 
   abrirSelectorSobres(): void {

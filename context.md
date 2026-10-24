@@ -70,7 +70,7 @@
 - Las cartas **no se retiran** del juego.
 - **Pendiente:** rangos de poder y costo por rareza.
 
-> **Naming a resolver:** el recurso de juego (antes "maná") ahora se llama **cupón** y se representa con la imagen de un cuponcito, pero también existen los **cupones de descuento** de las marcas (sección 13). Conviene renombrar uno de los dos (por ejemplo "energía" para el recurso de juego) para evitar confusión en código y UI. El modelo de datos actual todavía usa `Mana` (`CostoMana`, `ManaActual`).
+> **Naming a resolver:** el recurso de juego (antes "maná") ahora se llama **cupón** y se representa con la imagen de un cuponcito, pero también existen los **cupones de descuento** de las marcas (sección 13). Conviene renombrar uno de los dos (por ejemplo "energía" para el recurso de juego) para evitar confusión en código y UI. El modelo de datos actual todavía usa `Mana` (`costoCupon`, `ManaActual`).
 
 ---
 
@@ -259,12 +259,18 @@ Cambios necesarios para alinearlo con las reglas de negocio:
 
 > El frontend ya tiene componentes de misiones, pity, apertura de sobres y suscripción de empresa (ver estructura en la sección 5). **A verificar:** qué parte de eso está respaldada por backend y base de datos, y qué está solo en la interfaz.
 
-### Estado del tablero de partida (mock de frontend)
+### Estado del tablero de partida
 
-El tablero ([`frontend/src/app/compartidos/componentes/partida/`](frontend/src/app/compartidos/componentes/partida/)) es una maqueta funcional sin backend: todo el estado sale de `PartidaEstadoService` (mock) y no hay timers ni resolución de turno.
+El tablero ([`frontend/src/app/compartidos/componentes/partida/`](frontend/src/app/compartidos/componentes/partida/)) tiene dos modos:
 
-- **Jugar una carta** pasa por una única vía, `PartidaEstadoService.jugarCarta(carta, lugar, indice)`, reutilizada por el arrastre y por el botón de cada casilla. Valida solo lo definido: es el turno del jugador (`estadoRonda === 'jugando'`), la carta sigue en la mano y el slot destino es propio y está vacío. Devuelve `true`/`false`.
-- **NO se valida** todavía el costo/cupón de la carta (el modelo `Carta` no tiene costo ni `CostoMana`, ver sección 4) ni el límite de cartas jugables por ronda (pendiente, sección 10). Documentado en el propio servicio.
+- **Partida real contra el bot:** `PartidaServicio` adapta el contrato de `PartidasController`/`PartidasJuegoController` y el servidor es la única fuente de verdad. La pantalla `/juego/ia` elige un mazo completo y crea la partida con `POST /api/Partidas/bot`. El front no calcula puntajes, cupones, ganadores de zona ni resultado.
+- **Maqueta/galería:** sin partida real, `PartidaServicio` delega en `PartidaEstadoService` (mock), que conserva el tablero demostrativo y sus cálculos locales para la galería de componentes.
+
+- **Jugar una carta** pasa por una única vía, `PartidaServicio.jugarCarta(carta, lugar, indice)`, reutilizada por el arrastre y por el botón de cada casilla. En modo real envía `POST /api/Partidas/{id}/jugar` con `Idempotency-Key` y aplica el estado que devuelve el servidor, sin eco optimista. En modo mock delega en `PartidaEstadoService.jugarCarta`.
+- **Disponibilidad de cartas:** la mano real trae `jugable` resuelto por el servidor; una carta no jugable se muestra atenuada y no se puede arrastrar ni seleccionar. El cliente no recalcula el costo/cupón. El límite de cartas jugables por ronda sigue pendiente (sección 10).
+- **Sincronización real:** reloj local cada 1 s, heartbeat cada 20 s, polling del estado cada 5 s solo con la pestaña visible y GET inmediato al volver a la pestaña. Al vencer el tiempo se envía `finalizar`; al terminar o abandonar se limpian los timers. La partida activa se guarda en `localStorage` (`faltauna_partida_activa`) para reconectar.
+- **Cierre y resultado:** `finalizar` puede devolver `200` con el resultado de la ronda o `202` con el estado en espera del rival; después se relee el estado. El resultado, el ganador y el motivo vienen del servidor. `rendirse` y `abandonar` también los resuelve el backend.
+- **Cartas ocultas del rival:** el contrato manda `oculta: true`, `carta: null` y `poderActual: null`; el tablero dibuja un reverso y nunca inventa nombre, poder ni rareza.
 - **Dos formas de jugar:** arrastre con Pointer Events (mouse y táctil) y, como alternativa accesible, selección de la carta con la tecla **Espacio** (resalta las casillas propias vacías) y botón de la casilla; **Enter** mantiene el detalle de la carta.
 - El fantasma del arrastre es `position: fixed`; su containing block es el div `.tablero` (`contain: layout` en ese div, **no** en `:host`: los popups usan `fixed` y están fuera de él, así siguen anclados al viewport). Las coordenadas se corrigen restando el rect del tablero (se le pasa como `referencia` a `app-mano`, que comparte origen con el div).
 - **Chips de jugador:** sin `width: max-content` ni `container-type` propios; el nombre se muestra completo (`whitespace-nowrap`, sin `truncate`) dentro del ancho de su celda. A ~375 px el chip tiene ~276 px disponibles y los nombres mock (~10 caracteres) entran sin problemas; solo nombres de 30+ caracteres correrían riesgo de recorte.

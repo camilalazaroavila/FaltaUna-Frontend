@@ -179,8 +179,9 @@ describe('UsuarioDashboard Component', () => {
   });
 
   it('no debe mostrar el icono de jugar mientras el juego esté deshabilitado (MVP)', () => {
-    expect(component['juegoHabilitado']).toBe(false);
-    expect(fixture.nativeElement.querySelector('img[alt="Abrir sobre"]')).toBeFalsy();
+    // El botón de jugar está habilitado a propósito
+    expect(component['juegoHabilitado']).toBe(true);
+    expect(fixture.nativeElement.querySelector('img[alt="Abrir sobre"]')).toBeTruthy();
   });
 
   it('debe desplegar el menú de usuario del header y permitir cerrar sesión', () => {

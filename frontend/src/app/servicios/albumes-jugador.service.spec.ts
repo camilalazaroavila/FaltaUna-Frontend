@@ -204,7 +204,7 @@ describe('AlbumesJugadorService', () => {
         expect(enAlbum.imagenUrl).toBe(origen!.imagenUrl);
         expect(enAlbum.categoria).toBe(origen!.categoria);
         expect(enAlbum.poder).toBe(origen!.atributoIzquierdo);
-        expect(enAlbum.costoMana).toBe(origen!.atributoDerecho);
+        expect(enAlbum.costoCupon).toBe(origen!.atributoDerecho);
         expect(enAlbum.obtenida).toBe(origen!.obtenida);
       }
     });
