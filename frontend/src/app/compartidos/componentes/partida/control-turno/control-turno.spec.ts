@@ -25,18 +25,44 @@ describe('ControlTurno', () => {
     expect(component).toBeTruthy();
   });
 
-  it('muestra "Finalizar 1 de 6" cuando está jugando', () => {
+  it('muestra "Realizar" y la insignia "1/6" cuando está jugando', () => {
     const boton = fixture.nativeElement.querySelector('button[app-boton]') as HTMLButtonElement;
-    expect(boton.textContent?.replace(/\s+/g, ' ').trim()).toContain('Finalizar 1 de 6');
+    const texto = boton.textContent?.replace(/\s+/g, ' ').trim();
+    expect(texto).toContain('Realizar');
+    expect(texto).toContain('1/6');
+    expect(boton.getAttribute('aria-label')).toBe('Realizar turno 1 de 6');
   });
 
-  it('muestra "Ronda final" cuando es la última ronda', () => {
+  it('muestra "Ronda final" y la insignia "6/6" cuando es la última ronda', () => {
     fixture.componentRef.setInput('turno', 6);
     fixture.componentRef.setInput('totalTurnos', 6);
     fixture.componentRef.setInput('estado', 'jugando');
     fixture.detectChanges();
     const boton = fixture.nativeElement.querySelector('button[app-boton]') as HTMLButtonElement;
-    expect(boton.textContent?.replace(/\s+/g, ' ').trim()).toContain('Ronda final');
+    const texto = boton.textContent?.replace(/\s+/g, ' ').trim();
+    expect(texto).toContain('Ronda final');
+    expect(texto).toContain('6/6');
+    expect(boton.getAttribute('aria-label')).toBe('Ronda final, turno 6 de 6');
+  });
+
+  it('muestra "Esperando" y el contador de turno cuando está esperando resolución', () => {
+    fixture.componentRef.setInput('estado', 'esperando');
+    fixture.detectChanges();
+    const boton = fixture.nativeElement.querySelector('button[app-boton]') as HTMLButtonElement;
+    const texto = boton.textContent?.replace(/\s+/g, ' ').trim();
+    expect(texto).toContain('Esperando');
+    expect(texto).toContain('1/6');
+    expect(boton.getAttribute('aria-label')).toBe('Esperando turno 1 de 6');
+  });
+
+  it('muestra "Realizando" y el contador cuando está resolviendo', () => {
+    fixture.componentRef.setInput('estado', 'resolviendo');
+    fixture.detectChanges();
+    const boton = fixture.nativeElement.querySelector('button[app-boton]') as HTMLButtonElement;
+    const texto = boton.textContent?.replace(/\s+/g, ' ').trim();
+    expect(texto).toContain('Realizando');
+    expect(texto).toContain('1/6');
+    expect(boton.getAttribute('aria-label')).toBe('Realizando turno 1 de 6');
   });
 
   it('deshabilita el botón mientras no está en estado jugando', () => {
@@ -46,11 +72,11 @@ describe('ControlTurno', () => {
     expect(boton.disabled).toBe(true);
   });
 
-  it('muestra los botones de Abandonar y Rendirme debajo del botón principal', () => {
+  it('muestra solo el botón de Rendirse debajo del botón principal', () => {
     const botones = fixture.nativeElement.querySelectorAll('button');
     const textos = Array.from(botones).map((b) => (b as HTMLButtonElement).textContent?.trim());
-    expect(textos).toContain('Abandonar');
-    expect(textos).toContain('Rendirme');
+    expect(textos).not.toContain('Abandonar');
+    expect(textos).toContain('Rendirse');
   });
 
   it('al confirmar abandonar en SweetAlert, emite el evento abandonar', async () => {

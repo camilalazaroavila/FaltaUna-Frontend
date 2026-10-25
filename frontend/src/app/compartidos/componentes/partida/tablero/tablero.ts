@@ -160,7 +160,29 @@ export class Tablero {
    * ninguno o está ocupado.
    */
   private slotEnPosicion(posicion: PosicionArrastre): SlotSobrevolado | null {
-    const elemento = document.elementFromPoint(posicion.x, posicion.y);
+    if (typeof document !== 'undefined' && typeof document.elementsFromPoint === 'function') {
+      const elementos = document.elementsFromPoint(posicion.x, posicion.y);
+      for (const el of elementos) {
+        const slot = el.closest<HTMLElement>('[data-slot-lado="propio"]');
+        if (!slot) continue;
+
+        const estado = slot.getAttribute('data-slot-estado');
+        if (estado === 'ocupado') {
+          return null;
+        }
+
+        const contenedor = slot.closest<HTMLElement>('[data-lugar][data-indice]');
+        const lugar = contenedor?.dataset['lugar'];
+        const indice = Number(contenedor?.dataset['indice']);
+
+        if ((lugar === 'izquierda' || lugar === 'derecha') && Number.isInteger(indice)) {
+          return { lugar, indice, elemento: slot };
+        }
+      }
+      return null;
+    }
+
+    const elemento = typeof document !== 'undefined' ? document.elementFromPoint(posicion.x, posicion.y) : null;
     const slot = elemento?.closest<HTMLElement>('[data-slot-lado="propio"]');
 
     if (!slot) {

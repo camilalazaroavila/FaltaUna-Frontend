@@ -5,12 +5,17 @@
 .barra-etiqueta {
     max-width: 100%;
     overflow: hidden;
-    padding-inline: clamp(0.25rem, 6cqw, 0.625rem);
+    padding-inline: clamp(0.35rem, 8cqw, 0.75rem);
+    font-size: clamp(0.6875rem, 16cqw, 0.9375rem);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .barra-cuerpo {
-    width: clamp(1rem, 50cqw, 2rem);
-    min-height: 6rem;
+    width: clamp(1.25rem, 55cqw, 2.5rem);
+    min-height: 7rem;
+}
+
+.barra-numero {
+    font-size: clamp(0.8125rem, 20cqw, 1.25rem);
 }

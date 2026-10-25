@@ -43,6 +43,23 @@
     margin-inline: auto;
 }
 
+.zona-indicadores-categoria {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 25;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+    pointer-events: auto;
+}
+
+.zona-indicadores-categoria--izq {
+    right: -1.25rem;
+}
+
+.zona-indicadores-categoria--der {
+    left: -1.25rem;
+}
+
 .zona-celda {
     position: relative;
     min-width: 0;

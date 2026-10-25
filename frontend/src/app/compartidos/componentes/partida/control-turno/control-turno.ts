@@ -13,7 +13,7 @@ import type { EstadoBotonListo } from '@compartidos/componentes/partida/boton-li
 const SEGUNDOS_ADVERTENCIA = 10;
 
 const CLASES_TIEMPO_BASE =
-  'inline-flex items-center gap-1.5 rounded-pildora border-2 bg-hundido px-3 py-0.5 font-titulo text-cuerpo leading-titulo tabular-nums';
+  'inline-flex items-center justify-center gap-2 rounded-pildora border-2 bg-hundido px-3.5 py-1 font-titulo text-subtitulo leading-titulo tabular-nums shadow-cartoon';
 
 /**
  * Control del turno: botón principal "Finalizar turno" y acciones secundarias
@@ -50,34 +50,56 @@ export class ControlTurno {
 
     return total > 0 ? Math.min(1, Math.max(0, this.segundosRestantes() / total)) : 0;
   });
-  protected readonly textoBoton = computed(() => {
+  protected readonly contadorTurno = computed(
+    () => `${this.turno()}/${this.totalTurnos()}`,
+  );
+
+  protected readonly accionBoton = computed(() => {
+    if (this.estado() === 'jugando') {
+      return this.turno() >= this.totalTurnos() ? 'Ronda final' : 'Realizar';
+    }
+    if (this.estado() === 'esperando') {
+      return 'Esperando';
+    }
+    return 'Realizando';
+  });
+
+  protected readonly accionBotonCorto = computed(() => {
+    if (this.estado() === 'jugando') {
+      return this.turno() >= this.totalTurnos() ? 'Final' : 'Realizar';
+    }
+    if (this.estado() === 'esperando') {
+      return 'Esperando';
+    }
+    return 'Realizando';
+  });
+
+  protected readonly nombreAccesible = computed(() => {
     const turno = this.turno();
     const total = this.totalTurnos();
 
     if (this.estado() === 'jugando') {
       if (turno >= total) {
-        return `Ronda final (${turno} de ${total})`;
+        return `Ronda final, turno ${turno} de ${total}`;
       }
-      return `Finalizar ${turno} de ${total}`;
+      return `Realizar turno ${turno} de ${total}`;
     }
     if (this.estado() === 'esperando') {
-      return `Esperando… ${turno} de ${total}`;
+      return `Esperando turno ${turno} de ${total}`;
     }
     return `Realizando turno ${turno} de ${total}`;
   });
+
+  protected readonly textoBoton = computed(() => {
+    return `${this.accionBoton()} ${this.contadorTurno()}`;
+  });
+
   /**
-   * Versión corta para columnas angostas: el texto SIEMPRE queda visible, en
-   * contenedores chicos cambia el largo, no la presencia.
+   * Versión corta para columnas angostas: el texto SIEMPRE queda visible y
+   * el contador de turno n/6 nunca desaparece.
    */
   protected readonly textoBotonCorto = computed(() => {
-    switch (this.estado()) {
-      case 'jugando':
-        return 'Finalizar';
-      case 'esperando':
-        return 'Esperando…';
-      default:
-        return 'Realizando';
-    }
+    return `${this.accionBotonCorto()} ${this.contadorTurno()}`;
   });
   protected readonly clasesTiempo = computed(() =>
     [

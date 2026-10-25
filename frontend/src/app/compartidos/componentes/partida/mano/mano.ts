@@ -181,7 +181,9 @@ export class Mano {
     const posicion = { x: evento.clientX, y: evento.clientY };
 
     try {
-      (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
+      const objetivo = evento.currentTarget as HTMLElement;
+      objetivo.releasePointerCapture?.(evento.pointerId);
+      objetivo.blur?.();
     } catch {
       // Ignorar
     }

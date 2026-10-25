@@ -37,6 +37,15 @@ export interface Carta {
   readonly jugable?: boolean;
   /** Carta del rival que todavía no fue revelada. */
   readonly oculta?: boolean;
+  /** Efectos sobre categorías que produce la habilidad de la carta. */
+  readonly efectosCategoria?: readonly EfectoCategoriaCarta[];
+}
+
+/** Efecto sobre una categoría que mejora o empeora el poder. */
+export interface EfectoCategoriaCarta {
+  readonly tipo: 'sube' | 'baja';
+  readonly categoria: CategoriaCarta;
+  readonly valor?: number | null;
 }
 
 /** Cantidad de estrellas según rareza (orden ascendente de poder). */
