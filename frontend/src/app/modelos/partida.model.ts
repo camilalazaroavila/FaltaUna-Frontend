@@ -1,4 +1,4 @@
-import type { Carta, CategoriaCarta } from './carta.model';
+import type { Carta, CategoriaCarta, EfectoCategoriaCarta } from './carta.model';
 
 /**
  * Tipos compartidos por los componentes de la pantalla de partida.
@@ -102,6 +102,8 @@ export interface ZonaTablero {
   readonly bonusPorCategoria: Readonly<Record<number, number>>;
   /** Zona ganada según el servidor (solo en partida real). */
   readonly ganador?: GanadorPartida;
+  /** Efectos visuales de categoría (sube/baja) que la zona aplica a las cartas. */
+  readonly efectosCategoria?: readonly EfectoCategoriaCarta[];
 }
 
 /** Jugador del tablero (chip con nombre y avatar). */
@@ -168,6 +170,13 @@ export interface JugadorPartidaApi {
   readonly cartasEnMazo: number;
 }
 
+/** Modificador de categoría que puede mandar el backend estructurado. */
+export interface ModificadorCategoriaZonaApi {
+  readonly categoria: string;
+  readonly bonus?: number;
+  readonly valor?: number;
+}
+
 /** Zona activa con el poder ya jugado. */
 export interface ZonaPartidaApi {
   readonly zonaPartidaId: number;
@@ -181,6 +190,7 @@ export interface ZonaPartidaApi {
   readonly diferencia: number;
   readonly ganador: GanadorPartida;
   readonly cartas: readonly CartaEnMesaApi[];
+  readonly modificadores?: readonly ModificadorCategoriaZonaApi[];
 }
 
 /** Resultado de una zona en la ronda recién resuelta. */

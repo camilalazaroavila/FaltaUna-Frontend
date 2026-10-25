@@ -17,7 +17,9 @@ import {
 import { PuntajeZona } from '@compartidos/componentes/partida/puntaje-zona/puntaje-zona';
 import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-carta';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
-import type { Carta } from '@modelos/carta.model';
+import { IndicadorCategoriasHabilidad } from '@compartidos/componentes/cartas/indicador-categorias-habilidad/indicador-categorias-habilidad';
+import type { Carta, EfectoCategoriaCarta } from '@modelos/carta.model';
+import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre } from '@modelos/carta.model';
 import type {
   EstadoPuntajeZona,
   EstadoSlot,
@@ -72,7 +74,7 @@ const claseDelta = (delta: number): string =>
   templateUrl: './zona.html',
   styleUrl: './zona.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SlotCarta, PuntajeZona, CartaComponent],
+  imports: [SlotCarta, PuntajeZona, CartaComponent, IndicadorCategoriasHabilidad],
   host: { class: 'block w-full' },
 })
 export class Zona implements AfterViewInit {
@@ -94,6 +96,14 @@ export class Zona implements AfterViewInit {
   readonly puntajePropio = input.required<number>();
   readonly estadoRival = input<EstadoPuntajeZona>('empate');
   readonly estadoPropio = input<EstadoPuntajeZona>('empate');
+
+  protected readonly efectosCategoria = computed(() => {
+    const zona = this.zona();
+    if (zona.efectosCategoria && zona.efectosCategoria.length > 0) {
+      return zona.efectosCategoria;
+    }
+    return this.calcularEfectosCategoria(zona);
+  });
 
 
   readonly verCarta = output<Carta>();
@@ -423,5 +433,50 @@ export class Zona implements AfterViewInit {
         }
       }
     });
+  }
+
+  private calcularEfectosCategoria(zona: ZonaTablero): EfectoCategoriaCarta[] {
+    const efectos: EfectoCategoriaCarta[] = [];
+    const texto = zona.efecto?.texto || '';
+
+    if (texto) {
+      const regex = /([a-záéíóúñ]+)\s*([+\-−]\d+)/gi;
+      let match: RegExpExecArray | null;
+      while ((match = regex.exec(texto)) !== null) {
+        const nombreCat = match[1];
+        const valorStr = match[2].replace('−', '-');
+        const valor = parseInt(valorStr, 10);
+        const cat = categoriaCartaDesdeNombre(nombreCat);
+        if (!isNaN(valor) && valor !== 0) {
+          efectos.push({
+            tipo: valor > 0 ? 'sube' : 'baja',
+            categoria: cat,
+            valor,
+          });
+        }
+      }
+    }
+
+    if (efectos.length === 0 && zona.bonusPorCategoria) {
+      for (const [, bonus] of Object.entries(zona.bonusPorCategoria)) {
+        if (bonus !== 0) {
+          efectos.push({
+            tipo: bonus > 0 ? 'sube' : 'baja',
+            categoria: zona.efecto?.categoria ?? CATEGORIA_POR_DEFECTO,
+            valor: bonus,
+          });
+        }
+      }
+    }
+
+    if (efectos.length === 0 && zona.efecto && zona.efecto.bonus !== 0) {
+      efectos.push({
+        tipo: zona.efecto.bonus > 0 ? 'sube' : 'baja',
+        categoria: zona.efecto.categoria,
+        valor: zona.efecto.bonus,
+      });
+    }
+
+    return efectos;
   }
 }

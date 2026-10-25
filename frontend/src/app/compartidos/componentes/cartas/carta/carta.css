@@ -113,6 +113,14 @@
   aspect-ratio: 1;
 }
 
+.carta__indicador-efectos {
+  position: absolute;
+  top: 24%;
+  left: 2%;
+  z-index: 5;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
+}
+
 .carta__icono-categoria {
   position: absolute;
   inset: 0;

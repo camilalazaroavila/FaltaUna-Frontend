@@ -9,12 +9,15 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import { CampoSelect, type OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
 import { Caja } from '@compartidos/componentes/contenedor/caja/caja';
 import { Header } from '@compartidos/componentes/layout/header/header';
+import { PantallaResultado } from '@compartidos/componentes/partida/pantalla-resultado/pantalla-resultado';
 import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
 import { Texto } from '@compartidos/componentes/textual/texto/texto';
 import { Titulo } from '@compartidos/componentes/textual/titulo/titulo';
@@ -33,7 +36,18 @@ import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja
  */
 @Component({
   selector: 'app-partida',
-  imports: [Boton, Caja, Header, RouterLink, Tablero, Texto, Titulo],
+  imports: [
+    Boton,
+    Caja,
+    CampoSelect,
+    FormsModule,
+    Header,
+    PantallaResultado,
+    RouterLink,
+    Tablero,
+    Texto,
+    Titulo,
+  ],
   templateUrl: './partida.html',
   styleUrl: './partida.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +56,7 @@ export class Partida implements OnInit, OnDestroy {
   protected readonly servicio = inject(PartidaServicio);
   private readonly baraja = inject(BarajaService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   /** Hay una partida real en curso (no la maqueta). */
   protected readonly enPartida = computed(() => this.servicio.partidaId() !== null);
@@ -50,17 +65,36 @@ export class Partida implements OnInit, OnDestroy {
     () => !this.enPartida() && !this.servicio.cargando(),
   );
   protected readonly resultado = this.servicio.resultadoRonda;
+  protected readonly resultadoFinal = this.servicio.resultadoFinal;
   protected readonly terminada = this.servicio.terminada;
   protected readonly gane = this.servicio.gane;
+  protected readonly mostrarPantallaResultado = computed(
+    () => this.terminada() || this.resultadoFinal() !== null,
+  );
 
   protected readonly mazos = signal<readonly MazoApi[]>([]);
   protected readonly mazoSeleccionado = signal<number | null>(null);
   protected readonly cargandoMazos = signal(true);
   protected readonly errorMazos = signal<string | null>(null);
   protected readonly mazosCompletos = computed(() => this.mazos().filter((mazo) => mazo.completo));
+  protected readonly opcionesMazos = computed<OpcionSelect[]>(() =>
+    this.mazosCompletos().map((mazo) => ({
+      valor: String(mazo.id),
+      etiqueta: mazo.nombre,
+    })),
+  );
+  protected readonly mazoSeleccionadoStr = computed(() => {
+    const id = this.mazoSeleccionado();
+    return id !== null ? String(id) : '';
+  });
   protected readonly puedeJugar = computed(
     () => this.mazoSeleccionado() !== null && !this.servicio.cargando(),
   );
+
+  protected seleccionarMazoStr(valor: string): void {
+    const mazoId = Number(valor);
+    this.mazoSeleccionado.set(Number.isInteger(mazoId) && mazoId > 0 ? mazoId : null);
+  }
 
   /** Variante del aviso de resultado según cómo terminó la ronda. */
   protected readonly varianteResultado = computed<VarianteCaja>(() => {
@@ -171,6 +205,21 @@ export class Partida implements OnInit, OnDestroy {
     if (resultado.isConfirmed) {
       this.servicio.abandonar();
     }
+  }
+
+  /** Reinicia una partida nueva con el mismo mazo contra el bot. */
+  protected reintentarPartida(): void {
+    const mazoId = this.mazoSeleccionado() ?? this.mazosCompletos()[0]?.id ?? null;
+    this.servicio.abandonarPartida();
+    if (mazoId !== null) {
+      this.servicio.iniciarContraBot(mazoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    }
+  }
+
+  /** Sale de la partida finalizada y vuelve al menú de modos de juego. */
+  protected volverAlMenu(): void {
+    this.servicio.abandonarPartida();
+    this.router.navigate(['/usuario/jugar']);
   }
 
   protected seleccionarMazo(evento: Event): void {

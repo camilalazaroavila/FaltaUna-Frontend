@@ -5,7 +5,7 @@ import { toast } from 'ngx-sonner';
 import { PartidaApiService } from '@servicios/servicios-partida/partida-api.service';
 import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
 import { JUGADORES_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
-import type { Carta, RarezaCarta } from '@modelos/carta.model';
+import type { Carta, EfectoCategoriaCarta, RarezaCarta } from '@modelos/carta.model';
 import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre } from '@modelos/carta.model';
 import type {
   CartaApi,
@@ -15,12 +15,14 @@ import type {
   EstadoPartidaApi,
   EstadoRondaPartida,
   GanadorPartida,
+  HabilidadApi,
   JugadorTablero,
   LadoPartida,
   LugarPartida,
   NombreLugar,
   PorLugar,
   PuntajeLugar,
+  ResultadoPartidaApi,
   ResultadoRonda,
   ResultadoRondaApi,
   ResultadoZonaRonda,
@@ -61,6 +63,7 @@ const zonaVacia = (): ZonaTablero => ({
   poderRival: 0,
   bonusPorCategoria: {},
   ganador: 'empate',
+  efectosCategoria: [],
 });
 
 const LUGARES_VACIOS: PorLugar<LugarPartida> = {
@@ -85,6 +88,20 @@ interface CartaMesaVista {
   readonly lado: LadoPartida;
   /** Slot del lugar (0..5), o null si el servidor no especificó índice. */
   readonly slot: number | null;
+}
+
+/** Jugada pendiente en la cola secuencial. */
+interface JugadaEncolada {
+  readonly id: string;
+  readonly carta: Carta;
+  readonly lugar: NombreLugar;
+  readonly indice: number;
+  readonly costo: number;
+  readonly zonaPartidaId: number;
+  readonly partidaId: number;
+  readonly ronda: number;
+  readonly claveIdempotencia: string;
+  readonly timestamp: number;
 }
 
 /** Estado real (contra el bot o PvP) que consume el tablero. */
@@ -155,6 +172,7 @@ export class PartidaServicio {
   private readonly enviandoCartaSignal = signal(false);
   private readonly confirmandoSignal = signal(false);
   private readonly resultadoSignal = signal<ResultadoRonda | null>(null);
+  private readonly resultadoFinalSignal = signal<ResultadoPartidaApi | null>(null);
   private readonly errorSignal = signal<string | null>(null);
   private readonly rondaCerradaSignal = signal(false);
   private readonly cartasConfirmadasRonda = new Set<number>();
@@ -166,6 +184,11 @@ export class PartidaServicio {
   /** Invalida respuestas que llegan después de abandonar o cambiar de partida. */
   private epoca = 0;
   private readonly clavesEnCurso = new Map<string, { firma: string; clave: string }>();
+  private readonly colaJugadas: JugadaEncolada[] = [];
+  private jugandoEnCurso = false;
+  private ultimaJugadaTimestamp = 0;
+  private pendienteFinalizar = false;
+  private secuenciaJugadas = 0;
 
   private readonly escuchaVisibilidad = (): void => {
     if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
@@ -179,6 +202,7 @@ export class PartidaServicio {
   readonly cargando = this.cargandoSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
   readonly resultadoRonda = this.resultadoSignal.asReadonly();
+  readonly resultadoFinal = this.resultadoFinalSignal.asReadonly();
   /** `true` mientras hay una acción viajando al servidor. */
   readonly enviandoCarta = this.enviandoCartaSignal.asReadonly();
   /** `true` mientras se está cerrando la ronda o abandonando. */
@@ -186,7 +210,16 @@ export class PartidaServicio {
   /** La partida terminó (no se puede seguir jugando). */
   readonly terminada = computed(() => this.estadoRealSignal()?.terminada ?? false);
   /** El jugador ganó la partida (`null` si sigue en curso o terminó empatada). */
-  readonly gane = computed(() => this.resultadoSignal()?.gane ?? null);
+  readonly gane = computed(() => {
+    const fin = this.resultadoFinalSignal();
+    if (fin && fin.ganador) {
+      if (fin.ganador === 'empate') {
+        return null;
+      }
+      return fin.ganador === 'propio';
+    }
+    return this.resultadoSignal()?.gane ?? null;
+  });
 
   readonly lugares = computed<PorLugar<LugarPartida>>(() => {
     if (!this.modoRealSignal()) {
@@ -501,12 +534,17 @@ export class PartidaServicio {
    */
   modoGaleria(): void {
     this.epoca += 1;
+    this.colaJugadas.length = 0;
+    this.jugandoEnCurso = false;
+    this.pendienteFinalizar = false;
+    this.ultimaJugadaTimestamp = 0;
+    this.secuenciaJugadas = 0;
     this.modoRealSignal.set(false);
   }
 
   /**
    * Baja una carta a la mesa con actualización optimista inmediata
-   * para eliminar retrasos de red y permitir interactividad fluida.
+   * y encolado secuencial para evitar condiciones de carrera o rechazos del servidor.
    */
   jugarCarta(carta: Carta, lugar: NombreLugar, indice: number): boolean {
     if (!this.modoRealSignal()) {
@@ -520,7 +558,8 @@ export class PartidaServicio {
       estado.terminada ||
       estado.listo ||
       estado.fase !== 'jugando' ||
-      this.confirmandoSignal()
+      this.confirmandoSignal() ||
+      this.pendienteFinalizar
     ) {
       return false;
     }
@@ -555,13 +594,38 @@ export class PartidaServicio {
     }
 
     const cartaPartidaId = enMano.cartaPartidaId;
-    const firma = [estado.partidaId, estado.ronda, cartaPartidaId, zona.zonaPartidaId, indice].join(
-      ':',
-    );
+    const ahora = Date.now();
+    const firma = [
+      estado.partidaId,
+      estado.ronda,
+      cartaPartidaId ?? enMano.cartaId,
+      zona.zonaPartidaId,
+      indice,
+    ].join(':');
     const clave = this.clavePara('jugar', firma);
-    const epoca = this.epoca;
 
-    // 1. Actualización optimista inmediata
+    // Evitar duplicados si la misma carta o el mismo slot ya están encolados
+    const yaEncolada = this.colaJugadas.some(
+      (j) =>
+        (cartaPartidaId != null && j.carta.cartaPartidaId === cartaPartidaId) ||
+        j.carta.id === enMano.id ||
+        (j.zonaPartidaId === zona.zonaPartidaId && j.indice === indice) ||
+        j.claveIdempotencia === clave,
+    );
+    if (yaEncolada) {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+        console.info('[PartidaServicio] Se descartó jugada idéntica o ya encolada', {
+          cartaId: enMano.cartaId,
+          cartaPartidaId,
+          zonaPartidaId: zona.zonaPartidaId,
+          indice,
+          clave,
+        });
+      }
+      return false;
+    }
+
+    // 1. Actualización optimista inmediata en el cliente
     const nuevoCupon = Math.max(0, estado.cuponActual - costo);
     const nuevaMano = estado.mano
       .filter((item) =>
@@ -605,44 +669,343 @@ export class PartidaServicio {
     this.errorSignal.set(null);
     this.deltasSignal.set(DELTAS_VACIOS);
 
+    // 2. Encolado secuencial de la jugada
+    const jugada: JugadaEncolada = {
+      id: `jugada-${ahora}-${this.generarId()}`,
+      carta: enMano,
+      lugar,
+      indice,
+      costo,
+      zonaPartidaId: zona.zonaPartidaId,
+      partidaId: estado.partidaId,
+      ronda: estado.ronda,
+      claveIdempotencia: clave,
+      timestamp: ahora,
+    };
+
+    this.secuenciaJugadas += 1;
+    this.ultimaJugadaTimestamp = ahora;
+    this.colaJugadas.push(jugada);
+
+    if (!this.jugandoEnCurso) {
+      this.procesarSiguienteJugada();
+    }
+
+    return true;
+  }
+
+  /**
+   * Procesa las jugadas encoladas de manera estrictamente secuencial.
+   */
+  private procesarSiguienteJugada(): void {
+    if (!this.modoRealSignal()) {
+      return;
+    }
+
+    if (this.colaJugadas.length === 0) {
+      this.jugandoEnCurso = false;
+      this.enviandoCartaSignal.set(false);
+
+      if (this.pendienteFinalizar) {
+        this.pendienteFinalizar = false;
+        this.cerrarRonda();
+      }
+      return;
+    }
+
+    this.jugandoEnCurso = true;
+    this.enviandoCartaSignal.set(true);
+
+    const jugada = this.colaJugadas[0];
+    const epoca = this.epoca;
+    const momentoEnvio = Date.now();
+
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      console.info('[PartidaJugada] Enviando jugada:', {
+        jugadaId: jugada.id,
+        clave: jugada.claveIdempotencia,
+        partidaId: jugada.partidaId,
+        ronda: jugada.ronda,
+        cartaId: jugada.carta.cartaId,
+        cartaPartidaId: jugada.carta.cartaPartidaId,
+        nombre: jugada.carta.nombre,
+        zonaPartidaId: jugada.zonaPartidaId,
+        lugar: jugada.lugar,
+        indice: jugada.indice,
+        momentoEnvio,
+      });
+    }
+
     this.partidaApi
       .jugarCarta(
-        estado.partidaId,
+        jugada.partidaId,
         {
-          cartaId: enMano.cartaId,
-          cartaPartidaId,
-          zonaPartidaId: zona.zonaPartidaId,
-          indice,
-          numeroRonda: estado.ronda,
+          cartaId: jugada.carta.cartaId!,
+          cartaPartidaId: jugada.carta.cartaPartidaId,
+          zonaPartidaId: jugada.zonaPartidaId,
+          indice: jugada.indice,
+          numeroRonda: jugada.ronda,
         },
-        clave,
+        jugada.claveIdempotencia,
       )
       .pipe(
         tap((nuevoEstado) => {
-          if (!this.esEpocaActual(epoca) || !this.esPartidaActual(estado.partidaId)) {
+          if (!this.esEpocaActual(epoca) || !this.esPartidaActual(jugada.partidaId)) {
             return;
           }
 
+          const momentoRespuesta = Date.now();
+          if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+            console.info('[PartidaJugada] Jugada confirmada por servidor:', {
+              jugadaId: jugada.id,
+              clave: jugada.claveIdempotencia,
+              latenciaMs: momentoRespuesta - momentoEnvio,
+              ronda: nuevoEstado.ronda,
+              cartasEnMesa: nuevoEstado.cartasEnMesa?.length,
+              mano: nuevoEstado.manoPropia?.length,
+            });
+          }
+
           this.olvidarClave('jugar');
-          this.enviandoCartaSignal.set(false);
-          this.aplicarEstado(nuevoEstado);
+
+          const idx = this.colaJugadas.findIndex((j) => j.id === jugada.id);
+          if (idx !== -1) {
+            this.colaJugadas.splice(idx, 1);
+          }
+
+          if (this.colaJugadas.length === 0) {
+            this.aplicarEstado(nuevoEstado);
+          } else {
+            this.reconciliarEstadoConCola(nuevoEstado);
+          }
+
+          this.procesarSiguienteJugada();
         }),
         catchError((error: unknown) => {
           if (!this.esEpocaActual(epoca)) {
             return EMPTY;
           }
 
-          this.enviandoCartaSignal.set(false);
-          // Si el servidor rechazó la jugada, revertir al estado previo
-          this.estadoRealSignal.set(estado);
-          this.registrarError(error, true);
+          const momentoRespuesta = Date.now();
+          const status = this.statusDe(error);
+          const mensajeError = this.mensajeDeError(error);
 
-          return EMPTY;
+          if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+            console.warn('[PartidaJugada] Error en jugada:', {
+              jugadaId: jugada.id,
+              clave: jugada.claveIdempotencia,
+              latenciaMs: momentoRespuesta - momentoEnvio,
+              status,
+              mensaje: mensajeError,
+              error,
+            });
+          }
+
+          this.olvidarClave('jugar');
+
+          const idx = this.colaJugadas.findIndex((j) => j.id === jugada.id);
+          if (idx !== -1) {
+            this.colaJugadas.splice(idx, 1);
+          }
+
+          // Ante cualquier rechazo o respuesta ambigua, el servidor es la autoridad:
+          // Consultamos el estado real para saber si la carta realmente quedó en la mesa o en la mano.
+          const consulta$ = this.partidaApi.obtenerEstado(jugada.partidaId);
+          if (!consulta$) {
+            this.revertirJugada(jugada);
+            this.registrarError(error, false);
+            this.procesarSiguienteJugada();
+            return EMPTY;
+          }
+
+          return consulta$.pipe(
+            tap((estadoServidor) => {
+              if (!this.esEpocaActual(epoca) || !this.esPartidaActual(jugada.partidaId)) {
+                return;
+              }
+
+              const cartaPartidaId = jugada.carta.cartaPartidaId;
+              const estaEnMesaServidor = (estadoServidor.cartasEnMesa ?? []).some(
+                (c) =>
+                  c.lado === 'propio' &&
+                  (cartaPartidaId != null
+                    ? c.cartaPartidaId === cartaPartidaId || c.carta?.cartaId === jugada.carta.cartaId
+                    : c.carta?.cartaId === jugada.carta.cartaId),
+              );
+
+              const estaEnManoServidor = (estadoServidor.manoPropia ?? []).some(
+                (m) =>
+                  (cartaPartidaId != null && m.cartaPartidaId === cartaPartidaId) ||
+                  m.carta?.cartaId === jugada.carta.cartaId,
+              );
+
+              if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+                console.info('[PartidaJugada] Resultado de reconciliación tras error:', {
+                  jugadaId: jugada.id,
+                  estaEnMesaServidor,
+                  estaEnManoServidor,
+                  cartasEnMesa: estadoServidor.cartasEnMesa?.length,
+                  cartasMano: estadoServidor.manoPropia?.length,
+                });
+              }
+
+              // Aplicar estado autoritativo primero
+              if (this.colaJugadas.length === 0) {
+                this.aplicarEstado(estadoServidor);
+              } else {
+                this.reconciliarEstadoConCola(estadoServidor);
+              }
+
+              if (estaEnMesaServidor) {
+                // El servidor ya la tiene en mesa: NO vuelve a la mano.
+                this.errorSignal.set(null);
+                if (this.esErrorCartaNoEnMano(error)) {
+                  toast.info('La jugada ya había sido registrada en el servidor.');
+                }
+              } else if (estaEnManoServidor) {
+                // El servidor confirmó que sigue en la mano: recién aquí vuelve a la mano
+                this.registrarError(error, false);
+                this.anuncioSignal.set(`${jugada.carta.nombre} no se pudo jugar: vuelve a tu mano.`);
+              } else {
+                this.registrarError(error, false);
+              }
+
+              this.procesarSiguienteJugada();
+            }),
+            catchError(() => {
+              if (!this.esEpocaActual(epoca)) {
+                return EMPTY;
+              }
+              // Si falla la consulta de red, registrar error
+              this.registrarError(error, false);
+              this.procesarSiguienteJugada();
+              return EMPTY;
+            }),
+          );
         }),
       )
       .subscribe();
+  }
 
-    return true;
+  /**
+   * Helper para detectar si el error del servidor indica que la carta ya no está en la mano.
+   */
+  private esErrorCartaNoEnMano(error: unknown): boolean {
+    const mensaje = normalizar(this.mensajeDeError(error));
+    return (
+      mensaje.includes('no esta en tu mano') ||
+      mensaje.includes('no se encuentra en la mano') ||
+      mensaje.includes('ya no esta en la mano') ||
+      mensaje.includes('ya fue jugada') ||
+      mensaje.includes('no tenes esta carta')
+    );
+  }
+
+  /**
+   * Aplica la respuesta del servidor preservando las cartas optimistas que siguen en cola.
+   */
+  private reconciliarEstadoConCola(servidorEstado: EstadoPartidaApi): void {
+    this.aplicarEstado(servidorEstado);
+
+    const estado = this.estadoRealSignal();
+    if (!estado) {
+      return;
+    }
+
+    let cuponRestante = estado.cuponActual;
+    let manoRestante = [...estado.mano];
+    const cartasMesaActualizadas = [...estado.cartasMesa];
+    const zonasActualizadas = {
+      izquierda: { ...estado.zonas.izquierda },
+      derecha: { ...estado.zonas.derecha },
+    };
+
+    for (const jugada of this.colaJugadas) {
+      cuponRestante = Math.max(0, cuponRestante - jugada.costo);
+      manoRestante = manoRestante.filter((item) =>
+        jugada.carta.cartaPartidaId
+          ? item.cartaPartidaId !== jugada.carta.cartaPartidaId
+          : item.id !== jugada.carta.id,
+      );
+
+      const yaEnMesa = cartasMesaActualizadas.some(
+        (c) =>
+          c.lado === 'propio' &&
+          c.zonaPartidaId === jugada.zonaPartidaId &&
+          c.slot === jugada.indice,
+      );
+      if (!yaEnMesa) {
+        cartasMesaActualizadas.push({
+          carta: { ...jugada.carta, oculta: false },
+          lado: 'propio',
+          zonaPartidaId: jugada.zonaPartidaId,
+          slot: jugada.indice,
+        });
+      }
+
+      const poderCarta = jugada.carta.poderBase ?? jugada.carta.atributoDerecho ?? 0;
+      zonasActualizadas[jugada.lugar].poderPropio += poderCarta;
+    }
+
+    manoRestante = manoRestante.map((item) => ({
+      ...item,
+      jugable: (item.atributoIzquierdo ?? 0) <= cuponRestante,
+    }));
+
+    this.estadoRealSignal.set({
+      ...estado,
+      cuponActual: cuponRestante,
+      mano: manoRestante,
+      cartasMesa: cartasMesaActualizadas,
+      zonas: zonasActualizadas,
+    });
+  }
+
+  /**
+   * Revierte individualmente una jugada rechazada o cancelada sin afectar a las demás.
+   */
+  private revertirJugada(jugada: JugadaEncolada): void {
+    const estado = this.estadoRealSignal();
+    if (!estado) {
+      return;
+    }
+
+    const nuevasCartasMesa = estado.cartasMesa.filter(
+      (c) =>
+        !(
+          c.lado === 'propio' &&
+          c.zonaPartidaId === jugada.zonaPartidaId &&
+          c.slot === jugada.indice
+        ),
+    );
+
+    const nuevoCupon = estado.cuponActual + jugada.costo;
+    const nuevaMano = [
+      ...estado.mano,
+      { ...jugada.carta, jugable: true },
+    ].map((item) => ({
+      ...item,
+      jugable: (item.atributoIzquierdo ?? 0) <= nuevoCupon,
+    }));
+
+    const poderCarta = jugada.carta.poderBase ?? jugada.carta.atributoDerecho ?? 0;
+    const nuevasZonas = {
+      ...estado.zonas,
+      [jugada.lugar]: {
+        ...estado.zonas[jugada.lugar],
+        poderPropio: Math.max(0, estado.zonas[jugada.lugar].poderPropio - poderCarta),
+      },
+    };
+
+    this.estadoRealSignal.set({
+      ...estado,
+      mano: nuevaMano,
+      cartasMesa: nuevasCartasMesa,
+      cuponActual: nuevoCupon,
+      zonas: nuevasZonas,
+    });
+
+    this.anuncioSignal.set(`${jugada.carta.nombre} vuelve a tu mano.`);
   }
 
   /**
@@ -691,6 +1054,18 @@ export class PartidaServicio {
 
     if (this.cartasConfirmadasRonda.has(cartaPartidaId)) {
       return false;
+    }
+
+    const idxCola = this.colaJugadas.findIndex(
+      (j) =>
+        (cartaPartidaId != null && j.carta.cartaPartidaId === cartaPartidaId) ||
+        j.carta.id === carta.id,
+    );
+    if (idxCola > 0) {
+      const jugada = this.colaJugadas[idxCola];
+      this.colaJugadas.splice(idxCola, 1);
+      this.revertirJugada(jugada);
+      return true;
     }
 
     const idxMesa = estado.cartasMesa.findIndex(
@@ -786,6 +1161,12 @@ export class PartidaServicio {
       return;
     }
 
+    if (this.colaJugadas.length > 0 || this.jugandoEnCurso) {
+      this.pendienteFinalizar = true;
+      this.anuncioSignal.set('Esperando que se completen las jugadas antes de finalizar…');
+      return;
+    }
+
     this.cerrarRonda();
   }
 
@@ -846,6 +1227,20 @@ export class PartidaServicio {
     this.partidaApi
       .rendirse(estado.partidaId, clave)
       .pipe(
+        tap((resRendicion) => {
+          if (resRendicion && resRendicion.ganador) {
+            this.resultadoFinalSignal.set(resRendicion);
+          } else {
+            this.resultadoFinalSignal.set({
+              partidaId: estado.partidaId,
+              ganador: 'rival',
+              motivo: 'rendicion',
+              puntosPropio: estado.puntosPropio,
+              puntosRival: estado.puntosRival,
+              fechaFin: new Date().toISOString(),
+            });
+          }
+        }),
         switchMap(() => this.partidaApi.obtenerEstado(estado.partidaId)),
         tap((nuevoEstado) => {
           if (!this.esEpocaActual(epoca) || !this.esPartidaActual(estado.partidaId)) {
@@ -919,8 +1314,12 @@ export class PartidaServicio {
       estado.terminada ||
       estado.listo ||
       this.confirmandoSignal() ||
-      this.enviandoCartaSignal()
+      this.colaJugadas.length > 0 ||
+      this.jugandoEnCurso
     ) {
+      if (this.colaJugadas.length > 0 || this.jugandoEnCurso) {
+        this.pendienteFinalizar = true;
+      }
       return;
     }
 
@@ -1254,6 +1653,12 @@ export class PartidaServicio {
     this.segundosSignal.set(estado.segundosRestantes);
     this.errorSignal.set(null);
 
+    if (estado.ultimoResultado?.fin) {
+      this.resultadoFinalSignal.set(estado.ultimoResultado.fin);
+    } else if (terminada) {
+      this.consultarResultadoFinal(estado.partidaId);
+    }
+
     if (cartasRivalesRecienReveladas.length > 0) {
       const nombresZonas = new Map<number, string>();
       estado.zonas.forEach((z) => nombresZonas.set(z.zonaPartidaId, z.nombre));
@@ -1274,6 +1679,38 @@ export class PartidaServicio {
     } else if (cambioDeRonda && anterior) {
       this.anuncioSignal.set(`Ronda ${estado.ronda} en curso.`);
     }
+  }
+
+  /** Consulta el resultado final definitivo al backend si no vino en el último resultado. */
+  private consultarResultadoFinal(partidaId: number): void {
+    if (this.resultadoFinalSignal()) {
+      return;
+    }
+
+    this.partidaApi
+      .obtenerResultado(partidaId)
+      .pipe(
+        tap((res) => {
+          if (res) {
+            this.resultadoFinalSignal.set(res);
+          }
+        }),
+        catchError(() => {
+          const actual = this.estadoRealSignal();
+          if (actual && !this.resultadoFinalSignal()) {
+            this.resultadoFinalSignal.set({
+              partidaId,
+              ganador: null,
+              motivo: null,
+              puntosPropio: actual.puntosPropio,
+              puntosRival: actual.puntosRival,
+              fechaFin: null,
+            });
+          }
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 
   private deltaPuntos(lado: LadoPartida): number | null {
@@ -1383,6 +1820,55 @@ export class PartidaServicio {
     };
   }
 
+  /**
+   * Extrae los efectos de categoría que la zona aplica (sube/baja de poder).
+   *
+   * Consume primero los modificadores estructurados si el contrato los provee.
+   * Si no, traduce el texto de `zona.efecto` (ej. "Comida +2 · Ropa -2" o "Gastronomía +1")
+   * usando `categoriaCartaDesdeNombre`.
+   */
+  private extraerEfectosCategoria(zona: ZonaPartidaApi): readonly EfectoCategoriaCarta[] {
+    const efectos: EfectoCategoriaCarta[] = [];
+
+    if (zona.modificadores && zona.modificadores.length > 0) {
+      for (const mod of zona.modificadores) {
+        const catNombre = mod.categoria;
+        const valor = mod.bonus ?? mod.valor ?? 0;
+        if (catNombre && valor !== 0) {
+          efectos.push({
+            tipo: valor > 0 ? 'sube' : 'baja',
+            categoria: categoriaCartaDesdeNombre(catNombre),
+            valor,
+          });
+        }
+      }
+      if (efectos.length > 0) {
+        return efectos;
+      }
+    }
+
+    const texto = zona.efecto || '';
+    if (texto) {
+      const regex = /([a-záéíóúñ]+)\s*([+\-−]\d+)/gi;
+      let match: RegExpExecArray | null;
+      while ((match = regex.exec(texto)) !== null) {
+        const nombreCat = match[1];
+        const valorStr = match[2].replace('−', '-');
+        const valor = parseInt(valorStr, 10);
+        const cat = categoriaCartaDesdeNombre(nombreCat);
+        if (!isNaN(valor) && valor !== 0) {
+          efectos.push({
+            tipo: valor > 0 ? 'sube' : 'baja',
+            categoria: cat,
+            valor,
+          });
+        }
+      }
+    }
+
+    return efectos;
+  }
+
   private construirZona(zona: ZonaPartidaApi): ZonaTablero {
     return {
       id: zona.zonaPartidaId,
@@ -1398,6 +1884,7 @@ export class PartidaServicio {
       poderRival: zona.puntajeRival,
       bonusPorCategoria: {},
       ganador: zona.ganador,
+      efectosCategoria: this.extraerEfectosCategoria(zona),
     };
   }
 
@@ -1648,7 +2135,29 @@ export class PartidaServicio {
       poderBase,
       obtenida: true,
       jugable: opciones.jugable,
+      efectosCategoria: this.parsearEfectosHabilidad(carta.habilidad),
     };
+  }
+
+  private parsearEfectosHabilidad(habilidad: HabilidadApi | null): EfectoCategoriaCarta[] {
+    if (!habilidad || !habilidad.categoriaObjetivo) {
+      return [];
+    }
+
+    const cat = categoriaCartaDesdeNombre(habilidad.categoriaObjetivo);
+    const tipo =
+      (habilidad.valor !== null && habilidad.valor < 0) ||
+      habilidad.tipo?.toLowerCase().includes('reduc')
+        ? 'baja'
+        : 'sube';
+
+    return [
+      {
+        tipo,
+        categoria: cat,
+        valor: habilidad.valor,
+      },
+    ];
   }
 
   /** Reverso de una carta que el rival todavía no reveló. */
@@ -1824,6 +2333,8 @@ export class PartidaServicio {
     const epoca = this.epoca;
     const partidaId = estado.partidaId;
     const rondaActual = estado.ronda;
+    const momentoConsulta = Date.now();
+    const secuenciaConsulta = this.secuenciaJugadas;
 
     this.sincronizando = true;
 
@@ -1839,6 +2350,24 @@ export class PartidaServicio {
       .subscribe({
         next: (nuevoEstado) => {
           if (!this.esEpocaActual(epoca) || !this.esPartidaActual(partidaId)) {
+            return;
+          }
+
+          // Ignorar respuestas de polling si hay jugadas encoladas, en vuelo o si la consulta salió antes de una jugada
+          if (
+            this.colaJugadas.length > 0 ||
+            this.jugandoEnCurso ||
+            secuenciaConsulta < this.secuenciaJugadas ||
+            momentoConsulta < this.ultimaJugadaTimestamp
+          ) {
+            console.warn('[PartidaServicio] Se descartó respuesta de polling originada antes de una jugada', {
+              enCola: this.colaJugadas.length,
+              enCurso: this.jugandoEnCurso,
+              secuenciaConsulta,
+              secuenciaActual: this.secuenciaJugadas,
+              momentoConsulta,
+              ultimaJugada: this.ultimaJugadaTimestamp,
+            });
             return;
           }
 
@@ -1945,6 +2474,7 @@ export class PartidaServicio {
     this.modoRealSignal.set(false);
     this.estadoRealSignal.set(null);
     this.resultadoSignal.set(null);
+    this.resultadoFinalSignal.set(null);
     this.deltasSignal.set(DELTAS_VACIOS);
     this.anuncioSignal.set('');
     this.segundosSignal.set(0);
@@ -1956,6 +2486,11 @@ export class PartidaServicio {
     this.sincronizando = false;
     this.clavesEnCurso.clear();
     this.cartasConfirmadasRonda.clear();
+    this.colaJugadas.length = 0;
+    this.jugandoEnCurso = false;
+    this.pendienteFinalizar = false;
+    this.ultimaJugadaTimestamp = 0;
+    this.secuenciaJugadas = 0;
   }
 
   private guardarPartidaId(partidaId: number): void {

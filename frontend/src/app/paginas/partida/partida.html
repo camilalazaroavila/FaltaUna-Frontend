@@ -1,5 +1,9 @@
 <div
-  class="flex min-h-[100dvh] h-[100dvh] flex-col overflow-x-hidden overflow-y-hidden bg-fondo-app font-interfaz text-texto-primario"
+  class="flex min-h-[100dvh] flex-col overflow-x-hidden font-interfaz text-texto-primario"
+  [class.h-[100dvh]]="enPartida()"
+  [class.overflow-y-hidden]="enPartida()"
+  [class.bg-fondo-app]="enPartida()"
+  [class.pantalla-seleccion-fondo]="!enPartida()"
 >
   @if (enPartida()) {
     <!-- Partida activa: pantalla completa sin header global -->
@@ -44,7 +48,7 @@
         <button
           type="button"
           app-boton
-          [variante]="servicio.terminada() ? 'primario' : 'fantasma'"
+          [variante]="servicio.terminada() ? 'primario' : 'peligro'"
           tamanio="sm"
           (click)="abandonar()"
         >
@@ -57,75 +61,144 @@
       <div class="area-tablero min-h-0 flex-1">
         <app-tablero (rendirse)="servicio.rendirse()" />
       </div>
+
+      @if (mostrarPantallaResultado()) {
+        <app-pantalla-resultado
+          [resultado]="resultadoFinal()"
+          [nombreJugador]="servicio.jugadores().propio.nombre"
+          [nombreRival]="servicio.jugadores().rival.nombre"
+          (jugarOtraVez)="reintentarPartida()"
+          (volverAlMenu)="volverAlMenu()"
+        />
+      }
     </main>
   } @else {
     <!-- Sin partida activa: mostrar header global y pantalla de selección de mazo -->
     @if (mostrarHeader()) {
       <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario/jugar" />
     }
-    <main class="flex flex-1 flex-col gap-4 px-4 pt-2 pb-6 sm:px-8 lg:px-12">
-      <!-- Antes de empezar: se elige un mazo y se crea la partida contra el bot -->
-      <div class="flex flex-1 items-center justify-center py-8">
-        <app-caja variante="elevada" sombra="media" padding="lg" radio="lg" class="max-w-2xl">
-          <h1 app-titulo tamano="lg">Partida contra el bot</h1>
-
-          <p app-texto variante="secundario">
-            Bajá tus cartas a las zonas, sumá poder y cerrá el turno antes de que se agoten los 60
-            segundos. El bot juega su turno cuando vos finalizás.
-          </p>
-
-          <p app-texto variante="secundario" tamano="menor">
-            Para arrancar necesitás un mazo completo de 12 cartas. Si todavía no lo tenés, armalo en
-            "Mi baraja".
-          </p>
-
-          @if (servicio.error(); as mensaje) {
-            <app-caja variante="error" padding="sm">
-              <p app-texto variante="heredar" tamano="menor">{{ mensaje }}</p>
-            </app-caja>
-          }
-
-          @if (errorMazos(); as mensajeMazos) {
-            <app-caja variante="error" padding="sm">
-              <p app-texto variante="heredar" tamano="menor">{{ mensajeMazos }}</p>
-            </app-caja>
-          } @else if (cargandoMazos()) {
-            <p app-texto variante="secundario" tamano="menor">Cargando tus mazos…</p>
-          } @else if (mazosCompletos().length === 0) {
-            <app-caja variante="advertencia" padding="sm">
-              <p app-texto variante="heredar" tamano="menor">
-                No tenés un mazo completo. Armá uno con 12 cartas para jugar.
-              </p>
-            </app-caja>
-          } @else {
-            <label class="flex flex-col gap-1 font-interfaz text-etiqueta text-texto-secundario">
-              Mazo
-              <select
-                class="h-[2.75rem] rounded-md border border-borde-default bg-fondo-elevado px-3 font-interfaz text-sm text-texto-primario focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
-                [value]="mazoSeleccionado() ?? ''"
-                (change)="seleccionarMazo($event)"
-              >
-                @for (mazo of mazosCompletos(); track mazo.id) {
-                  <option [value]="mazo.id">{{ mazo.nombre }}</option>
-                }
-              </select>
-            </label>
-          }
-
-          <div class="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              app-boton
-              variante="primario"
-              [cargando]="servicio.cargando()"
-              [disabled]="!puedeJugar()"
-              (click)="jugar()"
+    <main class="relative flex flex-1 flex-col justify-center px-4 pt-2 pb-8 sm:px-8 lg:px-12 overflow-y-auto">
+      <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 py-4">
+        <!-- Componente de volver existente -->
+        <div>
+          <a
+            routerLink="/usuario/jugar"
+            class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-secundario uppercase transition-colors hover:text-marca-coleccion focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+          >
+            <svg
+              class="size-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
             >
-              Jugar contra el bot
-            </button>
-            <a app-boton variante="fantasma" routerLink="/usuario/jugar">Volver al menú</a>
+              <path d="M15 6l-6 6 6 6" />
+            </svg>
+            Volver
+          </a>
+        </div>
+
+        <div
+          class="flex flex-col items-center justify-between gap-8 lg:flex-row lg:items-center lg:gap-12"
+        >
+          <!-- Formulario a la izquierda -->
+          <div class="w-full max-w-xl flex-1">
+            <app-caja
+              variante="elevada"
+              sombra="alta"
+              padding="lg"
+              radio="lg"
+              class="w-full border border-borde-default bg-fondo-elevado"
+            >
+              <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <h1 app-titulo tamano="lg">Partida contra el bot</h1>
+
+                  <p app-texto variante="secundario">
+                    Bajá tus cartas a las zonas, sumá poder y cerrá el turno antes de que se agoten los
+                    segundos de la ronda. El bot juega su turno cuando vos finalizás.
+                  </p>
+
+                  <p app-texto variante="secundario" tamano="menor">
+                    Para arrancar necesitás un mazo completo de 12 cartas. Si todavía no lo tenés, armalo en
+                    "Mi baraja".
+                  </p>
+                </div>
+
+                @if (servicio.error(); as mensaje) {
+                  <app-caja variante="error" padding="sm">
+                    <p app-texto variante="heredar" tamano="menor">{{ mensaje }}</p>
+                  </app-caja>
+                }
+
+                @if (errorMazos(); as mensajeMazos) {
+                  <app-caja variante="error" padding="sm">
+                    <p app-texto variante="heredar" tamano="menor">{{ mensajeMazos }}</p>
+                  </app-caja>
+                } @else if (cargandoMazos()) {
+                  <div class="flex items-center gap-3 py-2">
+                    <div
+                      class="size-5 animate-spin rounded-full border-2 border-marca-primaria border-t-transparent"
+                      aria-hidden="true"
+                    ></div>
+                    <p app-texto variante="secundario" tamano="menor">Cargando tus mazos…</p>
+                  </div>
+                } @else if (mazosCompletos().length === 0) {
+                  <app-caja variante="advertencia" padding="md" class="flex flex-col gap-3">
+                    <p app-texto variante="heredar" tamano="menor">
+                      No tenés un mazo completo. Armá uno con 12 cartas para jugar.
+                    </p>
+                    <a
+                      app-boton
+                      variante="secundario"
+                      tamanio="sm"
+                      routerLink="/usuario/baraja"
+                      class="self-start"
+                    >
+                      Ir a Mi baraja
+                    </a>
+                  </app-caja>
+                } @else {
+                  <app-campo-select
+                    etiqueta="Mazo"
+                    [opciones]="opcionesMazos()"
+                    [ngModel]="mazoSeleccionadoStr()"
+                    (ngModelChange)="seleccionarMazoStr($event)"
+                  />
+                }
+
+                <div class="flex flex-wrap items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    app-boton
+                    variante="primario"
+                    [cargando]="servicio.cargando()"
+                    [disabled]="!puedeJugar()"
+                    (click)="jugar()"
+                  >
+                    Jugar contra el bot
+                  </button>
+                  <a app-boton variante="fantasma" routerLink="/usuario/jugar">Volver al menú</a>
+                </div>
+              </div>
+            </app-caja>
           </div>
-        </app-caja>
+
+          <!-- Mascota a la derecha -->
+          <div
+            class="flex w-full max-w-xs flex-1 items-center justify-center sm:max-w-sm lg:max-w-md lg:justify-end"
+          >
+            <img
+              src="/imagenes/gatito/gatito monoculo.png"
+              alt="Mascota: Gato con monóculo sosteniendo cartas y diciendo: Elegí tu mazo, lo voy a poner"
+              class="mascota-imagen h-auto w-full max-w-[18rem] object-contain sm:max-w-[24rem] lg:max-w-[34rem] drop-shadow-cartoon select-none pointer-events-none"
+              loading="lazy"
+            />
+          </div>
+        </div>
       </div>
     </main>
   }

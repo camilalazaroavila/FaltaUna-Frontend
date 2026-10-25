@@ -33,6 +33,17 @@
     <app-icono-categoria [categoria]="carta().categoria"></app-icono-categoria>
   </div>
 
+  @if (tieneEfectosCategoria()) {
+    <div class="carta__indicador-efectos">
+      <app-indicador-categorias-habilidad
+        [efectos]="efectosCategoria()"
+        [maxVisibles]="2"
+        orientacion="vertical"
+        tamanio="sm"
+      />
+    </div>
+  }
+
   <div class="carta__imagen-wrapper">
     @if (!imagenRota()) {
       <img
