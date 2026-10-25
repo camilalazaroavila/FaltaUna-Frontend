@@ -11,8 +11,8 @@ import type { Carta, CategoriaCarta } from './carta.model';
  * 1. **Dominio**: los tipos que consume el tablero (lugares, slots, zonas).
  * 2. **Contrato**: los DTOs crudos que devuelve la API de partida, replicando
  *    los nombres en camelCase que usa el backend (`PartidasController` y
- *    `PartidasBotController`). El mapeo de DTO a dominio vive en los servicios,
- *    nunca en los componentes.
+ *    `PartidasJuegoController`). El mapeo de DTO a dominio vive en los
+ *    servicios, nunca en los componentes.
  */
 
 /**
@@ -23,6 +23,9 @@ import type { Carta, CategoriaCarta } from './carta.model';
  * efecto (secciones 10 y 11).
  */
 export type LadoPartida = 'propio' | 'rival';
+
+/** Ganador de una zona o de la partida, desde la perspectiva del jugador. */
+export type GanadorPartida = LadoPartida | 'empate';
 
 /** Estado de un slot del tablero. */
 export type EstadoSlot = 'vacio' | 'resaltado' | 'ocupado';
@@ -72,19 +75,19 @@ export interface DeltaLugar {
 /**
  * Efecto de una zona.
  *
- * El backend manda `BonusPorCategoria` con todas las categorías que la zona
- * bonifica (`ZonaCategoria.BonusPoder`). Acá se expone **el efecto principal**
- * (la categoría que más bonifica) porque es lo que muestra el popup, y el
- * diccionario completo queda disponible en `ZonaTablero.bonusPorCategoria`.
+ * El contrato actual manda un texto libre (`efecto`) y un tipo. Los campos de
+ * categoría y bonus quedan para la maqueta y para cuando el catálogo de zonas
+ * exponga esa información.
  */
 export interface EfectoZona {
   readonly categoria: CategoriaCarta;
   readonly bonus: number;
+  readonly texto?: string;
 }
 
 /** Zona activa, tal como la muestra el tablero. */
 export interface ZonaTablero {
-  /** Id de la zona en el catálogo (`Zona.Id`). */
+  /** Id de la zona en el catálogo, o `zonaPartidaId` si el contrato no lo manda. */
   readonly id: number;
   /** Id de la zona en esta partida (`ZonaPartida.Id`): es el destino al jugar. */
   readonly zonaPartidaId: number;
@@ -95,166 +98,192 @@ export interface ZonaTablero {
   readonly poderPropio: number;
   /** Poder acumulado del rival en la zona, calculado por el servidor. */
   readonly poderRival: number;
-  /** Bonus por `CategoriaId`, tal cual lo manda el servidor. */
+  /** Bonus por `CategoriaId`, solo disponible en la maqueta. */
   readonly bonusPorCategoria: Readonly<Record<number, number>>;
+  /** Zona ganada según el servidor (solo en partida real). */
+  readonly ganador?: GanadorPartida;
 }
 
 /** Jugador del tablero (chip con nombre y avatar). */
 export interface JugadorTablero {
   readonly nombre: string;
   readonly avatarUrl: string | null;
+  readonly esBot?: boolean;
 }
 
 /* ────────────────────────────── Contrato de la API ────────────────────────────── */
 
-/** Carta que el servidor tiene en la mano del jugador. */
-export interface CartaEnManoApi {
+/** Habilidad de una carta, tal como la expone el contrato. */
+export interface HabilidadApi {
+  readonly tipo: string;
+  readonly momento: string;
+  readonly valor: number | null;
+  readonly categoriaObjetivo: string | null;
+  readonly descripcion: string | null;
+}
+
+/** Carta del juego con todos los datos que necesita el tablero. */
+export interface CartaApi {
   readonly cartaId: number;
   readonly nombre: string;
-  readonly costoMana: number;
+  readonly descripcion: string | null;
   readonly poder: number;
-  readonly categoriaId: number;
-  readonly estado: string;
+  readonly costoCupon: number;
+  readonly rareza: string;
+  readonly categoria: string;
+  readonly imagenUrl: string | null;
+  readonly habilidad: HabilidadApi | null;
 }
 
-/** Ronda en curso, con el tiempo que le queda calculado por el servidor. */
-export interface RondaActualApi {
-  readonly numero: number;
-  readonly fechaInicio: string;
-  readonly fechaFin: string;
-  readonly segundosRestantes: number;
+/** Carta en la mano, con la disponibilidad ya resuelta por el servidor. */
+export interface CartaEnManoApi {
+  readonly cartaPartidaId: number;
+  readonly carta: CartaApi;
+  readonly jugable: boolean;
 }
 
-/** Estado del jugador que está mirando la partida. */
-export interface JugadorEstadoApi {
-  readonly usuarioId: number;
-  readonly manaActual: number;
-  readonly puntosAcumulados: number;
-  readonly confirmoRonda: boolean;
-  readonly mano: readonly CartaEnManoApi[];
+/** Carta sobre la mesa. `oculta` indica que el rival todavía no la reveló. */
+export interface CartaEnMesaApi {
+  readonly cartaPartidaId: number;
+  readonly zonaPartidaId: number | null;
+  readonly indice: number | null;
+  readonly lado: LadoPartida;
+  readonly oculta: boolean;
+  readonly carta: CartaApi | null;
+  readonly poderActual: number | null;
 }
 
-/** Estado del rival. El servidor todavía no manda cuántas cartas tiene en mano. */
-export interface RivalEstadoApi {
-  readonly usuarioId: number;
+/** Jugador de la partida con sus recursos y puntos calculados por el servidor. */
+export interface JugadorPartidaApi {
+  readonly jugadorPartidaId: number;
+  readonly usuarioId: number | null;
+  readonly nombre: string;
+  readonly avatarUrl: string | null;
   readonly esBot: boolean;
-  readonly manaActual: number;
-  readonly puntosAcumulados: number;
+  readonly puntosTotales: number;
+  readonly cuponActual: number;
+  readonly cuponMaximo: number;
+  readonly listo: boolean;
+  readonly cartasEnMano: number;
+  readonly cartasEnMazo: number;
 }
 
-/**
- * Zona activa con el poder ya jugado.
- *
- * `bonusPorCategoria` llega como `Dictionary<int, int>`: en JSON las claves
- * quedan como strings ("1", "2"), así que el tipo es `Record<string, number>`.
- */
-export interface ZonaEstadoApi {
+/** Zona activa con el poder ya jugado. */
+export interface ZonaPartidaApi {
   readonly zonaPartidaId: number;
-  readonly zonaId: number;
   readonly nombre: string;
-  readonly posicionInicial: string;
-  readonly poderPropio: number;
-  readonly poderRival: number;
-  readonly bonusPorCategoria: Readonly<Record<string, number>>;
-}
-
-/** Estado completo de la partida: es lo que devuelve `GET .../bot/estado`. */
-export interface PartidaEstadoApi {
-  readonly partidaId: number;
-  readonly estado: string;
-  readonly puntosObjetivo: number;
-  readonly rondaActual: RondaActualApi;
-  readonly miJugador: JugadorEstadoApi;
-  readonly rival: RivalEstadoApi;
-  readonly zonas: readonly ZonaEstadoApi[];
-  readonly ganadorId: number | null;
-  readonly fechaFin: string | null;
-}
-
-/** Zona revelada al empezar la partida. */
-export interface ZonaReveladaApi {
-  readonly id: number;
-  readonly nombre: string;
-  readonly posicionInicial: string;
-}
-
-/** Carta de la mano al empezar la partida (aún sin costo ni poder). */
-export interface CartaEnManoInicialApi {
-  readonly cartaId: number;
-  readonly posicionMazo: number;
-  readonly estado: string;
-  readonly nombre: string;
-}
-
-/** Mano propia al empezar la partida. */
-export interface ManoPropiaApi {
-  readonly usuarioId: number;
-  readonly mazoId: number;
-  readonly manaActual: number;
-  readonly cartas: readonly CartaEnManoInicialApi[];
-}
-
-/** Rival al empezar la partida. */
-export interface RivalApi {
-  readonly usuarioId: number;
-  readonly mazoId: number;
-}
-
-/** Respuesta de `POST /api/Partidas/bot`. */
-export interface PartidaIniciadaApi {
-  readonly partidaId: number;
-  readonly estado: string;
-  readonly zonasReveladas: readonly ZonaReveladaApi[];
-  readonly manoPropia: ManoPropiaApi;
-  readonly rival: RivalApi;
+  readonly lugar: string;
+  readonly imagenUrl: string | null;
+  readonly efecto: string | null;
+  readonly tipoEfecto: string;
+  readonly puntajePropio: number;
+  readonly puntajeRival: number;
+  readonly diferencia: number;
+  readonly ganador: GanadorPartida;
+  readonly cartas: readonly CartaEnMesaApi[];
 }
 
 /** Resultado de una zona en la ronda recién resuelta. */
 export interface ResultadoZonaApi {
   readonly zonaPartidaId: number;
-  readonly poderJugador1: number;
-  readonly poderJugador2: number;
+  readonly puntajePropio: number;
+  readonly puntajeRival: number;
+  readonly diferencia: number;
+  readonly puntosGanadosPropio: number;
+  readonly puntosGanadosRival: number;
+  readonly ganador: GanadorPartida;
 }
 
-/**
- * Resultado de la ronda.
- *
- * Ojo: `poderJugador1` y `poderJugador2` siguen el orden de `Partida.Manos`
- * (ordenado por `UsuarioId`), no "vos" y "el rival". Para saber cuál es el
- * propio hay que comparar `miJugador.usuarioId` con `rival.usuarioId`.
- */
-export interface ResultadoRondaApi {
-  readonly numeroRonda: number;
-  readonly zonas: readonly ResultadoZonaApi[];
-  readonly partidaTerminada: boolean;
-  readonly ganadorId: number | null;
-}
-
-/** Respuesta de `POST .../bot/jugar-carta`. */
-export interface JugarCartaRespuestaApi {
-  readonly manaRestante: number;
-  readonly estado: PartidaEstadoApi;
-}
-
-/**
- * Respuesta de `POST .../bot/confirmar-fin-ronda` y de `.../cerrar-ronda-vencida`.
- *
- * Cuando al rival todavía no confirmó viene `esperandoRival: true` y
- * `resultado: null`; contra el bot el servidor siempre cierra la ronda.
- * `cerrar-ronda-vencida` no manda el campo, por eso es opcional.
- */
-export interface ConfirmarFinDeRondaRespuestaApi {
-  readonly resultado: ResultadoRondaApi | null;
-  readonly esperandoRival?: boolean;
-  readonly estado: PartidaEstadoApi;
-}
-
-/** Categoría del catálogo (`GET /api/Categorias`). */
-export interface CategoriaApi {
-  readonly id: number;
-  readonly nombre: string;
+/** Efecto aplicado durante la resolución de una ronda. */
+export interface EfectoRondaApi {
+  readonly cartaPartidaId: number | null;
+  readonly zonaPartidaId: number | null;
+  readonly momento: string;
+  readonly delta: number;
   readonly descripcion: string | null;
+  readonly orden: number;
 }
+
+/** Fin de la partida: ganador textual y motivo definido por el servidor. */
+export interface ResultadoPartidaApi {
+  readonly partidaId: number;
+  readonly ganador: GanadorPartida | null;
+  readonly motivo: string | null;
+  readonly puntosPropio: number;
+  readonly puntosRival: number;
+  readonly fechaFin: string | null;
+}
+
+/** Resultado completo de una ronda resuelta. */
+export interface ResultadoRondaApi {
+  readonly ronda: number;
+  readonly cartasReveladas: readonly CartaEnMesaApi[];
+  readonly efectos: readonly EfectoRondaApi[];
+  readonly zonas: readonly ResultadoZonaApi[];
+  readonly puntosTotalesPropio: number;
+  readonly puntosTotalesRival: number;
+  readonly zonasNuevas: readonly ZonaPartidaApi[];
+  readonly cartaRobada: CartaEnManoApi | null;
+  readonly cuponNuevoPropio: number;
+  readonly cuponNuevoRival: number;
+  readonly fin: ResultadoPartidaApi | null;
+}
+
+/**
+ * Estado completo de la partida.
+ *
+ * Es la única fuente de verdad: puntajes, cupones, fase, ganador y mano ya
+ * vienen resueltos por el servidor.
+ */
+export interface EstadoPartidaApi {
+  readonly partidaId: number;
+  readonly estado: string;
+  readonly modo: string;
+  readonly ronda: number;
+  readonly rondasTotales: number;
+  readonly fase: string;
+  readonly finDeRonda: string | null;
+  readonly puntosMaximos: number;
+  readonly jugadorPropio: JugadorPartidaApi;
+  readonly rival: JugadorPartidaApi;
+  readonly zonas: readonly ZonaPartidaApi[];
+  readonly cartasEnMesa: readonly CartaEnMesaApi[];
+  readonly manoPropia: readonly CartaEnManoApi[];
+  readonly ultimoResultado: ResultadoRondaApi | null;
+  readonly segundosRestantes: number;
+}
+
+/** Respuesta liviana del heartbeat. */
+export interface HeartbeatApi {
+  readonly ahora: string;
+}
+
+/** Cuerpo de `POST /api/Partidas/bot`. */
+export interface IniciarPartidaBotRequest {
+  readonly mazoId?: number;
+  readonly mazoUsuario1Id?: number;
+}
+
+/** Cuerpo de `POST /api/Partidas/{id}/jugar`. */
+export interface JugarCartaRequestApi {
+  readonly cartaId: number;
+  readonly cartaPartidaId?: number;
+  readonly zonaPartidaId: number;
+  readonly indice?: number;
+  readonly numeroRonda?: number;
+}
+
+/** Cuerpo de `POST /api/Partidas/{id}/finalizar`. */
+export interface FinalizarPartidaRequestApi {
+  readonly ronda?: number;
+  readonly numeroRonda?: number;
+}
+
+/**
+ * Respuesta de `finalizar`: `200` devuelve el resultado de la ronda y `202`
+ * devuelve el estado cuando todavía se espera al rival.
+ */
+export type FinalizarPartidaRespuestaApi = ResultadoRondaApi | EstadoPartidaApi;
 
 /* ───────────────────────────── Resultado de ronda ───────────────────────────── */
 
@@ -266,15 +295,19 @@ export interface ResultadoZonaRonda {
   readonly propio: number;
   /** Poder del rival en la zona. */
   readonly rival: number;
+  readonly ganador: GanadorPartida;
+  readonly puntosGanadosPropio: number;
+  readonly puntosGanadosRival: number;
 }
 
-/**
- * Resultado de la ronda, listo para mostrar.
- *
- * `poderJugador1` y `poderJugador2` del backend siguen el orden de
- * `Partida.Manos` (por `UsuarioId`), así que el servicio ya los traduce a
- * "propio" y "rival" antes de armar este tipo.
- */
+/** Carta jugada por el rival revelada al resolver la ronda. */
+export interface CartaReveladaRival {
+  readonly nombre: string;
+  readonly poder: number;
+  readonly nombreZona: string;
+}
+
+/** Resultado de la ronda, listo para mostrar. */
 export interface ResultadoRonda {
   readonly numero: number;
   readonly zonas: readonly ResultadoZonaRonda[];
@@ -282,8 +315,12 @@ export interface ResultadoRonda {
   readonly puntosRival: number;
   /** La partida terminó con esta ronda. */
   readonly terminada: boolean;
-  readonly ganadorId: number | null;
-  /** `null` cuando la partida terminó empatada. */
+  /** Ganador textual que manda el servidor (`null` si sigue en curso). */
+  readonly ganador: GanadorPartida | null;
+  /** Motivo del fin de partida, tal cual lo manda el servidor. */
+  readonly motivo: string | null;
+  /** `null` cuando la partida sigue en curso o terminó empatada. */
   readonly gane: boolean | null;
+  /** Cartas reveladas del rival en esta resolución. */
+  readonly cartasReveladasRival: readonly CartaReveladaRival[];
 }
-

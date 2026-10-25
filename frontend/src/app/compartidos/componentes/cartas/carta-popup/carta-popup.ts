@@ -11,6 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import type { Carta } from '@modelos/carta.model';
 import { ETIQUETA_CATEGORIA, ETIQUETA_RAREZA } from '@modelos/carta.model';
 
@@ -28,7 +29,7 @@ const ID_TITULO = 'carta-popup-titulo';
 @Component({
   selector: 'app-carta-popup',
   standalone: true,
-  imports: [CartaComponent],
+  imports: [CartaComponent, Boton],
   templateUrl: './carta-popup.html',
   styleUrl: './carta-popup.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,7 +39,9 @@ const ID_TITULO = 'carta-popup-titulo';
 })
 export class CartaPopupComponent implements AfterViewInit {
   readonly carta = input.required<Carta>();
+  readonly esProvisional = input<boolean>(false);
   readonly cerrar = output<void>();
+  readonly retirar = output<void>();
 
   protected readonly idTitulo = ID_TITULO;
   protected readonly nombreVisible = computed(() =>

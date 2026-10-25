@@ -1,4 +1,4 @@
-﻿<div class="carta__marco">
+<div class="carta__marco">
   <img
     class="carta__fondo"
     [src]="urlFondo()"
@@ -16,6 +16,16 @@
   <div class="carta__atributo carta__atributo--der">
     <img class="carta__cuadrado carta__cuadrado--der" [src]="urlCuadrado" alt="" aria-hidden="true" draggable="false" />
     <span class="carta__numero carta__numero--der">{{ carta().atributoDerecho }}</span>
+    @if (muestraDiferencia()) {
+      <span
+        class="carta__poder-diferencia absolute -top-1 -right-1 rounded-pildora px-1 py-0.5 font-interfaz text-[0.625rem] leading-none"
+        [class.carta__poder-diferencia--positivo]="esPositivo()"
+        [class.carta__poder-diferencia--negativo]="esNegativo()"
+        [attr.aria-label]="esPositivo() ? 'Aumento de poder ' + etiquetaDiferencia() : 'Reducción de poder ' + etiquetaDiferencia()"
+      >
+        {{ etiquetaDiferencia() }}
+      </span>
+    }
   </div>
 
   <div class="carta__categoria" style="padding: 2%;">
@@ -30,6 +40,7 @@
         [src]="carta().imagenUrl"
         [alt]="altImagen()"
         loading="lazy"
+        draggable="false"
         (error)="alFallarImagen()"
       />
     }

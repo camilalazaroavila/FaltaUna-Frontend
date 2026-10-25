@@ -1,16 +1,34 @@
-/* Alto disponible para el tablero: el resto de la pantalla es header + barra de
-   acciones. El tablero ya se ocupa de acomodar las zonas y los slots con su
-   propia grilla (tablero.css). */
+/* Vista de partida activa: pantalla completa sin header.
+   El contenedor usa `min-h-dvh` en el padre; aquí fijamos
+   el alto del contenedor de partida para que los hijos no
+   desborden el viewport en móvil (barras del navegador). */
+.partida-activa {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    /* Ocupa todo el alto disponible del viewport dinámico */
+    height: 100dvh;
+    overflow: hidden;
+}
+
+/* Alto disponible para el tablero: el resto son la barra de
+   acciones (~2.5rem) + el aviso de resultado (0 cuando no hay).
+   El tablero ya se ocupa de acomodar las zonas con su propia grilla. */
 .area-tablero {
     flex: 1 1 auto;
-    height: calc(100dvh - 11rem);
-    min-height: 30rem;
-    max-height: 74rem;
+    min-height: 0;
+    overflow: hidden;
 }
 
 @media (max-height: 48rem) {
-    .area-tablero {
+    .partida-activa {
         height: auto;
+        overflow: visible;
+    }
+
+    .area-tablero {
+        overflow: visible;
         min-height: 26rem;
     }
 }

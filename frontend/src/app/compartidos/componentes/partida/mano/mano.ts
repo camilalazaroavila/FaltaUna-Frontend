@@ -78,6 +78,8 @@ export class Mano {
   private readonly umbralActivo = signal(false);
   private origen: PosicionArrastre | null = null;
   private punteroActivo?: number;
+  private animacionId = 0;
+  private animacionActiva?: gsap.core.Tween;
 
   protected readonly disposicion = computed<CartaMano[]>(() => {
     const cartas = this.cartas();
@@ -103,9 +105,21 @@ export class Mano {
 
   protected readonly cartaArrastradaVisible = computed(() => this.arrastrando() !== null);
 
+  /** Identifica copias repetidas de una misma carta dentro de la partida. */
+  protected idCarta(carta: Carta): string {
+    return carta.cartaPartidaId !== undefined ? `cp-${carta.cartaPartidaId}` : carta.id;
+  }
+
   protected alPulsar(carta: Carta, evento: PointerEvent): void {
-    if (evento.button !== 0 && evento.pointerType === 'mouse') {
+    if (carta.jugable === false || (evento.button !== 0 && evento.pointerType === 'mouse')) {
       return;
+    }
+
+    // Si había una animación de vuelo en curso, limpiarla para que no interrumpa este arrastre
+    this.animacionId++;
+    if (this.animacionActiva) {
+      this.animacionActiva.kill();
+      this.animacionActiva = undefined;
     }
 
     const objetivo = evento.currentTarget as HTMLElement;
@@ -114,7 +128,11 @@ export class Mano {
     this.punteroActivo = evento.pointerId;
     this.arrastrando.set(carta);
     this.puntero.set(this.aLocal(this.origen));
-    objetivo.setPointerCapture(evento.pointerId);
+    try {
+      objetivo.setPointerCapture(evento.pointerId);
+    } catch {
+      // Ignorar si no es capturable
+    }
   }
 
   protected alMover(evento: PointerEvent): void {
@@ -162,7 +180,11 @@ export class Mano {
     const carta = this.arrastrando();
     const posicion = { x: evento.clientX, y: evento.clientY };
 
-    (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
+    try {
+      (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
+    } catch {
+      // Ignorar
+    }
 
     if (this.umbralActivo()) {
       // El fantasma sigue vivo: el tablero decide si vuela al slot o se anula.
@@ -185,6 +207,11 @@ export class Mano {
   protected alTeclear(carta: Carta, evento: KeyboardEvent): void {
     if (evento.key === ' ') {
       evento.preventDefault();
+
+      if (carta.jugable === false) {
+        return;
+      }
+
       this.seleccion.emit(this.arrastrando()?.id === carta.id ? null : carta);
       return;
     }
@@ -197,6 +224,12 @@ export class Mano {
   protected alCancelar(evento: PointerEvent): void {
     if (evento.pointerId !== this.punteroActivo) {
       return;
+    }
+
+    try {
+      (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
+    } catch {
+      // Ignorar
     }
 
     if (this.umbralActivo()) {
@@ -225,15 +258,21 @@ export class Mano {
       y: destino.top + destino.height / 2,
     });
     const actual = this.puntero();
+    const idActual = ++this.animacionId;
 
-    this.gsapServicio.gsap.to(fantasma, {
+    this.animacionActiva = this.gsapServicio.gsap.to(fantasma, {
       x: centro.x - (actual?.x ?? centro.x),
       y: centro.y - (actual?.y ?? centro.y),
       scale: 0.9,
       opacity: 0,
       duration: this.gsapServicio.duracionPartida('vuelo-carta'),
       ease: 'power2.in',
-      onComplete: () => this.reiniciar(),
+      onComplete: () => {
+        if (this.animacionId === idActual) {
+          this.reiniciar();
+          this.animacionActiva = undefined;
+        }
+      },
     });
   }
 

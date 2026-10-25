@@ -1,42 +1,51 @@
 <div class="tablero rounded-lg bg-tablero-fondo">
   <!-- Rival: arriba a la derecha (chip arriba, mano oculta debajo) -->
   <div class="area-rival">
+    <app-jugador-chip
+      [nombre]="servicio.jugadores().rival.nombre"
+      [avatarUrl]="servicio.jugadores().rival.avatarUrl"
+      lado="rival"
+      tamanio="lg"
+    />
 
-  <app-jugador-chip
-    [nombre]="servicio.jugadores().rival.nombre"
-    [avatarUrl]="servicio.jugadores().rival.avatarUrl"
-    lado="rival"
-    tamanio="lg"
-  />
-
-  <div
-    class="rival-mano"
-    role="img"
-    [attr.aria-label]="'El rival tiene ' + servicio.cartasManoRival() + ' cartas en la mano'"
-  >
-    <span class="flex items-center" aria-hidden="true">
-      @for (reverso of reversosRival(); track reverso.indice) {
-        <span
-          class="reverso-rival h-[clamp(2.2rem,6cqw,3.4rem)] aspect-[3/4] shrink-0 rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
-          [style.--angulo]="reverso.angulo"
-        ></span>
-      }
-    </span>
-    <span
-      class="shrink-0 rounded-pildora border-2 border-zona-marco bg-hundido px-2 font-titulo text-etiqueta tabular-nums text-texto-primario"
-      aria-hidden="true"
+    <div
+      class="rival-mano"
+      role="img"
+      [attr.aria-label]="'El rival tiene ' + servicio.cartasManoRival() + ' cartas en la mano'"
     >
-      ×{{ servicio.cartasManoRival() }}
-    </span>
-  </div>
+      <span class="flex items-center" aria-hidden="true">
+        @for (reverso of reversosRival(); track reverso.indice) {
+          <span
+            class="reverso-rival h-[clamp(2.2rem,6cqw,3.4rem)] aspect-[3/4] shrink-0 rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
+            [style.--angulo]="reverso.angulo"
+          ></span>
+        }
+      </span>
+      <span
+        class="shrink-0 rounded-pildora border-2 border-zona-marco bg-hundido px-2 font-titulo text-etiqueta tabular-nums text-texto-primario"
+        aria-hidden="true"
+      >
+        ×{{ servicio.cartasManoRival() }}
+      </span>
+    </div>
   </div>
 
   <div class="area-barra-propia">
-    <app-barra-puntos [puntos]="servicio.barraPropia()" lado="propio" />
+    <app-barra-puntos
+      [puntos]="servicio.barraPropia()"
+      [maximo]="servicio.puntosMaximos()"
+      [delta]="servicio.deltaPuntosPropio()"
+      lado="propio"
+    />
   </div>
 
   <div class="area-barra-rival">
-    <app-barra-puntos [puntos]="servicio.barraRival()" lado="rival" />
+    <app-barra-puntos
+      [puntos]="servicio.barraRival()"
+      [maximo]="servicio.puntosMaximos()"
+      [delta]="servicio.deltaPuntosRival()"
+      lado="rival"
+    />
   </div>
 
   <div class="area-zonas">
@@ -57,11 +66,18 @@
         [deltaRival]="delta.rival"
         [deltaPropio]="delta.propio"
         [slotsResaltados]="resaltarSlots()"
+        [esProvisionalFn]="esProvisionalFn"
         (abrirPopup)="lugarAbierto.set(lugar)"
         (jugarSlot)="alJugarEnSlot(lugar, $event)"
+        (retirarCarta)="alRetirarCarta($event)"
         (verCarta)="cartaAbierta.set($event)"
       />
     }
+        <app-cupon-recurso
+      [valor]="servicio.cuponesPropio()"
+      [maximo]="servicio.cuponMaximo()"
+      variante="completa"
+    />
   </div>
 
   <div class="area-mano">
@@ -76,17 +92,16 @@
   </div>
 
   <div class="area-propio">
+
+
+    
     <app-jugador-chip
       [nombre]="servicio.jugadores().propio.nombre"
       [avatarUrl]="servicio.jugadores().propio.avatarUrl"
       lado="propio"
       tamanio="lg"
     />
-    <app-cupon-recurso
-      [valor]="servicio.cuponesPropio()"
-      [maximo]="servicio.turno()"
-      variante="compacta"
-    />
+
   </div>
 
   <div class="area-control">
@@ -95,7 +110,8 @@
       [segundosRestantes]="servicio.segundosRestantes()"
       [estado]="servicio.estadoRonda()"
       (finalizar)="servicio.marcarListo()"
-      (rendirse)="rendirse.emit()"
+      (abandonar)="servicio.abandonar()"
+      (rendirse)="servicio.rendirse()"
     />
   </div>
 </div>
@@ -110,7 +126,12 @@
 }
 
 @if (cartaAbierta(); as carta) {
-  <app-carta-popup [carta]="carta" (cerrar)="cartaAbierta.set(null)" />
+  <app-carta-popup
+    [carta]="carta"
+    [esProvisional]="servicio.esCartaProvisional(carta)"
+    (retirar)="alRetirarCarta(carta)"
+    (cerrar)="cartaAbierta.set(null)"
+  />
 }
 
 <div class="sr-only" aria-live="polite">{{ servicio.anuncio() }}</div>
