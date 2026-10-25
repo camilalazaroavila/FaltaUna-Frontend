@@ -8,14 +8,14 @@
         [attr.aria-label]="etiquetaTiempo()"
       >
         @if (enAdvertencia()) {
-          <ng-icon name="phosphorWarningFill" size="16" aria-hidden="true" />
+          <ng-icon name="phosphorWarningFill" size="18" aria-hidden="true" />
         } @else {
-          <ng-icon name="phosphorHourglassMediumFill" size="16" aria-hidden="true" />
+          <ng-icon name="phosphorHourglassMediumFill" size="18" aria-hidden="true" />
         }
         {{ segundosRestantes() }}s
       </span>
 
-      <span class="block h-1.5 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
+      <span class="block h-2 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
         <span
           class="block h-full rounded-pildora transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
           [class]="clasesBarra()"
@@ -31,30 +31,31 @@
     variante="primario"
     tamanio="lg"
     class="control-boton"
-    [attr.aria-label]="textoBoton()"
+    [attr.aria-label]="nombreAccesible()"
     [disabled]="!activo()"
     [cargando]="!activo()"
     (click)="pulsarFinalizar()"
   >
-    <span class="control-texto control-texto--largo">{{ textoBoton() }}</span>
-    <span class="control-texto control-texto--corto">{{ textoBotonCorto() }}</span>
+    <span class="control-accion">
+      <span class="control-texto control-texto--largo">{{ accionBoton() }}</span>
+      <span class="control-texto control-texto--corto">{{ accionBotonCorto() }}</span>
+    </span>
+    <span class="control-insignia-turno" aria-hidden="true">
+      {{ contadorTurno() }}
+    </span>
   </button>
 
   @if (!resolviendo()) {
-    <div class="flex items-center justify-between gap-3 pt-1">
+    <div class="flex items-center justify-center pt-1">
       <button
         type="button"
-        class="font-interfaz text-xs font-semibold text-texto-secundario hover:text-error underline underline-offset-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco cursor-pointer"
-        (click)="pedirConfirmacionAbandonar()"
-      >
-        Abandonar
-      </button>
-      <button
-        type="button"
-        class="font-interfaz text-xs font-semibold text-texto-secundario hover:text-error underline underline-offset-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco cursor-pointer"
+        app-boton
+        variante="peligro"
+        tamanio="sm"
+        class="w-full"
         (click)="pedirConfirmacionRendirse()"
       >
-        Rendirme
+        Rendirse
       </button>
     </div>
   }

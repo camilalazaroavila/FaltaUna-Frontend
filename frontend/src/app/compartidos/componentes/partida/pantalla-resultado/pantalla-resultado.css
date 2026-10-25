@@ -1,0 +1,71 @@
+:host {
+  display: block;
+}
+
+.pantalla-resultado-tarjeta {
+  background-color: var(--color-superficie-elevada);
+  border-color: var(--color-borde-default);
+  color: var(--color-texto-primario);
+  animation: aparicion-tarjeta-resultado 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pantalla-resultado-tarjeta--victoria {
+  border-color: var(--color-exito);
+  box-shadow: 0 0 24px rgba(34, 197, 94, 0.25), 4px 6px 0 var(--color-sombra-cartoon);
+}
+
+.pantalla-resultado-tarjeta--derrota {
+  border-color: var(--color-error);
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.2), 4px 6px 0 var(--color-sombra-cartoon);
+}
+
+.pantalla-resultado-tarjeta--empate {
+  border-color: var(--color-advertencia);
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.2), 4px 6px 0 var(--color-sombra-cartoon);
+}
+
+.pantalla-resultado-tarjeta--finalizada {
+  border-color: var(--color-borde-default);
+  box-shadow: 4px 6px 0 var(--color-sombra-cartoon);
+}
+
+.pantalla-resultado-icono--victoria {
+  background-color: var(--color-exito);
+  color: var(--color-exito-sobre);
+  border-color: var(--color-exito-borde);
+}
+
+.pantalla-resultado-icono--derrota {
+  background-color: var(--color-error);
+  color: var(--color-error-sobre);
+  border-color: var(--color-error-borde);
+}
+
+.pantalla-resultado-icono--empate {
+  background-color: var(--color-advertencia);
+  color: var(--color-advertencia-sobre);
+  border-color: var(--color-advertencia-borde);
+}
+
+.pantalla-resultado-icono--finalizada {
+  background-color: var(--color-fondo-hundido);
+  color: var(--color-texto-primario);
+  border-color: var(--color-borde-default);
+}
+
+@keyframes aparicion-tarjeta-resultado {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pantalla-resultado-tarjeta {
+    animation: none;
+  }
+}

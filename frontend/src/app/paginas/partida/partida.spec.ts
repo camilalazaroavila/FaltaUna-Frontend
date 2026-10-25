@@ -35,10 +35,16 @@ describe('Partida', () => {
       turno: signal(1),
       rondasTotales: signal(6),
       resultadoRonda: resultadoSignal,
+      resultadoFinal: signal(null),
+      jugadores: signal({
+        propio: { nombre: 'Vos', avatarUrl: null },
+        rival: { nombre: 'Bot', avatarUrl: null },
+      }),
       anuncio: anuncioSignal,
       reconectar: jest.fn().mockReturnValue(of(true)),
       detenerSincronizacion: jest.fn(),
       abandonarPartida: jest.fn(),
+      abandonar: jest.fn(),
       rendirse: jest.fn(),
       iniciarContraBot: jest.fn().mockReturnValue(of(true)),
     };
@@ -85,5 +91,110 @@ describe('Partida', () => {
     expect(fixture.componentInstance['servicio'].anuncio()).toBe(
       'El bot jugó Dibu Martinez con poder 8 en Grido.',
     );
+  });
+
+  it('muestra la pantalla de resultado cuando la partida finaliza', () => {
+    (fixture.componentInstance['servicio'].terminada as unknown as { set: (v: boolean) => void }).set(true);
+    (fixture.componentInstance['servicio'].resultadoFinal as unknown as { set: (v: unknown) => void }).set({
+      partidaId: 7,
+      ganador: 'propio',
+      motivo: 'cien-puntos',
+      puntosPropio: 105,
+      puntosRival: 80,
+      fechaFin: '2026-10-25T14:00:00Z',
+    });
+    fixture.detectChanges();
+
+    const pantallaResultado = fixture.debugElement.nativeElement.querySelector('app-pantalla-resultado');
+    expect(pantallaResultado).toBeTruthy();
+    expect(pantallaResultado.textContent).toContain('¡Victoria!');
+  });
+
+  describe('Pantalla de selección de mazo (sin partida activa)', () => {
+    beforeEach(() => {
+      partidaIdSignal.set(null);
+      fixture.detectChanges();
+    });
+
+    it('muestra el enlace de volver y la mascota con texto alternativo accesible', () => {
+      const enlaceVolver = fixture.nativeElement.querySelector('a[routerLink="/usuario/jugar"]');
+      expect(enlaceVolver).toBeTruthy();
+      expect(enlaceVolver.textContent).toContain('Volver');
+
+      const mascota = fixture.nativeElement.querySelector('img.mascota-imagen') as HTMLImageElement;
+      expect(mascota).toBeTruthy();
+      expect(mascota.getAttribute('alt')).toContain('Elegí tu mazo, lo voy a poner');
+    });
+
+    it('muestra estado de carga mientras cargandoMazos es true', () => {
+      fixture.componentInstance['cargandoMazos'].set(true);
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement.textContent;
+      expect(texto).toContain('Cargando tus mazos…');
+    });
+
+    it('muestra mensaje de error cuando falla la carga de mazos', () => {
+      fixture.componentInstance['cargandoMazos'].set(false);
+      fixture.componentInstance['errorMazos'].set('Error al conectar con el servidor.');
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement.textContent;
+      expect(texto).toContain('Error al conectar con el servidor.');
+    });
+
+    it('muestra advertencia y acceso directo a Mi baraja cuando no hay mazos completos', () => {
+      fixture.componentInstance['cargandoMazos'].set(false);
+      fixture.componentInstance['errorMazos'].set(null);
+      fixture.componentInstance['mazos'].set([
+        { id: 1, nombre: 'Mazo Incompleto', completo: false, cartas: [] } as any,
+      ]);
+      fixture.detectChanges();
+
+      const texto = fixture.nativeElement.textContent;
+      expect(texto).toContain('No tenés un mazo completo');
+
+      const enlaceBaraja = fixture.nativeElement.querySelector('a[routerLink="/usuario/baraja"]');
+      expect(enlaceBaraja).toBeTruthy();
+      expect(enlaceBaraja.textContent).toContain('Ir a Mi baraja');
+
+      const botonJugar = Array.from(fixture.nativeElement.querySelectorAll('button')).find(
+        (b) => (b as HTMLButtonElement).textContent?.includes('Jugar contra el bot'),
+      ) as HTMLButtonElement;
+      expect(botonJugar.disabled).toBe(true);
+    });
+
+    it('permite jugar cuando hay un mazo completo seleccionado', () => {
+      fixture.componentInstance['cargandoMazos'].set(false);
+      fixture.componentInstance['errorMazos'].set(null);
+      fixture.componentInstance['mazos'].set([
+        { id: 10, nombre: 'Mazo Campeón', completo: true, cartas: [] } as any,
+      ]);
+      fixture.componentInstance['mazoSeleccionado'].set(10);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance['puedeJugar']()).toBe(true);
+      const botonJugar = Array.from(fixture.nativeElement.querySelectorAll('button')).find(
+        (b) => (b as HTMLButtonElement).textContent?.includes('Jugar contra el bot'),
+      ) as HTMLButtonElement;
+      expect(botonJugar).toBeTruthy();
+      expect(botonJugar.disabled).toBe(false);
+    });
+
+    it('deshabilita el botón y muestra spinner cuando la partida está creándose', () => {
+      fixture.componentInstance['cargandoMazos'].set(false);
+      fixture.componentInstance['mazos'].set([
+        { id: 10, nombre: 'Mazo Campeón', completo: true, cartas: [] } as any,
+      ]);
+      fixture.componentInstance['mazoSeleccionado'].set(10);
+      (fixture.componentInstance['servicio'].cargando as unknown as { set: (v: boolean) => void }).set(true);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance['puedeJugar']()).toBe(false);
+      const botonJugar = Array.from(fixture.nativeElement.querySelectorAll('button')).find(
+        (b) => (b as HTMLButtonElement).textContent?.includes('Jugar contra el bot'),
+      ) as HTMLButtonElement;
+      expect(botonJugar.disabled).toBe(true);
+    });
   });
 });

@@ -1,0 +1,35 @@
+@if (tieneEfectos()) {
+  <div class="indicador-lista" role="group" aria-label="Efectos sobre categorías">
+    @for (efecto of efectosVisibles(); track efecto.categoria + efecto.tipo) {
+      <div
+        class="indicador-item"
+        [class.indicador-item--sube]="efecto.tipo === 'sube'"
+        [class.indicador-item--baja]="efecto.tipo === 'baja'"
+        [attr.aria-label]="etiquetaEfecto(efecto)"
+        role="img"
+      >
+        <span class="indicador-icono-wrapper" aria-hidden="true">
+          <app-icono-categoria [categoria]="efecto.categoria" />
+        </span>
+        <span
+          class="indicador-signo"
+          [class.indicador-signo--sube]="efecto.tipo === 'sube'"
+          [class.indicador-signo--baja]="efecto.tipo === 'baja'"
+          aria-hidden="true"
+        >
+          {{ signoEfecto(efecto) }}
+        </span>
+      </div>
+    }
+
+    @if (cantidadOcultos() > 0) {
+      <span
+        class="indicador-resumen"
+        [attr.aria-label]="etiquetaOcultos()"
+        role="status"
+      >
+        +{{ cantidadOcultos() }}
+      </span>
+    }
+  </div>
+}

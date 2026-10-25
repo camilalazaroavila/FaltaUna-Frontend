@@ -117,6 +117,22 @@
           </span>
         </div>
       </div>
+
+      <!-- Indicador de categorías que la zona mejora o empeora -->
+      @if (efectosCategoria().length > 0) {
+        <div
+          class="zona-indicadores-categoria"
+          [class.zona-indicadores-categoria--izq]="lugar() === 'izquierda'"
+          [class.zona-indicadores-categoria--der]="lugar() === 'derecha'"
+        >
+          <app-indicador-categorias-habilidad
+            [efectos]="efectosCategoria()"
+            [maxVisibles]="3"
+            orientacion="vertical"
+            tamanio="md"
+          />
+        </div>
+      }
     </div>
   </div>
 

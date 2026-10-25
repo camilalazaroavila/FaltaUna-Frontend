@@ -82,6 +82,30 @@ describe('Zona', () => {
     expect(component).toBeTruthy();
   });
 
+  it('muestra el indicador de categorías cuando la zona tiene efectos de categoría', () => {
+    fixture.componentRef.setInput('zona', {
+      ...ZONAS_MOCK[0],
+      efectosCategoria: [{ tipo: 'sube', categoria: 'gastronomia', valor: 2 }],
+    });
+    fixture.detectChanges();
+
+    const indicador = fixture.nativeElement.querySelector('app-indicador-categorias-habilidad');
+    expect(indicador).toBeTruthy();
+  });
+
+  it('no muestra el indicador de categorías cuando la zona no tiene efectos', () => {
+    fixture.componentRef.setInput('zona', {
+      ...ZONAS_MOCK[0],
+      efecto: { categoria: 'gastronomia', bonus: 0 },
+      bonusPorCategoria: {},
+      efectosCategoria: [],
+    });
+    fixture.detectChanges();
+
+    const indicador = fixture.nativeElement.querySelector('app-indicador-categorias-habilidad');
+    expect(indicador).toBeNull();
+  });
+
   it('oculta renderiza reverso', () => {
     const cartaOculta = cartaMock({
       id: 'oculta-1',
