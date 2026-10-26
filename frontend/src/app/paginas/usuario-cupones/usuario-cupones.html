@@ -1,30 +1,50 @@
 <div
-  class="relative flex min-h-dvh flex-col overflow-hidden bg-btn-juego-bg font-interfaz text-btn-juego-texto"
+  class="pagina relative flex min-h-dvh flex-col overflow-hidden"
 >
-  <!-- Mancha verde decorativa: ocupa casi todo el ancho -->
+  <!-- Ola crema superior: asoma detrás del header -->
   <svg
-    class="pointer-events-none absolute right-0 top-0 h-48 w-full sm:h-64"
-    viewBox="0 0 1200 240"
+    class="pointer-events-none absolute left-0 top-0 h-44 w-full sm:h-52 lg:h-56"
+    viewBox="0 0 1200 220"
     preserveAspectRatio="none"
     aria-hidden="true"
   >
     <path
-      d="M300 0 H1200 V160 C1150 200 1090 130 1010 124 C930 118 890 176 800 142 C720 112 730 52 640 56 C560 60 520 96 450 70 C390 48 345 40 300 0 Z"
-      style="fill: color-mix(in srgb, var(--color-verde-jugador) 72%, var(--color-teal-profundo))"
+      d="M0 0 H1200 V128 C1160 150 1110 158 1050 146 C980 132 930 122 860 138 C790 154 740 176 670 168 C610 161 580 140 535 128 C470 110 400 112 300 104 C200 96 90 70 0 70 Z"
+      style="fill: var(--crema)"
     />
+  </svg>
+
+  <!-- Ola crema inferior -->
+  <svg
+    class="pointer-events-none absolute bottom-0 left-0 z-0 h-24 w-full sm:h-28"
+    viewBox="0 0 1200 110"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M0 28 C70 8 150 4 240 30 C340 58 420 92 540 94 C650 96 700 60 790 40 C860 24 930 22 1000 48 C1060 70 1100 82 1150 68 C1175 60 1190 46 1200 28 V110 H0 Z"
+      style="fill: var(--crema)"
+    />
+  </svg>
+
+  <!-- Trazo verde, esquina inferior derecha -->
+  <svg
+    class="pointer-events-none absolute -bottom-2 right-1 z-0 hidden h-28 w-24 text-marca-primaria lg:block"
+    viewBox="0 0 96 112"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="5"
+    stroke-linecap="round"
+    aria-hidden="true"
+  >
+    <path d="M90 108 C 40 100, 20 70, 40 52 C 58 38, 78 54, 62 66 C 50 74, 38 62, 52 52" />
   </svg>
 
   <app-header [logueado]="true" />
 
-  <div class="vista-cupones relative z-10 flex min-h-0 flex-1 flex-col">
-    <!-- Disco de categorías: gira y se desliza hacia arriba al elegir otra -->
-    <div class="disco-marco absolute inset-y-0 left-0 top-10 z-20 overflow-hidden">
-      <div
-        class="disco"
-        aria-hidden="true"
-        [style.--giro]="giroDisco() + 'deg'"
-      ></div>
-
+  <div class="vista-cupones relative z-10 flex min-h-0 flex-1 flex-col pb-14 sm:pb-16">
+    <!-- Categorías en círculo, sin fondo: giran y se iluminan al elegir una -->
+    <div class="disco-marco absolute bottom-16 left-0 top-0 z-[35]">
       <nav aria-label="Categorías de cupones" class="disco-eje">
         <span class="disco-puntero" aria-hidden="true"></span>
 
@@ -35,12 +55,17 @@
             [attr.aria-label]="categoria.nombre"
             [attr.aria-pressed]="categoriaActiva() === categoria.id"
             [attr.title]="categoria.nombre"
-            class="disco-icono flex cursor-pointer items-center justify-center rounded-xl bg-btn-juego-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+            class="disco-icono flex cursor-pointer items-center justify-center rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
             [class.disco-icono--activo]="categoriaActiva() === categoria.id"
             [class.disco-icono--lejos]="fueraDeVista(i)"
             [style.--ang]="angulos()[i] + 'deg'"
+            [style.--inclina]="(i % 2 === 0 ? -8 : 6) + 'deg'"
           >
-            <img [src]="categoria.urlIcono" alt="" class="size-3/5 object-contain" />
+            <span
+              class="disco-glifo"
+              aria-hidden="true"
+              [style.--glifo]="'url(' + categoria.urlIcono + ')'"
+            ></span>
           </button>
         }
       </nav>
@@ -48,30 +73,36 @@
 
     <!-- Decoraciones -->
     <svg
-      class="pointer-events-none absolute left-[calc(var(--visible)+6.5rem)] top-12 hidden h-7 w-5 text-btn-juego-texto/70 lg:block"
+      class="pointer-events-none absolute left-[calc(var(--visible)+6.5rem)] top-12 hidden h-7 w-5 lg:block"
+      style="color: var(--crema)"
       viewBox="0 0 20 28" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"
     >
       <path d="M10 1 C10 10 12 12 19 14 C12 16 10 18 10 27 C10 18 8 16 1 14 C8 12 10 10 10 1 Z" />
     </svg>
     <svg
-      class="pointer-events-none absolute left-[calc(var(--visible)+16rem)] top-44 hidden h-8 w-10 text-btn-juego-texto lg:block"
+      class="pointer-events-none absolute left-[calc(var(--visible)+11rem)] top-12 hidden h-4 w-3 opacity-80 lg:block"
+      style="color: var(--crema)"
+      viewBox="0 0 20 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"
+    >
+      <path d="M10 1 C10 10 12 12 19 14 C12 16 10 18 10 27 C10 18 8 16 1 14 C8 12 10 10 10 1 Z" />
+    </svg>
+    <!-- Rasguños junto al título -->
+    <svg
+      class="pointer-events-none absolute left-[calc(var(--visible)+16rem)] top-44 hidden h-8 w-10 lg:block"
+      style="color: color-mix(in srgb, var(--fondo) 60%, var(--color-teal-borde))"
       viewBox="0 0 40 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"
     >
       <path d="M4 10 L14 28" /><path d="M16 4 L28 26" /><path d="M30 2 L38 18" />
     </svg>
+    <!-- Estrellas -->
     <svg
-      class="pointer-events-none absolute right-6 top-4 hidden h-14 w-16 text-marca-primaria md:block"
+      class="pointer-events-none absolute right-6 top-2 hidden h-14 w-16 opacity-70 md:block"
+      style="color: var(--crema)"
       viewBox="0 0 64 56" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"
     >
       <path d="M44 4 L48 14 L58 14 L50 20 L53 30 L44 24 L35 30 L38 20 L30 14 L40 14 Z" />
       <path d="M18 24 L21 32 L29 32 L23 37 L25 45 L18 40 L11 45 L13 37 L7 32 L15 32 Z" />
       <path d="M40 38 L42 44 L48 44 L43 48 L45 54 L40 50 L35 54 L37 48 L32 44 L38 44 Z" />
-    </svg>
-    <svg
-      class="pointer-events-none absolute bottom-6 right-2 hidden h-28 w-24 text-btn-juego-texto lg:block"
-      viewBox="0 0 96 112" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"
-    >
-      <path d="M90 108 C 40 100, 20 70, 40 52 C 58 38, 78 54, 62 66 C 50 74, 38 62, 52 52" />
     </svg>
 
   <div class="relative z-30 pr-4 pt-1 pl-4 sm:pr-8">
@@ -102,12 +133,13 @@
         Tus cupones,<br />tus reglas
       </h1>
 
+      <!-- Flecha verde del título al contador -->
       <svg
-        class="hidden h-20 w-40 shrink-0 text-btn-juego-texto md:block"
+        class="hidden h-20 w-40 shrink-0 text-marca-primaria md:block"
         viewBox="0 0 160 80"
         fill="none"
         stroke="currentColor"
-        stroke-width="3"
+        stroke-width="3.5"
         stroke-linecap="round"
         stroke-linejoin="round"
         aria-hidden="true"
@@ -116,35 +148,9 @@
         <path d="M132 34 L150 49 L128 58" />
       </svg>
 
-      <div
-        class="relative flex size-32 shrink-0 items-center justify-center text-center text-btn-juego-bg sm:size-36"
-        role="status"
-        aria-live="polite"
-      >
-        <svg
-          class="absolute inset-0 size-full"
-          viewBox="0 0 100 100"
-          aria-hidden="true"
-          style="fill: color-mix(in srgb, var(--color-teal-profundo) 88%, white)"
-        >
-          <circle cx="50" cy="50" r="34" />
-          <circle cx="80" cy="50" r="17"/><circle cx="71.2" cy="71.2" r="17"/><circle cx="50" cy="80" r="17"/><circle cx="28.8" cy="71.2" r="17"/><circle cx="20" cy="50" r="17"/><circle cx="28.8" cy="28.8" r="17"/><circle cx="50" cy="20" r="17"/><circle cx="71.2" cy="28.8" r="17"/>
-        </svg>
-
-        <p class="relative flex flex-col items-center font-interfaz font-bold uppercase leading-tight">
-          <span class="font-titulo text-xs tracking-wide">Tenés</span>
-          <span class="font-titulo text-4xl leading-none">{{ cuponesActivos() }}</span>
-          <span class="font-titulo text-xs tracking-wide">
-            {{ cuponesActivos() === 1 ? 'Cupón' : 'Cupones' }}<br />
-            {{ cuponesActivos() === 1 ? 'activo' : 'activos' }}
-          </span>
-        </p>
-      </div>
-    </div>
-
     <!-- Buscador y filtros de cupones propios -->
     <div
-      class="mt-1 flex items-center justify-end gap-2 pl-[calc(var(--visible)+0.5rem)]"
+      class="ml-auto flex w-full items-center justify-end gap-2 self-end sm:w-auto"
       (click)="$event.stopPropagation()"
     >
       <div class="relative min-w-0 flex-1 sm:w-64 sm:flex-none">
@@ -171,7 +177,7 @@
           (input)="escribirBusqueda(buscador.value)"
           placeholder="Mis cupones"
           autocomplete="off"
-          class="w-full rounded-pildora border border-btn-juego-texto/50 bg-btn-juego-bg py-1.5 pl-9 pr-8 font-titulo text-xs uppercase tracking-wide transition placeholder:text-btn-juego-texto focus-visible:border-marca-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          class="w-full rounded-pildora border border-(--crema)/40 bg-(--color-teal-hundido) py-1.5 pl-9 pr-8 font-titulo text-xs uppercase tracking-wide text-(--crema) transition placeholder:text-(--crema) focus-visible:border-marca-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
         />
 
         @if (busqueda()) {
@@ -179,153 +185,148 @@
             type="button"
             (click)="escribirBusqueda(''); buscador.focus()"
             aria-label="Borrar búsqueda"
-            class="absolute right-2 top-1/2 flex size-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-circulo bg-btn-juego-texto text-[10px] font-bold text-btn-juego-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+            class="absolute right-2 top-1/2 flex size-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-circulo bg-(--crema) text-[10px] font-bold text-(--fondo) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
           >
             ✕
           </button>
         }
       </div>
 
-            <!-- Menú de filtro por estado -->
-            <div class="relative shrink-0">
-              <button
-                type="button"
-                (click)="alternarMenu()"
-                aria-haspopup="true"
-                [attr.aria-expanded]="menuAbierto()"
-                aria-controls="menu-filtros-cupones"
-                aria-label="Filtrar por estado"
-                class="relative flex size-9 cursor-pointer items-center justify-center rounded-lg transition hover:bg-marca-primaria/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
-                [class.bg-marca-primaria]="menuAbierto() || estadoActivo() !== null"
-              >
-                <svg
-                  class="size-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.75"
-                  stroke-linecap="round"
-                  aria-hidden="true"
-                >
-                  <path d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+      <!-- Menú de filtro por estado -->
+      <div class="relative shrink-0">
+        <button
+          type="button"
+          (click)="alternarMenu()"
+          aria-haspopup="true"
+          [attr.aria-expanded]="menuAbierto()"
+          aria-controls="menu-filtros-cupones"
+          aria-label="Filtrar por estado"
+          class="relative flex size-9 cursor-pointer items-center justify-center rounded-lg transition hover:bg-marca-primaria/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          [class.bg-marca-primaria]="menuAbierto() || estadoActivo() !== null"
+          [style.color]="menuAbierto() || estadoActivo() !== null ? 'var(--fondo)' : null"
+        >
+          <svg
+            class="size-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.75"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
 
-                @if (estadoActivo() !== null) {
-                  <span
-                    aria-hidden="true"
-                    class="absolute -right-1 -top-1 size-3 rounded-circulo border-2 border-btn-juego-bg bg-landing-oscuro-fondo"
-                  ></span>
-                }
-              </button>
+          @if (estadoActivo() !== null) {
+            <span
+              aria-hidden="true"
+              class="absolute -right-1 -top-1 size-3 rounded-circulo border-2 border-(--fondo) bg-(--crema)"
+            ></span>
+          }
+        </button>
 
-              @if (menuAbierto()) {
-                <div
-                  id="menu-filtros-cupones"
-                  role="group"
-                  aria-label="Filtros de cupones"
-                  class="absolute right-0 top-full z-30 mt-2 w-56 rounded-2xl bg-landing-oscuro-fondo p-3 text-landing-oscuro-texto shadow-alta"
-                >
-                  <p
-                    class="px-2 pb-2 font-interfaz text-[11px] font-bold uppercase tracking-[0.08em] text-texto-secundario"
-                  >
-                    Estado del cupón
-                  </p>
+        @if (menuAbierto()) {
+          <div
+            id="menu-filtros-cupones"
+            role="group"
+            aria-label="Filtros de cupones"
+            class="absolute right-0 top-full z-30 mt-2 w-56 rounded-2xl border border-teal-borde bg-landing-oscuro-fondo p-3 text-landing-oscuro-texto shadow-alta"
+          >
+            <p
+              class="px-2 pb-2 font-interfaz text-[11px] font-bold uppercase tracking-[0.08em] text-texto-secundario"
+            >
+              Estado del cupón
+            </p>
 
-                  <ul class="flex flex-col gap-1">
-                    @for (estado of estados; track estado) {
-                      <li>
-                        <button
-                          type="button"
-                          (click)="elegirEstado(estado)"
-                          [attr.aria-pressed]="estadoActivo() === estado"
-                          class="flex w-full cursor-pointer items-center gap-3 rounded-xl px-2 py-2 text-left font-interfaz text-sm font-bold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
-                          [class.bg-white/10]="estadoActivo() === estado"
-                        >
-                          <span
-                            aria-hidden="true"
-                            class="size-2.5 shrink-0 rounded-circulo"
-                            [class.bg-marca-primaria]="estado === 'Disponible'"
-                            [class.bg-texto-secundario]="estado === 'Usado'"
-                            [class.bg-red-400]="estado === 'Vencido'"
-                          ></span>
-
-                          <span class="flex-1">{{ estado }}</span>
-
-                          @if (estadoActivo() === estado) {
-                            <span
-                              aria-hidden="true"
-                              class="text-marca-primaria"
-                            >
-                              ✓
-                            </span>
-                          }
-                        </button>
-                      </li>
-                    }
-                  </ul>
-
+            <ul class="flex flex-col gap-1">
+              @for (estado of estados; track estado) {
+                <li>
                   <button
                     type="button"
-                    (click)="limpiarFiltros()"
-                    [disabled]="!hayFiltros()"
-                    class="mt-3 w-full cursor-pointer rounded-pildora bg-marca-primaria px-4 py-2 font-interfaz text-xs font-bold uppercase text-marca-sobre-primaria transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
+                    (click)="elegirEstado(estado)"
+                    [attr.aria-pressed]="estadoActivo() === estado"
+                    class="flex w-full cursor-pointer items-center gap-3 rounded-xl px-2 py-2 text-left font-interfaz text-sm font-bold transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+                    [class.bg-white/10]="estadoActivo() === estado"
                   >
-                    Limpiar filtros
-                  </button>
-                </div>
-              }
-            </div>
-    </div>
-  </div>
+                    <span
+                      aria-hidden="true"
+                      class="size-2.5 shrink-0 rounded-circulo"
+                      [class.bg-marca-primaria]="estado === 'Disponible'"
+                      [class.bg-texto-secundario]="estado === 'Usado'"
+                      [class.bg-red-400]="estado === 'Vencido'"
+                    ></span>
 
-    <div class="relative z-10 mt-2 flex min-h-0 flex-1 pl-[calc(var(--visible)+0.75rem)] pr-4 sm:pr-8">
-    <main class="zona-scroll min-w-0 flex-1 overflow-y-auto pb-6 pt-2 pr-2">
-        @if (cargando()) {
-          <p class="font-interfaz text-sm font-bold" role="status">
-            Cargando tus cupones…
-          </p>
-        } @else if (error()) {
-          <div role="alert" class="font-interfaz text-sm">
-            <p class="font-bold">{{ error() }}</p>
+                    <span class="flex-1">{{ estado }}</span>
+
+                    @if (estadoActivo() === estado) {
+                      <span aria-hidden="true" class="text-marca-primaria">✓</span>
+                    }
+                  </button>
+                </li>
+              }
+            </ul>
 
             <button
               type="button"
-              (click)="cargarCupones()"
-              class="mt-3 cursor-pointer rounded-pildora bg-landing-oscuro-fondo px-5 py-2 text-xs font-bold uppercase text-landing-oscuro-texto"
+              (click)="limpiarFiltros()"
+              [disabled]="!hayFiltros()"
+              class="mt-3 w-full cursor-pointer rounded-pildora bg-marca-primaria px-4 py-2 font-interfaz text-xs font-bold uppercase text-marca-sobre-primaria transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
             >
-              Reintentar
+              Limpiar filtros
             </button>
           </div>
-        } @else if (cuponesFiltrados().length === 0) {
-          <div class="font-interfaz text-sm font-bold">
-            @if (hayFiltros()) {
-              <p>
-                No encontramos cupones con esos filtros en esta categoría.
-              </p>
+        }
+      </div>
+    </div>
+    </div>
+  </div>
 
-              @if (categoriasConResultados().size > 0) {
-                <p class="mt-2 text-xs font-normal">
-                  Hay resultados en:
+  <div class="relative z-10 mt-2 flex flex-1 pl-[calc(var(--visible)+0.75rem)] pr-4 sm:pr-8">
+    <main class="min-w-0 flex-1 pt-2">
+      @if (cargando()) {
+        <p class="font-interfaz text-sm font-bold" role="status">
+          Cargando tus cupones…
+        </p>
+      } @else if (error()) {
+        <div role="alert" class="font-interfaz text-sm">
+          <p class="font-bold">{{ error() }}</p>
 
-                  @for (cat of categorias; track cat.id) {
-                    @if (categoriasConResultados().has(cat.id)) {
-                      <button
-                        type="button"
-                        (click)="elegirCategoria(cat.id)"
-                        class="ml-1 cursor-pointer font-bold text-marca-primaria underline hover:opacity-80"
-                      >
-                        {{ cat.nombre }}
-                      </button>
-                    }
+          <button
+            type="button"
+            (click)="cargarCupones()"
+            class="mt-3 cursor-pointer rounded-pildora bg-marca-primaria px-5 py-2 text-xs font-bold uppercase text-marca-sobre-primaria"
+          >
+            Reintentar
+          </button>
+        </div>
+      } @else if (cuponesFiltrados().length === 0) {
+        <div class="font-interfaz text-sm font-bold">
+          @if (hayFiltros()) {
+            <p>No encontramos cupones con esos filtros en esta categoría.</p>
+
+            @if (categoriasConResultados().size > 0) {
+              <p class="mt-2 text-xs font-normal">
+                Hay resultados en:
+
+                @for (cat of categorias; track cat.id) {
+                  @if (categoriasConResultados().has(cat.id)) {
+                    <button
+                      type="button"
+                      (click)="elegirCategoria(cat.id)"
+                      class="ml-1 cursor-pointer font-bold text-marca-primaria underline hover:opacity-80"
+                    >
+                      {{ cat.nombre }}
+                    </button>
                   }
-                </p>
-              }
-            } @else {
-              <p>Todavía no tenés cupones en esta categoría.</p>
+                }
+              </p>
             }
-          </div>
+          } @else {
+            <p>Todavía no tenés cupones en esta categoría.</p>
+          }
+        </div>
       } @else {
-        <ul class="grid grid-cols-2 gap-x-4 gap-y-5 p-1 sm:grid-cols-3 lg:grid-cols-5">
+        <ul class="grid grid-cols-1 gap-x-6 gap-y-6 p-2 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-5">
           @for (cupon of cuponesFiltrados(); track cupon.id) {
             <li>
               <button
@@ -337,50 +338,47 @@
               >
                 <span class="sello__hoja" aria-hidden="true"></span>
 
+                <!-- Arte del sello: verde con bandas onduladas crema y teal -->
                 <span
-                  class="relative block size-full overflow-hidden border-2 border-solid border-btn-juego-texto bg-btn-juego-bg"
+                  class="relative block size-full overflow-hidden border-2 border-solid border-(--crema) bg-marca-primaria"
                 >
                   <svg
-                    class="absolute inset-0 size-full text-marca-primaria"
+                    class="sello__arte absolute inset-0 size-full"
                     viewBox="0 0 100 100"
                     preserveAspectRatio="none"
                     fill="none"
-                    stroke="currentColor"
-                    stroke-width="16"
+                    stroke-width="11"
                     aria-hidden="true"
                   >
-                    <path vector-effect="non-scaling-stroke" d="M-10 8 C 25 -12, 45 32, 110 6" />
-                    <path vector-effect="non-scaling-stroke" d="M-10 38 C 25 18, 45 62, 110 36" />
-                    <path vector-effect="non-scaling-stroke" d="M-10 68 C 25 48, 45 92, 110 66" />
-                    <path vector-effect="non-scaling-stroke" d="M-10 98 C 25 78, 45 122, 110 96" />
-                  </svg>
-
-                  <!-- Hoja decorativa -->
-                  <svg
-                    class="absolute right-0 top-0 h-[38%] w-[16%] text-marca-primaria"
-                    viewBox="0 0 20 40"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                  >
-                    <path d="M0 0 H20 V40 C 8 36, 0 22, 0 0 Z" fill="currentColor" />
+                    <g stroke="var(--color-teal-profundo)" opacity="0.9">
+                      <path d="M30 -10 C 52 22, 12 62, 36 110" />
+                      <path d="M62 -10 C 84 22, 44 62, 68 110" />
+                      <path d="M94 -10 C 116 22, 76 62, 100 110" />
+                    </g>
+                    <g stroke="var(--crema)">
+                      <path d="M14 -10 C 36 22, -4 62, 20 110" />
+                      <path d="M46 -10 C 68 22, 28 62, 52 110" />
+                      <path d="M78 -10 C 100 22, 60 62, 84 110" />
+                    </g>
                   </svg>
 
                   <span
-                    class="absolute inset-x-1 top-0 bottom-9 flex items-center justify-center px-1 text-center font-titulo text-xl uppercase leading-[0.95] sm:bottom-11 sm:text-2xl xl:text-3xl"
+                    class="absolute inset-x-1 top-0 bottom-9 flex items-center justify-center px-1 text-center font-titulo text-xl uppercase leading-[0.95] text-(--color-teal-profundo) sm:bottom-11 sm:text-xl xl:text-2xl"
+                    style="text-shadow: 0 0 5px color-mix(in srgb, var(--crema) 85%, transparent)"
                   >
-                    <span class="bg-btn-juego-bg/60 px-1.5">{{ cupon.marca }}</span>
+                    {{ cupon.marca }}
                   </span>
 
                   <!-- Franja de descuento -->
                   <span
-                    class="absolute inset-x-0 bottom-0 flex items-center justify-between border-t-2 border-btn-juego-texto bg-marca-primaria px-2 py-1.5"
+                    class="absolute inset-x-0 bottom-0 flex items-center justify-between border-t-2 border-(--crema) bg-marca-primaria px-2 py-1.5 text-(--color-teal-profundo)"
                   >
-                    <span class="font-titulo text-sm uppercase sm:text-lg xl:text-xl">
+                    <span class="whitespace-nowrap font-titulo text-sm uppercase sm:text-lg">
                       {{ etiquetaDescuento(cupon) }}
                     </span>
 
                     <span
-                      class="flex size-5 items-center justify-center rounded-circulo bg-btn-juego-bg text-xs font-bold leading-none sm:size-6 sm:text-sm"
+                      class="flex size-5 items-center justify-center rounded-circulo bg-white text-xs font-bold leading-none sm:size-6 sm:text-sm"
                       aria-hidden="true"
                       >→</span
                     >
@@ -389,7 +387,7 @@
 
                 @if (cupon.estado !== 'Disponible') {
                   <span
-                    class="absolute right-2 top-2 rounded-pildora bg-landing-oscuro-fondo px-2 py-0.5 font-interfaz text-[10px] font-bold uppercase text-landing-oscuro-texto"
+                    class="absolute right-2 top-2 rounded-pildora bg-(--crema) px-2 py-0.5 font-interfaz text-[10px] font-bold uppercase text-(--color-teal-profundo)"
                   >
                     {{ cupon.estado }}
                   </span>
@@ -400,21 +398,7 @@
         </ul>
       }
     </main>
-
-      <!-- Trazo verde gastado a la derecha -->
-      <app-linea-gastada
-        orientacion="vertical"
-        [semilla]="4"
-        class="absolute right-1 top-4 bottom-2 hidden w-10 sm:block"
-      />
-    </div>
-
-    <!-- Trazo verde gastado inferior -->
-    <app-linea-gastada
-      orientacion="horizontal"
-      [semilla]="9"
-      class="relative z-10 mx-auto mb-3 block h-6 w-[62%]"
-    />
+  </div>
   </div>
 
   <app-confeti />
@@ -431,7 +415,7 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="titulo-cupon"
-      class="fixed left-1/2 top-1/2 z-50 max-h-[92dvh] w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-alta"
+      class="fixed left-1/2 top-1/2 z-50 max-h-[92dvh] w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl border border-(--crema)/25 bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-alta"
     >
       <button
         type="button"

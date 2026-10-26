@@ -9,6 +9,7 @@ import { BehaviorSubject, of } from 'rxjs';
 
 import { UsuarioCupones } from './usuario-cupones';
 import { CuponesService } from '../../servicios/cupones.service';
+import { SonidoService } from '../../servicios/sonido.service';
 import type { CuponDescuento } from '../../modelos/cupon.model';
 
 const CUPONES: CuponDescuento[] = [
@@ -59,6 +60,10 @@ describe('UsuarioCupones', () => {
             queryParamMap: params.asObservable(),
             snapshot: { queryParamMap: params.value },
           },
+        },
+        {
+          provide: SonidoService,
+          useValue: { precargar: jest.fn(), reproducir: jest.fn() },
         },
         {
           provide: CuponesService,
@@ -219,5 +224,17 @@ describe('UsuarioCupones', () => {
     fixture.detectChanges();
 
     expect(componente.hayFiltros()).toBe(false);
+  });
+
+  it('suena el mp3 de canje al tocar un cupón disponible', async () => {
+    await montar('gastronomia');
+    const sonido = TestBed.inject(SonidoService);
+    const raiz: HTMLElement = fixture.nativeElement;
+
+    expect(sonido.precargar).toHaveBeenCalledWith('sonidos/canje.mp3');
+
+    (raiz.querySelector('ul button.sello') as HTMLButtonElement).click();
+
+    expect(sonido.reproducir).toHaveBeenCalledWith('sonidos/canje.mp3');
   });
 });

@@ -16,8 +16,8 @@ import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
 import QRCode from 'qrcode';
 import { Header } from '../../compartidos/componentes/header/header';
 import { Confeti } from '../../compartidos/componentes/confeti/confeti';
-import { LineaGastada } from '../../compartidos/componentes/linea-gastada/linea-gastada';
 import { CuponesService } from '../../servicios/cupones.service';
+import { SonidoService } from '../../servicios/sonido.service';
 import {
   CategoriaCupon,
   CuponDescuento,
@@ -45,7 +45,7 @@ interface FiltroCategoria {
 @Component({
   selector: 'app-usuario-cupones',
   standalone: true,
-  imports: [RouterLink, DatePipe, Header, LineaGastada, Confeti],
+  imports: [RouterLink, DatePipe, Header, Confeti],
   templateUrl: './usuario-cupones.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -57,8 +57,9 @@ interface FiltroCategoria {
     .sello {
       --perf: 3.5px;
       --linea: 2px;
-      --tinta: var(--color-teal-profundo);
-      --papel: var(--btn-juego-bg);
+      /* Sobre fondo oscuro: la línea del sello es crema y las perforaciones dejan ver el fondo. */
+      --tinta: var(--crema);
+      --papel: var(--fondo);
       position: relative;
       background-color: var(--tinta);
       background-image:
@@ -87,58 +88,63 @@ interface FiltroCategoria {
     }
 
     .titulo-cupones {
-      text-shadow: 3px 3px 0 var(--color-verde-jugador);
+      color: var(--crema);
+      text-shadow: 3px 3px 0 color-mix(in srgb, var(--color-verde-jugador) 55%, var(--fondo));
+    }
+
+    /* Tipografía Rockstone: copiar el archivo de la fuente a public/fuentes/ (ver README del cambio). */
+    @font-face {
+      font-family: 'Rockstone';
+      src:
+        url('/fuentes/Rockstone.woff2') format('woff2'),
+        url('/fuentes/Rockstone.otf') format('opentype'),
+        url('/fuentes/Rockstone.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    /* Rockstone en toda la vista (títulos, botones, buscador, modal). */
+    .pagina,
+    .pagina * {
+      font-family: 'Rockstone', 'Russo One', system-ui, sans-serif !important;
+      font-weight: 400 !important;
+    }
+
+    .pagina {
+      --fondo: var(--color-teal-profundo);
+      --crema: var(--color-amarillo-logo);
+      background-color: var(--fondo);
+      color: var(--crema);
     }
 
     .vista-cupones {
-      --r-disco: 20rem;
-      --visible: 11rem;
-      --r-icono: calc(var(--r-disco) - 4.5rem);
-      --tam-icono: 3.25rem;
-      --ang-activo: -35deg;
+      --r-disco: 11.5rem;
+      --visible: 12.5rem;
+      --r-icono: 10rem;
+      --tam-icono: 3rem;
+      --ang-activo: -66deg;
     }
 
     @media (max-width: 639px) {
       .vista-cupones {
-        --r-disco: 13rem;
-        --visible: 5.5rem;
-        --r-icono: calc(var(--r-disco) - 2.6rem);
-        --tam-icono: 2.5rem;
-        --ang-activo: -38deg;
+        --r-disco: 6.6rem;
+        --visible: 7.2rem;
+        --r-icono: 5.6rem;
+        --tam-icono: 1.8rem;
       }
     }
 
     .disco-marco {
       width: var(--visible);
+      /* Está por encima del título solo para que se vea el disco: no debe tapar sus clicks. */
+      pointer-events: none;
     }
 
     /* En pantallas angostas la página es muy alta: el disco queda arriba, con altura propia. */
     @media (max-width: 639px) {
       .disco-marco {
         bottom: auto;
-        height: 30rem;
+        height: 17rem;
       }
-    }
-
-    /* Disco de vinilo: ruido fino + surcos concéntricos. Gira junto con las categorías. */
-    .disco {
-      --giro: 0deg;
-      position: absolute;
-      top: 50%;
-      left: calc(var(--visible) - var(--r-disco) * 2);
-      width: calc(var(--r-disco) * 2);
-      height: calc(var(--r-disco) * 2);
-      margin-top: calc(var(--r-disco) * -1);
-      border-radius: 50%;
-      background-color: color-mix(in srgb, var(--color-teal-profundo) 82%, #8fa39d);
-      background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 -.38'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E"),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .5' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 -.42'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E"),
-        repeating-radial-gradient(circle at center, transparent 0 0.9rem, rgb(0 0 0 / 0.07) 0.9rem 0.95rem);
-      box-shadow: inset 0 0 0 0.3rem rgb(255 255 255 / 0.05);
-      transform: rotate(var(--giro));
-      transition: transform 0.85s cubic-bezier(0.5, 0, 0.2, 1);
-      will-change: transform;
     }
 
     /* Punto fijo desde el que se cuelgan los íconos: el centro del disco. */
@@ -158,31 +164,47 @@ interface FiltroCategoria {
       width: var(--tam-icono);
       height: var(--tam-icono);
       margin: calc(var(--tam-icono) / -2) 0 0 calc(var(--tam-icono) / -2);
-      transform: rotate(var(--ang)) translateX(var(--r-icono));
+      /* Orbitan alrededor del centro del disco, pero se mantienen casi derechos. */
+      transform: rotate(var(--ang)) translateX(var(--r-icono)) rotate(calc(var(--ang) * -1 + var(--inclina, 0deg)));
       transition:
         transform 0.85s cubic-bezier(0.5, 0, 0.2, 1),
         opacity 0.5s ease,
         filter 0.3s ease;
     }
 
-    .disco-icono:hover {
-      filter: brightness(1.08);
+    .disco-icono {
+      pointer-events: auto;
     }
 
-    /* Categoría elegida: se ilumina y late una vez al activarse. */
+    /* Glifo de la categoría: sin fondo, pintado en crema a partir del SVG. */
+    .disco-glifo {
+      width: 100%;
+      height: 100%;
+      background-color: var(--crema);
+      -webkit-mask: var(--glifo) center / contain no-repeat;
+      mask: var(--glifo) center / contain no-repeat;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .disco-icono:hover .disco-glifo {
+      transform: scale(1.12);
+    }
+
+    /* Categoría elegida: se ilumina en verde y late una vez al activarse. */
     .disco-icono--activo {
-      background-color: color-mix(in srgb, var(--color-verde-jugador) 38%, var(--btn-juego-bg));
-      box-shadow:
-        0 0 0 2px var(--color-verde-jugador),
-        0 0 1.3rem 0.25rem color-mix(in srgb, var(--color-verde-jugador) 70%, transparent);
-      filter: brightness(1.08);
+      filter: drop-shadow(0 0 0.6rem color-mix(in srgb, var(--color-verde-jugador) 85%, transparent));
       animation: disco-latido 0.9s ease-out;
     }
 
+    .disco-icono--activo .disco-glifo {
+      background-color: var(--color-verde-jugador);
+      transform: scale(1.18);
+    }
+
     @keyframes disco-latido {
-      0% { box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 0 0 color-mix(in srgb, var(--color-verde-jugador) 80%, transparent); }
-      60% { box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 2.2rem 0.6rem color-mix(in srgb, var(--color-verde-jugador) 80%, transparent); }
-      100% { box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 1.3rem 0.25rem color-mix(in srgb, var(--color-verde-jugador) 70%, transparent); }
+      0% { filter: drop-shadow(0 0 0 transparent); }
+      60% { filter: drop-shadow(0 0 1.4rem var(--color-verde-jugador)) drop-shadow(0 0 0.5rem var(--color-verde-jugador)); }
+      100% { filter: drop-shadow(0 0 0.6rem color-mix(in srgb, var(--color-verde-jugador) 85%, transparent)); }
     }
 
     /* Cupón: al pasar el mouse o enfocarlo se ilumina. */
@@ -206,27 +228,45 @@ interface FiltroCategoria {
       height: 1.1rem;
       margin: -0.55rem 0 0 -0.4rem;
       background: var(--color-verde-jugador);
-      clip-path: polygon(100% 0, 0 50%, 100% 100%);
-      transform: rotate(var(--ang-activo)) translateX(calc(var(--r-icono) - var(--tam-icono) / 2 - 0.9rem));
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+      transform: translate(
+        calc(cos(var(--ang-activo)) * var(--r-icono) - var(--tam-icono) / 2 - 1rem),
+        calc(sin(var(--ang-activo)) * var(--r-icono))
+      );
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .disco,
-      .disco-icono {
+      .disco-icono,
+      .disco-glifo {
         transition: none;
         animation: none;
       }
     }
 
-    .zona-scroll {
-      scrollbar-width: auto;
-      scrollbar-color: var(--color-teal-profundo) transparent;
+    /* Sello: las bandas del arte se mecen apenas al pasar el mouse. */
+    .sello__arte {
+      transition: transform 0.6s ease;
+    }
+
+    .sello:hover .sello__arte,
+    .sello:focus-visible .sello__arte {
+      transform: scale(1.06);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sello__arte {
+        transition: none;
+      }
     }
   `,
 })
 export class UsuarioCupones {
   private readonly cuponesService = inject(CuponesService);
   private readonly ruta = inject(ActivatedRoute);
+  private readonly sonido = inject(SonidoService);
+
+  /** Sonido (mp3) que suena al tocar un cupón para canjearlo. Reemplazá el archivo para cambiarlo. */
+  private readonly sonidoCanje = 'sonidos/canje.mp3';
 
   protected readonly categorias: readonly FiltroCategoria[] = [
     { id: 'gastronomia', nombre: 'Gastronomía', urlIcono: urlIconoGastro },
@@ -376,6 +416,7 @@ export class UsuarioCupones {
       untracked(() => this.girarHasta(indice));
     });
 
+    this.sonido.precargar(this.sonidoCanje);
     this.escucharCategoriaDesdeUrl(destruir);
     this.cargarCupones();
 
@@ -446,11 +487,11 @@ export class UsuarioCupones {
   }
 
   /** Grados entre un ícono y el siguiente sobre el borde del disco. */
-  private readonly pasoGrados = 14;
+  private readonly pasoGrados = 22;
   /** Posición (grados desde el eje horizontal) donde queda la categoría elegida. */
-  private readonly anguloActivo = -35;
+  private readonly anguloActivo = -66;
   /** Cuántas categorías se ven por encima de la elegida antes de que den la vuelta por atrás. */
-  private readonly lugaresArriba = 1;
+  private readonly lugaresArriba = 0;
 
   protected readonly indiceActivo = computed(() =>
     Math.max(
@@ -464,9 +505,6 @@ export class UsuarioCupones {
    * arriba sigue girando por detrás del disco y reaparece abajo, como en espiral.
    */
   protected readonly angulos = signal<number[]>(this.angulosPara(0));
-
-  /** Giro acumulado de la superficie del disco. */
-  protected readonly giroDisco = signal(0);
 
   private indicePrevio = 0;
 
@@ -516,14 +554,13 @@ export class UsuarioCupones {
       }),
     );
 
-    this.giroDisco.update((g) => g - pasos * this.pasoGrados);
     this.indicePrevio = nuevo;
   }
 
   /** Solo se ven los íconos que están sobre la parte visible del disco. */
   protected fueraDeVista(indice: number): boolean {
     const normalizado = ((((this.angulos()[indice] + 180) % 360) + 360) % 360) - 180;
-    return normalizado < -72 || normalizado > 72;
+    return normalizado < -80 || normalizado > 80;
   }
 
   protected elegirCategoria(id: CategoriaCupon): void {
@@ -560,6 +597,11 @@ export class UsuarioCupones {
 
   protected abrirCupon(cupon: CuponDescuento, evento?: MouseEvent): void {
     this.confeti()?.lanzarDesdeEvento(evento);
+
+    // Solo los cupones que todavía se pueden canjear hacen sonar el mp3.
+    if (cupon.estado === 'Disponible') {
+      this.sonido.reproducir(this.sonidoCanje);
+    }
 
     this.liberarQr();
     this.cuponSeleccionado.set(cupon);
