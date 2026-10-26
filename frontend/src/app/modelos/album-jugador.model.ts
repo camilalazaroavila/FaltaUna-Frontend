@@ -8,28 +8,12 @@ import {
 /**
  * Modelos de la vista "Álbumes" del jugador.
  *
- * El backend todavía no expone estos endpoints: `AlbumesJugadorService` los
- * consume con la forma HTTP final y cae a datos de prueba ante un error, así
- * que cuando el back esté listo solo cambia la implementación del servicio.
+ * `AlbumesJugadorService` los arma a partir de los endpoints `/api/Albumes`,
+ * que ya devuelven el progreso y las favoritas del usuario autenticado.
  *
  * El nombre del archivo lleva el sufijo `-jugador` para no chocar con
  * `album.model.ts`, que describe la creación de colecciones del modo empresa.
  */
-
-/**
- * Cantidades de cartas admitidas por colección (regla de negocio): solo 12, 20 o
- * 30. Es un catálogo cerrado para que ningún álbum de la demo quede con un total
- * intermedio (13, 21, …) que rompa la coherencia de la grilla.
- */
-export const CANTIDADES_ALBUM_VALIDAS = [12, 20, 30] as const;
-
-/** Total de cartas de un álbum: uno de los valores de `CANTIDADES_ALBUM_VALIDAS`. */
-export type CantidadAlbum = (typeof CANTIDADES_ALBUM_VALIDAS)[number];
-
-/** Valida que un total sea una cantidad de álbum admitida (12, 20 o 30). */
-export function esCantidadAlbumValida(total: number): total is CantidadAlbum {
-  return (CANTIDADES_ALBUM_VALIDAS as readonly number[]).includes(total);
-}
 
 /** Resumen de un álbum de marca para el listado lateral por categoría. */
 export interface ResumenAlbum {

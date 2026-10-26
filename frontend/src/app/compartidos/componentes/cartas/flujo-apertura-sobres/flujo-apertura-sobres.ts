@@ -14,6 +14,7 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { SobresService } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
+import type { SobreInventarioUsuario } from '@servicios/sobres.service';
 import { PanelDesplazable } from '@compartidos/componentes/controles/panel-desplazable/panel-desplazable';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
@@ -25,6 +26,7 @@ import {
   SobreRespuesta,
 } from '@modelos/sobre.model';
 import type { Carta, CategoriaCarta } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre, rarezaDesdeNombre } from '@modelos/carta.model';
 import { categoriaDesdeNombre } from '@modelos/categoria.model';
 import type { CategoriaSobre } from '@modelos/categoria.model';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
@@ -40,6 +42,7 @@ export interface PropsSobre {
 }
 
 export interface SobreInicialApertura {
+  readonly sobreId: number;
   readonly tipo: 'GENERAL' | 'CATEGORIA' | 'MARCA';
   readonly etiqueta?: string;
 }
@@ -124,6 +127,7 @@ export class FlujoAperturaSobres {
   readonly abierto = input<boolean>(false);
   readonly sobresCatalogo = input<readonly SobreRespuesta[]>([]);
   readonly sobresDiariosDisponibles = input<number>(2);
+  readonly sobresInventario = input<readonly SobreInventarioUsuario[]>([]);
   /** Sobre con el que abrir directamente (reclamo de misión). `null` = grilla normal. */
   readonly sobreInicial = input<SobreInicialApertura | null>(null);
 
@@ -186,32 +190,56 @@ export class FlujoAperturaSobres {
       untracked(() => {
         this.iniciar();
         if (inicial) {
-          const sobre = this.resolverSobreInicial(inicial);
-          if (sobre) {
-            this.seleccionarSobre(sobre);
-          }
+          this.seleccionarSobre(this.resolverSobreInicial(inicial));
         }
       });
     });
   }
 
   /**
-   * Resuelve el sobre de apertura contra la lista UI. Empareja por tipo y
-   * etiqueta cuando se indica; si no hay coincidencia (o el catálogo todavía no
-   * cargó), devuelve el sobre genérico: el diario disponible.
+   * Resuelve el sobre acreditado por su `sobreId`. Primero contra la grilla
+   * (inventario ya cargado) y, si todavía no llegó la respuesta, contra el
+   * catálogo. Nunca cae al sobre diario: ese tiene su propio límite de cargas y
+   * abrirlo por error consumiría una apertura del día.
    */
-  private resolverSobreInicial(descriptor: SobreInicialApertura): SobreItemUI | null {
-    const items = this.listaSobresUI();
-    const buscado = descriptor.etiqueta?.trim().toUpperCase();
+  private resolverSobreInicial(descriptor: SobreInicialApertura): SobreItemUI {
+    const enGrilla = this.listaSobresUI().find(
+      (item) => !item.esDiario && Number(item.id) === descriptor.sobreId,
+    );
+    if (enGrilla) return enGrilla;
 
-    if (buscado) {
-      const porEtiqueta = items.find(
-        (item) => !item.esDiario && item.tipo === descriptor.tipo && item.etiqueta === buscado,
-      );
-      if (porEtiqueta) return porEtiqueta;
+    const delCatalogo = this.sobresCatalogo().find((s) => s.id === descriptor.sobreId);
+    if (delCatalogo) {
+      return {
+        id: delCatalogo.id,
+        nombre: delCatalogo.nombre,
+        etiqueta: (delCatalogo.marca ?? delCatalogo.categoria ?? delCatalogo.nombre).toUpperCase(),
+        tipo: delCatalogo.tipo,
+        precio: delCatalogo.precio ?? 0,
+        cantidadCartas: delCatalogo.cantidadCartas,
+        esDiario: false,
+        disponible: true,
+        categoria: delCatalogo.categoria ?? null,
+        marca: delCatalogo.marca ?? null,
+        logoUrl: delCatalogo.logoUrl ?? null,
+      };
     }
 
-    return items.find((item) => item.esDiario && item.disponible) ?? items.find((item) => item.esDiario) ?? null;
+    // Último recurso: el descriptor ya trae lo necesario para abrir por id.
+    return {
+      id: descriptor.sobreId,
+      nombre: descriptor.etiqueta ?? 'Sobre',
+      etiqueta: (descriptor.etiqueta ?? 'SOBRE').toUpperCase(),
+      tipo: descriptor.tipo,
+      precio: 0,
+      cantidadCartas: this.cantidadCartasPorTipo(descriptor.tipo),
+      esDiario: false,
+      disponible: true,
+    };
+  }
+
+  private cantidadCartasPorTipo(tipo: SobreInicialApertura['tipo']): number {
+    return tipo === 'MARCA' ? 1 : tipo === 'CATEGORIA' ? 3 : CARTAS_SOBRE_DIARIO;
   }
 
   /**
@@ -247,6 +275,7 @@ export class FlujoAperturaSobres {
   protected readonly listaSobresUI = computed<SobreItemUI[]>(() => {
     const catalogo = this.sobresCatalogo();
     const diarios = this.sobresDiariosDisponibles();
+    const inventario = this.sobresInventario();
 
     const items: SobreItemUI[] = [];
 
@@ -266,22 +295,27 @@ export class FlujoAperturaSobres {
       });
     }
 
-    // Sobres provenientes del backend
-    for (const s of catalogo) {
-      const etiqueta = s.marca ?? s.categoria ?? (s.tipo === 'GENERAL' ? 'CLÁSICO' : s.nombre);
-      items.push({
-        id: s.id,
-        nombre: s.nombre,
-        etiqueta: etiqueta.toUpperCase(),
-        tipo: s.tipo,
-        precio: s.precio,
-        cantidadCartas: s.cantidadCartas,
-        esDiario: false,
-        disponible: true,
-        categoria: s.categoria ?? null,
-        marca: s.marca ?? null,
-        logoUrl: s.logoUrl ?? null,
-      });
+    for (const inv of inventario) {
+      if (!inv || inv.cantidad <= 0) continue;
+      const sobreCatalogo = catalogo.find((s) => s.id === inv.sobreId);
+      const tipo = (sobreCatalogo?.tipo ?? inv.tipo) as 'GENERAL' | 'CATEGORIA' | 'MARCA';
+      const etiqueta = sobreCatalogo?.marca ?? sobreCatalogo?.categoria ?? inv.nombre;
+      const cantidad = inv.cantidad;
+      for (let i = 0; i < cantidad; i++) {
+        items.push({
+          id: inv.sobreId,
+          nombre: inv.nombre,
+          etiqueta: etiqueta.toUpperCase(),
+          tipo,
+          precio: sobreCatalogo?.precio ?? 0,
+          cantidadCartas: sobreCatalogo?.cantidadCartas ?? (tipo === 'MARCA' ? 1 : tipo === 'CATEGORIA' ? 3 : 5),
+          esDiario: false,
+          disponible: true,
+          categoria: sobreCatalogo?.categoria ?? null,
+          marca: sobreCatalogo?.marca ?? null,
+          logoUrl: sobreCatalogo?.logoUrl ?? null,
+        });
+      }
     }
 
     return items;
@@ -518,41 +552,38 @@ export class FlujoAperturaSobres {
 
     this.cargandoApertura.set(true);
 
-    const llamada$ = sobre?.esDiario
+    const esDiario = sobre?.esDiario === true || String(sobre?.id).startsWith('diario');
+
+    const llamada$ = esDiario
       ? this.sobresService.reclamarSobreDiario(usuarioId)
       : this.sobresService.abrirSobre(Number(sobre?.id), usuarioId);
 
     llamada$.subscribe({
       next: (resp) => {
         this.cargandoApertura.set(false);
+        this.errorApertura.set(null);
 
-        // El backend define CUÁNTAS cartas trae el sobre; cuáles se ven lo define el front.
-        this.mostrarCartas(this.cantidadDeCartas(resp?.cartas ?? [], sobre), sobre);
+        const cartasBackend = resp?.cartas ?? [];
+        if (cartasBackend.length > 0) {
+          this.mostrarCartasDesdeBackend(cartasBackend);
+        } else {
+          this.mostrarCartas(this.cantidadDeCartas(cartasBackend, sobre), sobre);
+        }
         this.indiceCartaActual.set(0);
         this.aperturaRealizada.emit(resp);
 
-        // Transición fluida a revelación
         setTimeout(() => {
           this.fase.set('revelacion');
         }, 400);
       },
-      error: () => {
-        // Si el backend falla, se abre igual con la cantidad que indica el sobre
+      error: (err) => {
         this.cargandoApertura.set(false);
-        this.mostrarCartas(this.cantidadDeCartas([], sobre), sobre);
-        this.indiceCartaActual.set(0);
-
-        const aperturaRespaldo: AperturaSobreRespuesta = {
-          id: Date.now(),
-          sobreId: typeof sobre?.id === 'number' ? sobre.id : 1,
-          fecha: new Date().toISOString(),
-          cartas: this.cartasObtenidas(),
-        };
-        this.aperturaRealizada.emit(aperturaRespaldo);
-
-        setTimeout(() => {
-          this.fase.set('revelacion');
-        }, 400);
+        const mensaje =
+          err?.error?.mensaje ||
+          err?.error?.message ||
+          err?.message ||
+          'No se pudo abrir el sobre. Intentá nuevamente.';
+        this.errorApertura.set(mensaje);
       },
     });
   }
@@ -592,6 +623,42 @@ export class FlujoAperturaSobres {
   cerrarFlujo(): void {
     this.fase.set('cerrado');
     this.cerrar.emit();
+  }
+
+  private mostrarCartasDesdeBackend(cartasBackend: readonly CartaObtenidaRespuesta[]): void {
+    const cartasUI: Carta[] = [];
+
+    for (const cartaBackend of cartasBackend) {
+      const cantidad = Math.max(1, cartaBackend.cantidad ?? 1);
+      for (let i = 0; i < cantidad; i++) {
+        cartasUI.push({
+          id: `${cartaBackend.cartaId}-${i}`,
+          cartaId: cartaBackend.cartaId,
+          nombre: cartaBackend.nombre,
+          imagenUrl: cartaBackend.imagenUrl ?? '',
+          rareza: rarezaDesdeNombre(cartaBackend.rareza),
+          categoria: categoriaCartaDesdeNombre(cartaBackend.categoria),
+          atributoIzquierdo: cartaBackend.poder ?? 0,
+          atributoDerecho: cartaBackend.costoMana ?? 0,
+          obtenida: true,
+        });
+      }
+    }
+
+    this.cartasUI.set(cartasUI);
+    this.marcarRepetidas(cartasUI);
+    this.cartasObtenidas.set(
+      cartasBackend.map((c) => ({
+        cartaId: c.cartaId,
+        nombre: c.nombre,
+        cantidad: c.cantidad,
+        imagenUrl: c.imagenUrl,
+        rareza: c.rareza,
+        poder: c.poder,
+        costoMana: c.costoMana,
+        categoria: c.categoria,
+      })),
+    );
   }
 
   /** Sortea las cartas del sobre y las deja listas para `app-carta`. */

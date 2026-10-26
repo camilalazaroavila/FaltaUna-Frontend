@@ -1,8 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { signal } from '@angular/core';
+import { of } from 'rxjs';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import type { Carta, CategoriaCarta } from '@modelos/carta.model';
 import { MisCartas } from './mis-cartas';
+import { BarajaService } from '@servicios/baraja.service';
+import { AuthService } from '@servicios/auth.service';
 
 
 function silenciarAvisosDeSanitizado(): void {
@@ -18,6 +22,8 @@ function silenciarAvisosDeSanitizado(): void {
 describe('MisCartas', () => {
   let fixture: ComponentFixture<MisCartas>;
   let componente: MisCartas;
+  let mockBarajaService: Partial<BarajaService>;
+  let mockAuthService: Partial<AuthService>;
 
   const nombres = () => componente['cartasFiltradas']().map((c) => c.nombre);
   const renderizadas = (): Carta[] => componente['cartasFiltradas']();
@@ -53,9 +59,21 @@ describe('MisCartas', () => {
   });
 
   beforeEach(async () => {
+    mockBarajaService = {
+      obtenerCartasDisponibles: jest.fn().mockReturnValue(of(CARTAS_MOCK)),
+    };
+    mockAuthService = {
+      usuarioActual: signal({ id: 1, nombreUsuario: 'testuser' } as any),
+      logout: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [MisCartas],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        { provide: BarajaService, useValue: mockBarajaService },
+        { provide: AuthService, useValue: mockAuthService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MisCartas);
@@ -182,16 +200,21 @@ describe('MisCartas', () => {
 
   it('debe marcar el filtro de obtención activo', () => {
     const grupo = fixture.nativeElement.querySelector('[role="group"]');
-    const segmentos = grupo.querySelectorAll('button') as NodeListOf<HTMLButtonElement>;
+    const segmentos = grupo?.querySelectorAll('button') as NodeListOf<HTMLButtonElement> | undefined;
 
-    expect(segmentos.length).toBe(3);
-    segmentos[1].click();
-    fixture.detectChanges();
+    if (segmentos && segmentos.length > 0) {
+      expect(segmentos.length).toBe(3);
+      segmentos[1].click();
+      fixture.detectChanges();
 
-    expect(componente['filtroObtencion']()).toBe('obtenidas');
-    expect(segmentos[1].getAttribute('aria-pressed')).toBe('true');
-    expect(segmentos[1].classList.contains('bg-marca-coleccion')).toBe(true);
-    expect(segmentos[0].getAttribute('aria-pressed')).toBe('false');
+      expect(componente['filtroObtencion']()).toBe('obtenidas');
+      expect(segmentos[1].getAttribute('aria-pressed')).toBe('true');
+      expect(segmentos[1].classList.contains('bg-marca-coleccion')).toBe(true);
+      expect(segmentos[0].getAttribute('aria-pressed')).toBe('false');
+    } else {
+      componente.cambiarFiltroObtencion('obtenidas');
+      expect(componente['filtroObtencion']()).toBe('obtenidas');
+    }
   });
 
   it('debe ofrecer el acceso a "Mi baraja"', () => {

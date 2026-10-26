@@ -29,6 +29,7 @@
 
       <div class="flex overflow-hidden rounded-pildora border border-borde-coleccion" role="group"
         aria-label="Filtrar por estado de obtención">
+        <!--
         @for (opcion of opcionesObtencion; track opcion.valor) {
         <button type="button"
           class="cursor-pointer px-3.5 py-2 text-xs font-semibold whitespace-nowrap transition-colors not-first:border-l not-first:border-borde-coleccion hover:bg-white/6"
@@ -39,7 +40,7 @@
           [attr.aria-pressed]="filtroObtencion() === opcion.valor" (click)="cambiarFiltroObtencion(opcion.valor)">
           {{ opcion.etiqueta }}
         </button>
-        }
+        } -->
       </div>
 
       <div>

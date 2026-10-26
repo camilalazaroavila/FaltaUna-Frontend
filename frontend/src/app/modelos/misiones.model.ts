@@ -1,4 +1,4 @@
-import type { CategoriaSobre } from './categoria.model';
+import { categoriaDesdeNombre, type CategoriaSobre } from './categoria.model';
 
 /** Pestañas de la vista: cada misión pertenece a exactamente una. */
 export const PERIODICIDADES = ['diaria', 'semanal', 'permanente'] as const;
@@ -10,8 +10,16 @@ export const ETIQUETAS_PERIODICIDAD: Record<Periodicidad, string> = {
   permanente: 'Permanente',
 };
 
-/** `partidas_jugadas` todavía no tiene mecánica: se muestra como "Próximamente". */
-export type TipoMision = 'inicio_sesion' | 'sobres_abiertos' | 'partidas_jugadas';
+/**
+ * Objetivos que hoy expone el backend. `partidas_jugadas` e `inicio_sesion`
+ * se conservan en el union para las misiones que todavía no tienen mecánica.
+ */
+export type TipoMision =
+  | 'inicio_sesion'
+  | 'sobres_abiertos'
+  | 'partidas_jugadas'
+  | 'reclamar_sobre_diario'
+  | 'obtener_cartas';
 
 /**
  * `completada` = progreso al 100% y recompensa sin reclamar (el sobre se vuelve clickeable).
@@ -22,12 +30,25 @@ export type EstadoMision = 'en_curso' | 'completada' | 'reclamada';
 /**
  * Sobre descrito con los mismos datos que consume `app-sobre-marca`.
  * Sirve tanto para la recompensa de una misión como para una fila del PT System.
+ *
+ * `sobreId` solo está presente en las recompensas reales del backend: permite
+ * abrir exactamente el sobre acreditado y nunca confundirlo con el diario.
  */
 export type SobreReferencia =
-  | { readonly tipo: 'generico' }
-  | { readonly tipo: 'categoria'; readonly categoria: CategoriaSobre }
+  | {
+      readonly tipo: 'generico';
+      readonly sobreId?: number;
+      readonly nombre?: string;
+    }
+  | {
+      readonly tipo: 'categoria';
+      readonly sobreId?: number;
+      readonly nombre?: string;
+      readonly categoria: CategoriaSobre;
+    }
   | {
       readonly tipo: 'marca';
+      readonly sobreId?: number;
       readonly nombre: string;
       readonly logoUrl: string | null;
       /** Categoría a la que pertenece la marca: permite filtrar por categoría. */
@@ -47,6 +68,112 @@ export interface Mision {
   /** `false` para mecánicas que todavía no existen (se muestran como "Próximamente"). */
   readonly disponible: boolean;
 }
+
+/** Contrato de `GET /api/Misiones`. */
+export type PeriodoMisionBackend = 'DIARIA' | 'SEMANAL';
+export type ObjetivoMisionBackend =
+  | 'ABRIR_SOBRES'
+  | 'RECLAMAR_SOBRE_DIARIO'
+  | 'OBTENER_CARTAS';
+export type TipoSobreBackend = 'GENERAL' | 'CATEGORIA' | 'MARCA';
+
+export interface SobreRecompensaRespuesta {
+  readonly id: number;
+  readonly nombre: string;
+  readonly tipo: TipoSobreBackend;
+  readonly categoria: string | null;
+  readonly marca: string | null;
+  readonly logoUrl: string | null;
+}
+
+export interface MisionRespuesta {
+  readonly id: number;
+  readonly nombre: string;
+  readonly periodo: PeriodoMisionBackend;
+  readonly objetivo: ObjetivoMisionBackend;
+  readonly meta: number;
+  readonly progreso: number;
+  readonly completada: boolean;
+  readonly reclamada: boolean;
+  readonly recompensa: SobreRecompensaRespuesta;
+  readonly cantidadRecompensa: number;
+}
+
+/** Contrato de `POST /api/Misiones/{id}/reclamar`. */
+export interface RecompensaMisionRespuesta {
+  readonly sobreId: number;
+  readonly sobre: string;
+  readonly cantidad: number;
+}
+
+const PERIODICIDAD_POR_PERIODO: Record<PeriodoMisionBackend, Periodicidad> = {
+  DIARIA: 'diaria',
+  SEMANAL: 'semanal',
+};
+
+const TIPO_POR_OBJETIVO: Record<ObjetivoMisionBackend, TipoMision> = {
+  ABRIR_SOBRES: 'sobres_abiertos',
+  RECLAMAR_SOBRE_DIARIO: 'reclamar_sobre_diario',
+  OBTENER_CARTAS: 'obtener_cartas',
+};
+
+export const mapearPeriodicidad = (periodo: string): Periodicidad =>
+  PERIODICIDAD_POR_PERIODO[periodo as PeriodoMisionBackend] ?? 'diaria';
+
+export const mapearEstado = (completada: boolean, reclamada: boolean): EstadoMision => {
+  if (reclamada) return 'reclamada';
+  if (completada) return 'completada';
+  return 'en_curso';
+};
+
+/**
+ * Traduce el sobre que devuelve el backend al modelo que dibuja la tarjeta.
+ * Si la categoría no se reconoce, cae a genérico en vez de romper el render.
+ */
+export const mapearRecompensa = (
+  recompensa: SobreRecompensaRespuesta | null | undefined,
+): SobreReferencia | null => {
+  if (!recompensa) return null;
+
+  const categoria = categoriaDesdeNombre(recompensa.categoria);
+
+  if (recompensa.tipo === 'CATEGORIA' && categoria) {
+    return {
+      tipo: 'categoria',
+      sobreId: recompensa.id,
+      nombre: recompensa.nombre,
+      categoria,
+    };
+  }
+
+  if (recompensa.tipo === 'MARCA' && recompensa.marca) {
+    return {
+      tipo: 'marca',
+      sobreId: recompensa.id,
+      nombre: recompensa.marca,
+      logoUrl: recompensa.logoUrl,
+      categoria: categoria ?? undefined,
+    };
+  }
+
+  return {
+    tipo: 'generico',
+    sobreId: recompensa.id,
+    nombre: recompensa.nombre,
+  };
+};
+
+export const mapearMision = (respuesta: MisionRespuesta): Mision => ({
+  id: respuesta.id,
+  titulo: respuesta.nombre,
+  tipo: TIPO_POR_OBJETIVO[respuesta.objetivo] ?? 'obtener_cartas',
+  periodicidad: mapearPeriodicidad(respuesta.periodo),
+  actual: respuesta.progreso,
+  objetivo: respuesta.meta,
+  estado: mapearEstado(respuesta.completada, respuesta.reclamada),
+  recompensa: mapearRecompensa(respuesta.recompensa),
+  disponible: true,
+});
 
 /** Una fila del PT System: sobres abiertos de un tipo desde la última legendaria. */
 export interface ProgresoPity {

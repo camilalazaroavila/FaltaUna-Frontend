@@ -94,7 +94,34 @@
         <div role="tabpanel" [id]="'panel-' + periodicidad" [attr.aria-labelledby]="'pestana-' + periodicidad"
           [hidden]="periodicidadActiva() !== periodicidad" tabindex="0"
           class="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco">
-          @if (misionesDe(periodicidad).length === 0) {
+          @if (cargando()) {
+          <div class="flex flex-col items-center gap-2 px-8 py-16 text-center" role="status" aria-live="polite">
+            <svg class="size-6 animate-spin text-marca-acento" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-6.22-8.56" />
+            </svg>
+            <p class="text-misiones-texto text-texto-secundario">Cargando misiones…</p>
+          </div>
+          } @else if (error()) {
+          <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center" role="alert">
+            <p class="font-titulo text-misiones-fila text-texto-secundario">{{ error() }}</p>
+            <p class="text-misiones-texto text-texto-apagado">Revisá tu conexión y volvé a intentar.</p>
+            <button type="button"
+              class="mt-4 cursor-pointer rounded-pildora border border-marca-coleccion bg-transparent px-5 py-2 text-xs font-bold tracking-[0.06em] text-marca-coleccion uppercase transition-colors hover:bg-marca-coleccion hover:text-marca-coleccion-sobre"
+              (click)="cargarMisiones()">
+              Reintentar
+            </button>
+          </div>
+          } @else if (periodicidad === 'permanente') {
+          <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center">
+            <p class="font-titulo text-misiones-fila text-texto-secundario">
+              Misiones permanentes: próximamente.
+            </p>
+            <p class="text-misiones-texto text-texto-apagado">
+              Estamos preparando desafíos de largo plazo que no se reinician.
+            </p>
+          </div>
+          } @else if (misionesDe(periodicidad).length === 0) {
           <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center">
             <p class="font-titulo text-misiones-fila text-texto-secundario">
               No hay misiones {{ etiquetasPeriodicidad[periodicidad].toLowerCase() }}s ahora.
@@ -187,5 +214,7 @@
   }
 
   <app-flujo-apertura-sobres [abierto]="modalAperturaAbierto()" [sobresCatalogo]="sobresCatalogo()"
-    [sobreInicial]="sobreReclamado()" (cerrar)="cerrarAperturaSobres()" />
+    [sobresInventario]="sobresInventario()" [sobresDiariosDisponibles]="sobresDiariosDisponibles()"
+    [sobreInicial]="sobreReclamado()" (cerrar)="cerrarAperturaSobres()"
+    (aperturaRealizada)="alAbrirSobreRecompensa()" />
 </div>

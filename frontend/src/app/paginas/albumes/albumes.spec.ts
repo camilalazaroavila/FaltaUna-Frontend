@@ -7,21 +7,13 @@ import { of, throwError } from 'rxjs';
 import { Albumes } from './albumes';
 import { AlbumesJugadorService } from '@servicios/albumes-jugador.service';
 import { AuthService } from '@servicios/auth.service';
-import type {
-  CategoriaAlbum,
-  DetalleAlbum,
-  ResumenAlbum,
-} from '@modelos/album-jugador.model';
+import type { DetalleAlbum, ResumenAlbum } from '@modelos/album-jugador.model';
 
 jest.mock('ngx-sonner', () => ({
   toast: { success: jest.fn(), error: jest.fn() },
 }));
 
 const ICONO = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
-
-const CATEGORIAS: readonly CategoriaAlbum[] = [
-  { id: 4, nombre: 'Gastronomía', categoria: 'gastronomia' },
-];
 
 const RESUMEN: ResumenAlbum = {
   id: 4,
@@ -40,8 +32,8 @@ const RESUMEN2: ResumenAlbum = {
   marcaNombre: 'Zara',
   logoUrl: null,
   descripcion: 'Indumentaria.',
-  categoriaId: 4,
-  categoriaNombre: 'Gastronomía',
+  categoriaId: 5,
+  categoriaNombre: 'Indumentaria',
   total: 2,
   obtenidas: 0,
   porcentaje: 0,
@@ -98,7 +90,6 @@ const DETALLE_ZARA: DetalleAlbum = {
 describe('Albumes', () => {
   let fixture: ComponentFixture<Albumes>;
   let servicio: {
-    listarCategorias: jest.Mock;
     listarAlbumes: jest.Mock;
     obtenerDetalleAlbum: jest.Mock;
     marcarFavorita: jest.Mock;
@@ -107,9 +98,10 @@ describe('Albumes', () => {
 
   beforeEach(async () => {
     servicio = {
-      listarCategorias: jest.fn(() => of([...CATEGORIAS])),
       listarAlbumes: jest.fn(() => of([RESUMEN])),
-      obtenerDetalleAlbum: jest.fn((id: number) => of(id === RESUMEN2.id ? DETALLE_ZARA : DETALLE)),
+      obtenerDetalleAlbum: jest.fn((id: number) =>
+        of(id === RESUMEN2.id ? DETALLE_ZARA : DETALLE),
+      ),
       marcarFavorita: jest.fn(() => of(undefined)),
       desmarcarFavorita: jest.fn(() => of(undefined)),
     };
@@ -147,13 +139,27 @@ describe('Albumes', () => {
     fixture.detectChanges();
   };
 
-  it('carga categorías y álbumes al iniciar y los lista', () => {
-    expect(servicio.listarCategorias).toHaveBeenCalled();
-    expect(servicio.listarAlbumes).toHaveBeenCalledWith(null);
+  it('carga los álbumes al iniciar y los lista', () => {
+    expect(servicio.listarAlbumes).toHaveBeenCalledTimes(1);
 
     const texto = raiz().textContent ?? '';
     expect(texto).toContain('Grido');
     expect(texto).toContain('1 de 2 cartas');
+  });
+
+  it('deriva las categorías del filtro a partir de los álbumes cargados', () => {
+    servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
+    fixture.componentInstance['cargarAlbumes']();
+    fixture.detectChanges();
+
+    const botones = [
+      ...raiz().querySelectorAll('button[aria-label^="Filtrar álbumes por"]'),
+    ];
+    expect(botones).toHaveLength(2);
+    expect(botones.map((boton) => boton.textContent?.trim())).toEqual([
+      'Gastronomía',
+      'Indumentaria',
+    ]);
   });
 
   it('selecciona el primer álbum visible al entrar', () => {
@@ -181,11 +187,29 @@ describe('Albumes', () => {
     expect(raiz().querySelector('app-grilla-album')).not.toBeNull();
   });
 
-  it('vuelve a pedir los álbumes al cambiar de categoría', () => {
-    fixture.componentInstance['cambiarCategoria'](4);
+  it('filtra por categoría en el cliente sin volver a pedir los álbumes', () => {
+    servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
+    fixture.componentInstance['cargarAlbumes']();
+    fixture.detectChanges();
+    const llamadasPrevias = servicio.listarAlbumes.mock.calls.length;
+
+    fixture.componentInstance['cambiarCategoria'](5);
     fixture.detectChanges();
 
-    expect(servicio.listarAlbumes).toHaveBeenCalledWith(4);
+    expect(servicio.listarAlbumes).toHaveBeenCalledTimes(llamadasPrevias);
+    expect(servicio.obtenerDetalleAlbum).toHaveBeenCalledWith(5);
+
+    const texto = raiz().textContent ?? '';
+    expect(texto).toContain('Zara');
+    expect(texto).not.toContain('Grido');
+  });
+
+  it('muestra "No hay álbumes en esta categoría" cuando el filtro no tiene resultados', () => {
+    fixture.componentInstance['cambiarCategoria'](99);
+    fixture.detectChanges();
+
+    expect(raiz().textContent).toContain('No hay álbumes en esta categoría.');
+    expect(raiz().querySelector('app-encabezado-album')).toBeNull();
   });
 
   it('marca una carta como favorita al tocar su corazón', () => {
@@ -201,7 +225,7 @@ describe('Albumes', () => {
 
   it('filtra el listado por nombre de marca sin distinguir mayúsculas', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
-    fixture.componentInstance['cargarAlbumes'](null);
+    fixture.componentInstance['cargarAlbumes']();
     fixture.detectChanges();
 
     buscar('ZARA');
@@ -213,7 +237,7 @@ describe('Albumes', () => {
 
   it('filtra en el cliente sobre lo ya cargado, sin volver a pedir los álbumes', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
-    fixture.componentInstance['cargarAlbumes'](null);
+    fixture.componentInstance['cargarAlbumes']();
     fixture.detectChanges();
     const llamadasPrevias = servicio.listarAlbumes.mock.calls.length;
 
@@ -234,7 +258,7 @@ describe('Albumes', () => {
 
   it('reselecciona el primer álbum visible cuando el filtro cambia la visibilidad', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
-    fixture.componentInstance['cargarAlbumes'](null);
+    fixture.componentInstance['cargarAlbumes']();
     fixture.detectChanges();
 
     // Al entrar se selecciona Grido (primero); al filtrar por Zara, cambia.
@@ -250,7 +274,7 @@ describe('Albumes', () => {
   it('muestra el error de listado y permite reintentar', () => {
     servicio.listarAlbumes.mockReturnValueOnce(throwError(() => new Error('red')));
 
-    fixture.componentInstance['cargarAlbumes'](null);
+    fixture.componentInstance['cargarAlbumes']();
     fixture.detectChanges();
 
     expect(raiz().textContent).toContain('No pudimos cargar los álbumes.');

@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup/carta-popup';
 import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
-import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
 import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
 import { Header } from '@compartidos/componentes/layout/header/header';
+import { BarajaService } from '@servicios/baraja.service';
+import { AuthService } from '@servicios/auth.service';
 
 import urlGastro from '@svgs/Icon_GastroInv.svg';
 import urlCosme from '@svgs/Icon_CosmeInv.svg';
@@ -28,10 +30,10 @@ interface BotonCategoria {
   readonly urlIcono: string;
 }
 
-interface OpcionObtencion {
+/* interface OpcionObtencion {
   readonly valor: FiltroObtencion;
   readonly etiqueta: string;
-}
+} */
 
 const ORDEN_RAREZA: Record<RarezaCarta, number> = {
   comun: 0,
@@ -50,8 +52,6 @@ const ORDEN_CATEGORIA: Record<CategoriaCarta, number> = {
   tecnologia: 6,
 };
 
-const COLECCION: Carta[] = CARTAS_MOCK;
-
 @Component({
   selector: 'app-mis-cartas',
   standalone: true,
@@ -60,11 +60,16 @@ const COLECCION: Carta[] = CARTAS_MOCK;
   styleUrl: './mis-cartas.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MisCartas {
+export class MisCartas implements OnInit {
+  private readonly barajaService = inject(BarajaService);
+  private readonly authService = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
+
   protected readonly urlLogo = urlLogo;
 
   // Datos
-  private readonly coleccion = signal<Carta[]>(COLECCION);
+  private readonly coleccion = signal<Carta[]>([]);
+  protected readonly cargando = signal(true);
 
   // Detalle de carta
   protected readonly cartaPopup = signal<Carta | null>(null);
@@ -75,11 +80,12 @@ export class MisCartas {
   protected readonly categoriaActiva = signal<CategoriaCarta | null>(null);
   protected readonly criterioOrden = signal<CriterioOrden>('nombre-asc');
 
+  /*
   protected readonly opcionesObtencion: readonly OpcionObtencion[] = [
     { valor: 'todas', etiqueta: 'Todas' },
-    { valor: 'obtenidas', etiqueta: 'Obtenidas' },
-    { valor: 'no-obtenidas', etiqueta: 'No obtenidas' },
-  ];
+    { valor: 'obtenidas', etiqueta: 'Obtenidas' }
+    { valor: 'no-obtenidas', etiqueta: 'No obtenidas' }, 
+  ]; */
 
   // Botones de categoría
   protected readonly categoriasDisponibles: readonly BotonCategoria[] = [
@@ -153,6 +159,31 @@ export class MisCartas {
   });
 
   protected readonly sinResultados = computed(() => this.cartasFiltradas().length === 0);
+
+  constructor() {
+    this.cargarCartas();
+  }
+
+  ngOnInit(): void {
+    this.cargarCartas();
+  }
+
+  private cargarCartas(): void {
+    this.cargando.set(true);
+    this.barajaService
+      .obtenerCartasDisponibles()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (cartas) => {
+          this.coleccion.set(cartas);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.coleccion.set([]);
+          this.cargando.set(false);
+        },
+      });
+  }
 
   protected readonly resumen = computed(() => {
     const total = this.coleccion().length;
