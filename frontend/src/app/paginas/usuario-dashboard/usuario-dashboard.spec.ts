@@ -31,9 +31,21 @@ describe('UsuarioDashboard Component', () => {
     };
 
     const signalSobres = signal({ actuales: 2, maximo: 2 });
+    let primeraCarga = true;
     mockSobresService = {
       obtenerSobres: jest.fn().mockReturnValue(of([])),
+      obtenerInventarioSobres: jest.fn().mockReturnValue(of([])),
       sobresDisponibles: signalSobres,
+      cargarEstadoDiario: jest.fn().mockImplementation(() => {
+        if (!primeraCarga) {
+          signalSobres.update((s) => ({ ...s, actuales: Math.max(0, s.actuales - 1) }));
+        }
+        primeraCarga = false;
+        return of({
+          cargasDisponibles: signalSobres().actuales,
+          cargasMaximas: signalSobres().maximo,
+        });
+      }),
       consumirSobreGratuito: jest.fn().mockImplementation(() => {
         signalSobres.update((s) => ({ ...s, actuales: Math.max(0, s.actuales - 1) }));
       }),
