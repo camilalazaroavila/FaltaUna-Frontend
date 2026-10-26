@@ -4,12 +4,13 @@
    redefinen en [data-modo="empresa"]. */
 :root,
 [data-modo="jugador"] {
-  --combate-fondo-alto: #fbf9b5;
+  --combate-fondo-alto: #f7f272;
   --combate-fondo-bajo: #0b2e36;
   --combate-titulo: #12454f;
 
   --combate-fondo-carga: var(--combate-fondo-bajo);
   --combate-texto: var(--combate-fondo-alto);
+  
 }
 
 

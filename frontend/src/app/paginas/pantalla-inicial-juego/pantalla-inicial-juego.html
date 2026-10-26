@@ -1,21 +1,32 @@
-<div class="pantalla-combate fondo-combate relative flex min-h-dvh flex-col overflow-x-hidden text-white">
+<div class="pantalla-combate bg-tablero-fondo relative flex min-h-dvh flex-col overflow-x-hidden text-white">
   <app-header [logueado]="true" />
-
+    <div class="px-4 pt-4 sm:px-6 lg:px-8">
+      <a routerLink="/usuario"
+         class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-combate-titulo uppercase underline-offset-4 transition-colors hover:underline">
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 6l-6 6 6 6" />
+        </svg>
+             Volver
+       </a>
+    </div>
   <main class="grid flex-1 grid-cols-1 gap-6 pt-6 md:grid-cols-[30%_1fr] md:gap-0 md:pt-8">
     <!-- Menú: 30% del ancho, pegado al borde izquierdo. En escritorio los botones se reparten el alto -->
     <nav
       aria-label="Opciones de juego"
       class="flex flex-col gap-4 pr-4 pb-8 sm:pr-6 md:gap-6 md:pr-0">
-      @for (opcion of opciones; track opcion.id) {
+      @for (opcion of opciones(); track opcion.id) 
+       {
         <a
           app-boton-opcion-juego
           ancho="completo"
           tamanio="lg"
           class="md:flex-1"
-          [routerLink]="opcion.ruta">
+          [routerLink]="opcion.ruta"
+          [disabled]="opcion.bloqueada">
           {{ opcion.texto }}
-        </a>
-      }
+        </a> 
+       }
     </nav>
 
     <!-- En móvil el título va arriba del menú (order-first); desde md, a la derecha -->
@@ -25,6 +36,9 @@
         class="text-center font-titulo text-5xl leading-none uppercase text-combate-titulo sm:text-6xl md:text-7xl lg:text-[max(4.5rem,6vw)]">
         ¡A combatir!
       </h1>
+      <img 
+        src="imagenes/pantalla-inicial-juego/Gata-Jugando-Falta-Una.png"
+        alt="Ilustracion gatito">
     </section>
   </main>
 </div>
