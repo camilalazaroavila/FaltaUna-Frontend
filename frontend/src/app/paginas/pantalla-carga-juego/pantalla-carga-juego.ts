@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { ModoJuego, esModoJuego } from '@app/modelos/modo-juego.model';
@@ -36,6 +36,10 @@ export class PantallaCargaJuego {
   protected readonly encontrado = toSignal(this.emparejamiento.buscarPartida(this.modo), {
     initialValue: false,
   });
+
+  protected readonly mensaje = computed(() =>
+    this.encontrado() ? this.textos.listo : this.textos.buscando,
+  );
 
   private leerModoDeLaRuta(): ModoJuego {
     const modoRuta: unknown = this.ruta.snapshot.data['modo'];
