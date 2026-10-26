@@ -18,6 +18,16 @@ export interface CartaObtenidaRespuesta {
   readonly nombre: string;
   readonly cantidad: number;
   readonly imagenUrl?: string | null;
+  readonly rareza?: string | null;
+  readonly poder?: number | null;
+  readonly costoMana?: number | null;
+  readonly categoria?: string | null;
+}
+
+export interface EstadoSobreDiarioRespuesta {
+  readonly cargasDisponibles: number;
+  readonly cargasMaximas: number;
+  readonly proximaRecarga?: string | null;
 }
 
 export interface AperturaSobreRespuesta {

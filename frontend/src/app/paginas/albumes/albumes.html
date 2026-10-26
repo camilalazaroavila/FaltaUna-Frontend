@@ -68,11 +68,11 @@
             </div>
           } @else if (albumes().length === 0) {
             <p class="rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie p-3 text-sm text-texto-apagado">
-              No hay álbumes en esta categoría.
+              No hay álbumes disponibles.
             </p>
           } @else if (albumesVisibles().length === 0) {
             <p class="rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie p-3 text-sm text-texto-apagado">
-              No encontramos marcas con ese nombre.
+              {{ busqueda() ? 'No encontramos marcas con ese nombre.' : 'No hay álbumes en esta categoría.' }}
             </p>
           } @else {
             <ul class="flex flex-col gap-2" aria-label="Álbumes disponibles">

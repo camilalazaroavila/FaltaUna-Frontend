@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { FlujoAperturaSobres } from './flujo-apertura-sobres';
 import { signal } from '@angular/core';
-import { SobresService } from '@servicios/sobres.service';
+import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
 import { AperturaSobreRespuesta, SobreRespuesta } from '@modelos/sobre.model';
 import { Usuario } from '@modelos/usuario.model';
@@ -31,6 +31,11 @@ describe('FlujoAperturaSobres Component', () => {
       precio: 200,
       cantidadCartas: 4,
     },
+  ];
+
+  const mockInventario: SobreInventarioUsuario[] = [
+    { sobreId: 1, nombre: 'Sobre Clásico', tipo: 'GENERAL', cantidad: 1 },
+    { sobreId: 2, nombre: 'Sobre Grido', tipo: 'MARCA', cantidad: 1 },
   ];
 
   const mockApertura: AperturaSobreRespuesta = {
@@ -80,6 +85,7 @@ describe('FlujoAperturaSobres Component', () => {
     component = fixture.componentInstance;
     fixture.componentRef.setInput('abierto', true);
     fixture.componentRef.setInput('sobresCatalogo', mockSobres);
+    fixture.componentRef.setInput('sobresInventario', mockInventario);
     fixture.componentRef.setInput('sobresDiariosDisponibles', 2);
     fixture.detectChanges();
   });
@@ -88,14 +94,43 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('debe incluir los 2 sobres diarios y los sobres del catalogo en listaSobresUI', () => {
+  it('debe incluir los 2 sobres diarios y los sobres del inventario en listaSobresUI', () => {
     const lista = component['listaSobresUI']();
-    expect(lista.length).toBe(4); // 2 Diarios + 2 del catálogo
+    expect(lista.length).toBe(4); // 2 Diarios + 2 del inventario
     expect(lista[0].esDiario).toBe(true);
     expect(lista[0].etiqueta).toBe('GRATIS');
     expect(lista[1].esDiario).toBe(true);
     expect(lista[1].etiqueta).toBe('GRATIS');
     expect(lista[3].etiqueta).toBe('GRIDO');
+  });
+
+  it('abre por id el sobre acreditado y no cae al sobre diario', () => {
+    fixture.componentRef.setInput('sobreInicial', {
+      sobreId: 2,
+      tipo: 'MARCA',
+      etiqueta: 'Grido',
+    });
+    fixture.detectChanges();
+
+    const seleccionado = component['sobreSeleccionado']();
+    expect(seleccionado?.id).toBe(2);
+    expect(seleccionado?.esDiario).toBe(false);
+    expect(component['fase']()).toBe('preview');
+  });
+
+  it('resuelve el sobre acreditado contra el catálogo si el inventario todavía no llegó', () => {
+    fixture.componentRef.setInput('sobresInventario', []);
+    fixture.componentRef.setInput('sobreInicial', {
+      sobreId: 2,
+      tipo: 'MARCA',
+      etiqueta: 'Grido',
+    });
+    fixture.detectChanges();
+
+    const seleccionado = component['sobreSeleccionado']();
+    expect(seleccionado?.id).toBe(2);
+    expect(seleccionado?.esDiario).toBe(false);
+    expect(component['fase']()).toBe('preview');
   });
 
   it('debe transicionar a preview al seleccionar un sobre', () => {
@@ -132,13 +167,10 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component['fase']()).toBe('revelacion');
   }));
 
-  it('debe mostrar cartas de respaldo en caso de que el backend falle', fakeAsync(() => {
-    const errorObservable = {
-      subscribe: (observer: any) => {
-        observer.error(new Error('Conexión fallida con el backend'));
-      },
-    };
-    sobresServiceSpy.reclamarSobreDiario.mockReturnValue(errorObservable as any);
+  it('muestra el error del backend y no inventa cartas si falla la apertura', fakeAsync(() => {
+    sobresServiceSpy.reclamarSobreDiario.mockReturnValue(
+      throwError(() => new Error('Conexión fallida con el backend')),
+    );
 
     const sobreDiario = component['listaSobresUI']()[0];
     component.seleccionarSobre(sobreDiario);
@@ -147,8 +179,9 @@ describe('FlujoAperturaSobres Component', () => {
     component.ejecutarCorte();
     tick(1000);
 
-    expect(component['cartasObtenidas']().length).toBeGreaterThan(0);
-    expect(component['fase']()).toBe('revelacion');
+    expect(component['errorApertura']()).toContain('Conexión fallida');
+    expect(component['cartasObtenidas']()).toEqual([]);
+    expect(component['fase']()).toBe('corte');
   }));
 
   it('debe navegar el carrusel mediante arrastre/swipe con pointer', () => {

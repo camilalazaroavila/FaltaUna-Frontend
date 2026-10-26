@@ -26,6 +26,9 @@
             "loader": {
               ".svg": "file"
             },
+            "allowedCommonJsDependencies": [
+              "qrcode"
+            ],
             "assets": [
               {
                 "glob": "**/*",

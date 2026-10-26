@@ -111,7 +111,7 @@ describe('TarjetaMision', () => {
 
       expect(emitidos).toEqual([7]);
     });
-
+  });
 
   describe('íconos', () => {
     it.each<[string, Partial<Mision>]>([

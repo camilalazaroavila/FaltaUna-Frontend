@@ -36,7 +36,53 @@ const CATEGORIA_POR_MARCA: Record<string, CategoriaCupon> = {
   cinemark: 'entretenimiento',
   samsung: 'tecnologia',
   musimundo: 'tecnologia',
+
+  // Marcas ficticias del seed de demostración (5 por categoría).
+  'sabor criollo': 'gastronomia',
+  'don luigi pizzería': 'gastronomia',
+  'la parrilla del sur': 'gastronomia',
+  'café aromo': 'gastronomia',
+  'heladería copo': 'gastronomia',
+  'casa nogal': 'deco',
+  'hogar lumbre': 'deco',
+  'rincón textil': 'deco',
+  'luz & madera': 'deco',
+  'verde interior': 'deco',
+  'bella aurora': 'cosmetica',
+  'piel serena': 'cosmetica',
+  'esencia lunar': 'cosmetica',
+  'brillo natural': 'cosmetica',
+  'aura beauty': 'cosmetica',
+  'urbano norte': 'indumentaria',
+  'hilo sur': 'indumentaria',
+  'trama denim': 'indumentaria',
+  'paso ligero': 'indumentaria',
+  'cima outdoor': 'indumentaria',
+  'cine estelar': 'entretenimiento',
+  'parque aventura sol': 'entretenimiento',
+  'escape room enigma': 'entretenimiento',
+  'strike zone bowling': 'entretenimiento',
+  'teatro telón': 'entretenimiento',
+  'acorde estudio': 'musica',
+  'vinilo vivo': 'musica',
+  'sonora instrumentos': 'musica',
+  'ritmo academia': 'musica',
+  'entrada fest': 'musica',
+  'byte market': 'tecnologia',
+  'conecta hogar': 'tecnologia',
+  'pixel store': 'tecnologia',
+  'nodo gadgets': 'tecnologia',
+  'circuito tech': 'tecnologia',
 };
+
+/** El seed deja el link de la promo al final de la descripción: "Fuente: https://...". */
+/**
+ * Demo: muestra todos los cupones como "Disponible" sin importar el estado que mande el backend.
+ * Poner en `false` para respetar Usado / Vencido.
+ */
+const FORZAR_CUPONES_DISPONIBLES = true;
+
+const REGEX_ENLACE = /\s*Fuente:\s*(https?:\/\/\S+)/i;
 
 @Injectable({
   providedIn: 'root',
@@ -46,14 +92,22 @@ export class CuponesService {
   private readonly apiUrl = environment.apiUrl;
 
   /**
-   * Cupones del usuario logueado (rol Usuario). Admite buscar por marca, nombre,
-   * descripción o código, y filtrar por estado; ambos filtros los aplica el backend.
+   * Cupones del usuario logueado (rol Usuario).
+   * Los filtros los aplica el backend.
    */
-  obtenerMisCupones(filtros: FiltrosCupones = {}): Observable<CuponDescuento[]> {
+  obtenerMisCupones(
+    filtros: FiltrosCupones = {},
+  ): Observable<CuponDescuento[]> {
     let params = new HttpParams();
     const buscar = filtros.buscar?.trim();
-    if (buscar) params = params.set('buscar', buscar);
-    if (filtros.estado) params = params.set('estado', filtros.estado);
+
+    if (buscar) {
+      params = params.set('buscar', buscar);
+    }
+
+    if (filtros.estado) {
+      params = params.set('estado', filtros.estado);
+    }
 
     return this.http
       .get<MiCuponApi[]>(`${this.apiUrl}/Cupones/mis-cupones`, { params })
@@ -61,25 +115,28 @@ export class CuponesService {
   }
 
   /**
-   * QR del cupón. El backend lo devuelve como JSON (data URL + token); acá se convierte
-   * en imagen para que la pantalla lo muestre y se descargue como siempre.
+   * Obtiene el QR del cupón y convierte su imagen en un Blob.
    */
   obtenerQr(cuponId: number): Observable<QrCupon> {
-    return this.http.get<QrCuponApi>(`${this.apiUrl}/Cupones/${cuponId}/qr`).pipe(
-      map((qr) => ({
-        imagen: this.dataUrlABlob(qr.qrDataUrl),
-        token: qr.qrToken,
-      })),
-    );
+    return this.http
+      .get<QrCuponApi>(`${this.apiUrl}/Cupones/${cuponId}/qr`)
+      .pipe(
+        map((qr) => ({
+          imagen: this.dataUrlABlob(qr.qrDataUrl),
+          token: qr.qrToken,
+        })),
+      );
   }
 
   /**
-   * Rol Empleado: verifica el token del QR SIN consumir el cupón. Si es válido devuelve
-   * el detalle para confirmarlo; si no, llega un HttpErrorResponse con el motivo.
+   * Rol Empleado: verifica el QR sin consumir el cupón.
    */
   validar(qrToken: string): Observable<CuponValidado> {
     return this.http
-      .post<ValidarQrApi>(`${this.apiUrl}/Cupones/empleado/validar-qr`, { qrToken })
+      .post<ValidarQrApi>(
+        `${this.apiUrl}/Cupones/empleado/validar-qr`,
+        { qrToken },
+      )
       .pipe(
         map(({ cupon }) => ({
           marca: cupon.marca,
@@ -94,42 +151,64 @@ export class CuponesService {
   }
 
   /**
-   * Rol Empleado: consume el cupón a partir del token del QR
-   * (acepta también el contenido completo "FALTAUNA:COUPON:<token>").
-   * Los rechazos llegan como HttpErrorResponse.
+   * Rol Empleado: canjea el cupón a partir del token del QR.
    */
   canjear(qrToken: string): Observable<CanjeExitosoRespuesta> {
     const solicitud: CanjearCuponSolicitud = { qrToken };
-    return this.http.post<CanjeApi>(`${this.apiUrl}/Cupones/empleado/canjear`, solicitud).pipe(
-      map((r) => ({
-        marca: r.cupon.marca,
-        titulo: r.cupon.nombre,
-        descripcion: r.cupon.nombre,
-        fechaCanjeUtc: r.fechaUso,
-      })),
-    );
+
+    return this.http
+      .post<CanjeApi>(
+        `${this.apiUrl}/Cupones/empleado/canjear`,
+        solicitud,
+      )
+      .pipe(
+        map((r) => ({
+          marca: r.cupon.marca,
+          titulo: r.cupon.nombre,
+          descripcion: r.cupon.nombre,
+          fechaCanjeUtc: r.fechaUso,
+        })),
+      );
   }
 
   private aCuponDescuento(c: MiCuponApi): CuponDescuento {
+    const textoOriginal = c.descripcion || c.nombre;
+    const enlace = REGEX_ENLACE.exec(textoOriginal)?.[1] ?? null;
+
     return {
       id: c.cuponId,
       marca: c.marca,
-      categoria: CATEGORIA_POR_MARCA[c.marca.toLowerCase()] ?? 'gastronomia',
+      categoria:
+        CATEGORIA_POR_MARCA[c.marca.toLowerCase()] ?? 'gastronomia',
       titulo: c.nombre,
-      descripcion: c.descripcion || c.nombre,
+      descripcion: textoOriginal.replace(REGEX_ENLACE, '').trim(),
       detalles: `${c.porcentajeDescuento}% de descuento`,
       codigo: c.codigo,
       vigenteHastaUtc: c.fechaVencimiento,
       estado: this.estadoDe(c),
+      enlace,
+      porcentajeDescuento: c.porcentajeDescuento,
     };
   }
 
   private estadoDe(c: MiCuponApi): EstadoCupon {
+    if (FORZAR_CUPONES_DISPONIBLES) {
+      return 'Disponible';
+    }
+
     const estado = c.estado.toUpperCase();
-    if (estado === 'USADO' || estado === 'CANJEADO') return 'Usado';
-    if (estado === 'VENCIDO') return 'Vencido';
-    // Un cupón "Disponible" cuya fecha ya pasó se muestra como vencido.
-    return new Date(c.fechaVencimiento).getTime() < Date.now() ? 'Vencido' : 'Disponible';
+
+    if (estado === 'USADO' || estado === 'CANJEADO') {
+      return 'Usado';
+    }
+
+    if (estado === 'VENCIDO') {
+      return 'Vencido';
+    }
+
+    return new Date(c.fechaVencimiento).getTime() < Date.now()
+      ? 'Vencido'
+      : 'Disponible';
   }
 
   private dataUrlABlob(dataUrl: string): Blob {
@@ -137,7 +216,11 @@ export class CuponesService {
     const tipo = /data:([^;]+)/.exec(cabecera)?.[1] ?? 'image/png';
     const binario = atob(base64);
     const bytes = new Uint8Array(binario.length);
-    for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
+
+    for (let i = 0; i < binario.length; i++) {
+      bytes[i] = binario.charCodeAt(i);
+    }
+
     return new Blob([bytes], { type: tipo });
   }
 }

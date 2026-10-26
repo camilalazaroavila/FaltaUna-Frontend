@@ -1,9 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, ParamMap, convertToParamMap, provideRouter } from '@angular/router';
+import {
+  ActivatedRoute,
+  ParamMap,
+  convertToParamMap,
+  provideRouter,
+} from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 
 import { UsuarioCupones } from './usuario-cupones';
 import { CuponesService } from '@servicios/cupones.service';
+import { SonidoService } from '@servicios/sonido.service';
 import type { CuponDescuento } from '@modelos/cupon.model';
 
 const CUPONES: CuponDescuento[] = [
@@ -17,6 +23,7 @@ const CUPONES: CuponDescuento[] = [
     codigo: 'GRIDO-1',
     vigenteHastaUtc: '2026-12-31T00:00:00Z',
     estado: 'Disponible',
+    enlace: null,
   },
   {
     id: 2,
@@ -28,6 +35,7 @@ const CUPONES: CuponDescuento[] = [
     codigo: 'ZARA-1',
     vigenteHastaUtc: '2026-12-31T00:00:00Z',
     estado: 'Disponible',
+    enlace: null,
   },
 ];
 
@@ -36,7 +44,11 @@ describe('UsuarioCupones', () => {
   let params: BehaviorSubject<ParamMap>;
 
   const montar = async (categoriaInicial: string | null): Promise<void> => {
-    params = new BehaviorSubject(convertToParamMap(categoriaInicial ? { categoria: categoriaInicial } : {}));
+    params = new BehaviorSubject(
+      convertToParamMap(
+        categoriaInicial ? { categoria: categoriaInicial } : {},
+      ),
+    );
 
     await TestBed.configureTestingModule({
       imports: [UsuarioCupones],
@@ -48,6 +60,10 @@ describe('UsuarioCupones', () => {
             queryParamMap: params.asObservable(),
             snapshot: { queryParamMap: params.value },
           },
+        },
+        {
+          provide: SonidoService,
+          useValue: { precargar: jest.fn(), reproducir: jest.fn() },
         },
         {
           provide: CuponesService,
@@ -63,7 +79,8 @@ describe('UsuarioCupones', () => {
     fixture.detectChanges();
   };
 
-  const activa = (): string => fixture.componentInstance['categoriaActiva']();
+  const activa = (): string =>
+    fixture.componentInstance['categoriaActiva']();
 
   it('preselecciona la categoría válida indicada en la URL', async () => {
     await montar('indumentaria');
@@ -87,7 +104,8 @@ describe('UsuarioCupones', () => {
 
   it('filtra los cupones según la categoría activa', async () => {
     await montar('indumentaria');
-    const filtrados = fixture.componentInstance['cuponesFiltrados']();
+    const filtrados =
+      fixture.componentInstance['cuponesFiltrados']();
 
     expect(filtrados).toHaveLength(1);
     expect(filtrados[0].marca).toBe('Zara');
@@ -99,10 +117,18 @@ describe('UsuarioCupones', () => {
     const componente = fixture.componentInstance as any;
 
     componente.elegirEstado('Usado');
-    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({ buscar: '', estado: 'Usado' });
+
+    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({
+      buscar: '',
+      estado: 'Usado',
+    });
 
     componente.elegirEstado('Usado');
-    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({ buscar: '', estado: null });
+
+    expect(servicio.obtenerMisCupones).toHaveBeenLastCalledWith({
+      buscar: '',
+      estado: null,
+    });
   });
 
   it('limpiarFiltros borra el texto y el estado', async () => {
@@ -111,9 +137,11 @@ describe('UsuarioCupones', () => {
 
     componente.escribirBusqueda('grido');
     componente.elegirEstado('Disponible');
+
     expect(componente.hayFiltros()).toBe(true);
 
     componente.limpiarFiltros();
+
     expect(componente.hayFiltros()).toBe(false);
   });
 
@@ -134,7 +162,6 @@ describe('UsuarioCupones', () => {
     await montar('gastronomia');
     const componente = fixture.componentInstance as any;
 
-    // Grido está 'Disponible'
     componente.elegirEstado('Disponible');
     expect(componente.cuponesFiltrados()).toHaveLength(1);
 
@@ -149,38 +176,98 @@ describe('UsuarioCupones', () => {
 
     expect(raiz.querySelector('#menu-filtros-cupones')).toBeNull();
 
-    (raiz.querySelector('button[aria-label="Filtrar por estado"]') as HTMLButtonElement).click();
+    (
+      raiz.querySelector(
+        'button[aria-label="Filtrar por estado"]',
+      ) as HTMLButtonElement
+    ).click();
+
     fixture.detectChanges();
 
-    const menu = raiz.querySelector('#menu-filtros-cupones') as HTMLElement;
+    const menu = raiz.querySelector(
+      '#menu-filtros-cupones',
+    ) as HTMLElement;
+
     expect(menu).not.toBeNull();
     expect(menu.querySelectorAll('ul button')).toHaveLength(3);
     expect(menu.textContent).toContain('Limpiar filtros');
 
     componente.elegirEstado('Usado');
     fixture.detectChanges();
+
     expect(raiz.querySelector('#menu-filtros-cupones')).toBeNull();
   });
 
-  it('el botón Limpiar filtros del menú está deshabilitado sin filtros y los borra al usarlo', async () => {
+  it('el botón Limpiar filtros está deshabilitado sin filtros y los borra al usarlo', async () => {
     await montar(null);
     const componente = fixture.componentInstance as any;
     const raiz: HTMLElement = fixture.nativeElement;
 
     componente.alternarMenu();
     fixture.detectChanges();
+
     const limpiar = () =>
-      Array.from(raiz.querySelectorAll('#menu-filtros-cupones button')).find((b) =>
+      Array.from(
+        raiz.querySelectorAll('#menu-filtros-cupones button'),
+      ).find((b) =>
         b.textContent?.includes('Limpiar filtros'),
       ) as HTMLButtonElement;
+
     expect(limpiar().disabled).toBe(true);
 
     componente.escribirBusqueda('grido');
     fixture.detectChanges();
+
     expect(limpiar().disabled).toBe(false);
 
     limpiar().click();
     fixture.detectChanges();
+
     expect(componente.hayFiltros()).toBe(false);
+  });
+
+  it('suena el mp3 de canje al tocar un cupón disponible', async () => {
+    await montar('gastronomia');
+    const sonido = TestBed.inject(SonidoService);
+    const raiz: HTMLElement = fixture.nativeElement;
+
+    expect(sonido.precargar).toHaveBeenCalledWith('sonidos/canje.mp3');
+
+    (raiz.querySelector('ul button.sello') as HTMLButtonElement).click();
+
+    expect(sonido.reproducir).toHaveBeenCalledWith('sonidos/canje.mp3');
+  });
+  it('muestra las 7 categorías en columna y marca solo la elegida', async () => {
+    await montar('indumentaria');
+    const raiz: HTMLElement = fixture.nativeElement;
+    const botones = Array.from(
+      raiz.querySelectorAll<HTMLButtonElement>('.rail__item'),
+    );
+
+    expect(botones).toHaveLength(7);
+    expect(
+      botones.filter((b) => b.getAttribute('aria-pressed') === 'true'),
+    ).toHaveLength(1);
+    expect(
+      raiz.querySelector('.rail__item--activo')?.getAttribute('aria-label'),
+    ).toBe('Indumentaria');
+  });
+
+  it('el triángulo verde baja hasta la categoría elegida', async () => {
+    await montar(null);
+    const raiz: HTMLElement = fixture.nativeElement;
+    const puntero = raiz.querySelector<HTMLElement>('.rail__puntero')!;
+
+    expect(puntero.style.getPropertyValue('--i')).toBe('0');
+
+    (
+      raiz.querySelector(
+        'button[aria-label="Música"]',
+      ) as HTMLButtonElement
+    ).click();
+    fixture.detectChanges();
+
+    expect(activa()).toBe('musica');
+    expect(puntero.style.getPropertyValue('--i')).toBe('5');
   });
 });

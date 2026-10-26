@@ -133,6 +133,7 @@
 - **Reinicio:** los martes a las 21:00. La recompensa no reclamada **se pierde**. **A confirmar:** si esto aplica también a las diarias y a qué hora se reinician.
 - El premio se reclama **manualmente**, con un botón **"Reclamar todo"**.
 - Algunas misiones dan más progreso por jugar en matchmaking.
+- **Estado de implementación:** la vista `/usuario/misiones` consume `GET /api/Misiones` y `POST /api/Misiones/{id}/reclamar` con JWT. Las misiones diarias y semanales salen de `SeedMisiones` (equivalente a `database/seeds/05_misiones.sql`), que corre junto con `SeedSobres` al arrancar la API, así que cada recompensa apunta a un sobre real. La pestaña **Permanente** queda como placeholder y el **PT System** sigue alimentado con datos de prueba. Al reclamar, el modal abre el sobre por su `sobreId` acreditado y nunca cae al sobre diario (ese tiene su propio límite de cargas).
 
 ---
 
@@ -257,7 +258,7 @@ Cambios necesarios para alinearlo con las reglas de negocio:
 | **Agregar** | `Marca`, `Plan`, `Mision` y progreso por usuario, favoritas por usuario, progreso de pity por tipo de sobre, inventario de sobres, local/sucursal por colección, rol de usuario y su empresa, visibilidad del perfil, icono de perfil. |
 | **Revisar** | `Cupon` hoy cuelga de `Coleccion`; debe vincularse a `Marca` e hitos. `Intercambio` necesita fecha de vencimiento y reserva de cartas. `Carta` con una sola colección (hoy `ColeccionCarta` es N:N). Cartas de bienvenida marcadas como no intercambiables. `Ronda.FechaFin` es obligatoria y debería ser opcional. Renombrar `Mana` según la decisión de naming (sección 4). `ZonaPartida` hoy tiene `ZonaId` fijo y `CartaPartida` apunta a `ZonaPartidaId`: para que las cartas no se muevan al rotar, `ZonaPartida` debe representar el lugar físico y la zona activa debe variar por ronda (`ZonaRonda` podría cubrirlo); pendiente de revisión del backend. |
 
-> El frontend ya tiene componentes de misiones, pity, apertura de sobres y suscripción de empresa (ver estructura en la sección 5). **A verificar:** qué parte de eso está respaldada por backend y base de datos, y qué está solo en la interfaz.
+> El frontend ya tiene componentes de misiones, pity, apertura de sobres y suscripción de empresa (ver estructura en la sección 5). **Misiones ya está respaldada por el backend** (`GET /api/Misiones`, `POST /api/Misiones/{id}/reclamar`) y por los seeds `SeedSobres`/`SeedMisiones`; el **PT System** y la pestaña **Permanente** siguen siendo mock/placeholder.
 
 ### Estado del tablero de partida
 

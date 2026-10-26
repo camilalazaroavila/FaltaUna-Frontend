@@ -6,10 +6,9 @@ import type { CategoriaAlbum } from '@modelos/album-jugador.model';
 import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
 
 /**
- * Filtro lateral de la vista Álbumes: lista las 7 categorías de carta (con su
- * icono) y emite el `categoriaId` elegido (o `null` para "Todas"). El filtrado
- * real lo hace el backend (`?categoriaId=`), que filtra por la categoría de la
- * marca.
+ * Filtro lateral de la vista Álbumes: lista las categorías presentes en el
+ * listado de álbumes (con su icono) y emite el `categoriaId` elegido (o `null`
+ * para "Todas"). El filtrado real lo hace la página en el cliente.
  */
 @Component({
   selector: 'app-filtros-categoria-album',

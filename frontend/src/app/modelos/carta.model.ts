@@ -1,6 +1,35 @@
 /** Rareza de una carta coleccionable. */
 export type RarezaCarta = 'comun' | 'rara' | 'epicarta' | 'legendaria';
 
+const normalizarTexto = (valor: string): string =>
+  valor
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+export function rarezaDesdeNombre(valor: string | null | undefined): RarezaCarta {
+  if (typeof valor !== 'string') {
+    return 'comun';
+  }
+
+  const normalizada = normalizarTexto(valor);
+
+  if (normalizada === 'rara') {
+    return 'rara';
+  }
+
+  if (normalizada === 'epica' || normalizada === 'epicarta') {
+    return 'epicarta';
+  }
+
+  if (normalizada === 'legendaria') {
+    return 'legendaria';
+  }
+
+  return 'comun';
+}
+
 /** Categoría comercial de la marca representada en la carta. */
 export type CategoriaCarta =
   | 'gastronomia'
