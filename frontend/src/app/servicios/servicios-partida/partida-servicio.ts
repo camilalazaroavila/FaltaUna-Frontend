@@ -5,7 +5,7 @@ import { toast } from 'ngx-sonner';
 import { PartidaApiService } from '@servicios/servicios-partida/partida-api.service';
 import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
 import { JUGADORES_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
-import type { Carta, RarezaCarta } from '@modelos/carta.model';
+import type { Carta, EfectoCategoriaCarta, RarezaCarta } from '@modelos/carta.model';
 import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre, rarezaDesdeNombre } from '@modelos/carta.model';
 import type {
   CartaApi,

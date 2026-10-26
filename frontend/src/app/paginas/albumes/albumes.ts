@@ -8,10 +8,11 @@ import { Tooltip } from '@compartidos/componentes/feedback/tooltip/tooltip';
 import { FiltrosCategoriaAlbum } from '@compartidos/componentes/filtros-categoria-album/filtros-categoria-album';
 import { GrillaAlbum } from '@compartidos/componentes/grilla-album/grilla-album';
 import { Header } from '@compartidos/componentes/layout/header/header';
-import type {
-  CategoriaAlbum,
-  DetalleAlbum,
-  ResumenAlbum,
+import {
+  categoriaCartaDesdeNombre,
+  type CategoriaAlbum,
+  type DetalleAlbum,
+  type ResumenAlbum,
 } from '@modelos/album-jugador.model';
 import { normalizarNombre } from '@modelos/categoria.model';
 import { categoriaCuponDesdeCarta, type CategoriaCupon } from '@modelos/cupon.model';
@@ -25,9 +26,8 @@ import { AlbumesJugadorService } from '@servicios/albumes-jugador.service';
  * Al entrar (o al cambiar de categoría/búsqueda) se selecciona el primer álbum
  * visible. En mobile se navega en dos pantallas (listado → detalle).
  *
- * Los componentes no hacen HTTP: todo pasa por `AlbumesJugadorService`, que
- * consume `ApiService` con respaldo mock mientras el backend no expone el
- * contrato acordado.
+ * Los álbumes se cargan una sola vez desde `AlbumesJugadorService`; el filtro
+ * por categoría se deriva de ese listado y el filtrado/búsqueda es en cliente.
  */
 @Component({
   selector: 'app-albumes',
@@ -39,13 +39,34 @@ import { AlbumesJugadorService } from '@servicios/albumes-jugador.service';
 export class Albumes implements OnInit {
   private readonly servicio = inject(AlbumesJugadorService);
 
-  protected readonly categorias = signal<readonly CategoriaAlbum[]>([]);
   protected readonly categoriaActiva = signal<number | null>(null);
 
   protected readonly albumes = signal<readonly ResumenAlbum[]>([]);
   protected readonly busqueda = signal('');
   protected readonly cargandoAlbumes = signal(true);
   protected readonly errorAlbumes = signal<string | null>(null);
+
+  /**
+   * Categorías del filtro, derivadas de los álbumes cargados: solo aparecen las
+   * que tienen al menos un álbum. `categoriaCartaDesdeNombre` traduce el nombre
+   * del backend a la categoría de carta y descarta las desconocidas.
+   */
+  protected readonly categorias = computed<readonly CategoriaAlbum[]>(() => {
+    const porId = new Map<number, CategoriaAlbum>();
+
+    for (const album of this.albumes()) {
+      if (album.categoriaId === null || porId.has(album.categoriaId)) {
+        continue;
+      }
+      porId.set(album.categoriaId, {
+        id: album.categoriaId,
+        nombre: album.categoriaNombre ?? 'Sin categoría',
+        categoria: categoriaCartaDesdeNombre(album.categoriaNombre),
+      });
+    }
+
+    return [...porId.values()].sort((a, b) => a.nombre.localeCompare(b.nombre));
+  });
 
   protected readonly albumSeleccionado = signal<ResumenAlbum | null>(null);
   protected readonly detalle = signal<DetalleAlbum | null>(null);
@@ -62,12 +83,13 @@ export class Albumes implements OnInit {
 
   /** Álbumes visibles: los de la categoría activa filtrados por el buscador. */
   protected readonly albumesVisibles = computed(() => {
+    const categoriaId = this.categoriaActiva();
     const termino = normalizarNombre(this.busqueda());
-    if (!termino) {
-      return this.albumes();
-    }
-    return this.albumes().filter((album) =>
-      normalizarNombre(album.marcaNombre).includes(termino),
+
+    return this.albumes().filter(
+      (album) =>
+        (categoriaId === null || album.categoriaId === categoriaId) &&
+        (!termino || normalizarNombre(album.marcaNombre).includes(termino)),
     );
   });
 
@@ -82,22 +104,14 @@ export class Albumes implements OnInit {
   });
 
   ngOnInit(): void {
-    this.cargarCategorias();
-    this.cargarAlbumes(null);
+    this.cargarAlbumes();
   }
 
-  private cargarCategorias(): void {
-    this.servicio.listarCategorias().subscribe({
-      next: (categorias) => this.categorias.set(categorias),
-      error: () => this.categorias.set([]),
-    });
-  }
-
-  protected cargarAlbumes(categoriaId: number | null): void {
+  protected cargarAlbumes(): void {
     this.cargandoAlbumes.set(true);
     this.errorAlbumes.set(null);
 
-    this.servicio.listarAlbumes(categoriaId).subscribe({
+    this.servicio.listarAlbumes().subscribe({
       next: (albumes) => {
         this.albumes.set(albumes);
         this.cargandoAlbumes.set(false);
@@ -113,7 +127,7 @@ export class Albumes implements OnInit {
   protected cambiarCategoria(categoriaId: number | null): void {
     this.categoriaActiva.set(categoriaId);
     this.volverALista();
-    this.cargarAlbumes(categoriaId);
+    this.asegurarSeleccion();
   }
 
   protected buscar(evento: Event): void {
@@ -174,7 +188,7 @@ export class Albumes implements OnInit {
   }
 
   protected reintentarAlbumes(): void {
-    this.cargarAlbumes(this.categoriaActiva());
+    this.cargarAlbumes();
   }
 
   protected volverALista(): void {
