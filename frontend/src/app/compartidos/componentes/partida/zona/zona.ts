@@ -17,7 +17,9 @@ import {
 import { PuntajeZona } from '@compartidos/componentes/partida/puntaje-zona/puntaje-zona';
 import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-carta';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
-import type { Carta } from '@modelos/carta.model';
+import { IndicadorCategoriasHabilidad } from '@compartidos/componentes/cartas/indicador-categorias-habilidad/indicador-categorias-habilidad';
+import type { Carta, EfectoCategoriaCarta } from '@modelos/carta.model';
+import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre } from '@modelos/carta.model';
 import type {
   EstadoPuntajeZona,
   EstadoSlot,
@@ -72,7 +74,7 @@ const claseDelta = (delta: number): string =>
   templateUrl: './zona.html',
   styleUrl: './zona.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SlotCarta, PuntajeZona, CartaComponent],
+  imports: [SlotCarta, PuntajeZona, CartaComponent, IndicadorCategoriasHabilidad],
   host: { class: 'block w-full' },
 })
 export class Zona implements AfterViewInit {
@@ -95,8 +97,20 @@ export class Zona implements AfterViewInit {
   readonly estadoRival = input<EstadoPuntajeZona>('empate');
   readonly estadoPropio = input<EstadoPuntajeZona>('empate');
 
+  protected readonly efectosCategoria = computed(() => {
+    const zona = this.zona();
+    if (zona.efectosCategoria && zona.efectosCategoria.length > 0) {
+      return zona.efectosCategoria;
+    }
+    return this.calcularEfectosCategoria(zona);
+  });
+
 
   readonly verCarta = output<Carta>();
+  readonly retirarCarta = output<Carta>();
+
+  /** Función para verificar si una carta en la mesa es provisional (retirable). */
+  readonly esProvisionalFn = input<(carta: Carta) => boolean>(() => false);
 
   /** `true` mientras el jugador tiene una carta agarrada: resalta sus slots vacíos. */
   readonly slotsResaltados = input(false);
@@ -107,6 +121,86 @@ export class Zona implements AfterViewInit {
   readonly abrirPopup = output<void>();
   /** Índice del slot propio donde se pulsó "jugar" (alternativa al arrastre). */
   readonly jugarSlot = output<number>();
+
+  protected alRetirarCarta(carta: Carta, evento: MouseEvent): void {
+    evento.stopPropagation();
+    this.retirarCarta.emit(carta);
+  }
+
+  private arrastrandoProvisional?: {
+    carta: Carta;
+    origenY: number;
+    origenX: number;
+    punteroId: number;
+    huboArrastre: boolean;
+  };
+
+  protected alPulsarCartaProvisional(carta: Carta, evento: PointerEvent): void {
+    if (evento.button !== 0 && evento.pointerType === 'mouse') return;
+    this.arrastrandoProvisional = {
+      carta,
+      origenY: evento.clientY,
+      origenX: evento.clientX,
+      punteroId: evento.pointerId,
+      huboArrastre: false,
+    };
+    try {
+      (evento.currentTarget as HTMLElement).setPointerCapture(evento.pointerId);
+    } catch {
+      // Ignorar si no se puede capturar
+    }
+  }
+
+  protected alMoverCartaProvisional(evento: PointerEvent): void {
+    if (!this.arrastrandoProvisional || evento.pointerId !== this.arrastrandoProvisional.punteroId) {
+      return;
+    }
+    const distancia = Math.hypot(
+      evento.clientX - this.arrastrandoProvisional.origenX,
+      evento.clientY - this.arrastrandoProvisional.origenY,
+    );
+    if (distancia > 15) {
+      this.arrastrandoProvisional.huboArrastre = true;
+    }
+  }
+
+  protected alSoltarCartaProvisional(evento: PointerEvent): void {
+    if (!this.arrastrandoProvisional || evento.pointerId !== this.arrastrandoProvisional.punteroId) {
+      return;
+    }
+    try {
+      (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
+    } catch {
+      // Ignorar
+    }
+
+    const { carta, huboArrastre, origenY } = this.arrastrandoProvisional;
+    this.arrastrandoProvisional = undefined;
+
+    // Si se arrastró hacia abajo (hacia la mano) al menos 15px, retirar la carta
+    if (huboArrastre && evento.clientY > origenY + 15) {
+      evento.stopPropagation();
+      this.retirarCarta.emit(carta);
+    }
+  }
+
+  protected alCancelarCartaProvisional(evento: PointerEvent): void {
+    if (this.arrastrandoProvisional && evento.pointerId === this.arrastrandoProvisional.punteroId) {
+      try {
+        (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
+      } catch {
+        // Ignorar
+      }
+      this.arrastrandoProvisional = undefined;
+    }
+  }
+
+  protected alClickCarta(carta: Carta): void {
+    if (this.arrastrandoProvisional?.huboArrastre) {
+      return;
+    }
+    this.verCarta.emit(carta);
+  }
 
   protected readonly movimientoReducido = this.gsapServicio.movimientoReducido;
   protected readonly deltaEstatico = signal(false);
@@ -137,11 +231,15 @@ export class Zona implements AfterViewInit {
   protected readonly textoDeltaRival = computed(() => textoDelta(this.deltaRival()));
   protected readonly claseDeltaPropio = computed(() => claseDelta(this.deltaPropio()));
   protected readonly claseDeltaRival = computed(() => claseDelta(this.deltaRival()));
+  protected readonly diferencia = computed(() =>
+    Math.abs(this.puntajePropio() - this.puntajeRival()),
+  );
 
   private contexto?: ContextoGsap;
   private zonaAnteriorId?: number;
   private destacadoAnterior = false;
   private temporizador?: ReturnType<typeof setTimeout>;
+  private cartasRivalPrevias?: SlotsLado;
 
   constructor() {
     this.destroyRef.onDestroy(() => clearTimeout(this.temporizador));
@@ -161,6 +259,47 @@ export class Zona implements AfterViewInit {
       }
 
       untracked(() => this.reproducirCambio(destacadoPrevio));
+    });
+
+    effect(() => {
+      const cartasActuales = this.cartasRival();
+      const previas = this.cartasRivalPrevias;
+      this.cartasRivalPrevias = cartasActuales;
+
+      if (previas === undefined) {
+        return;
+      }
+
+      if (this.movimientoReducido() || this.enModoReducido()) {
+        return;
+      }
+
+      const indicesParaAnimar: number[] = [];
+      cartasActuales.forEach((carta, indice) => {
+        if (carta && !carta.oculta) {
+          const previa = previas[indice];
+          const eraOculta = previa?.oculta === true;
+          const eraVacia = !previa;
+          const distinta =
+            previa &&
+            (previa.cartaId !== carta.cartaId ||
+              previa.cartaPartidaId !== carta.cartaPartidaId);
+          if (eraOculta || eraVacia || distinta) {
+            indicesParaAnimar.push(indice);
+          }
+        }
+      });
+
+      if (indicesParaAnimar.length === 0) {
+        return;
+      }
+
+      untracked(() => {
+        const timer = setTimeout(() => {
+          this.animarCartasReveladas(indicesParaAnimar);
+        }, 0);
+        this.destroyRef.onDestroy(() => clearTimeout(timer));
+      });
     });
   }
 
@@ -255,5 +394,89 @@ export class Zona implements AfterViewInit {
       flotar(deltaPropio, valorPropio);
       flotar(deltaRival, valorRival);
     });
+  }
+
+  private animarCartasReveladas(indices: readonly number[]): void {
+    if (this.movimientoReducido() || this.enModoReducido()) {
+      return;
+    }
+
+    const duracion = this.gsapServicio.duracionPartida('revelado-carta');
+    const { gsap } = this.gsapServicio;
+
+    if (!this.contexto) {
+      this.contexto = this.gsapServicio.crearContexto(
+        this.elementoRef.nativeElement,
+        () => undefined,
+        this.destroyRef,
+      );
+    }
+
+    this.contexto.add(() => {
+      for (const indice of indices) {
+        const botonCarta = this.elementoRef.nativeElement.querySelector<HTMLElement>(
+          `[data-lado="rival"][data-indice="${indice}"] button`,
+        );
+
+        if (botonCarta) {
+          gsap.fromTo(
+            botonCarta,
+            { rotateY: 90, opacity: 0 },
+            {
+              rotateY: 0,
+              opacity: 1,
+              duration: duracion,
+              ease: 'power2.out',
+              overwrite: true,
+            },
+          );
+        }
+      }
+    });
+  }
+
+  private calcularEfectosCategoria(zona: ZonaTablero): EfectoCategoriaCarta[] {
+    const efectos: EfectoCategoriaCarta[] = [];
+    const texto = zona.efecto?.texto || '';
+
+    if (texto) {
+      const regex = /([a-záéíóúñ]+)\s*([+\-−]\d+)/gi;
+      let match: RegExpExecArray | null;
+      while ((match = regex.exec(texto)) !== null) {
+        const nombreCat = match[1];
+        const valorStr = match[2].replace('−', '-');
+        const valor = parseInt(valorStr, 10);
+        const cat = categoriaCartaDesdeNombre(nombreCat);
+        if (!isNaN(valor) && valor !== 0) {
+          efectos.push({
+            tipo: valor > 0 ? 'sube' : 'baja',
+            categoria: cat,
+            valor,
+          });
+        }
+      }
+    }
+
+    if (efectos.length === 0 && zona.bonusPorCategoria) {
+      for (const [, bonus] of Object.entries(zona.bonusPorCategoria)) {
+        if (bonus !== 0) {
+          efectos.push({
+            tipo: bonus > 0 ? 'sube' : 'baja',
+            categoria: zona.efecto?.categoria ?? CATEGORIA_POR_DEFECTO,
+            valor: bonus,
+          });
+        }
+      }
+    }
+
+    if (efectos.length === 0 && zona.efecto && zona.efecto.bonus !== 0) {
+      efectos.push({
+        tipo: zona.efecto.bonus > 0 ? 'sube' : 'baja',
+        categoria: zona.efecto.categoria,
+        valor: zona.efecto.bonus,
+      });
+    }
+
+    return efectos;
   }
 }

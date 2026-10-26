@@ -1,9 +1,9 @@
 <span class="cupon muesca-cupon inline-flex items-center rounded-md bg-cupon-fondo" [class]="clasesCuerpo()">
-  <span #numero class="block text-subtitulo leading-titulo tabular-nums">{{ valor() }}</span>
+  <span #numero class="block text-titulo leading-titulo tabular-nums">{{ valor() }}</span>
 
   @if (esCompacta()) {
-    <ng-icon name="phosphorTicketFill" size="16" aria-hidden="true" />
+    <ng-icon name="phosphorTicketFill" size="18" aria-hidden="true" />
   } @else {
-    <span class="font-interfaz text-etiqueta uppercase tracking-etiqueta">{{ leyenda() }}</span>
+    <span class="font-interfaz text-menor uppercase tracking-etiqueta">{{ leyenda() }}</span>
   }
 </span>

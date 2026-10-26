@@ -11,23 +11,53 @@
     gap: clamp(0.25rem, 1vh, 0.75rem);
 }
 
-/* Una sola fila de 6 slots por lado. El ancho máximo depende del alto de la
-   pantalla: así, en pantallas bajas, los slots no empujan hasta hacer scroll. */
-/* 3 columnas x 2 filas por lado. El ancho máximo depende del alto de la
-   pantalla para que las 4 filas de slots más la foto entren sin scroll. */
+/* Slots por lado. Ancho de zona >= 28rem: 1 fila de 6 (2 filas en total).
+   Más angosta: 3 columnas x 2 filas (4 filas en total).
+   El slot toma el menor entre lo que permite el ANCHO de la zona, lo que
+   permite el ALTO de la pantalla y el tope --slot-ancho-max. */
 .zona-slots {
+    --columnas: 6;
+    --filas-total: 2;
+    --slot-gap: clamp(0.2rem, 1.2cqw, 0.6rem);
+    --slot-por-ancho: calc((100cqw - (var(--columnas) - 1) * var(--slot-gap)) / var(--columnas));
+    --slot-por-alto: calc((100dvh - var(--tablero-alto-fijo, 30rem)) / var(--filas-total) * 0.75);
+    --slot-ancho: max(2.5rem, min(var(--slot-ancho-max, 9rem), var(--slot-por-ancho), var(--slot-por-alto)));
+
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(0.2rem, 1.4cqw, 0.6rem);
+    grid-template-columns: repeat(var(--columnas), var(--slot-ancho));
+    justify-content: center;
+    gap: var(--slot-gap);
     width: 100%;
-    max-width: min(100%, 26vh);
-    margin-inline: auto;
+}
+
+@container (max-width: 28rem) {
+    .zona-slots {
+        --columnas: 3;
+        --filas-total: 4;
+    }
 }
 
 .zona-foto {
     position: relative;
-    width: clamp(5rem, min(45cqw, 18vh), 12rem);
+    width: clamp(5rem, min(40cqw, 15dvh), 11rem);
     margin-inline: auto;
+}
+
+.zona-indicadores-categoria {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 25;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+    pointer-events: auto;
+}
+
+.zona-indicadores-categoria--izq {
+    right: -1.25rem;
+}
+
+.zona-indicadores-categoria--der {
+    left: -1.25rem;
 }
 
 .zona-celda {
@@ -45,9 +75,8 @@
 .zona-celda-foto {
     display: grid;
     place-items: center;
-    padding-block: clamp(0.9rem, 2.5vh, 1.5rem);
+    padding-block: clamp(0.75rem, 2vh, 1.25rem);
 }
-
 
 .zona-foto>button {
     filter: drop-shadow(3px 5px 0 var(--zona-marco-sombra));

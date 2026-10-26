@@ -1,0 +1,120 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="titulo-resultado"
+  aria-describedby="motivo-resultado"
+>
+  <div
+    class="pantalla-resultado-tarjeta relative flex w-full max-w-md flex-col items-center gap-5 rounded-3xl border-2 p-6 sm:p-8 text-center shadow-cartoon"
+    [class.pantalla-resultado-tarjeta--victoria]="tipo() === 'victoria'"
+    [class.pantalla-resultado-tarjeta--derrota]="tipo() === 'derrota'"
+    [class.pantalla-resultado-tarjeta--empate]="tipo() === 'empate'"
+    [class.pantalla-resultado-tarjeta--finalizada]="tipo() === 'finalizada'"
+  >
+    <!-- Ícono / Emblema decorativo -->
+    <div
+      class="pantalla-resultado-icono flex size-16 items-center justify-center rounded-2xl border-2 shadow-cartoon"
+      [class.pantalla-resultado-icono--victoria]="tipo() === 'victoria'"
+      [class.pantalla-resultado-icono--derrota]="tipo() === 'derrota'"
+      [class.pantalla-resultado-icono--empate]="tipo() === 'empate'"
+      [class.pantalla-resultado-icono--finalizada]="tipo() === 'finalizada'"
+      aria-hidden="true"
+    >
+      @if (tipo() === 'victoria') {
+        <svg class="size-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+          <path d="M4 22h16" />
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+        </svg>
+      } @else if (tipo() === 'derrota') {
+        <svg class="size-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="m15 9-6 6" />
+          <path d="m9 9 6 6" />
+        </svg>
+      } @else if (tipo() === 'empate') {
+        <svg class="size-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M8 12h8" />
+        </svg>
+      } @else {
+        <svg class="size-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 6v6l4 2" />
+        </svg>
+      }
+    </div>
+
+    <!-- Título y subtítulo -->
+    <div class="flex flex-col gap-1">
+      <h2
+        id="titulo-resultado"
+        class="font-titulo text-3xl sm:text-4xl tracking-wide uppercase"
+        [class.text-exito]="tipo() === 'victoria'"
+        [class.text-error]="tipo() === 'derrota'"
+        [class.text-advertencia-texto]="tipo() === 'empate'"
+        [class.text-texto-primario]="tipo() === 'finalizada'"
+      >
+        {{ titulo() }}
+      </h2>
+      <p class="font-interfaz text-sm text-texto-secundario">
+        {{ subtitulo() }}
+      </p>
+    </div>
+
+    <!-- Marcador de puntos finales -->
+    <div class="grid w-full grid-cols-2 gap-3 rounded-2xl border border-borde-default bg-hundido/80 p-3 sm:p-4">
+      <div class="flex flex-col items-center gap-1">
+        <span class="font-interfaz text-xs font-semibold uppercase tracking-wider text-texto-secundario">
+          {{ nombreJugador() }}
+        </span>
+        <span class="font-titulo text-3xl sm:text-4xl tabular-nums text-texto-primario">
+          {{ puntosPropio() }}
+        </span>
+      </div>
+      <div class="flex flex-col items-center gap-1 border-l border-borde-default">
+        <span class="font-interfaz text-xs font-semibold uppercase tracking-wider text-texto-secundario">
+          {{ nombreRival() }}
+        </span>
+        <span class="font-titulo text-3xl sm:text-4xl tabular-nums text-texto-primario">
+          {{ puntosRival() }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Motivo de fin de partida -->
+    <div
+      id="motivo-resultado"
+      class="w-full rounded-xl border border-borde-default/60 bg-fondo-elevado/50 px-3.5 py-2.5 font-interfaz text-xs text-texto-secundario"
+    >
+      {{ motivoTexto() }}
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="mt-2 flex w-full flex-col gap-2.5 sm:flex-row">
+      <button
+        #botonReintentar
+        type="button"
+        app-boton
+        variante="primario"
+        class="flex-1"
+        (click)="jugarOtraVez.emit()"
+      >
+        Jugar otra vez
+      </button>
+      <button
+        type="button"
+        app-boton
+        variante="fantasma"
+        class="flex-1"
+        (click)="volverAlMenu.emit()"
+      >
+        Volver al menú
+      </button>
+    </div>
+  </div>
+</div>

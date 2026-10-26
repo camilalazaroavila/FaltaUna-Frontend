@@ -172,10 +172,11 @@
   descripcion="Un solo botón muestra el turno y lo finaliza. Arriba, el tiempo con su barra; abajo, Rendirme con alerta de confirmación."
 >
   <div class="flex flex-wrap items-start gap-6">
-    <app-control-turno [turno]="3" [segundosRestantes]="25" estado="jugando" />
-    <app-control-turno [turno]="3" [segundosRestantes]="8" estado="jugando" />
-    <app-control-turno [turno]="3" [segundosRestantes]="20" estado="esperando" />
-    <app-control-turno [turno]="3" [segundosRestantes]="0" estado="resolviendo" />
+    <app-control-turno [turno]="2" [totalTurnos]="6" [segundosRestantes]="25" estado="jugando" />
+    <app-control-turno [turno]="3" [totalTurnos]="6" [segundosRestantes]="8" estado="jugando" />
+    <app-control-turno [turno]="6" [totalTurnos]="6" [segundosRestantes]="30" estado="jugando" />
+    <app-control-turno [turno]="2" [totalTurnos]="6" [segundosRestantes]="20" estado="esperando" />
+    <app-control-turno [turno]="2" [totalTurnos]="6" [segundosRestantes]="0" estado="resolviendo" />
   </div>
 </app-tarjeta-muestra>
 <app-tarjeta-muestra

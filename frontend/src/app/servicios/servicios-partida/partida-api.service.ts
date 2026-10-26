@@ -54,6 +54,19 @@ export class PartidaApiService {
     });
   }
 
+  /** Retira una carta provisional de la mesa y la devuelve a la mano. */
+  retirarCarta(
+    partidaId: number,
+    cartaPartidaId: number,
+    claveIdempotencia: string,
+  ): Observable<EstadoPartidaApi> {
+    return this.api.post<EstadoPartidaApi>(
+      `Partidas/${partidaId}/retirar`,
+      { cartaPartidaId },
+      { headers: { [CABECERA_IDEMPOTENCIA]: claveIdempotencia } },
+    );
+  }
+
   /**
    * Finaliza el turno.
    *

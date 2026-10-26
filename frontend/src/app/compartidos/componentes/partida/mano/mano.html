@@ -16,6 +16,7 @@
       (pointermove)="alMover($event)"
       (pointerup)="alSoltar($event)"
       (pointercancel)="alCancelar($event)"
+      (lostpointercapture)="alCancelar($event)"
       (keydown)="alTeclear(item.carta, $event)"
       (blur)="seleccion.emit(null)"
     >

@@ -209,6 +209,26 @@ export class PartidaEstadoService {
     return true;
   }
 
+  /** Retira una carta del tablero y la devuelve a la mano. */
+  retirarCarta(carta: Carta): boolean {
+    const lugares = this.estadoLugares();
+    for (const lugar of ['izquierda', 'derecha'] as const) {
+      const propios = lugares[lugar].propio;
+      const idx = propios.findIndex((c) => c?.id === carta.id);
+      if (idx !== -1) {
+        const nuevosPropios = propios.map((c, i) => (i === idx ? null : c));
+        this.estadoLugares.update((l) => ({
+          ...l,
+          [lugar]: { ...l[lugar], propio: nuevosPropios },
+        }));
+        this.estadoManoPropia.update((m) => [...m, carta]);
+        this.estadoAnuncio.set(`${carta.nombre} volvió a tu mano.`);
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** Publica un texto en la región aria-live (avisos de la partida). */
   anunciar(mensaje: string): void {
     this.estadoAnuncio.set(mensaje);
@@ -227,5 +247,15 @@ export class PartidaEstadoService {
   /** MOCK: vuelve a "jugando" (galería). */
   reiniciarRonda(): void {
     this.estadoRonda.set('jugando');
+  }
+
+  /** MOCK: rendirse. */
+  rendirse(): void {
+    this.estadoAnuncio.set('Te rendiste.');
+  }
+
+  /** MOCK: abandonar. */
+  abandonar(): void {
+    this.estadoAnuncio.set('Abandonaste la partida.');
   }
 }

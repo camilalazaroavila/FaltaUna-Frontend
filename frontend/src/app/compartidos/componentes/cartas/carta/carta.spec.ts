@@ -141,7 +141,7 @@ describe('CartaComponent', () => {
 
   it('debe describir la carta en el aria-label sin filtrar el nombre si no está obtenida', () => {
     expect(carta('obtenida').getAttribute('aria-label')).toBe(
-      'Carta Danonino, Común, Gastronomía, obtenida',
+      'Carta Danonino, Común, Gastronomía, costo 12, poder 8, obtenida',
     );
     expect(carta('bloqueada').getAttribute('aria-label')).toBe(
       'Carta no obtenida, Legendaria, Gastronomía',
@@ -200,5 +200,35 @@ describe('CartaComponent · mapeo de assets por rareza y categoría', () => {
       const host = fixture.nativeElement as HTMLElement;
       expect(host.querySelectorAll('.carta__estrella').length).toBe(ESTRELLAS_POR_RAREZA[rareza]);
     }
+  });
+
+  it('no muestra indicador de efectos de categoría si la carta no los tiene', () => {
+    conCarta(cartaComun);
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.carta__indicador-efectos')).toBeNull();
+  });
+
+  it('muestra indicador de efectos de categoría cuando la carta los tiene definidos', () => {
+    conCarta({
+      ...cartaComun,
+      efectosCategoria: [
+        { tipo: 'sube', categoria: 'musica', valor: 2 },
+        { tipo: 'baja', categoria: 'tecnologia', valor: -1 },
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const indicador = host.querySelector('.carta__indicador-efectos');
+    expect(indicador).not.toBeNull();
+    expect(indicador?.querySelectorAll('.indicador-item').length).toBe(2);
+  });
+
+  it('no muestra indicador de efectos si la carta está oculta', () => {
+    conCarta({
+      ...cartaComun,
+      oculta: true,
+      efectosCategoria: [{ tipo: 'sube', categoria: 'musica', valor: 2 }],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.carta__indicador-efectos')).toBeNull();
   });
 });

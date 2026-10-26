@@ -32,3 +32,24 @@
         min-height: 26rem;
     }
 }
+
+/* Pantalla de selección de mazo: fondo decorativo de ondas con fallback sólido */
+.pantalla-seleccion-fondo {
+    background-color: var(--color-fondo-app, #0c2e2e);
+    background-image: url('/imagenes/fondos/fondito.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.mascota-imagen {
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
+    transition: transform 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mascota-imagen {
+        transition: none;
+    }
+}

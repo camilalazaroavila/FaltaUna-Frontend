@@ -55,8 +55,10 @@ export interface Carta {
   readonly categoria: CategoriaCarta;
   readonly atributoIzquierdo: number;
   readonly atributoDerecho: number;
+  /** Poder base de la carta (solo relevante en mesa). */
+  readonly poderBase?: number;
   readonly obtenida: boolean;
-  /** Id de la carta en el catálogo cuando viene de una partida. */
+  /** Id de la carta en el catálogos cuando viene de una partida. */
   readonly cartaId?: number;
   /** Id de la instancia en la partida: distingue copias repetidas en la mano. */
   readonly cartaPartidaId?: number;
@@ -64,6 +66,15 @@ export interface Carta {
   readonly jugable?: boolean;
   /** Carta del rival que todavía no fue revelada. */
   readonly oculta?: boolean;
+  /** Efectos sobre categorías que produce la habilidad de la carta. */
+  readonly efectosCategoria?: readonly EfectoCategoriaCarta[];
+}
+
+/** Efecto sobre una categoría que mejora o empeora el poder. */
+export interface EfectoCategoriaCarta {
+  readonly tipo: 'sube' | 'baja';
+  readonly categoria: CategoriaCarta;
+  readonly valor?: number | null;
 }
 
 /** Cantidad de estrellas según rareza (orden ascendente de poder). */

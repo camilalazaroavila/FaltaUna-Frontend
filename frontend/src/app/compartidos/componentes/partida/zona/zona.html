@@ -71,7 +71,12 @@
       <!-- Puntaje del rival: arriba de la foto -->
       <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div class="relative">
-          <app-puntaje-zona [puntos]="puntajeRival()" [estado]="estadoRival()" lado="rival" />
+          <app-puntaje-zona
+            [puntos]="puntajeRival()"
+            [estado]="estadoRival()"
+            lado="rival"
+            [diferencia]="diferencia()"
+          />
           <span
             class="pointer-events-none absolute top-1/2 left-full ml-1.5 -translate-y-1/2"
             aria-hidden="true"
@@ -91,7 +96,12 @@
       <!-- Puntaje propio: abajo de la foto -->
       <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
         <div class="relative">
-          <app-puntaje-zona [puntos]="puntajePropio()" [estado]="estadoPropio()" lado="propio" />
+          <app-puntaje-zona
+            [puntos]="puntajePropio()"
+            [estado]="estadoPropio()"
+            lado="propio"
+            [diferencia]="diferencia()"
+          />
           <span
             class="pointer-events-none absolute top-1/2 left-full ml-1.5 -translate-y-1/2"
             aria-hidden="true"
@@ -107,6 +117,22 @@
           </span>
         </div>
       </div>
+
+      <!-- Indicador de categorías que la zona mejora o empeora -->
+      @if (efectosCategoria().length > 0) {
+        <div
+          class="zona-indicadores-categoria"
+          [class.zona-indicadores-categoria--izq]="lugar() === 'izquierda'"
+          [class.zona-indicadores-categoria--der]="lugar() === 'derecha'"
+        >
+          <app-indicador-categorias-habilidad
+            [efectos]="efectosCategoria()"
+            [maxVisibles]="3"
+            orientacion="vertical"
+            tamanio="md"
+          />
+        </div>
+      }
     </div>
   </div>
 
@@ -121,14 +147,33 @@
       >
         <app-slot-carta lado="propio" [estado]="slot.estado" (jugar)="jugarSlot.emit(slot.indice)">
           @if (slot.carta; as carta) {
-            <button
-              type="button"
-              class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
-              [attr.aria-label]="'Ver carta ' + carta.nombre"
-              (click)="verCarta.emit(carta)"
-            >
-              <app-carta [carta]="carta" />
-            </button>
+            <div class="relative h-full w-full">
+              <button
+                type="button"
+                class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
+                [attr.aria-label]="'Ver carta ' + carta.nombre"
+                (click)="alClickCarta(carta)"
+                (pointerdown)="esProvisionalFn()(carta) && alPulsarCartaProvisional(carta, $event)"
+                (pointermove)="alMoverCartaProvisional($event)"
+                (pointerup)="alSoltarCartaProvisional($event)"
+                (pointercancel)="alCancelarCartaProvisional($event)"
+                (lostpointercapture)="alCancelarCartaProvisional($event)"
+              >
+                <app-carta [carta]="carta" />
+              </button>
+
+              @if (esProvisionalFn()(carta)) {
+                <button
+                  type="button"
+                  class="absolute -top-2 left-1/2 -translate-x-1/2 z-30 flex size-5.5 items-center justify-center rounded-full border border-white/90 bg-error text-[0.625rem] font-bold text-white shadow-cartoon transition hover:scale-120 hover:bg-error-borde active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-borde-foco cursor-pointer"
+                  [attr.aria-label]="'Retirar ' + carta.nombre + ' y devolver a la mano'"
+                  title="Devolver a mi mano"
+                  (click)="alRetirarCarta(carta, $event)"
+                >
+                  ✕
+                </button>
+              }
+            </div>
           }
         </app-slot-carta>
       </div>

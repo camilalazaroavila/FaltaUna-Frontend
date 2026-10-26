@@ -1,0 +1,115 @@
+:host {
+  display: block;
+  user-select: none;
+}
+
+.indicador-lista {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+:host(.indicador--vertical) .indicador-lista {
+  flex-direction: column;
+}
+
+:host(.indicador--horizontal) .indicador-lista {
+  flex-direction: row;
+}
+
+.indicador-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-pildora);
+  border: 2px solid;
+  background-color: var(--color-superficie-panel, #1e293b);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease-out;
+}
+
+:host(.indicador--sm) .indicador-item {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+:host(.indicador--md) .indicador-item {
+  width: 2rem;
+  height: 2rem;
+}
+
+.indicador-item--sube {
+  border-color: var(--color-exito, #22c55e);
+  background-color: rgba(34, 197, 94, 0.18);
+}
+
+.indicador-item--baja {
+  border-color: var(--color-error, #ef4444);
+  background-color: rgba(239, 68, 68, 0.18);
+}
+
+.indicador-icono-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 65%;
+  height: 65%;
+}
+
+.indicador-signo {
+  position: absolute;
+  bottom: -0.25rem;
+  right: -0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: var(--radio-pildora);
+  font-family: var(--fuente-titulo);
+  font-size: 0.65rem;
+  font-weight: 900;
+  line-height: 1;
+  border: 1.5px solid #000;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+:host(.indicador--sm) .indicador-signo {
+  width: 0.75rem;
+  height: 0.75rem;
+  font-size: 0.55rem;
+  bottom: -0.2rem;
+  right: -0.2rem;
+}
+
+.indicador-signo--sube {
+  background-color: var(--color-exito, #22c55e);
+  color: var(--color-exito-sobre, #ffffff);
+}
+
+.indicador-signo--baja {
+  background-color: var(--color-error, #ef4444);
+  color: var(--color-error-sobre, #ffffff);
+}
+
+.indicador-resumen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radio-pildora);
+  border: 1.5px solid var(--color-zona-marco, #475569);
+  background-color: var(--color-hundido, #0f172a);
+  color: var(--color-texto-primario, #f8fafc);
+  font-family: var(--fuente-titulo);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+:host(.indicador--sm) .indicador-resumen {
+  font-size: 0.6rem;
+  padding: 0.05rem 0.25rem;
+}

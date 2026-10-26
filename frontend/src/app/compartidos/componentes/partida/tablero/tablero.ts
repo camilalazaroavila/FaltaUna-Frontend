@@ -72,6 +72,7 @@ export class Tablero {
 
   /** `true` cuando el drag de la galería fuerza el resaltado (demo). */
   readonly cartaAgarrada = input(false);
+  readonly abandonar = output<void>();
   readonly rendirse = output<void>();
 
   protected readonly lugares: readonly NombreLugar[] = ['izquierda', 'derecha'];
@@ -118,13 +119,13 @@ export class Tablero {
 
   protected alTerminarArrastre(posicion: PosicionArrastre): void {
     const carta = this.cartaEnArrastre();
-    this.cartaEnArrastre.set(null);
 
     if (!carta) {
       return;
     }
 
     const slot = this.slotEnPosicion(posicion);
+    this.cartaEnArrastre.set(null);
 
     if (slot && this.servicio.jugarCarta(carta, slot.lugar, slot.indice)) {
       this.mano()?.volarHacia(slot.elemento.getBoundingClientRect());
@@ -133,6 +134,16 @@ export class Tablero {
 
     this.mano()?.cancelarArrastre();
     this.servicio.anunciar(`No se puede jugar ${carta.nombre} ahí. La carta vuelve a tu mano.`);
+  }
+
+  protected readonly esProvisionalFn = (carta: Carta): boolean =>
+    this.servicio.esCartaProvisional(carta);
+
+  protected alRetirarCarta(carta: Carta): void {
+    this.servicio.retirarCarta(carta);
+    if (this.cartaAbierta()?.id === carta.id) {
+      this.cartaAbierta.set(null);
+    }
   }
 
   /** Jugar con el botón de un slot disponible (alternativa accesible al drag). */
@@ -146,13 +157,40 @@ export class Tablero {
 
   /**
    * Devuelve el slot propio vacío que está bajo el puntero, o `null` si no hay
-   * ninguno: así el drag solo juega sobre zonas realmente válidas.
+   * ninguno o está ocupado.
    */
   private slotEnPosicion(posicion: PosicionArrastre): SlotSobrevolado | null {
-    const elemento = document.elementFromPoint(posicion.x, posicion.y);
+    if (typeof document !== 'undefined' && typeof document.elementsFromPoint === 'function') {
+      const elementos = document.elementsFromPoint(posicion.x, posicion.y);
+      for (const el of elementos) {
+        const slot = el.closest<HTMLElement>('[data-slot-lado="propio"]');
+        if (!slot) continue;
+
+        const estado = slot.getAttribute('data-slot-estado');
+        if (estado === 'ocupado') {
+          return null;
+        }
+
+        const contenedor = slot.closest<HTMLElement>('[data-lugar][data-indice]');
+        const lugar = contenedor?.dataset['lugar'];
+        const indice = Number(contenedor?.dataset['indice']);
+
+        if ((lugar === 'izquierda' || lugar === 'derecha') && Number.isInteger(indice)) {
+          return { lugar, indice, elemento: slot };
+        }
+      }
+      return null;
+    }
+
+    const elemento = typeof document !== 'undefined' ? document.elementFromPoint(posicion.x, posicion.y) : null;
     const slot = elemento?.closest<HTMLElement>('[data-slot-lado="propio"]');
 
-    if (!slot || slot.getAttribute('data-slot-estado') !== 'resaltado') {
+    if (!slot) {
+      return null;
+    }
+
+    const estado = slot.getAttribute('data-slot-estado');
+    if (estado === 'ocupado') {
       return null;
     }
 

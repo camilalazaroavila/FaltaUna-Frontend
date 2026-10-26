@@ -73,7 +73,7 @@ export class BarraPuntos implements AfterViewInit {
    */
   protected readonly clasesNumero = computed(() =>
     [
-      'absolute inset-x-0 flex justify-center overflow-hidden font-titulo text-menor tabular-nums texto-contorno text-texto-primario',
+      'absolute inset-x-0 flex justify-center overflow-hidden font-titulo tabular-nums texto-contorno text-texto-primario',
       this.esRival() ? 'top-1.5' : 'bottom-1.5',
     ].join(' '),
   );
