@@ -110,8 +110,8 @@
       [segundosRestantes]="servicio.segundosRestantes()"
       [estado]="servicio.estadoRonda()"
       (finalizar)="servicio.marcarListo()"
-      (abandonar)="servicio.abandonar()"
-      (rendirse)="servicio.rendirse()"
+      (abandonar)="abandonar.emit()"
+      (rendirse)="rendirse.emit()"
     />
   </div>
 </div>

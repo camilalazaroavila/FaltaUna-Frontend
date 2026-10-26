@@ -46,13 +46,23 @@
   </button>
 
   @if (!resolviendo()) {
-    <div class="flex items-center justify-center pt-1">
+    <div class="flex items-center justify-between gap-1.5 pt-1">
+      <button
+        type="button"
+        app-boton
+        variante="fantasma"
+        tamanio="sm"
+        class="flex-1"
+        (click)="pedirConfirmacionAbandonar()"
+      >
+        Salir
+      </button>
       <button
         type="button"
         app-boton
         variante="peligro"
         tamanio="sm"
-        class="w-full"
+        class="flex-1"
         (click)="pedirConfirmacionRendirse()"
       >
         Rendirse

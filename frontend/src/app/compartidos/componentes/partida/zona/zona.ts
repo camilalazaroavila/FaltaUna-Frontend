@@ -127,78 +127,7 @@ export class Zona implements AfterViewInit {
     this.retirarCarta.emit(carta);
   }
 
-  private arrastrandoProvisional?: {
-    carta: Carta;
-    origenY: number;
-    origenX: number;
-    punteroId: number;
-    huboArrastre: boolean;
-  };
-
-  protected alPulsarCartaProvisional(carta: Carta, evento: PointerEvent): void {
-    if (evento.button !== 0 && evento.pointerType === 'mouse') return;
-    this.arrastrandoProvisional = {
-      carta,
-      origenY: evento.clientY,
-      origenX: evento.clientX,
-      punteroId: evento.pointerId,
-      huboArrastre: false,
-    };
-    try {
-      (evento.currentTarget as HTMLElement).setPointerCapture(evento.pointerId);
-    } catch {
-      // Ignorar si no se puede capturar
-    }
-  }
-
-  protected alMoverCartaProvisional(evento: PointerEvent): void {
-    if (!this.arrastrandoProvisional || evento.pointerId !== this.arrastrandoProvisional.punteroId) {
-      return;
-    }
-    const distancia = Math.hypot(
-      evento.clientX - this.arrastrandoProvisional.origenX,
-      evento.clientY - this.arrastrandoProvisional.origenY,
-    );
-    if (distancia > 15) {
-      this.arrastrandoProvisional.huboArrastre = true;
-    }
-  }
-
-  protected alSoltarCartaProvisional(evento: PointerEvent): void {
-    if (!this.arrastrandoProvisional || evento.pointerId !== this.arrastrandoProvisional.punteroId) {
-      return;
-    }
-    try {
-      (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
-    } catch {
-      // Ignorar
-    }
-
-    const { carta, huboArrastre, origenY } = this.arrastrandoProvisional;
-    this.arrastrandoProvisional = undefined;
-
-    // Si se arrastró hacia abajo (hacia la mano) al menos 15px, retirar la carta
-    if (huboArrastre && evento.clientY > origenY + 15) {
-      evento.stopPropagation();
-      this.retirarCarta.emit(carta);
-    }
-  }
-
-  protected alCancelarCartaProvisional(evento: PointerEvent): void {
-    if (this.arrastrandoProvisional && evento.pointerId === this.arrastrandoProvisional.punteroId) {
-      try {
-        (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
-      } catch {
-        // Ignorar
-      }
-      this.arrastrandoProvisional = undefined;
-    }
-  }
-
   protected alClickCarta(carta: Carta): void {
-    if (this.arrastrandoProvisional?.huboArrastre) {
-      return;
-    }
     this.verCarta.emit(carta);
   }
 

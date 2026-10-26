@@ -628,9 +628,12 @@ export class PartidaServicio {
     // 1. Actualización optimista inmediata en el cliente
     const nuevoCupon = Math.max(0, estado.cuponActual - costo);
     const nuevaMano = estado.mano
-      .filter((item) =>
-        enMano.cartaPartidaId ? item.cartaPartidaId !== enMano.cartaPartidaId : item.id !== enMano.id,
-      )
+      .filter((item) => {
+        if (enMano.cartaPartidaId != null && item.cartaPartidaId != null) {
+          return item.cartaPartidaId !== enMano.cartaPartidaId;
+        }
+        return item.id !== enMano.id;
+      })
       .map((item) => ({
         ...item,
         jugable: (item.atributoIzquierdo ?? 0) <= nuevoCupon,
@@ -922,11 +925,12 @@ export class PartidaServicio {
 
     for (const jugada of this.colaJugadas) {
       cuponRestante = Math.max(0, cuponRestante - jugada.costo);
-      manoRestante = manoRestante.filter((item) =>
-        jugada.carta.cartaPartidaId
-          ? item.cartaPartidaId !== jugada.carta.cartaPartidaId
-          : item.id !== jugada.carta.id,
-      );
+      manoRestante = manoRestante.filter((item) => {
+        if (jugada.carta.cartaPartidaId != null && item.cartaPartidaId != null) {
+          return item.cartaPartidaId !== jugada.carta.cartaPartidaId;
+        }
+        return item.id !== jugada.carta.id;
+      });
 
       const yaEnMesa = cartasMesaActualizadas.some(
         (c) =>
@@ -2353,16 +2357,28 @@ export class PartidaServicio {
             return;
           }
 
+          const cartasPropioActual = (this.estadoRealSignal()?.cartasMesa ?? []).filter(
+            (c) => c.lado === 'propio',
+          ).length;
+          const cartasPropioServidor = (nuevoEstado.cartasEnMesa ?? []).filter(
+            (c) => c.lado === 'propio',
+          ).length;
+
           // Ignorar respuestas de polling si hay jugadas encoladas, en vuelo o si la consulta salió antes de una jugada
           if (
             this.colaJugadas.length > 0 ||
             this.jugandoEnCurso ||
+            this.enviandoCartaSignal() ||
             secuenciaConsulta < this.secuenciaJugadas ||
-            momentoConsulta < this.ultimaJugadaTimestamp
+            momentoConsulta < this.ultimaJugadaTimestamp ||
+            (nuevoEstado.ronda === rondaActual && cartasPropioServidor < cartasPropioActual)
           ) {
             console.warn('[PartidaServicio] Se descartó respuesta de polling originada antes de una jugada', {
               enCola: this.colaJugadas.length,
               enCurso: this.jugandoEnCurso,
+              enviando: this.enviandoCartaSignal(),
+              cartasPropioActual,
+              cartasPropioServidor,
               secuenciaConsulta,
               secuenciaActual: this.secuenciaJugadas,
               momentoConsulta,

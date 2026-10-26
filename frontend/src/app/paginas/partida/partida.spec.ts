@@ -75,13 +75,13 @@ describe('Partida', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('muestra la cabecera de ronda y el tablero cuando la partida está activa', () => {
+  it('muestra el tablero cuando la partida está activa sin cabecera superior redundante', () => {
     fixture.detectChanges();
 
+    const tablero = fixture.nativeElement.querySelector('app-tablero');
+    expect(tablero).toBeTruthy();
     const texto = fixture.nativeElement.textContent;
-    expect(texto).toContain('Partida contra el bot');
-    expect(texto).toContain('Ronda 1 de 6');
-    expect(texto).toContain('Abandonar');
+    expect(texto).not.toContain('Partida contra el bot');
   });
 
   it('expone el anuncio en la partida', () => {
