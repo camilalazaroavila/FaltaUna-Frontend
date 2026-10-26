@@ -42,7 +42,7 @@
       <app-panel-desplazable clasesExtra="h-full">
         <div
           class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 2xl:gap-6 p-2 pb-4 2xl:p-4">
-          @for (sobre of listaSobresUI(); track sobre.id) {
+          @for (sobre of listaSobresUI(); track $index) {
           @let p = propsDeSobre(sobre);
           <div class="group flex flex-col items-center gap-1.5 2xl:gap-3 transition-opacity"
             [class.opacity-40]="!sobre.disponible" [attr.inert]="sobre.disponible ? null : ''">

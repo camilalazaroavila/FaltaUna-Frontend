@@ -6,7 +6,7 @@ import { PartidaApiService } from '@servicios/servicios-partida/partida-api.serv
 import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
 import { JUGADORES_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
 import type { Carta, EfectoCategoriaCarta, RarezaCarta } from '@modelos/carta.model';
-import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre } from '@modelos/carta.model';
+import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre, rarezaDesdeNombre } from '@modelos/carta.model';
 import type {
   CartaApi,
   CartaEnMesaApi,
@@ -2128,7 +2128,7 @@ export class PartidaServicio {
       cartaPartidaId: opciones.cartaPartidaId,
       nombre: carta.nombre || 'Carta',
       imagenUrl: carta.imagenUrl ?? '',
-      rareza: this.rarezaDesdeNombre(carta.rareza),
+      rareza: rarezaDesdeNombre(carta.rareza),
       categoria: categoriaCartaDesdeNombre(carta.categoria),
       atributoIzquierdo: carta.costoCupon,
       atributoDerecho: poderActual,
@@ -2177,21 +2177,7 @@ export class PartidaServicio {
   }
 
   private rarezaDesdeNombre(valor: string): RarezaCarta {
-    const normalizada = normalizar(valor);
-
-    if (normalizada === 'rara') {
-      return 'rara';
-    }
-
-    if (normalizada === 'epica' || normalizada === 'epicarta') {
-      return 'epicarta';
-    }
-
-    if (normalizada === 'legendaria') {
-      return 'legendaria';
-    }
-
-    return 'comun';
+    return rarezaDesdeNombre(valor);
   }
 
   /** Traduce el resultado de la ronda sin recalcular ningún puntaje. */
