@@ -15,13 +15,15 @@
         {{ segundosRestantes() }}s
       </span>
 
-      <span class="block h-2 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
-        <span
-          class="block h-full rounded-pildora transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
-          [class]="clasesBarra()"
-          [style.width.%]="proporcion() * 100"
-        ></span>
-      </span>
+      @if (segundosTotales() && segundosTotales()! > 0) {
+        <span class="block h-2 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
+          <span
+            class="block h-full rounded-pildora transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
+            [class]="clasesBarra()"
+            [style.width.%]="proporcion() * 100"
+          ></span>
+        </span>
+      }
     </div>
   }
 

@@ -54,7 +54,7 @@ describe('CartaPopupComponent', () => {
     expect(host().querySelector('app-carta')).not.toBeNull();
     expect(host().textContent).toContain('Danonino');
     expect(host().textContent).toContain('Común · Gastronomía');
-    expect(host().textContent).toContain('Cuesta 8 y suma 12.');
+    expect(host().textContent).toContain('Cuesta 12 y suma 8.');
   });
 
   it('oculta el nombre y la oración en las cartas no obtenidas', () => {
@@ -106,5 +106,33 @@ describe('CartaPopupComponent', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
 
     expect(emitido).toHaveBeenCalledTimes(1);
+  });
+
+  it('muestra la habilidad y el momento cuando la carta los tiene definidos', () => {
+    fixture.componentRef.setInput('carta', {
+      ...cartaObtenida,
+      habilidad: {
+        tipo: 'AUMENTAR_PODER_CATEGORIA',
+        momento: 'al-revelar',
+        valor: 2,
+        categoriaObjetivo: 'Gastronomía',
+        descripcion: 'Super Danonino: +2 de poder a las cartas aliadas de Gastronomía.',
+      },
+    });
+    fixture.detectChanges();
+
+    expect(host().textContent).toContain('Habilidad');
+    expect(host().textContent).toContain('Al revelar');
+    expect(host().textContent).toContain('Super Danonino: +2 de poder a las cartas aliadas de Gastronomía.');
+  });
+
+  it('muestra la descripción narrativa cuando la carta la tiene definida', () => {
+    fixture.componentRef.setInput('carta', {
+      ...cartaObtenida,
+      descripcion: 'El yogur favorito de las meriendas de la infancia.',
+    });
+    fixture.detectChanges();
+
+    expect(host().textContent).toContain('El yogur favorito de las meriendas de la infancia.');
   });
 });

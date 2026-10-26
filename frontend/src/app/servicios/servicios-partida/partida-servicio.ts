@@ -34,7 +34,7 @@ import type {
 const SLOTS_POR_LADO = 6;
 
 /** Foto de la zona mientras el backend no mande `imagenUrl`. */
-const IMAGEN_ZONA_RESPALDO = 'imagenes/grido.jpg';
+const IMAGEN_ZONA_RESPALDO = 'imagenes/zona-generica.svg';
 
 /** Clave de `localStorage` con la partida activa, para reconectar al recargar. */
 const CLAVE_PARTIDA = 'faltauna_partida_activa';
@@ -88,6 +88,8 @@ interface CartaMesaVista {
   readonly lado: LadoPartida;
   /** Slot del lugar (0..5), o null si el servidor no especificó índice. */
   readonly slot: number | null;
+  /** Lugar físico ('izquierda' | 'derecha') donde se jugó la carta. Inmutable tras la rotación. */
+  readonly lugar: NombreLugar;
 }
 
 /** Jugada pendiente en la cola secuencial. */
@@ -114,6 +116,9 @@ interface EstadoReal {
   readonly puntosMaximos: number;
   readonly segundosIniciales: number;
   readonly momentoReferencia: number;
+  readonly segundosTotales?: number;
+  readonly finDeRondaMs: number | null;
+  readonly desfaseServidorMs: number;
   readonly cuponActual: number;
   readonly cuponMaximo: number;
   readonly puntosPropio: number;
@@ -189,6 +194,11 @@ export class PartidaServicio {
   private ultimaJugadaTimestamp = 0;
   private pendienteFinalizar = false;
   private secuenciaJugadas = 0;
+  /**
+   * Registro inmutable del lugar físico ('izquierda' | 'derecha') y slot (0..5)
+   * de cada carta en la mesa durante la partida (solución transitoria de estabilidad).
+   */
+  private readonly ubicacionFijaCartas = new Map<number | string, { lugar: NombreLugar; slot: number }>();
 
   private readonly escuchaVisibilidad = (): void => {
     if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
@@ -232,13 +242,9 @@ export class PartidaServicio {
       return LUGARES_VACIOS;
     }
 
-    // El mapa acumula todas las zonas conocidas (activas + rotadas) para
-    // que las cartas jugadas antes de una rotación sigan visibles.
-    const mapaZona: ReadonlyMap<number, NombreLugar> = estado.mapaZonaLugar;
-
     return {
-      izquierda: this.construirLugar(estado, 'izquierda', mapaZona),
-      derecha: this.construirLugar(estado, 'derecha', mapaZona),
+      izquierda: this.construirLugar(estado, 'izquierda'),
+      derecha: this.construirLugar(estado, 'derecha'),
     };
   });
 
@@ -325,6 +331,11 @@ export class PartidaServicio {
 
   readonly segundosRestantes = computed(() =>
     this.modoRealSignal() ? this.segundosSignal() : this.mock.segundosRestantes(),
+  );
+
+  /** Segundos totales asignados a la ronda por el servidor. */
+  readonly segundosTotales = computed<number | undefined>(() =>
+    this.modoRealSignal() ? this.estadoRealSignal()?.segundosTotales : 60,
   );
 
   /** Cupones de recurso disponibles. */
@@ -647,7 +658,18 @@ export class PartidaServicio {
       lado: 'propio',
       zonaPartidaId: zona.zonaPartidaId,
       slot: indice,
+      lugar,
     };
+
+    if (cartaPartidaId != null) {
+      this.ubicacionFijaCartas.set(cartaPartidaId, { lugar, slot: indice });
+    }
+    if (enMano.cartaId != null) {
+      this.ubicacionFijaCartas.set(`cid-${enMano.cartaId}`, { lugar, slot: indice });
+    }
+    if (enMano.id != null) {
+      this.ubicacionFijaCartas.set(`cid-${enMano.id}`, { lugar, slot: indice });
+    }
 
     const nuevasCartasMesa = [...estado.cartasMesa, cartaParaMesa];
     const poderCarta = enMano.poderBase ?? enMano.atributoDerecho ?? 0;
@@ -805,6 +827,9 @@ export class PartidaServicio {
           }
 
           this.olvidarClave('jugar');
+          if (status !== null && status !== undefined && status >= 400 && status < 500) {
+            this.olvidarClavesDeCarta(jugada.carta.cartaPartidaId, jugada.carta.cartaId);
+          }
 
           const idx = this.colaJugadas.findIndex((j) => j.id === jugada.id);
           if (idx !== -1) {
@@ -944,6 +969,7 @@ export class PartidaServicio {
           lado: 'propio',
           zonaPartidaId: jugada.zonaPartidaId,
           slot: jugada.indice,
+          lugar: jugada.lugar,
         });
       }
 
@@ -1060,6 +1086,7 @@ export class PartidaServicio {
       return false;
     }
 
+    // 1. Si estaba encolada detrás de otra (índice > 0), no llegó a salir a la red: revertir localmente
     const idxCola = this.colaJugadas.findIndex(
       (j) =>
         (cartaPartidaId != null && j.carta.cartaPartidaId === cartaPartidaId) ||
@@ -1068,10 +1095,19 @@ export class PartidaServicio {
     if (idxCola > 0) {
       const jugada = this.colaJugadas[idxCola];
       this.colaJugadas.splice(idxCola, 1);
+      this.olvidarClavesDeCarta(cartaPartidaId, carta.id);
       this.revertirJugada(jugada);
       return true;
     }
 
+    if (idxCola === 0) {
+      this.colaJugadas.splice(0, 1);
+      if (this.colaJugadas.length === 0) {
+        this.jugandoEnCurso = false;
+      }
+    }
+
+    // 2. Si ya estaba en la mesa (enviada al servidor)
     const idxMesa = estado.cartasMesa.findIndex(
       (c) =>
         c.lado === 'propio' &&
@@ -1097,8 +1133,8 @@ export class PartidaServicio {
       jugable: (c.atributoIzquierdo ?? 0) <= nuevoCupon,
     }));
 
-    // Recalcular poder provisional de la zona
-    const lugar = this.lugarDeZona(cartaEnMesa.zonaPartidaId, estado);
+    // Recalcular poder provisional de la zona usando su lugar físico
+    const lugar = cartaEnMesa.lugar;
     const nuevasZonas = { ...estado.zonas };
     if (lugar) {
       const zona = estado.zonas[lugar];
@@ -1120,24 +1156,55 @@ export class PartidaServicio {
     this.estadoRealSignal.set(estadoOptimista);
     this.anuncioSignal.set(`${carta.nombre} volvió a tu mano.`);
 
+    // Olvidar claves previas para que la carta se pueda volver a jugar inmediatamente
+    this.olvidarClavesDeCarta(cartaPartidaId, carta.id);
+    if (cartaPartidaId != null) {
+      this.ubicacionFijaCartas.delete(cartaPartidaId);
+    }
+    if (carta.cartaId != null) {
+      this.ubicacionFijaCartas.delete(`cid-${carta.cartaId}`);
+    }
+    if (carta.id != null) {
+      this.ubicacionFijaCartas.delete(`cid-${carta.id}`);
+    }
+
     const clave = this.clavePara('retirar', `${estado.partidaId}:${estado.ronda}:${cartaPartidaId}`);
     const epoca = this.epoca;
+    this.enviandoCartaSignal.set(true);
+    this.ultimaJugadaTimestamp = Date.now();
+    this.secuenciaJugadas++;
 
     this.partidaApi
       .retirarCarta(estado.partidaId, cartaPartidaId, clave)
       .pipe(
         tap((nuevoEstado) => {
+          this.enviandoCartaSignal.set(false);
           if (!this.esEpocaActual(epoca) || !this.esPartidaActual(estado.partidaId)) {
             return;
           }
           this.olvidarClave('retirar');
+          this.olvidarClavesDeCarta(cartaPartidaId, carta.id);
           this.aplicarEstado(nuevoEstado);
         }),
         catchError((error: unknown) => {
+          this.enviandoCartaSignal.set(false);
+          this.olvidarClave('retirar');
+          this.olvidarClavesDeCarta(cartaPartidaId, carta.id);
           if (!this.esEpocaActual(epoca)) {
             return EMPTY;
           }
           this.registrarError(error, true);
+          this.partidaApi
+            .obtenerEstado(estado.partidaId)
+            .pipe(
+              tap((estadoServidor) => {
+                if (this.esEpocaActual(epoca) && this.esPartidaActual(estado.partidaId)) {
+                  this.aplicarEstado(estadoServidor);
+                }
+              }),
+              catchError(() => EMPTY),
+            )
+            .subscribe();
           return EMPTY;
         }),
       )
@@ -1503,7 +1570,6 @@ export class PartidaServicio {
     }
 
     this.resultadoSignal.set(resultado);
-    this.aplicarDeltas(resultado, zonas, anterior);
 
     // Construir el mapa de zonas ANTES de fijar el estado para que
     // `construirLugar` pueda ubicar cartas de zonas que ya rotaron.
@@ -1550,42 +1616,77 @@ export class PartidaServicio {
       }
     });
 
+    this.aplicarDeltas(resultado, zonas, anterior, mapaZonaLugar);
+
+    // Mapear cartas en mesa asignando lugar físico y slot estables (omitiendo zonas desconocidas)
+    const cartasMesaAdaptadas: CartaMesaVista[] = [];
+    for (const item of cartasEnMesaProcesadas) {
+      const { lugar, slot } = this.deducirLugarCarta(item, anterior, zonas, mapaZonaLugar);
+      if (lugar !== null) {
+        cartasMesaAdaptadas.push(this.cartaMesaDesdeApi(item, lugar, slot));
+      }
+    }
+
+    // Retención transitoria de cartas de rondas previas ante omisión del backend al rotar zonas (Hipótesis A)
+    if (anterior && !terminada) {
+      for (const cartaPrevia of anterior.cartasMesa) {
+        const sigueEnServidor = cartasMesaAdaptadas.some(
+          (c) =>
+            (cartaPrevia.carta.cartaPartidaId != null &&
+              c.carta.cartaPartidaId === cartaPrevia.carta.cartaPartidaId) ||
+            (cartaPrevia.carta.cartaId != null &&
+              c.carta.cartaId === cartaPrevia.carta.cartaId),
+        );
+        const volvioAMano = estado.manoPropia.some(
+          (m) =>
+            (cartaPrevia.carta.cartaPartidaId != null &&
+              m.cartaPartidaId === cartaPrevia.carta.cartaPartidaId) ||
+            (cartaPrevia.carta.cartaId != null &&
+              m.carta.cartaId === cartaPrevia.carta.cartaId),
+        );
+        if (!sigueEnServidor && !volvioAMano) {
+          console.warn(
+            '[PartidaServicio] Carta retenida en mesa (el servidor omitió enviarla tras rotar su zona):',
+            {
+              cartaId: cartaPrevia.carta.cartaId,
+              cartaPartidaId: cartaPrevia.carta.cartaPartidaId,
+              lugar: cartaPrevia.lugar,
+              slot: cartaPrevia.slot,
+            },
+          );
+          cartasMesaAdaptadas.push(cartaPrevia);
+        }
+      }
+    }
+
+    // Diagnósticos de desarrollo: rotación de zonas y estabilidad de cartas
     if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       try {
-        console.info(
-          '[PartidaRevelado] cartasEnMesa del lado rival:',
-          JSON.stringify(estado.cartasEnMesa.filter((c) => c.lado === 'rival')),
-        );
-        console.info(
-          '[PartidaRevelado] ultimoResultado.cartasReveladas:',
-          JSON.stringify(estado.ultimoResultado?.cartasReveladas ?? []),
-        );
-        console.info(
-          '[PartidaRevelado] zonas[].cartas:',
-          JSON.stringify(
-            estado.zonas.flatMap((z) =>
-              (z.cartas ?? []).map((c) => ({
-                zonaPartidaId: c.zonaPartidaId ?? z.zonaPartidaId,
-                lado: c.lado,
-                indice: c.indice,
-                oculta: c.oculta,
-              })),
-            ),
-          ),
-        );
-        console.info(
-          '[PartidaRevelado] claves de mapaZonaLugar:',
-          JSON.stringify(Array.from(mapaZonaLugar.keys())),
-        );
-        const noUbicadas = cartasEnMesaProcesadas.filter(
-          (c) => c.zonaPartidaId == null || !mapaZonaLugar.has(c.zonaPartidaId),
-        );
-        console.info(
-          '[PartidaRevelado] cartas que no lograron ubicarse:',
-          JSON.stringify(noUbicadas),
-        );
+        if (anterior && cambioDeRonda) {
+          const comparacion = anterior.cartasMesa.map((cPrev) => {
+            const cNueva = cartasMesaAdaptadas.find(
+              (c) =>
+                (cPrev.carta.cartaPartidaId != null &&
+                  c.carta.cartaPartidaId === cPrev.carta.cartaPartidaId) ||
+                (cPrev.carta.cartaId != null && c.carta.cartaId === cPrev.carta.cartaId),
+            );
+            return {
+              carta: cPrev.carta.nombre,
+              cartaPartidaId: cPrev.carta.cartaPartidaId,
+              antes: { lugar: cPrev.lugar, slot: cPrev.slot },
+              despues: cNueva ? { lugar: cNueva.lugar, slot: cNueva.slot } : 'desaparecida',
+              estable:
+                cNueva != null && cNueva.lugar === cPrev.lugar && cNueva.slot === cPrev.slot,
+            };
+          });
+          console.info('[PartidaRotacionDiagnostico] Ubicación de cartas tras rotación:', {
+            rondaAnterior: anterior.ronda,
+            rondaNueva: estado.ronda,
+            cartas: comparacion,
+          });
+        }
       } catch (e) {
-        console.info('[PartidaRevelado] error en logs de diagnóstico:', e);
+        console.info('[PartidaRotacionDiagnostico] Error al emitir diagnóstico:', e);
       }
     }
 
@@ -1621,6 +1722,52 @@ export class PartidaServicio {
         !idsVisiblesPrevios.has(c.cartaPartidaId),
     );
 
+    // Reloj continuo y sin saltos (sin números fijos ni inventar totales):
+    const totalServidor =
+      estado.segundosTotales ??
+      estado.duracionRonda ??
+      estado.tiempoTotalRonda;
+
+    let segundosTotales: number | undefined = anterior?.segundosTotales;
+    if (totalServidor != null && totalServidor > 0) {
+      segundosTotales = totalServidor;
+    } else if (cambioDeRonda || !anterior) {
+      segundosTotales = undefined;
+      console.warn('[PartidaServicio] El servidor no informó el total de la ronda.');
+    }
+
+    let finDeRondaMs: number | null = null;
+    let desfaseServidorMs = anterior?.desfaseServidorMs ?? 0;
+
+    if (estado.finDeRonda) {
+      const parsedFin = new Date(estado.finDeRonda).getTime();
+      if (!isNaN(parsedFin) && parsedFin > 0) {
+        finDeRondaMs = parsedFin;
+        if (estado.segundosRestantes > 0) {
+          const momentoServidorAprox = finDeRondaMs - estado.segundosRestantes * 1000;
+          desfaseServidorMs = Date.now() - momentoServidorAprox;
+        }
+      }
+    }
+
+    if (!finDeRondaMs) {
+      if (cambioDeRonda || !anterior?.finDeRondaMs) {
+        finDeRondaMs = Date.now() + (estado.segundosRestantes * 1000);
+        desfaseServidorMs = 0;
+      } else {
+        finDeRondaMs = anterior.finDeRondaMs;
+      }
+    }
+
+    let segundosMostrados = estado.segundosRestantes;
+    if (!cambioDeRonda && anterior && finDeRondaMs) {
+      const ahoraServidor = Date.now() - desfaseServidorMs;
+      const calculados = Math.max(0, Math.ceil((finDeRondaMs - ahoraServidor) / 1000));
+      if (Math.abs(calculados - estado.segundosRestantes) <= 3) {
+        segundosMostrados = calculados;
+      }
+    }
+
     this.estadoRealSignal.set({
       partidaId: estado.partidaId,
       estado: estado.estado,
@@ -1630,6 +1777,9 @@ export class PartidaServicio {
       puntosMaximos: estado.puntosMaximos,
       segundosIniciales: estado.segundosRestantes,
       momentoReferencia: Date.now(),
+      segundosTotales,
+      finDeRondaMs,
+      desfaseServidorMs,
       mapaZonaLugar,
       cuponActual: estado.jugadorPropio.cuponActual,
       cuponMaximo: estado.jugadorPropio.cuponMaximo,
@@ -1648,14 +1798,24 @@ export class PartidaServicio {
           poderBase: item.carta.poder,
         }),
       ),
-      cartasMesa: cartasEnMesaProcesadas.map((item) => this.cartaMesaDesdeApi(item)),
+      cartasMesa: cartasMesaAdaptadas,
       zonas,
       terminada,
       resultadoRonda: estado.ultimoResultado?.ronda ?? null,
     });
 
-    this.segundosSignal.set(estado.segundosRestantes);
+    this.segundosSignal.set(segundosMostrados);
     this.errorSignal.set(null);
+
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      console.info('[PartidaRelojDiagnostico] Tiempo servidor vs mostrado:', {
+        recibidoSegundos: estado.segundosRestantes,
+        finDeRonda: estado.finDeRonda,
+        segundosMostrados,
+        segundosTotales,
+        desfaseServidorMs,
+      });
+    }
 
     if (estado.ultimoResultado?.fin) {
       this.resultadoFinalSignal.set(estado.ultimoResultado.fin);
@@ -1739,6 +1899,7 @@ export class PartidaServicio {
     resultado: ResultadoRonda | null,
     zonas: PorLugar<ZonaTablero>,
     anterior: EstadoReal | null,
+    mapaZonaLugar?: ReadonlyMap<number, NombreLugar>,
   ): void {
     if (!resultado || anterior?.resultadoRonda === resultado.numero) {
       if (!resultado) {
@@ -1754,9 +1915,12 @@ export class PartidaServicio {
     };
 
     for (const zona of resultado.zonas) {
-      const lugar = (['izquierda', 'derecha'] as const).find(
-        (nombre) => zonas[nombre].zonaPartidaId === zona.zonaPartidaId,
-      );
+      let lugar = mapaZonaLugar?.get(zona.zonaPartidaId);
+      if (!lugar) {
+        lugar = (['izquierda', 'derecha'] as const).find(
+          (nombre) => zonas[nombre].zonaPartidaId === zona.zonaPartidaId,
+        );
+      }
 
       if (lugar) {
         deltas[lugar] = {
@@ -1895,58 +2059,19 @@ export class PartidaServicio {
   /**
    * Construye los slots de un lugar físico (izquierda/derecha).
    *
-   * Las cartas se asocian al lugar usando el mapa `zonaPartidaId → lugar`,
-   * que incluye tanto las zonas activas como las que rotaron en el último
-   * resultado. Esto garantiza que una carta jugada antes de una rotación
-   * siga apareciendo en el lugar correcto después de rotar.
+   * Las cartas pertenecen al LUGAR físico y a su slot: cuando la zona rota,
+   * las cartas permanecen inmutables en su lugar y slot. Solo cambia la zona.
    */
   private construirLugar(
     estado: EstadoReal,
     lugar: NombreLugar,
-    mapaZona?: ReadonlyMap<number, NombreLugar>,
   ): LugarPartida {
     const zona = estado.zonas[lugar];
     const propio = this.slotsVacios();
     const rival = this.slotsVacios();
 
     for (const item of estado.cartasMesa) {
-      // Si zonaPartidaId es null o desconocido, registrar console.warn y no renderizar ubicación inventada
-      if (item.zonaPartidaId == null || item.zonaPartidaId <= 0) {
-        if (lugar === 'izquierda') {
-          console.warn('[PartidaServicio] Carta con zonaPartidaId null:', {
-            cartaId: item.carta.cartaId,
-            cartaPartidaId: item.carta.cartaPartidaId,
-            zonaPartidaId: item.zonaPartidaId,
-            lado: item.lado,
-          });
-        }
-        continue;
-      }
-
-      let lugarCarta = mapaZona
-        ? (mapaZona.get(item.zonaPartidaId) ?? null)
-        : (item.zonaPartidaId === zona.zonaPartidaId ? lugar : null);
-
-      if (lugarCarta !== lugar && item.zonaPartidaId === zona.zonaPartidaId) {
-        lugarCarta = lugar;
-      }
-
-      if (lugarCarta === null) {
-        if (lugar === 'izquierda') {
-          console.warn(
-            '[PartidaServicio] Carta con zonaPartidaId desconocido (no mapeado a ningún lugar):',
-            {
-              cartaId: item.carta.cartaId,
-              cartaPartidaId: item.carta.cartaPartidaId,
-              zonaPartidaId: item.zonaPartidaId,
-              lado: item.lado,
-            },
-          );
-        }
-        continue;
-      }
-
-      if (lugarCarta !== lugar) {
+      if (item.lugar !== lugar) {
         continue;
       }
 
@@ -1977,7 +2102,7 @@ export class PartidaServicio {
 
       if (slot >= 0 && slot < SLOTS_POR_LADO) {
         slots[slot] = item.carta;
-      } else {
+      } else if (typeof ngDevMode !== 'undefined' && ngDevMode) {
         console.warn(
           '[PartidaServicio] No hay slot libre disponible para ubicar la carta:',
           {
@@ -2093,7 +2218,110 @@ export class PartidaServicio {
     return resultado;
   }
 
-  private cartaMesaDesdeApi(item: CartaEnMesaApi): CartaMesaVista {
+  /**
+   * Determina el lugar físico ('izquierda' | 'derecha') y slot de una carta en mesa.
+   * Las cartas pertenecen al lugar físico y no a la zona: cuando las zonas rotan,
+   * conservan inmutablemente su lugar y slot anteriores.
+   */
+  private deducirLugarCarta(
+    item: CartaEnMesaApi,
+    anterior: EstadoReal | null,
+    zonas: PorLugar<ZonaTablero>,
+    mapaZonaLugar: ReadonlyMap<number, NombreLugar>,
+  ): { lugar: NombreLugar | null; slot: number | null } {
+    if (item.zonaPartidaId == null || item.zonaPartidaId <= 0) {
+      console.warn('[PartidaServicio] Carta con zonaPartidaId null:', {
+        cartaId: item.carta?.cartaId,
+        cartaPartidaId: item.cartaPartidaId,
+        zonaPartidaId: item.zonaPartidaId,
+        lado: item.lado,
+      });
+      return { lugar: null, slot: null };
+    }
+
+    const lugarExplicit = (item as unknown as { lugar?: string }).lugar;
+    if (lugarExplicit) {
+      const normal = normalizar(lugarExplicit);
+      const lugar = normal.includes('der') ? 'derecha' : 'izquierda';
+      const slot = item.indice ?? null;
+      if (slot !== null) {
+        if (item.cartaPartidaId != null) {
+          this.ubicacionFijaCartas.set(item.cartaPartidaId, { lugar, slot });
+        }
+        if (item.carta?.cartaId != null) {
+          this.ubicacionFijaCartas.set(`cid-${item.carta.cartaId}`, { lugar, slot });
+        }
+      }
+      return { lugar, slot };
+    }
+
+    // Ubicación fija inmutable previamente registrada para esta carta:
+    if (item.cartaPartidaId != null && this.ubicacionFijaCartas.has(item.cartaPartidaId)) {
+      const fijada = this.ubicacionFijaCartas.get(item.cartaPartidaId)!;
+      return { lugar: fijada.lugar, slot: item.indice ?? fijada.slot };
+    }
+    if (item.carta?.cartaId != null && this.ubicacionFijaCartas.has(`cid-${item.carta.cartaId}`)) {
+      const fijada = this.ubicacionFijaCartas.get(`cid-${item.carta.cartaId}`)!;
+      return { lugar: fijada.lugar, slot: item.indice ?? fijada.slot };
+    }
+
+    if (anterior) {
+      const previa = anterior.cartasMesa.find(
+        (c) =>
+          (item.cartaPartidaId != null && c.carta.cartaPartidaId === item.cartaPartidaId) ||
+          (item.carta?.cartaId != null && c.carta.cartaId === item.carta.cartaId),
+      );
+      if (previa && previa.lugar) {
+        const slot = item.indice ?? previa.slot ?? 0;
+        if (item.cartaPartidaId != null) {
+          this.ubicacionFijaCartas.set(item.cartaPartidaId, { lugar: previa.lugar, slot });
+        }
+        if (item.carta?.cartaId != null) {
+          this.ubicacionFijaCartas.set(`cid-${item.carta.cartaId}`, { lugar: previa.lugar, slot });
+        }
+        return {
+          lugar: previa.lugar,
+          slot: item.indice ?? previa.slot,
+        };
+      }
+    }
+
+    let lugarDeducido: NombreLugar | null = null;
+    if (zonas.izquierda.zonaPartidaId === item.zonaPartidaId) {
+      lugarDeducido = 'izquierda';
+    } else if (zonas.derecha.zonaPartidaId === item.zonaPartidaId) {
+      lugarDeducido = 'derecha';
+    } else {
+      const lugarMapeado = mapaZonaLugar.get(item.zonaPartidaId);
+      if (lugarMapeado) {
+        lugarDeducido = lugarMapeado;
+      }
+    }
+
+    if (lugarDeducido) {
+      const slotDeducido = item.indice ?? 0;
+      if (item.cartaPartidaId != null) {
+        this.ubicacionFijaCartas.set(item.cartaPartidaId, { lugar: lugarDeducido, slot: slotDeducido });
+      }
+      if (item.carta?.cartaId != null) {
+        this.ubicacionFijaCartas.set(`cid-${item.carta.cartaId}`, { lugar: lugarDeducido, slot: slotDeducido });
+      }
+      return { lugar: lugarDeducido, slot: item.indice ?? null };
+    }
+
+    console.warn(
+      '[PartidaServicio] Carta con zonaPartidaId desconocido (no mapeado a ningún lugar):',
+      {
+        cartaId: item.carta?.cartaId,
+        cartaPartidaId: item.cartaPartidaId,
+        zonaPartidaId: item.zonaPartidaId,
+        lado: item.lado,
+      },
+    );
+    return { lugar: null, slot: null };
+  }
+
+  private cartaMesaDesdeApi(item: CartaEnMesaApi, lugar: NombreLugar, slot?: number | null): CartaMesaVista {
     const carta =
       item.oculta || !item.carta
         ? this.cartaOculta(item.cartaPartidaId)
@@ -2107,7 +2335,8 @@ export class PartidaServicio {
       carta,
       zonaPartidaId: item.zonaPartidaId ?? null,
       lado: item.lado,
-      slot: item.indice ?? null,
+      slot: slot !== undefined ? slot : (item.indice ?? null),
+      lugar,
     };
   }
 
@@ -2139,6 +2368,11 @@ export class PartidaServicio {
       poderBase,
       obtenida: true,
       jugable: opciones.jugable,
+      habilidad: carta.habilidad,
+      descripcion: carta.descripcion,
+      descripcionHabilidad:
+        carta.habilidad?.descripcion ??
+        this.generarDescripcionHabilidad(carta.habilidad),
       efectosCategoria: this.parsearEfectosHabilidad(carta.habilidad),
     };
   }
@@ -2162,6 +2396,44 @@ export class PartidaServicio {
         valor: habilidad.valor,
       },
     ];
+  }
+
+  /** Genera texto de la habilidad si el servidor no envió descripción directa. */
+  private generarDescripcionHabilidad(habilidad: HabilidadApi | null): string | null {
+    if (!habilidad) {
+      return null;
+    }
+    if (habilidad.descripcion) {
+      return habilidad.descripcion;
+    }
+    const valor = habilidad.valor ?? 0;
+    const tipo = habilidad.tipo?.toUpperCase() || '';
+    const cat = habilidad.categoriaObjetivo || '';
+
+    switch (tipo) {
+      case 'AUMENTAR_PODER_ALIADOS_CERCANOS':
+        return `+${valor} de poder a las cartas aliadas a su lado.`;
+      case 'REDUCIR_PODER_RIVAL_ENFRENTE':
+        return `-${Math.abs(valor)} de poder a la carta rival que esté enfrente.`;
+      case 'AUMENTAR_PODER_CATEGORIA':
+        return `+${valor} de poder a las cartas aliadas de ${cat || 'su categoría'}.`;
+      case 'REDUCIR_PODER_RIVAL_CATEGORIA':
+        return `-${Math.abs(valor)} de poder a las cartas rivales de ${cat || 'su categoría'}.`;
+      case 'AUMENTAR_PODER_PROPIO':
+        return `+${valor} de poder propio al jugarse.`;
+      case 'AUMENTAR_PODER_ALIADOS_ZONA':
+        return `+${valor} de poder a todas sus cartas en esta zona.`;
+      case 'AUMENTAR_PODER_MISMA_FILA':
+        return `+${valor} de poder a todas sus cartas en la misma fila de la ronda.`;
+      case 'REDUCIR_PODER_RIVAL_ZONA':
+        return `-${Math.abs(valor)} de poder a todas las cartas rivales en esta zona.`;
+      case 'REEMPLAZAR_ZONA':
+        return 'Al revelarse, cambia esta zona por una nueva zona sorpresa del catálogo.';
+      case 'ROBAR_CARTA':
+        return `Roba ${valor || 1} carta(s) adicional(es) al jugarse.`;
+      default:
+        return valor !== 0 ? `Efecto: ${valor > 0 ? '+' : ''}${valor} de poder.` : null;
+    }
   }
 
   /** Reverso de una carta que el rival todavía no reveló. */
@@ -2281,8 +2553,14 @@ export class PartidaServicio {
       return;
     }
 
-    const transcurridos = Math.floor((Date.now() - estado.momentoReferencia) / 1000);
-    const restantes = Math.max(0, estado.segundosIniciales - transcurridos);
+    let restantes = 0;
+    if (estado.finDeRondaMs) {
+      const ahoraServidor = Date.now() - estado.desfaseServidorMs;
+      restantes = Math.max(0, Math.ceil((estado.finDeRondaMs - ahoraServidor) / 1000));
+    } else {
+      const transcurridos = Math.floor((Date.now() - estado.momentoReferencia) / 1000);
+      restantes = Math.max(0, estado.segundosIniciales - transcurridos);
+    }
 
     this.segundosSignal.set(restantes);
 
@@ -2364,14 +2642,15 @@ export class PartidaServicio {
             (c) => c.lado === 'propio',
           ).length;
 
-          // Ignorar respuestas de polling si hay jugadas encoladas, en vuelo o si la consulta salió antes de una jugada
+          // Ignorar respuestas de polling si hay acciones en curso o si la consulta salió antes de una mutación
           if (
             this.colaJugadas.length > 0 ||
             this.jugandoEnCurso ||
             this.enviandoCartaSignal() ||
+            this.confirmandoSignal() ||
             secuenciaConsulta < this.secuenciaJugadas ||
             momentoConsulta < this.ultimaJugadaTimestamp ||
-            (nuevoEstado.ronda === rondaActual && cartasPropioServidor < cartasPropioActual)
+            (nuevoEstado.ronda === rondaActual && cartasPropioServidor < cartasPropioActual && !this.esFinal(nuevoEstado))
           ) {
             console.warn('[PartidaServicio] Se descartó respuesta de polling originada antes de una jugada', {
               enCola: this.colaJugadas.length,
@@ -2441,6 +2720,23 @@ export class PartidaServicio {
     this.clavesEnCurso.delete(tipo);
   }
 
+  /**
+   * Olvida cualquier clave de idempotencia ('jugar' o 'retirar') asociada a una carta,
+   * permitiendo que al retirarla y volverla a jugar use una clave fresca sin bloqueos.
+   */
+  private olvidarClavesDeCarta(cartaPartidaId?: number | null, cartaId?: number | string | null): void {
+    const ids: string[] = [];
+    if (cartaPartidaId != null) ids.push(String(cartaPartidaId));
+    if (cartaId != null) ids.push(String(cartaId));
+    if (ids.length === 0) return;
+
+    for (const [tipo, entry] of this.clavesEnCurso.entries()) {
+      if (ids.some((id) => entry.firma.includes(`:${id}:`) || entry.firma.endsWith(`:${id}`))) {
+        this.clavesEnCurso.delete(tipo);
+      }
+    }
+  }
+
   private generarId(): string {
     const cripto = globalThis.crypto;
 
@@ -2507,6 +2803,7 @@ export class PartidaServicio {
     this.pendienteFinalizar = false;
     this.ultimaJugadaTimestamp = 0;
     this.secuenciaJugadas = 0;
+    this.ubicacionFijaCartas.clear();
   }
 
   private guardarPartidaId(partidaId: number): void {

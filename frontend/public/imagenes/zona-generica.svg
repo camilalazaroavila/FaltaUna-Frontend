@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" width="400" height="320">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f262b" />
+      <stop offset="50%" stop-color="#14363d" />
+      <stop offset="100%" stop-color="#091b1f" />
+    </linearGradient>
+    <linearGradient id="arenaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e4e58" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#0b2024" stop-opacity="0.8" />
+    </linearGradient>
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#2dd4bf" stroke-width="0.5" stroke-opacity="0.1" />
+    </pattern>
+  </defs>
+
+  <!-- Fondo base -->
+  <rect width="400" height="320" fill="url(#bgGrad)" />
+  <rect width="400" height="320" fill="url(#grid)" />
+
+  <!-- Brillo central -->
+  <circle cx="200" cy="145" r="130" fill="url(#glowGrad)" />
+
+  <!-- Campo / Arena isométrica -->
+  <ellipse cx="200" cy="155" rx="140" ry="75" fill="url(#arenaGrad)" stroke="#2dd4bf" stroke-width="2" stroke-opacity="0.4" />
+  <ellipse cx="200" cy="155" rx="100" ry="50" fill="none" stroke="#2dd4bf" stroke-width="1.5" stroke-dasharray="6 4" stroke-opacity="0.5" />
+  <ellipse cx="200" cy="155" rx="50" ry="25" fill="#14363d" stroke="#2dd4bf" stroke-width="2" stroke-opacity="0.7" />
+
+  <!-- Línea divisoria central -->
+  <line x1="60" y1="155" x2="340" y2="155" stroke="#2dd4bf" stroke-width="1.5" stroke-opacity="0.3" />
+
+  <!-- Ícono de zona neutral / portal en el centro -->
+  <g transform="translate(200, 140)">
+    <!-- Rombo / Núcleo de energía -->
+    <polygon points="0,-28 22,0 0,28 -22,0" fill="#2dd4bf" fill-opacity="0.2" stroke="#2dd4bf" stroke-width="2.5" />
+    <polygon points="0,-16 12,0 0,16 -12,0" fill="#2dd4bf" fill-opacity="0.8" />
+    <circle cx="0" cy="0" r="4" fill="#ffffff" />
+  </g>
+
+  <!-- Cartel inferior de Zona Neutral -->
+  <g transform="translate(200, 260)">
+    <rect x="-85" y="-14" width="170" height="28" rx="14" fill="#0b1b1e" stroke="#2dd4bf" stroke-width="1.5" stroke-opacity="0.6" />
+    <text x="0" y="5" font-family="'Inter', system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.5" fill="#e2f5f1" text-anchor="middle">
+      ZONA DE JUEGO
+    </text>
+  </g>
+</svg>

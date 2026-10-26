@@ -153,6 +153,7 @@ export interface CartaEnMesaApi {
   readonly oculta: boolean;
   readonly carta: CartaApi | null;
   readonly poderActual: number | null;
+  readonly lugar?: string;
 }
 
 /** Jugador de la partida con sus recursos y puntos calculados por el servidor. */
@@ -261,6 +262,9 @@ export interface EstadoPartidaApi {
   readonly manoPropia: readonly CartaEnManoApi[];
   readonly ultimoResultado: ResultadoRondaApi | null;
   readonly segundosRestantes: number;
+  readonly segundosTotales?: number;
+  readonly duracionRonda?: number;
+  readonly tiempoTotalRonda?: number;
 }
 
 /** Respuesta liviana del heartbeat. */

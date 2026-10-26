@@ -19,7 +19,7 @@ import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-cart
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { IndicadorCategoriasHabilidad } from '@compartidos/componentes/cartas/indicador-categorias-habilidad/indicador-categorias-habilidad';
 import type { Carta, EfectoCategoriaCarta } from '@modelos/carta.model';
-import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre } from '@modelos/carta.model';
 import type {
   EstadoPuntajeZona,
   EstadoSlot,
@@ -30,7 +30,7 @@ import type {
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
-const IMAGEN_RESPALDO = 'imagenes/grido.jpg';
+const IMAGEN_RESPALDO = 'imagenes/zona-generica.svg';
 
 /** Visibilidad en segundos del delta cuando no se anima (movimiento reducido). */
 const MS_DELTA_ESTATICO = 2000;
@@ -145,7 +145,7 @@ export class Zona implements AfterViewInit {
     computation: () => false,
   });
   protected readonly imagen = computed(() =>
-    this.falloImagen() ? IMAGEN_RESPALDO : this.zona().imagenUrl,
+    this.falloImagen() || !this.zona().imagenUrl ? IMAGEN_RESPALDO : this.zona().imagenUrl,
   );
 
   /** Decisión visual (mock): el marco se destaca cuando el lado propio va ganando. */
@@ -387,11 +387,11 @@ export class Zona implements AfterViewInit {
     }
 
     if (efectos.length === 0 && zona.bonusPorCategoria) {
-      for (const [, bonus] of Object.entries(zona.bonusPorCategoria)) {
+      for (const [nombreCat, bonus] of Object.entries(zona.bonusPorCategoria)) {
         if (bonus !== 0) {
           efectos.push({
             tipo: bonus > 0 ? 'sube' : 'baja',
-            categoria: zona.efecto?.categoria ?? CATEGORIA_POR_DEFECTO,
+            categoria: categoriaCartaDesdeNombre(nombreCat),
             valor: bonus,
           });
         }

@@ -231,4 +231,15 @@ describe('CartaComponent · mapeo de assets por rareza y categoría', () => {
     const host = fixture.nativeElement as HTMLElement;
     expect(host.querySelector('.carta__indicador-efectos')).toBeNull();
   });
+
+  it('no muestra ningún badge o indicador de diferencia de poder en la carta', () => {
+    conCarta({
+      ...cartaComun,
+      poderBase: 4,
+      atributoDerecho: 8,
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.carta__poder-diferencia')).toBeNull();
+    expect(host.textContent).not.toContain('+4');
+  });
 });

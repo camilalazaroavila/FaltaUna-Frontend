@@ -150,7 +150,7 @@
 
 ## 10. Partidas
 
-- **1 vs 1**, **6 rondas**, ambos jugadores actúan **a la vez** (estilo Marvel Snap). **Límite de 40 segundos por ronda.**
+- **1 vs 1**, **6 rondas**, ambos jugadores actúan **a la vez** (estilo Marvel Snap). **Límite de 60 segundos por ronda.** (A confirmar por el backend; actualmente el backend envía 40 s).
 - **Mano:** cada jugador empieza con **3 cartas** en mano y roba **1 carta por ronda**, empezando en la primera. Por eso en la primera ronda ya tiene 4.
 - **Recurso de juego ("cupón"):** empieza en 1 y sube 1 por ronda hasta 6. Determina qué cartas se pueden jugar según su costo.
 - **Zonas:** hay exactamente **2 zonas a la vez** (una a la izquierda y otra a la derecha) que **rotan cada turno por zonas aleatorias distintas**. Las cartas pertenecen al **LUGAR** (izquierda/derecha), no a la zona: al rotar la zona, las cartas se quedan donde estaban y solo cambian la foto, el marco y el efecto, recalculándose los puntajes de inmediato (un jugador puede pasar de golpe a tener ventaja o desventaja). Tienen efectos que afectan a ambos lados, y las cartas tienen sus propios efectos. Cada zona representa un local real de una marca (ver sección 11).

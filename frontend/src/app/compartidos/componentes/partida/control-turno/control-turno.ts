@@ -31,7 +31,7 @@ export class ControlTurno {
   readonly turno = input.required<number>();
   readonly totalTurnos = input(6);
   readonly segundosRestantes = input.required<number>();
-  readonly segundosTotales = input(60);
+  readonly segundosTotales = input<number | undefined>(undefined);
   readonly estado = input<EstadoBotonListo>('jugando');
 
   readonly finalizar = output<void>();
@@ -48,7 +48,7 @@ export class ControlTurno {
   protected readonly proporcion = computed(() => {
     const total = this.segundosTotales();
 
-    return total > 0 ? Math.min(1, Math.max(0, this.segundosRestantes() / total)) : 0;
+    return total && total > 0 ? Math.min(1, Math.max(0, this.segundosRestantes() / total)) : 0;
   });
   protected readonly contadorTurno = computed(
     () => `${this.turno()}/${this.totalTurnos()}`,

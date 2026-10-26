@@ -221,4 +221,15 @@ describe('Zona', () => {
       expect(dobleGsap.gsap.fromTo).not.toHaveBeenCalled();
     });
   });
+
+  it('usa la imagen genérica de respaldo cuando la zona no tiene foto o falla', () => {
+    fixture.componentRef.setInput('zona', {
+      ...ZONAS_MOCK[0],
+      imagenUrl: '',
+    });
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('.zona-foto img') as HTMLImageElement;
+    expect(img.getAttribute('src')).toBe('imagenes/zona-generica.svg');
+  });
 });

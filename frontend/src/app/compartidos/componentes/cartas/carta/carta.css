@@ -238,23 +238,7 @@
   }
 }
 
-.carta__poder-diferencia {
-  background: var(--superficie-elevado);
-  border: 1px solid var(--borde-default);
-  color: var(--texto-primario);
-}
 
-.carta__poder-diferencia--positivo {
-  background: var(--exito-sobre);
-  border-color: var(--exito-borde);
-  color: var(--exito-texto);
-}
-
-.carta__poder-diferencia--negativo {
-  background: var(--error-sobre);
-  border-color: var(--error-borde);
-  color: var(--error-texto);
-}
 
 @media (prefers-reduced-motion: reduce) {
   .carta__marco {

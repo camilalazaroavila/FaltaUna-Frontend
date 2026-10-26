@@ -78,30 +78,6 @@ export class CartaComponent {
     this.carta().obtenida ? this.carta().nombre : 'Carta no obtenida',
   );
 
-  protected readonly poderActual = computed(() => this.carta().atributoDerecho);
-  protected readonly poderBase = computed(() => this.carta().poderBase);
-  protected readonly diferenciaPoder = computed(() => {
-    const actual = this.poderActual();
-    const base = this.poderBase();
-    if (base === undefined || base === null) {
-      return null;
-    }
-    if (actual === base) {
-      return null;
-    }
-    return actual - base;
-  });
-  protected readonly muestraDiferencia = computed(() => this.diferenciaPoder() !== null);
-  protected readonly esPositivo = computed(() => (this.diferenciaPoder() ?? 0) > 0);
-  protected readonly esNegativo = computed(() => (this.diferenciaPoder() ?? 0) < 0);
-  protected readonly etiquetaDiferencia = computed(() => {
-    const diff = this.diferenciaPoder();
-    if (diff === null) {
-      return '';
-    }
-    return diff > 0 ? `+${diff}` : String(diff);
-  });
-
   protected readonly ariaLabel = computed(() => {
     const c = this.carta();
     const rareza = ETIQUETA_RAREZA[c.rareza];
@@ -111,10 +87,6 @@ export class CartaComponent {
       return `Carta no obtenida, ${rareza}, ${categoria}`;
     }
 
-    const diff = this.diferenciaPoder();
-    const extra =
-      diff !== null ? `, poder actual ${c.atributoDerecho}, ${diff > 0 ? 'aumento' : 'reducción'} ${Math.abs(diff)}` : '';
-
-    return `Carta ${c.nombre}, ${rareza}, ${categoria}, costo ${c.atributoIzquierdo}, poder ${c.atributoDerecho}${extra}, obtenida`;
+    return `Carta ${c.nombre}, ${rareza}, ${categoria}, costo ${c.atributoIzquierdo}, poder ${c.atributoDerecho}, obtenida`;
   });
 }
