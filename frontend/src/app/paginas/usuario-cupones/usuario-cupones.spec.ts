@@ -237,4 +237,37 @@ describe('UsuarioCupones', () => {
 
     expect(sonido.reproducir).toHaveBeenCalledWith('sonidos/canje.mp3');
   });
+  it('muestra las 7 categorías en columna y marca solo la elegida', async () => {
+    await montar('indumentaria');
+    const raiz: HTMLElement = fixture.nativeElement;
+    const botones = Array.from(
+      raiz.querySelectorAll<HTMLButtonElement>('.rail__item'),
+    );
+
+    expect(botones).toHaveLength(7);
+    expect(
+      botones.filter((b) => b.getAttribute('aria-pressed') === 'true'),
+    ).toHaveLength(1);
+    expect(
+      raiz.querySelector('.rail__item--activo')?.getAttribute('aria-label'),
+    ).toBe('Indumentaria');
+  });
+
+  it('el triángulo verde baja hasta la categoría elegida', async () => {
+    await montar(null);
+    const raiz: HTMLElement = fixture.nativeElement;
+    const puntero = raiz.querySelector<HTMLElement>('.rail__puntero')!;
+
+    expect(puntero.style.getPropertyValue('--i')).toBe('0');
+
+    (
+      raiz.querySelector(
+        'button[aria-label="Música"]',
+      ) as HTMLButtonElement
+    ).click();
+    fixture.detectChanges();
+
+    expect(activa()).toBe('musica');
+    expect(puntero.style.getPropertyValue('--i')).toBe('5');
+  });
 });

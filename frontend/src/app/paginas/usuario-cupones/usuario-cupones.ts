@@ -3,10 +3,8 @@ import {
   Component,
   DestroyRef,
   computed,
-  effect,
   inject,
   signal,
-  untracked,
   viewChild,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
@@ -116,95 +114,130 @@ interface FiltroCategoria {
       color: var(--crema);
     }
 
+    /* Columna de categorías: íconos en cuadrados crema, uno debajo del otro. */
     .vista-cupones {
-      --r-disco: 11.5rem;
-      --visible: 12.5rem;
-      --r-icono: 10rem;
-      --tam-icono: 3rem;
-      --ang-activo: -66deg;
+      --visible: 6.25rem;
+      --tam-icono: 2.75rem;
+      --sep-icono: 0.65rem;
     }
 
     @media (max-width: 639px) {
       .vista-cupones {
-        --r-disco: 6.6rem;
-        --visible: 7.2rem;
-        --r-icono: 5.6rem;
-        --tam-icono: 1.8rem;
+        --visible: 4.25rem;
+        --tam-icono: 2.25rem;
+        --sep-icono: 0.5rem;
       }
     }
 
-    .disco-marco {
-      width: var(--visible);
-      /* Está por encima del título solo para que se vea el disco: no debe tapar sus clicks. */
-      pointer-events: none;
-    }
-
-    /* En pantallas angostas la página es muy alta: el disco queda arriba, con altura propia. */
-    @media (max-width: 639px) {
-      .disco-marco {
-        bottom: auto;
-        height: 17rem;
-      }
-    }
-
-    /* Punto fijo desde el que se cuelgan los íconos: el centro del disco. */
-    .disco-eje {
-      position: absolute;
-      top: 50%;
-      left: calc(var(--visible) - var(--r-disco));
-      width: 0;
-      height: 0;
-    }
-
-    .disco-icono {
-      --ang: 0deg;
+    .rail {
       position: absolute;
       left: 0;
-      top: 0;
+      top: 8rem;
+      z-index: 35;
+      width: var(--visible);
+    }
+
+    .rail__lista {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sep-icono);
+      margin: 0;
+      padding: 0 0 0 calc(var(--visible) - var(--tam-icono) - 0.4rem);
+      list-style: none;
+    }
+
+    /* Triángulo verde: se desliza hasta la categoría elegida. */
+    .rail__puntero {
+      --i: 0;
+      position: absolute;
+      left: calc(var(--visible) - var(--tam-icono) - 1.6rem);
+      top: calc(var(--tam-icono) / 2 - 0.55rem);
+      width: 0.85rem;
+      height: 1.1rem;
+      background: var(--color-verde-jugador);
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+      filter: drop-shadow(0 0 0.35rem var(--color-verde-jugador));
+      transform: translateY(calc(var(--i) * (var(--tam-icono) + var(--sep-icono))));
+      transition: transform 0.45s cubic-bezier(0.5, 0, 0.2, 1);
+    }
+
+    .rail__item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: var(--tam-icono);
       height: var(--tam-icono);
-      margin: calc(var(--tam-icono) / -2) 0 0 calc(var(--tam-icono) / -2);
-      /* Orbitan alrededor del centro del disco, pero se mantienen casi derechos. */
-      transform: rotate(var(--ang)) translateX(var(--r-icono)) rotate(calc(var(--ang) * -1 + var(--inclina, 0deg)));
-      transition:
-        transform 0.85s cubic-bezier(0.5, 0, 0.2, 1),
-        opacity 0.5s ease,
-        filter 0.3s ease;
-    }
-
-    .disco-icono {
-      pointer-events: auto;
-    }
-
-    /* Glifo de la categoría: sin fondo, pintado en crema a partir del SVG. */
-    .disco-glifo {
-      width: 100%;
-      height: 100%;
+      border-radius: 0.75rem;
       background-color: var(--crema);
-      -webkit-mask: var(--glifo) center / contain no-repeat;
-      mask: var(--glifo) center / contain no-repeat;
-      transition: background-color 0.3s ease, transform 0.3s ease;
+      cursor: pointer;
+      transition:
+        transform 0.28s cubic-bezier(0.3, 0.7, 0.2, 1),
+        box-shadow 0.28s ease,
+        background-color 0.28s ease,
+        filter 0.28s ease;
     }
 
-    .disco-icono:hover .disco-glifo {
-      transform: scale(1.12);
+    .rail__item img {
+      width: 60%;
+      height: 60%;
+      object-fit: contain;
+      transition: transform 0.28s cubic-bezier(0.3, 0.7, 0.2, 1);
     }
 
-    /* Categoría elegida: se ilumina en verde y late una vez al activarse. */
-    .disco-icono--activo {
-      filter: drop-shadow(0 0 0.6rem color-mix(in srgb, var(--color-verde-jugador) 85%, transparent));
-      animation: disco-latido 0.9s ease-out;
+    /* Hover / foco: se corre un poco hacia el contenido y se ilumina con un halo crema. */
+    .rail__item:hover,
+    .rail__item:focus-visible {
+      transform: translateX(4px) scale(1.07);
+      filter: brightness(1.06);
+      box-shadow:
+        0 0 0 2px color-mix(in srgb, var(--crema) 70%, transparent),
+        0 0 1rem 0.1rem color-mix(in srgb, var(--crema) 55%, transparent);
     }
 
-    .disco-icono--activo .disco-glifo {
-      background-color: var(--color-verde-jugador);
-      transform: scale(1.18);
+    .rail__item:hover img,
+    .rail__item:focus-visible img {
+      transform: scale(1.08);
     }
 
-    @keyframes disco-latido {
-      0% { filter: drop-shadow(0 0 0 transparent); }
-      60% { filter: drop-shadow(0 0 1.4rem var(--color-verde-jugador)) drop-shadow(0 0 0.5rem var(--color-verde-jugador)); }
-      100% { filter: drop-shadow(0 0 0.6rem color-mix(in srgb, var(--color-verde-jugador) 85%, transparent)); }
+    /* Categoría elegida: queda iluminada en verde y late una vez al activarse. */
+    .rail__item--activo,
+    .rail__item--activo:hover,
+    .rail__item--activo:focus-visible {
+      transform: translateX(4px) scale(1.07);
+      background-color: color-mix(in srgb, var(--color-verde-jugador) 38%, var(--crema));
+      box-shadow:
+        0 0 0 2px var(--color-verde-jugador),
+        0 0 1.3rem 0.25rem color-mix(in srgb, var(--color-verde-jugador) 70%, transparent);
+      animation: rail-latido 0.9s ease-out;
+    }
+
+    @keyframes rail-latido {
+      0% {
+        box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 0 0 color-mix(in srgb, var(--color-verde-jugador) 80%, transparent);
+      }
+      60% {
+        box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 2.2rem 0.6rem color-mix(in srgb, var(--color-verde-jugador) 80%, transparent);
+      }
+      100% {
+        box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 1.3rem 0.25rem color-mix(in srgb, var(--color-verde-jugador) 70%, transparent);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .rail__puntero,
+      .rail__item,
+      .rail__item img {
+        transition: none;
+        animation: none;
+      }
+
+      .rail__item:hover,
+      .rail__item:focus-visible,
+      .rail__item--activo {
+        transform: none;
+        animation: none;
+      }
     }
 
     /* Cupón: al pasar el mouse o enfocarlo se ilumina. */
@@ -212,35 +245,6 @@ interface FiltroCategoria {
     .sello:focus-visible {
       filter: brightness(1.07) saturate(1.15)
         drop-shadow(0 0 0.7rem color-mix(in srgb, var(--color-verde-jugador) 85%, transparent));
-    }
-
-    .disco-icono--lejos {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* Triángulo fijo que marca la categoría elegida (no gira con el disco). */
-    .disco-puntero {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 0.8rem;
-      height: 1.1rem;
-      margin: -0.55rem 0 0 -0.4rem;
-      background: var(--color-verde-jugador);
-      clip-path: polygon(0 0, 100% 50%, 0 100%);
-      transform: translate(
-        calc(cos(var(--ang-activo)) * var(--r-icono) - var(--tam-icono) / 2 - 1rem),
-        calc(sin(var(--ang-activo)) * var(--r-icono))
-      );
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .disco-icono,
-      .disco-glifo {
-        transition: none;
-        animation: none;
-      }
     }
 
     /* Sello: las bandas del arte se mecen apenas al pasar el mouse. */
@@ -410,12 +414,6 @@ export class UsuarioCupones {
 
     destruir.onDestroy(() => this.liberarQr());
 
-    // Cada cambio de categoría (click o URL) hace girar el disco.
-    effect(() => {
-      const indice = this.indiceActivo();
-      untracked(() => this.girarHasta(indice));
-    });
-
     this.sonido.precargar(this.sonidoCanje);
     this.escucharCategoriaDesdeUrl(destruir);
     this.cargarCupones();
@@ -486,82 +484,13 @@ export class UsuarioCupones {
       : 'Ver cupón';
   }
 
-  /** Grados entre un ícono y el siguiente sobre el borde del disco. */
-  private readonly pasoGrados = 22;
-  /** Posición (grados desde el eje horizontal) donde queda la categoría elegida. */
-  private readonly anguloActivo = -66;
-  /** Cuántas categorías se ven por encima de la elegida antes de que den la vuelta por atrás. */
-  private readonly lugaresArriba = 0;
-
+  /** Posición de la categoría elegida en la columna: mueve el triángulo verde. */
   protected readonly indiceActivo = computed(() =>
     Math.max(
       0,
       this.categorias.findIndex((c) => c.id === this.categoriaActiva()),
     ),
   );
-
-  /**
-   * Ángulo acumulado de cada ícono. No se reinicia nunca: una categoría que sale por
-   * arriba sigue girando por detrás del disco y reaparece abajo, como en espiral.
-   */
-  protected readonly angulos = signal<number[]>(this.angulosPara(0));
-
-  private indicePrevio = 0;
-
-  /** Lugar de un ícono respecto del elegido, en el ciclo de categorías. */
-  private lugar(indice: number, activo: number): number {
-    const n = this.categorias.length;
-    return (
-      ((((indice - activo + this.lugaresArriba) % n) + n) % n) -
-      this.lugaresArriba
-    );
-  }
-
-  private angulosPara(activo: number): number[] {
-    return this.categorias.map(
-      (_, i) => this.anguloActivo + this.lugar(i, activo) * this.pasoGrados,
-    );
-  }
-
-  /** Gira el disco por el camino más corto hasta dejar `nuevo` en la posición activa. */
-  private girarHasta(nuevo: number): void {
-    const previo = this.indicePrevio;
-
-    if (nuevo === previo) {
-      return;
-    }
-
-    const n = this.categorias.length;
-    let pasos = (((nuevo - previo) % n) + n) % n;
-
-    if (pasos > n / 2) {
-      pasos -= n;
-    }
-
-    this.angulos.update((actuales) =>
-      actuales.map((angulo, i) => {
-        const salto = this.lugar(i, nuevo) - this.lugar(i, previo);
-        let giro = salto * this.pasoGrados;
-
-        // El ícono que da la vuelta por atrás recorre el resto de la circunferencia.
-        if (salto === -pasos + n) {
-          giro -= 360;
-        } else if (salto === -pasos - n) {
-          giro += 360;
-        }
-
-        return angulo + giro;
-      }),
-    );
-
-    this.indicePrevio = nuevo;
-  }
-
-  /** Solo se ven los íconos que están sobre la parte visible del disco. */
-  protected fueraDeVista(indice: number): boolean {
-    const normalizado = ((((this.angulos()[indice] + 180) % 360) + 360) % 360) - 180;
-    return normalizado < -80 || normalizado > 80;
-  }
 
   protected elegirCategoria(id: CategoriaCupon): void {
     this.categoriaActiva.set(id);

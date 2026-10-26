@@ -43,44 +43,39 @@
   <app-header [logueado]="true" />
 
   <div class="vista-cupones relative z-10 flex min-h-0 flex-1 flex-col pb-14 sm:pb-16">
-    <!-- Categorías en círculo, sin fondo: giran y se iluminan al elegir una -->
-    <div class="disco-marco absolute bottom-16 left-0 top-0 z-[35]">
-      <nav aria-label="Categorías de cupones" class="disco-eje">
-        <span class="disco-puntero" aria-hidden="true"></span>
+    <!-- Categorías en columna: cuadrados crema; el triángulo verde marca la elegida -->
+    <nav aria-label="Categorías de cupones" class="rail">
+      <span class="rail__puntero" aria-hidden="true" [style.--i]="indiceActivo()"></span>
 
-        @for (categoria of categorias; track categoria.id; let i = $index) {
-          <button
-            type="button"
-            (click)="elegirCategoria(categoria.id)"
-            [attr.aria-label]="categoria.nombre"
-            [attr.aria-pressed]="categoriaActiva() === categoria.id"
-            [attr.title]="categoria.nombre"
-            class="disco-icono flex cursor-pointer items-center justify-center rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
-            [class.disco-icono--activo]="categoriaActiva() === categoria.id"
-            [class.disco-icono--lejos]="fueraDeVista(i)"
-            [style.--ang]="angulos()[i] + 'deg'"
-            [style.--inclina]="(i % 2 === 0 ? -8 : 6) + 'deg'"
-          >
-            <span
-              class="disco-glifo"
-              aria-hidden="true"
-              [style.--glifo]="'url(' + categoria.urlIcono + ')'"
-            ></span>
-          </button>
+      <ul class="rail__lista">
+        @for (categoria of categorias; track categoria.id) {
+          <li>
+            <button
+              type="button"
+              (click)="elegirCategoria(categoria.id)"
+              [attr.aria-label]="categoria.nombre"
+              [attr.aria-pressed]="categoriaActiva() === categoria.id"
+              [attr.title]="categoria.nombre"
+              class="rail__item focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+              [class.rail__item--activo]="categoriaActiva() === categoria.id"
+            >
+              <img [src]="categoria.urlIcono" alt="" />
+            </button>
+          </li>
         }
-      </nav>
-    </div>
+      </ul>
+    </nav>
 
     <!-- Decoraciones -->
     <svg
-      class="pointer-events-none absolute left-[calc(var(--visible)+6.5rem)] top-12 hidden h-7 w-5 lg:block"
+      class="pointer-events-none absolute left-[calc(var(--visible)+16rem)] top-12 hidden h-7 w-5 lg:block"
       style="color: var(--crema)"
       viewBox="0 0 20 28" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"
     >
       <path d="M10 1 C10 10 12 12 19 14 C12 16 10 18 10 27 C10 18 8 16 1 14 C8 12 10 10 10 1 Z" />
     </svg>
     <svg
-      class="pointer-events-none absolute left-[calc(var(--visible)+11rem)] top-12 hidden h-4 w-3 opacity-80 lg:block"
+      class="pointer-events-none absolute left-[calc(var(--visible)+16.8rem)] top-6 hidden h-4 w-3 opacity-80 lg:block"
       style="color: var(--crema)"
       viewBox="0 0 20 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"
     >
@@ -281,7 +276,7 @@
     </div>
   </div>
 
-  <div class="relative z-10 mt-2 flex flex-1 pl-[calc(var(--visible)+0.75rem)] pr-4 sm:pr-8">
+  <div class="relative z-10 mt-2 flex flex-1 pl-[calc(var(--visible)+0.75rem)] pr-4 sm:pr-8 lg:pl-[calc(var(--visible)+4.25rem)]">
     <main class="min-w-0 flex-1 pt-2">
       @if (cargando()) {
         <p class="font-interfaz text-sm font-bold" role="status">
@@ -326,9 +321,9 @@
           }
         </div>
       } @else {
-        <ul class="grid grid-cols-1 gap-x-6 gap-y-6 p-2 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-5">
+        <ul class="grid grid-cols-1 gap-x-6 gap-y-6 p-2 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-5 2xl:grid-cols-5">
           @for (cupon of cuponesFiltrados(); track cupon.id) {
-            <li>
+            <li class="w-full max-w-xs justify-self-center lg:max-w-[12rem]">
               <button
                 type="button"
                 (click)="abrirCupon(cupon, $event)"
