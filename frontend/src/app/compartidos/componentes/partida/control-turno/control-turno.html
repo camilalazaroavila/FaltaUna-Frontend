@@ -1,0 +1,62 @@
+<div class="flex flex-col items-stretch gap-2">
+  @if (!resolviendo()) {
+    <div class="flex flex-col gap-1">
+      <span
+        class="control-tiempo"
+        [class]="clasesTiempo()"
+        role="timer"
+        [attr.aria-label]="etiquetaTiempo()"
+      >
+        @if (enAdvertencia()) {
+          <ng-icon name="phosphorWarningFill" size="18" aria-hidden="true" />
+        } @else {
+          <ng-icon name="phosphorHourglassMediumFill" size="18" aria-hidden="true" />
+        }
+        {{ segundosRestantes() }}s
+      </span>
+
+      <span class="block h-2 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
+        <span
+          class="block h-full rounded-pildora transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
+          [class]="clasesBarra()"
+          [style.width.%]="proporcion() * 100"
+        ></span>
+      </span>
+    </div>
+  }
+
+  <button
+    type="button"
+    app-boton
+    variante="primario"
+    tamanio="lg"
+    class="control-boton"
+    [attr.aria-label]="nombreAccesible()"
+    [disabled]="!activo()"
+    [cargando]="!activo()"
+    (click)="pulsarFinalizar()"
+  >
+    <span class="control-accion">
+      <span class="control-texto control-texto--largo">{{ accionBoton() }}</span>
+      <span class="control-texto control-texto--corto">{{ accionBotonCorto() }}</span>
+    </span>
+    <span class="control-insignia-turno" aria-hidden="true">
+      {{ contadorTurno() }}
+    </span>
+  </button>
+
+  @if (!resolviendo()) {
+    <div class="flex items-center justify-center pt-1">
+      <button
+        type="button"
+        app-boton
+        variante="peligro"
+        tamanio="sm"
+        class="w-full"
+        (click)="pedirConfirmacionRendirse()"
+      >
+        Rendirse
+      </button>
+    </div>
+  }
+</div>

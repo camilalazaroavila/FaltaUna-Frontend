@@ -12,6 +12,11 @@
    se actualicen dinámicamente en tiempo real al cambiar el atributo data-modo.
    ========================================================================== */
 @theme inline {
+   --color-combate-titulo: var(--combate-titulo);
+
+   --color-combate-fondo-carga: var(--combate-fondo-carga);
+   --color-combate-texto: var(--combate-texto);
+   
     --color-marca-primaria: var(--marca-primaria);
     --color-marca-primaria-hover: var(--marca-primaria-hover);
     --color-marca-primaria-activa: var(--marca-primaria-activa);
@@ -214,7 +219,8 @@
     --spacing-landing-cta: var(--landing-medida-cta);
     --spacing-landing-sobres: var(--landing-medida-sobres);
     --spacing-landing-ilustracion: var(--landing-medida-ilustracion);
-    --spacing-landing-avatar: var(--landing-medida-avatar);
+    --spacing-landing-carta-titulo: var(--landing-medida-carta-titulo);
+    --spacing-landing-avatar-equipo: var(--landing-medida-avatar-equipo);
     --spacing-landing-columna: var(--landing-espacio-columna);
 
     /* Escala fluida de Misiones expuesta a las utilidades de Tailwind:
@@ -239,19 +245,93 @@
     --background-image-landing-gradiente-amarillo-verde: var(--landing-gradiente-amarillo-verde);
     --background-image-usuario-gradiente-amarillo-verde: var(--usuario-gradiente-amarillo-verde);
 
+    /* Tablero de partida: el degradado va en `background-image` para que
+       `bg-tablero-fondo` genere `background-image` y no `background-color`. */
+    --background-image-tablero-fondo: var(--tablero-fondo);
+
+    --color-slot-rival-fondo: var(--slot-rival-fondo);
+    --color-slot-propio-fondo: var(--slot-propio-fondo);
+    --color-slot-borde: var(--slot-borde);
+    --color-slot-resaltado: var(--slot-resaltado);
+    --color-slot-resaltado-anillo: var(--slot-resaltado-anillo);
+
+    --color-zona-marco: var(--zona-marco);
+    --color-zona-marco-destacado: var(--zona-marco-destacado);
+
+    --color-puntaje-zona-ganando-fondo: var(--puntaje-zona-ganando-fondo);
+    --color-puntaje-zona-ganando-texto: var(--puntaje-zona-ganando-texto);
+    --color-puntaje-zona-perdiendo-fondo: var(--puntaje-zona-perdiendo-fondo);
+    --color-puntaje-zona-perdiendo-texto: var(--puntaje-zona-perdiendo-texto);
+    --color-puntaje-zona-empate-fondo: var(--puntaje-zona-empate-fondo);
+    --color-puntaje-zona-empate-texto: var(--puntaje-zona-empate-texto);
+
+   --font-titulo: var(--fuente-titulo);
+   --font-subtitulo: var(--fuente-subtitulo);
+   --font-cuerpo: var(--fuente-cuerpo);
+   --font-interfaz: var(--fuente-interfaz);
+    /* Cupón de recurso: ticket del recurso de juego de la pantalla de partida. */
+    --color-cupon-fondo: var(--cupon-fondo);
+    --color-cupon-borde: var(--cupon-borde);
+    --color-cupon-texto: var(--cupon-texto);
+    --color-cupon-perforacion: var(--cupon-perforacion);
+
+    /* Barra de puntos de la partida: relleno propio (verde) y rival (amarillo). */
+    --color-barra-puntos-fondo: var(--barra-puntos-fondo);
+    --color-barra-puntos-borde: var(--barra-puntos-borde);
+    --color-barra-puntos-sombra: var(--barra-puntos-sombra);
+    --color-barra-puntos-propio-relleno: var(--barra-puntos-propio-relleno);
+    --color-barra-puntos-rival-relleno: var(--barra-puntos-rival-relleno);
+    --color-barra-puntos-texto-contorno: var(--barra-puntos-texto-contorno);
+
+    /* Marco del avatar del chip de jugador (máscara marco-imagen). */
+    --color-avatar-marco: var(--avatar-marco);
+
+
+    /* Etiquetas de lado de zona */
+    --color-etiqueta-lado-propio-fondo: var(--etiqueta-lado-propio-fondo);
+    --color-etiqueta-lado-propio-texto: var(--etiqueta-lado-propio-texto);
+    --color-etiqueta-lado-rival-fondo: var(--etiqueta-lado-rival-fondo);
+    --color-etiqueta-lado-rival-texto: var(--etiqueta-lado-rival-texto);
+
     --font-titulo: var(--fuente-titulo);
     --font-cuerpo: var(--fuente-cuerpo);
     --font-interfaz: var(--fuente-interfaz);
+
+    /* Escala tipográfica semántica: `--text-*` genera text-*, y
+       `--font-weight-*`, `--leading-*` y `--tracking-*` generan font-*,
+       leading-* y tracking-*. Las claves de peso arrancan con `peso-` para no
+       confundirse con las familias `font-titulo`/`font-cuerpo`/`font-interfaz`. */
+    --text-display: var(--tipografia-display);
+    --text-titulo: var(--tipografia-titulo);
+    --text-subtitulo: var(--tipografia-subtitulo);
+    --text-cuerpo: var(--tipografia-cuerpo);
+    --text-menor: var(--tipografia-menor);
+    --text-etiqueta: var(--tipografia-etiqueta);
+
+    --font-weight-peso-titular: var(--peso-titular);
+    --font-weight-peso-lectura: var(--peso-lectura);
+    --font-weight-peso-etiqueta: var(--peso-etiqueta);
+
+    --leading-titulo: var(--interlineado-titulo);
+    --leading-cuerpo: var(--interlineado-cuerpo);
+
+    --tracking-titulo: var(--interletrado-titulo);
+    --tracking-etiqueta: var(--interletrado-etiqueta);
 
     --radius-sm: var(--radio-sm);
     --radius-md: var(--radio-md);
     --radius-lg: var(--radio-lg);
     --radius-pildora: var(--radio-pildora);
     --radius-circulo: var(--radio-circulo);
+    --radius-irregular-slot: var(--forma-irregular-slot);
 
     --shadow-baja: var(--sombra-baja);
     --shadow-media: var(--sombra-media);
     --shadow-alta: var(--sombra-alta);
     --shadow-brillo-verde: var(--sombra-brillo-verde);
     --shadow-marca: var(--sombra-marca);
+
+    --shadow-cartoon: var(--sombra-cartoon);
+    --shadow-cartoon-gruesa: var(--sombra-cartoon-gruesa);
+    --shadow-cartoon-clara: var(--sombra-cartoon-clara);
 }

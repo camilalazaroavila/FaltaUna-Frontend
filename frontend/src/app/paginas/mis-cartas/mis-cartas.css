@@ -1,3 +1,8 @@
+.mis-cartas__fondo {
+  background-size: 100% 100dvh;
+  background-repeat: no-repeat;
+}
+
 .coleccion__layout {
   display: flex;
   flex-direction: column;

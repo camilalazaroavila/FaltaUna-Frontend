@@ -1,0 +1,24 @@
+/* Tokens de la pantalla inicial del juego.
+   Los valores salen del mockup: el fondo es un degradé lineal de arriba a abajo
+   de crema a azul petróleo. Es una pantalla solo de jugador, por eso no se
+   redefinen en [data-modo="empresa"]. */
+:root,
+[data-modo="jugador"] {
+  --combate-fondo-alto: #f7f272;
+  --combate-fondo-bajo: #0b2e36;
+  --combate-titulo: #12454f;
+
+  --combate-fondo-carga: var(--combate-fondo-bajo);
+  --combate-texto: var(--combate-fondo-alto);
+  
+}
+
+
+/* Botones del menú invertidos respecto del resto de la app: cara azul petróleo,
+   sombra y texto crema. Se sobrescriben los tokens del botón solo dentro de esta
+   pantalla (clase pantalla-combate), así el componente no se toca. */
+.pantalla-combate {
+  --btn-juego-bg: var(--combate-fondo-bajo);
+  --btn-juego-sombra: var(--combate-fondo-alto);
+  --btn-juego-texto: var(--combate-fondo-alto);
+}

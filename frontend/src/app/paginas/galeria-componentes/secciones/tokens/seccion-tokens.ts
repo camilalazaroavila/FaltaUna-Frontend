@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TarjetaMuestra } from '../../tarjeta-muestra/tarjeta-muestra';
+import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 import {
   ESCALA_FEEDBACK,
   PALETA_SEMANTICA,
   RADIOS,
   SOMBRAS,
   TIPOGRAFIAS,
-} from '../../datos-tokens';
+} from '@paginas/galeria-componentes/datos-tokens';
 
 @Component({
   selector: 'app-seccion-tokens',

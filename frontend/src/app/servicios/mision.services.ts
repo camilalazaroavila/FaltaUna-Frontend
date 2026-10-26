@@ -6,7 +6,7 @@ import {
   type Periodicidad,
   type ProgresoPity,
   faltantesPity,
-} from '../modelos/misiones.model';
+} from '@modelos/misiones.model';
 
 /**
  * Datos de prueba mientras el backend no expone misiones ni PT System.
@@ -22,29 +22,26 @@ const MISIONES_MOCK: readonly Mision[] = [
   { id: 6, titulo: 'Jugá 10 partidas y reclamá tu sobre', tipo: 'partidas_jugadas', periodicidad: 'permanente', actual: 0, objetivo: 10, estado: 'en_curso', recompensa: null, disponible: false },
 ];
 
+import urlSobre1 from '@svgs/Paquete1.svg';
+import urlSobre2 from '@svgs/Paquete2.svg';
+import urlSobre3 from '@svgs/PaqueteHuh.svg';
+
 /**
  * Filas de prueba del PT System. Las marcas llevan su categoría para que el
  * filtro por categoría también las incluya (la relación categoría↔marca todavía
  * no existe en el backend: esto es dato de prueba).
  */
 const PITY_MOCK: readonly ProgresoPity[] = [
-  { id: 'generico', sobre: { tipo: 'generico' }, abiertos: 30, umbral: 50 },
-  { id: 'cat-tecnologia', sobre: { tipo: 'categoria', categoria: 'tecnologia' }, abiertos: 3, umbral: 20 },
-  { id: 'cat-cosmetica', sobre: { tipo: 'categoria', categoria: 'cosmetica' }, abiertos: 11, umbral: 20 },
-  { id: 'cat-entretenimiento', sobre: { tipo: 'categoria', categoria: 'entretenimiento' }, abiertos: 6, umbral: 20 },
-  { id: 'cat-gastronomia', sobre: { tipo: 'categoria', categoria: 'gastronomia' }, abiertos: 8, umbral: 20 },
-  { id: 'cat-indumentaria', sobre: { tipo: 'categoria', categoria: 'indumentaria' }, abiertos: 14, umbral: 20 },
-  { id: 'cat-musica', sobre: { tipo: 'categoria', categoria: 'musica' }, abiertos: 9, umbral: 10 },
-  { id: 'marca-mcdonalds', sobre: { tipo: 'marca', nombre: 'McDonald\'s', logoUrl: null, categoria: 'gastronomia' }, abiertos: 2, umbral: 10 },
-  { id: 'marca-grido', sobre: { tipo: 'marca', nombre: 'Grido', logoUrl: null, categoria: 'gastronomia' }, abiertos: 5, umbral: 10 },
-  { id: 'marca-samsung', sobre: { tipo: 'marca', nombre: 'Samsung', logoUrl: null, categoria: 'tecnologia' }, abiertos: 7, umbral: 10 },
-  { id: 'marca-natura', sobre: { tipo: 'marca', nombre: 'Natura', logoUrl: null, categoria: 'cosmetica' }, abiertos: 4, umbral: 10 },
-  { id: 'marca-adidas', sobre: { tipo: 'marca', nombre: 'Adidas', logoUrl: null, categoria: 'indumentaria' }, abiertos: 1, umbral: 10 },
+  { id: 'generico', sobre: { tipo: 'generico' }, abiertos: 30, umbral: 40, imagenSvg: urlSobre1 },
+  { id: 'cat-tecnologia', sobre: { tipo: 'categoria', categoria: 'tecnologia' }, abiertos: 13, umbral: 20, imagenSvg: urlSobre2 },
+  { id: 'marca-mcdonalds', sobre: { tipo: 'marca', nombre: 'McDonald\'s', logoUrl: null, categoria: 'gastronomia' }, abiertos: 3, umbral: 10, imagenSvg: urlSobre3 },
 ];
+
+const CLAVE_MISIONES = 'faltauna_misiones_estado';
 
 @Injectable({ providedIn: 'root' })
 export class MisionesService {
-  private readonly _misiones = signal<readonly Mision[]>(MISIONES_MOCK);
+  private readonly _misiones = signal<readonly Mision[]>(this.obtenerMisionesIniciales());
   private readonly _pity = signal<readonly ProgresoPity[]>(PITY_MOCK);
 
   readonly misiones = this._misiones.asReadonly();
@@ -71,7 +68,57 @@ export class MisionesService {
     }
 
     const reclamada: Mision = { ...mision, estado: 'reclamada' };
-    this._misiones.update((lista) => lista.map((m) => (m.id === id ? reclamada : m)));
+    this._misiones.update((lista) => {
+      const nuevaLista = lista.map((m) => (m.id === id ? reclamada : m));
+      // En el flujo del MVP, al reclamar la misión 2 ("Abrí 1 sobre"),
+      // el usuario abre el 2do sobre y la misión 3 ("Abrí 2 sobres")
+      // se completa y queda lista para reclamar.
+      if (id === 2) {
+        return nuevaLista.map((m) =>
+          m.id === 3 ? { ...m, actual: 2, estado: 'completada' as const } : m,
+        );
+      }
+      return nuevaLista;
+    });
+
+    this.guardarMisionesEnStorage();
     return of(reclamada);
+  }
+
+  /** Restablece las misiones a su estado inicial de prueba */
+  restablecerMisiones(): void {
+    this._misiones.set(MISIONES_MOCK);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem(CLAVE_MISIONES);
+      }
+    } catch {}
+  }
+
+  private obtenerMisionesIniciales(): readonly Mision[] {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const guardado = localStorage.getItem(CLAVE_MISIONES);
+        if (guardado) {
+          const parsed = JSON.parse(guardado);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      }
+    } catch {
+      // Ignorar fallos de acceso a localStorage
+    }
+    return MISIONES_MOCK;
+  }
+
+  private guardarMisionesEnStorage(): void {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem(CLAVE_MISIONES, JSON.stringify(this._misiones()));
+      }
+    } catch {
+      // Ignorar fallos de acceso a localStorage
+    }
   }
 }

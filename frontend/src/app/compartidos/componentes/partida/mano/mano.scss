@@ -1,0 +1,74 @@
+:host {
+    --ancho-carta: clamp(7rem, 13cqw, 10rem);
+    --escala-arrastre: 1;
+    display: block;
+    min-width: 0;
+    padding: clamp(3.25rem, 11cqw, 5.5rem) clamp(0.5rem, 2cqw, 1.5rem) 0;
+    pointer-events: none;
+}
+
+.mano {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-width: 0;
+    pointer-events: none;
+}
+
+.mano-carta {
+    position: relative;
+    width: var(--ancho-carta);
+    flex-shrink: 0;
+    transform-origin: bottom center;
+    transform: rotate(var(--angulo, 0deg)) translateY(var(--caida, 0rem));
+    transition: transform 200ms ease-out;
+    touch-action: none;
+    pointer-events: auto;
+}
+
+.mano-carta+.mano-carta {
+    margin-left: calc(min(calc(var(--ancho-carta) * 0.72),
+                calc((100% - var(--ancho-carta)) / var(--separaciones))) - var(--ancho-carta));
+}
+
+.mano-carta:hover,
+.mano-carta:focus-visible {
+    transform: translateY(-1.75rem) scale(1.5) rotate(0deg);
+}
+
+/* Si alguna carta se está arrastrando, anular el hover en todas las cartas para no tapar slots */
+.mano:has(.mano-carta--arrastrando) .mano-carta:hover,
+.mano:has(.mano-carta--arrastrando) .mano-carta:focus-visible {
+    transform: rotate(var(--angulo, 0deg)) translateY(var(--caida, 0rem));
+}
+
+/* La carta que se arrastra se atenúa en su lugar y no debe capturar puntero ni escalar */
+.mano-carta.mano-carta--arrastrando,
+.mano-carta.mano-carta--arrastrando:hover,
+.mano-carta.mano-carta--arrastrando:focus-visible {
+    opacity: 0.3;
+    transform: rotate(0deg) translateY(-0.5rem);
+    pointer-events: none;
+}
+
+/*
+ * Fantasma del arrastre: `position: fixed` se ancla al containing block creado
+ * por `contain: layout` en el div .tablero, cuyo origen coincide con el host
+ * (por eso `aLocal` resta el rect del host). Se centra bajo el puntero con un
+ * pequeño desplazamiento hacia arriba.
+ */
+.mano-fantasma {
+    position: fixed;
+    z-index: 60;
+    width: var(--ancho-carta);
+    pointer-events: none;
+    transform: translate(-50%, -115%) scale(var(--escala-arrastre));
+    transform-origin: center bottom;
+    filter: drop-shadow(0 0.5rem 0.75rem rgb(0 0 0 / 0.25));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mano-carta {
+        transition: none;
+    }
+}

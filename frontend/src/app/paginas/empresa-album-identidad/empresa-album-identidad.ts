@@ -3,17 +3,17 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
-import { AlbumBorrador } from '../../servicios/album-borrador.service';
-import { AlbumesService } from '../../servicios/albumes.service';
-import { SuscripcionEstado } from '../../servicios/suscripcion-estado.service';
-import { CATEGORIAS_RESPALDO, CategoriaApi, REDES_SOCIALES } from '../../modelos/album.model';
-import { Boton } from '../../compartidos/componentes/boton/boton';
-import { CalendarioMensual } from '../../compartidos/componentes/calendario-mensual/calendario-mensual';
-import { CampoSelect, OpcionSelect } from '../../compartidos/componentes/campo-select/campo-select';
-import { CampoTexto } from '../../compartidos/componentes/campo-texto/campo-texto';
-import { EncabezadoPaso } from '../../compartidos/componentes/encabezado-paso/encabezado-paso';
-import { EtiquetaCampo } from '../../compartidos/componentes/etiqueta-campo/etiqueta-campo';
-import { aIso } from '../../compartidos/utilidades/fechas';
+import { AlbumBorrador } from '@servicios/album-borrador.service';
+import { AlbumesService } from '@servicios/albumes.service';
+import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
+import { CATEGORIAS_RESPALDO, CategoriaApi, REDES_SOCIALES } from '@modelos/album.model';
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import { CalendarioMensual } from '@compartidos/componentes/controles/calendario-mensual/calendario-mensual';
+import { CampoSelect, OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
+import { CampoTexto } from '@compartidos/componentes/controles/campo-texto/campo-texto';
+import { EncabezadoPaso } from '@compartidos/componentes/controles/encabezado-paso/encabezado-paso';
+import { EtiquetaCampo } from '@compartidos/componentes/controles/etiqueta-campo/etiqueta-campo';
+import { aIso } from '@compartidos/utilidades/fechas';
 
 type Errores = Partial<Record<
   'descripcion' | 'usuarioRedSocial' | 'emailContacto' | 'categoria' | 'fechaInicio' | 'fechaFin',
@@ -111,6 +111,8 @@ export class EmpresaAlbumIdentidad {
       .subscribe({
         next: () => {
           b.limpiar();
+          // El alta quedó completa (álbum creado): el panel ya es accesible.
+          this.estado.marcarAltaCompletada();
           // El pago quedó consumido (un pago = un álbum): se descarta para no volver a usarlo.
           this.estado.ultimoPago.set(null);
           this.router.navigate(['/empresa/album/crear/listo']);

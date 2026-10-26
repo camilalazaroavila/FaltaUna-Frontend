@@ -1,6 +1,18 @@
 import { Carta } from './carta.model';
 
 /**
+ * Carta del mock con la marca a la que pertenece.
+ *
+ * El modelo `Carta` no expone la marca (el backend la relaciona aparte), pero
+ * "Mis cartas" y "Álbumes" necesitan agruparlas por marca para mostrar el mismo
+ * dato en las dos vistas. Se agrega acá, sin tocar `Carta`, para que el mock sea
+ * la única fuente de verdad de las cartas de la demo.
+ */
+export interface CartaConMarca extends Carta {
+  readonly marca: string;
+}
+
+/**
  * Datos mock de cartas coleccionables.
  *
  * Cubren las 4 rarezas, las 7 categorías, y mezclan obtenidas/no-obtenidas.
@@ -8,11 +20,12 @@ import { Carta } from './carta.model';
  * Cuando el backend esté disponible, este archivo se reemplaza por la
  * respuesta HTTP y el componente no necesita cambios.
  */
-export const CARTAS_MOCK: Carta[] = [
+export const CARTAS_MOCK: CartaConMarca[] = [
   // ── Comunes (1 estrella) ──────────────────────────────────────────────
   {
     id: 'c-001',
     nombre: 'Danonino',
+    marca: 'Grido',
     imagenUrl: 'imagenes/grido.jpg',
     rareza: 'comun',
     categoria: 'gastronomia',
@@ -23,6 +36,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-002',
     nombre: 'Sprite Fresh',
+    marca: 'Coca-Cola',
     imagenUrl: 'imagenes/Sprite.png',
     rareza: 'comun',
     categoria: 'gastronomia',
@@ -35,9 +49,10 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-003',
     nombre: 'Guacamola',
+    marca: 'McDonald\'s',
     imagenUrl: 'imagenes/McDonalds.jpg',
     rareza: 'rara',
-    categoria: 'cosmeticos',
+    categoria: 'gastronomia',
     atributoIzquierdo: 18,
     atributoDerecho: 14,
     obtenida: true,
@@ -45,6 +60,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-004',
     nombre: 'Auradías',
+    marca: 'Zara',
     imagenUrl: 'imagenes/zara.png',
     rareza: 'rara',
     categoria: 'indumentaria',
@@ -55,6 +71,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-005',
     nombre: 'Casa Limón',
+    marca: 'Casa Limón',
     imagenUrl: 'imagenes/lego.png',
     rareza: 'rara',
     categoria: 'decoracion',
@@ -67,6 +84,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-006',
     nombre: 'Super Grido',
+    marca: 'Grido',
     imagenUrl: 'imagenes/grido.jpg',
     rareza: 'epicarta',
     categoria: 'gastronomia',
@@ -77,6 +95,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-007',
     nombre: 'Sony Beats',
+    marca: 'Sony',
     imagenUrl: 'imagenes/sony.png',
     rareza: 'epicarta',
     categoria: 'musica',
@@ -87,6 +106,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-008',
     nombre: 'Pixel Max',
+    marca: 'Google',
     imagenUrl: 'imagenes/google.jpg',
     rareza: 'epicarta',
     categoria: 'tecnologia',
@@ -99,6 +119,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-009',
     nombre: 'Coca-Cola Zero',
+    marca: 'Coca-Cola',
     imagenUrl: 'imagenes/cocacola.jpg',
     rareza: 'legendaria',
     categoria: 'gastronomia',
@@ -109,6 +130,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-010',
     nombre: 'Zara Noir',
+    marca: 'Zara',
     imagenUrl: 'imagenes/zara.jpg',
     rareza: 'legendaria',
     categoria: 'indumentaria',
@@ -121,6 +143,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-011',
     nombre: 'Cine Royal',
+    marca: 'Lego',
     imagenUrl: 'imagenes/lego.png',
     rareza: 'comun',
     categoria: 'entretenimiento',
@@ -131,9 +154,10 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-012',
     nombre: 'Lego Creator',
+    marca: 'Lego',
     imagenUrl: 'imagenes/lego.png',
     rareza: 'rara',
-    categoria: 'decoracion',
+    categoria: 'entretenimiento',
     atributoIzquierdo: 19,
     atributoDerecho: 17,
     obtenida: true,
@@ -141,9 +165,10 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-013',
     nombre: 'McFlurry Deluxe',
+    marca: 'McDonald\'s',
     imagenUrl: 'imagenes/McDonalds.jpg',
     rareza: 'epicarta',
-    categoria: 'cosmeticos',
+    categoria: 'gastronomia',
     atributoIzquierdo: 22,
     atributoDerecho: 21,
     obtenida: false,
@@ -151,6 +176,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-014',
     nombre: 'Google Stadia',
+    marca: 'Google',
     imagenUrl: 'imagenes/google.jpg',
     rareza: 'legendaria',
     categoria: 'tecnologia',
@@ -159,12 +185,126 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
 
-  // ── Ampliación para "Mi baraja" ───────────────────────────────────────
-  // Suficientes cartas obtenidas para llenar una baraja de 12 (y permitir
-  // combinaciones atípicas, como "todas comunes"). Comunes (c-015..c-024):
+  // ── Grido: álbum completo (12 cartas obtenidas) ───────────────────────
+  // Deja un álbum al 100% para poder probar el flujo "Canjear cupón".
   {
     id: 'c-015',
+    nombre: 'Grido Frutilla',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'comun',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 13,
+    atributoDerecho: 9,
+    obtenida: true,
+  },
+  {
+    id: 'c-016',
+    nombre: 'Grido Bombón',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'comun',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 11,
+    atributoDerecho: 7,
+    obtenida: true,
+  },
+  {
+    id: 'c-017',
+    nombre: 'Cucurucho Clásico',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'comun',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 14,
+    atributoDerecho: 10,
+    obtenida: true,
+  },
+  {
+    id: 'c-018',
+    nombre: 'Súper Dulce de Leche',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'rara',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 17,
+    atributoDerecho: 15,
+    obtenida: true,
+  },
+  {
+    id: 'c-019',
+    nombre: 'Grido Deluxe',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'rara',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 19,
+    atributoDerecho: 16,
+    obtenida: true,
+  },
+  {
+    id: 'c-020',
+    nombre: 'Crocante Grido',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'rara',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 18,
+    atributoDerecho: 18,
+    obtenida: true,
+  },
+  {
+    id: 'c-021',
+    nombre: 'Mega Grido',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'epicarta',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 25,
+    atributoDerecho: 23,
+    obtenida: true,
+  },
+  {
+    id: 'c-022',
+    nombre: 'Grido Premium',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'epicarta',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 27,
+    atributoDerecho: 24,
+    obtenida: true,
+  },
+  {
+    id: 'c-023',
+    nombre: 'Leyenda Grido',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'legendaria',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 34,
+    atributoDerecho: 31,
+    obtenida: true,
+  },
+  {
+    id: 'c-024',
+    nombre: 'Grido Infinito',
+    marca: 'Grido',
+    imagenUrl: 'imagenes/grido.jpg',
+    rareza: 'legendaria',
+    categoria: 'gastronomia',
+    atributoIzquierdo: 36,
+    atributoDerecho: 33,
+    obtenida: true,
+  },
+
+  // ── Ampliación para "Mi baraja" ───────────────────────────────────────
+  // Suficientes cartas obtenidas para llenar una baraja de 12 (y permitir
+  // combinaciones atípicas, como "todas comunes"). Comunes (c-040..c-049):
+  {
+    id: 'c-040',
     nombre: 'Mostaza Sabor',
+    marca: 'Grido',
     imagenUrl: 'imagenes/grido.jpg',
     rareza: 'comun',
     categoria: 'gastronomia',
@@ -173,8 +313,9 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-016',
+    id: 'c-041',
     nombre: 'Agua Mineral',
+    marca: 'Coca-Cola',
     imagenUrl: 'imagenes/Sprite.png',
     rareza: 'comun',
     categoria: 'gastronomia',
@@ -183,8 +324,9 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-017',
+    id: 'c-042',
     nombre: 'Shampoo Fresh',
+    marca: 'Natura',
     imagenUrl: 'imagenes/zara.png',
     rareza: 'comun',
     categoria: 'cosmeticos',
@@ -193,8 +335,9 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-018',
+    id: 'c-043',
     nombre: 'Crema Nutritiva',
+    marca: 'Natura',
     imagenUrl: 'imagenes/McDonalds.jpg',
     rareza: 'comun',
     categoria: 'cosmeticos',
@@ -203,8 +346,9 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-019',
+    id: 'c-044',
     nombre: 'Vela Aromática',
+    marca: 'Casa Limón',
     imagenUrl: 'imagenes/lego.png',
     rareza: 'comun',
     categoria: 'decoracion',
@@ -213,8 +357,9 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-020',
+    id: 'c-045',
     nombre: 'Cuadro Retro',
+    marca: 'Casa Limón',
     imagenUrl: 'imagenes/google.jpg',
     rareza: 'comun',
     categoria: 'decoracion',
@@ -223,8 +368,9 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-021',
+    id: 'c-046',
     nombre: 'Buzo Básico',
+    marca: 'Zara',
     imagenUrl: 'imagenes/zara.png',
     rareza: 'comun',
     categoria: 'indumentaria',
@@ -233,8 +379,9 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-022',
+    id: 'c-047',
     nombre: 'Gorra Urbana',
+    marca: 'Zara',
     imagenUrl: 'imagenes/lego.png',
     rareza: 'comun',
     categoria: 'indumentaria',
@@ -243,8 +390,9 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-023',
+    id: 'c-048',
     nombre: 'Entrada Cine',
+    marca: 'Lego',
     imagenUrl: 'imagenes/sony.png',
     rareza: 'comun',
     categoria: 'entretenimiento',
@@ -253,8 +401,9 @@ export const CARTAS_MOCK: Carta[] = [
     obtenida: true,
   },
   {
-    id: 'c-024',
+    id: 'c-049',
     nombre: 'Vinilo Pop',
+    marca: 'Sony',
     imagenUrl: 'imagenes/cocacola.jpg',
     rareza: 'comun',
     categoria: 'musica',
@@ -267,6 +416,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-025',
     nombre: 'Hamburguesa Doble',
+    marca: 'McDonald\'s',
     imagenUrl: 'imagenes/McDonalds.jpg',
     rareza: 'rara',
     categoria: 'gastronomia',
@@ -277,6 +427,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-026',
     nombre: 'Zapatillas Run',
+    marca: 'Zara',
     imagenUrl: 'imagenes/zara.png',
     rareza: 'rara',
     categoria: 'indumentaria',
@@ -289,6 +440,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-027',
     nombre: 'Tablet Pro',
+    marca: 'Google',
     imagenUrl: 'imagenes/google.jpg',
     rareza: 'epicarta',
     categoria: 'tecnologia',
@@ -302,6 +454,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-028',
     nombre: 'Batman',
+    marca: 'Lego',
     imagenUrl: 'imagenes/batman.png',
     rareza: 'legendaria',
     categoria: 'entretenimiento',
@@ -312,6 +465,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-029',
     nombre: 'Spiderman',
+    marca: 'Lego',
     imagenUrl: 'imagenes/spiderman.jpg',
     rareza: 'rara',
     categoria: 'entretenimiento',
@@ -322,6 +476,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-030',
     nombre: 'Darth Vader',
+    marca: 'Lego',
     imagenUrl: 'imagenes/darthvader.jpg',
     rareza: 'epicarta',
     categoria: 'entretenimiento',
@@ -332,6 +487,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-031',
     nombre: 'Indiana Jones',
+    marca: 'Lego',
     imagenUrl: 'imagenes/indiana.jpg',
     rareza: 'comun',
     categoria: 'entretenimiento',
@@ -342,6 +498,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-032',
     nombre: 'Chuck 70',
+    marca: 'Zara', // TODO: confirmar — Chuck 70 (Converse) no es una marca del álbum; asignada a Zara por ser la única de indumentaria
     imagenUrl: 'imagenes/chuck70.jpg',
     rareza: 'rara',
     categoria: 'indumentaria',
@@ -352,6 +509,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-033',
     nombre: 'La 10',
+    marca: 'Zara', // TODO: confirmar — asignada a Zara por ser la única de indumentaria
     imagenUrl: 'imagenes/la10.jpg',
     rareza: 'legendaria',
     categoria: 'indumentaria',
@@ -362,6 +520,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-034',
     nombre: 'Adidas CNY',
+    marca: 'Zara', // TODO: confirmar — Adidas no es una marca del álbum; asignada a Zara por ser la única de indumentaria
     imagenUrl: 'imagenes/chineseNewYear.jpg',
     rareza: 'rara',
     categoria: 'indumentaria',
@@ -372,6 +531,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-035',
     nombre: 'sibari S',
+    marca: 'Zara', // TODO: confirmar — asignada a Zara por ser la única de indumentaria
     imagenUrl: 'imagenes/sibaris.jpg',
     rareza: 'comun',
     categoria: 'indumentaria',
@@ -382,6 +542,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-036',
     nombre: 'Queen II',
+    marca: 'Sony',
     imagenUrl: 'imagenes/queen.jpg',
     rareza: 'epicarta',
     categoria: 'musica',
@@ -392,6 +553,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-037',
     nombre: 'Short n Sweet',
+    marca: 'Sony',
     imagenUrl: 'imagenes/sabrina.jpg',
     rareza: 'rara',
     categoria: 'musica',
@@ -402,6 +564,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-038',
     nombre: 'PS5',
+    marca: 'Sony',
     imagenUrl: 'imagenes/ps5.jpg',
     rareza: 'rara',
     categoria: 'tecnologia',
@@ -412,6 +575,7 @@ export const CARTAS_MOCK: Carta[] = [
   {
     id: 'c-039',
     nombre: 'Switch 2',
+    marca: 'Google', // TODO: confirmar — Nintendo no está en el álbum; asignada a Google por ser la única de tecnología restante
     imagenUrl: 'imagenes/switch2.jpg',
     rareza: 'epicarta',
     categoria: 'tecnologia',

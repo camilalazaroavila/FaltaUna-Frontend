@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Rock+Salt&family=Russo+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Changa:wght@600;700;800&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Russo+One&display=swap');
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 @import "tailwindcss";
 
@@ -20,7 +20,7 @@
      estilos-fundamentos/  → primitivos.css, base.css
      estilos-roles/        → jugador.css, empresa.css
      estilos-feedback/     → feedback.css, alertas.css, toast.css
-     estilos-componentes/  → botones.css, cartas.css, sobres.css
+     estilos-componentes/  → botones.css, cartas.css, sobres.css, tooltip.css
      estilos-paginas/      → landing.css, layout.css, misiones.css
      estilos-tailwind/     → tema.css (@theme inline), utilidades.css
      estilos-animaciones/  → animaciones.css
@@ -50,9 +50,12 @@
 @import "./estilos/estilos-componentes/cartas.css";
 @import "./estilos/estilos-componentes/sobres.css";
 @import "./estilos/estilos-componentes/barra-progreso.css";
+@import "./estilos/estilos-componentes/tooltip.css";
 @import "./estilos/estilos-paginas/landing.css";
 @import "./estilos/estilos-paginas/layout.css";
+@import "./estilos/estilos-paginas/combate.css";
 @import "./estilos/estilos-paginas/misiones.css";
+@import "./estilos/estilos-paginas/album.css";
 @import "./estilos/estilos-paginas/look-cartas.css";
 @import "./estilos/estilos-tailwind/tema.css";
 @import "./estilos/estilos-tailwind/utilidades.css";

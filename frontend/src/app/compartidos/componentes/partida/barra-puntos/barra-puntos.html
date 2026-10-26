@@ -1,0 +1,34 @@
+<div class="flex h-full flex-col items-center gap-1.5">
+  <span
+    class="barra-etiqueta rounded-pildora border-2 border-zona-marco bg-hundido py-0.5 font-titulo text-etiqueta tracking-etiqueta text-texto-primario uppercase"
+    aria-hidden="true"
+  >
+    {{ etiquetaLado() }}
+  </span>
+
+  <!-- Misma pastilla cartoon que app-barra-progreso (álbumes): borde de tinta
+       y sombra sólida de 3px, adaptada a vertical y a los tokens del tablero. -->
+  <div
+    class="barra-cuerpo relative flex-1 overflow-hidden rounded-pildora border-2 border-barra-puntos-borde bg-barra-puntos-fondo shadow-[0_3px_0_var(--barra-puntos-sombra)]"
+    role="progressbar"
+    [attr.aria-label]="etiqueta()"
+    aria-valuemin="0"
+    [attr.aria-valuemax]="maximo()"
+    [attr.aria-valuenow]="puntos()"
+    [attr.aria-valuetext]="puntos() + ' de ' + maximo() + ' puntos'"
+  >
+    <span
+      [class]="clasesRelleno()"
+      [style.height]="'calc(' + porcentaje() + '% - 4px)'"
+      aria-hidden="true"
+    ></span>
+
+    <span class="barra-numero" [class]="clasesNumero()" aria-hidden="true">
+      {{ puntos() }}
+    </span>
+  </div>
+
+  <span #deltaFlotante [class]="clasesDelta()" aria-hidden="true">
+    {{ textoDelta() }}
+  </span>
+</div>

@@ -10,63 +10,84 @@
    ANIMACIONES MICRO-INTERACTIVAS
    ========================================================================== */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(4px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideUp {
-    from {
-        transform: translateY(100%);
-    }
+  from {
+    transform: translateY(100%);
+  }
 
-    to {
-        transform: translateY(0);
-    }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slide-up {
-    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Aviso suave de "recompensa lista para reclamar": un halo amarillo que late
    sin mover el layout. Solo decorativo: la información real va en el texto. */
 @keyframes latidoReclamo {
 
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 color-mix(in srgb, var(--marca-acento) 55%, transparent);
-    }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--marca-acento) 55%, transparent);
+  }
 
-    50% {
-        box-shadow: 0 0 0 6px color-mix(in srgb, var(--marca-acento) 0%, transparent);
-    }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--marca-acento) 0%, transparent);
+  }
 }
 
 .animate-latido-reclamo {
-    animation: latidoReclamo 1.9s ease-out infinite;
+  animation: latidoReclamo 1.9s ease-out infinite;
 }
+
+/* Slot resaltado de la partida: el anillo se expande y se apaga para indicar
+   dónde se puede soltar una carta. Solo decorativo: el estado va también en
+   `data-slot-estado` y en el aria-label. */
+@keyframes pulsoSlot {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--slot-resaltado-anillo);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--slot-resaltado) 0%, transparent);
+  }
+}
+
+.animate-pulso-slot {
+  animation: pulsoSlot 1.6s ease-out infinite;
+}
+
 
 /* Respeto por preferencias de movimiento reducido (A11y) */
 @media (prefers-reduced-motion: reduce) {
 
-    .animate-fade-in,
-    .animate-slide-up,
-    .animate-latido-reclamo {
-        animation: none;
-        opacity: 1;
-        transform: none;
-    }
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-latido-reclamo,
+  .animate-pulso-slot {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ==========================================================================
@@ -81,10 +102,10 @@
 [data-movimiento='reducido'] *,
 [data-movimiento='reducido'] *::before,
 [data-movimiento='reducido'] *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }
 
 /* =========================================
@@ -132,22 +153,26 @@
   El ciclo completo dura 12 segundos.
 */
 @keyframes sobre-ciclo-coordinado {
+
   /* Izquierda: pausa */
-  0%, 30% {
+  0%,
+  30% {
     left: var(--abanico-izquierda);
     z-index: 10;
     transform: translate(-50%, -50%) rotate(-12deg) scale(.86);
   }
 
   /* Transición rápida hacia el centro */
-  33.333%, 63.333% {
+  33.333%,
+  63.333% {
     left: var(--abanico-centro);
     z-index: 20;
     transform: translate(-50%, -50%) rotate(0deg) scale(1.17);
   }
 
   /* Transición rápida hacia la derecha */
-  66.666%, 96.666% {
+  66.666%,
+  96.666% {
     left: var(--abanico-derecha);
     z-index: 10;
     transform: translate(-50%, -50%) rotate(12deg) scale(.86);

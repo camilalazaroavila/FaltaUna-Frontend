@@ -1,4 +1,4 @@
-import { OpcionSelect } from '../compartidos/componentes/campo-select/campo-select';
+import { OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
 
 /** Casillas de imagen que se muestran en el álbum de marca (máximo permitido). */
 export const CARTAS_POR_ALBUM = 12;

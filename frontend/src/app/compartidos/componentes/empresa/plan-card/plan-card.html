@@ -1,0 +1,27 @@
+<article
+  class="relative flex min-h-40 items-stretch overflow-visible rounded-[1.5rem] bg-landing-claro-superficie shadow-[10px_10px_0_var(--color-violeta-empresa)]"
+  [class.flex-row-reverse]="plan().alineacion === 'derecha'"
+  [attr.aria-label]="'Plan ' + plan().nombre"
+>
+  <p
+    [class]="clasesEtiqueta()"
+    class="rounded-xl relative z-10 flex w-[32%] shrink-0 items-center justify-center px-3 py-6 text-center font-titulo text-xl uppercase tracking-wide text-landing-claro-fondo md:w-[30%] md:text-2xl lg:text-3xl"
+  >
+    {{ plan().nombre }}
+  </p>
+
+  <ul class="flex min-w-0 flex-1 flex-col justify-center gap-4 p-4 sm:p-6 md:gap-5 md:p-8">
+    @for (beneficio of plan().beneficios; track beneficio.texto) {
+      <li
+        class="flex items-start gap-3 font-interfaz text-sm leading-snug text-landing-claro-texto md:text-base lg:text-lg"
+      >
+        <ng-icon
+          [name]="iconoDe(beneficio)"
+          class="mt-0.5 size-5 shrink-0 text-marca-primaria md:size-6"
+          aria-hidden="true"
+        />
+        <span [innerHTML]="resaltarNumero(beneficio.texto)"></span>
+      </li>
+    }
+  </ul>
+</article>

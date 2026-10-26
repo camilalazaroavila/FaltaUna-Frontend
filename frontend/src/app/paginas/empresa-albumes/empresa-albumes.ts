@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
-import { BarraRareza } from '../../compartidos/componentes/barra-rareza/barra-rareza';
-import { CartaComponent } from '../../compartidos/componentes/carta/carta';
-import { TarjetaAlbum } from '../../compartidos/componentes/tarjeta-album/tarjeta-album';
-import { TarjetaKpi } from '../../compartidos/componentes/tarjeta-kpi/tarjeta-kpi';
-import { TarjetaRecompensa } from '../../compartidos/componentes/tarjeta-recompensa/tarjeta-recompensa';
-import type { Carta, RarezaCarta } from '../../modelos/carta.model';
-import { ETIQUETA_RAREZA } from '../../modelos/carta.model';
+import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
+import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarjeta-album';
+import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
+import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
+import type { Carta, RarezaCarta } from '@modelos/carta.model';
+import { ETIQUETA_RAREZA } from '@modelos/carta.model';
 
-import { AlbumesService } from '../../servicios/albumes.service'; // Ajusta la ruta según tu estructura
-import { AlbumRespuesta } from '../../modelos/album.model';
+import { AlbumesService } from '@servicios/albumes.service';
+import { AlbumRespuesta } from '@modelos/album.model';
 import {
   EMPRESA_ACTUAL,
   ESTADISTICAS_CARTA,
@@ -23,9 +23,16 @@ import {
   type EstadoAlbum,
   type EstadisticasCartaEmpresa,
   type ResumenAlbum,
-} from '../../modelos/empresa.mock';
+} from '@modelos/empresa.mock';
 
 export type CriterioOrdenAlbum = 'nombre-asc' | 'nombre-desc' | 'rareza';
+
+/** Dato que alimenta una tarjeta KPI del detalle del álbum. */
+interface KpiAlbum {
+  readonly etiqueta: string;
+  readonly valor: string;
+  readonly contexto: string;
+}
 
 interface AlbumConResumen extends AlbumEmpresa {
   readonly resumen: ResumenAlbum;
@@ -158,7 +165,7 @@ export class EmpresaAlbumes implements OnInit {
     }));
   });
 
-  protected readonly kpisAlbum = computed(() => {
+  protected readonly kpisAlbum = computed<readonly KpiAlbum[]>(() => {
     const album = this.albumActual();
     if (album === null) return [];
     const resumen = album.resumen;
@@ -166,26 +173,22 @@ export class EmpresaAlbumes implements OnInit {
       {
         etiqueta: 'Cartas',
         valor: String(resumen.totalCartas),
-        detalle: 'En toda la colección',
-        icono: 'phosphorCardsFill',
+        contexto: 'En toda la colección',
       },
       {
         etiqueta: 'Completaron',
         valor: `${resumen.porcentajeCompletado}%`,
-        detalle: `${album.jugadoresCompletaron} jugadores`,
-        icono: 'phosphorTrophyFill',
+        contexto: `${album.jugadoresCompletaron} jugadores`,
       },
       {
         etiqueta: 'Favoritos',
         valor: resumen.favoritos.toLocaleString('es-AR'),
-        detalle: 'Marcas de tus cartas',
-        icono: 'phosphorHeartFill',
+        contexto: 'Marcas de tus cartas',
       },
       {
         etiqueta: 'Intercambios',
         valor: resumen.intercambios.toLocaleString('es-AR'),
-        detalle: 'Entre jugadores',
-        icono: 'phosphorArrowsLeftRightFill',
+        contexto: 'Entre jugadores',
       },
     ];
   });

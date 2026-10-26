@@ -1,0 +1,188 @@
+<div class="space-y-8">
+  <header class="space-y-2">
+    <h2 class="font-titulo text-subtitulo text-texto-primario">Partida</h2>
+    <p class="font-cuerpo text-sm text-texto-secundario">
+      Átomos de la pantalla de partida en
+      <code class="font-interfaz text-texto-primario">compartidos/componentes/partida/</code>:
+      casilla de tablero, contador de cupones, barra de puntos, chip de jugador, cabecera de
+      turno y puntaje por zona. Se apoyan en los tokens de
+      <code class="font-interfaz text-texto-primario">jugador.css</code> (<code>--slot-*</code>,
+      <code>--cupon-*</code>, <code>--barra-puntos-*</code> y <code>--puntaje-zona-*</code>), que
+      solo existen en modo jugador.
+    </p>
+  </header>
+
+  <app-tarjeta-muestra
+  titulo="app-slot-carta"
+  descripcion="Casilla del tablero a tamaño real (3.5rem de ancho), sobre el fondo del tablero. Conserva los lados propio y rival, y expone data-slot-estado y data-slot-lado en el host para el futuro arrastre."
+>
+  <div class="flex h-[26rem] flex-col justify-between rounded-lg bg-tablero-fondo p-4">
+    @for (posicion of ['arriba', 'al medio', 'abajo']; track posicion) {
+      <div class="space-y-1">
+        <p class="font-interfaz text-etiqueta text-texto-sobre-claro">{{ posicion }}</p>
+        <div class="flex flex-wrap items-start gap-3">
+          <div class="w-14"><app-slot-carta lado="propio" estado="vacio" /></div>
+          <div class="w-14"><app-slot-carta lado="rival" estado="vacio" /></div>
+          <div class="w-14"><app-slot-carta lado="propio" estado="resaltado" /></div>
+          <div class="w-14">
+            <app-slot-carta lado="propio" estado="ocupado">
+              <div class="h-full w-full bg-marca-primaria-suave"></div>
+            </app-slot-carta>
+          </div>
+          <div class="w-14">
+            <app-slot-carta lado="rival" estado="ocupado">
+              <div class="h-full w-full bg-marca-acento-suave"></div>
+            </app-slot-carta>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+    <p class="font-interfaz text-xs text-info-texto">
+      Orden: vacío propio, vacío rival, resaltado, ocupado propio y ocupado rival. El estado
+      <code>resaltado</code> existe solo mientras se agarra una carta; la animación
+      <code>pulsoSlot</code> corre únicamente en ese estado y la anula
+      <code>prefers-reduced-motion</code>.
+    </p>
+  </div>
+</app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="app-cupon-recurso"
+    descripcion="Recurso de juego de la mano. Perforaciones laterales con --cupon-perforacion; el número sube o se sacude al cambiar el valor."
+  >
+    <div class="flex flex-wrap items-center gap-6">
+      <app-cupon-recurso [valor]="0" [maximo]="6" />
+      <app-cupon-recurso [valor]="3" [maximo]="6" />
+      <app-cupon-recurso [valor]="6" [maximo]="6" />
+      <app-cupon-recurso [valor]="3" [maximo]="6" variante="compacta" />
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        El contador usa <code>role="status"</code> y un
+        <code>aria-label</code> completo, porque el jugador debe leer el valor al cambiar sin
+        depender del color. Las muescas laterales salen de la utilidad
+        <code>muesca-cupon</code>; <code>variante="compacta"</code> es la versión de la franja
+        del tablero (solo número y ticket).
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="app-barra-puntos"
+    descripcion="Barra vertical hacia los 100 de la partida: la propia se llena desde abajo y la del rival desde arriba. El relleno usa una transición CSS de altura y el delta flotante lo anima GSAP."
+  >
+    <div class="flex h-64 max-w-md items-stretch gap-6">
+      <app-barra-puntos [puntos]="0" lado="propio" />
+      <app-barra-puntos [puntos]="50" [delta]="-5" lado="propio" />
+      <app-barra-puntos [puntos]="42" lado="rival" />
+      <app-barra-puntos [puntos]="100" lado="rival" />
+
+      <p app-texto variante="secundario" tamano="menor">
+        Hacé clic o cambia los valores en las otras muestras: los cambios de
+        <code>valor</code> en <code>app-cupon-recurso</code> y de
+        <code>puntos</code>/<code>delta</code> en <code>app-barra-puntos</code> y
+        <code>app-puntaje-zona</code> disparan las micro-animaciones programadas con GSAP.
+      </p>
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        El <code>delta</code> vive en el DOM con <code>aria-hidden="true"</code> y se apaga solo:
+        así la animación no interfiere con el <code>role="progressbar"</code> ni con la lectura
+        del puntaje.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="app-jugador-chip"
+    descripcion="Avatar con marco irregular (utilidad marco-imagen, color --avatar-marco) y nombre. Si la imagen falla, cae a la inicial del nombre. tamanio sm, md y lg."
+  >
+    <div class="space-y-4">
+      <app-jugador-chip nombre="Valen" lado="propio" tamanio="sm" />
+      <app-jugador-chip nombre="Tomi" [avatarUrl]="avatarVerde" lado="propio" tamanio="md" />
+      <app-jugador-chip nombre="Lu" [avatarUrl]="avatarAmarillo" lado="rival" tamanio="lg" />
+      <app-jugador-chip nombre="Sofi" lado="rival" tamanio="lg" />
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        Los chips con nombre de <code>Valen</code> y <code>Sofi</code> muestran el fallback
+        inicial; <code>Tomi</code> y <code>Lu</code> muestran la imagen. El chip describe el
+        lado y la posición para el lector de pantalla. En la franja del tablero el
+        <code>lg</code> mide 4rem y sube a 4.5rem en pantalla ancha (<code>xl</code>).
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="app-indicador-turno"
+    descripcion="Cabecera de la partida: turno sobre el total, tiempo restante y botón de rendirse. El valor crítico suma ícono para no depender solo del color."
+  >
+    <div class="max-w-xl space-y-4">
+      <app-indicador-turno [turno]="3" [totalTurnos]="6" [segundosRestantes]="25" />
+      <app-indicador-turno [turno]="6" [totalTurnos]="6" [segundosRestantes]="8" />
+      <app-indicador-turno
+        [turno]="2"
+        [totalTurnos]="6"
+        [segundosRestantes]="40"
+        (rendirse)="rendicion.set(true)"
+      />
+
+      @if (rendicion()) {
+        <p app-texto variante="secundario" tamano="menor">Rendición solicitada.</p>
+      }
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        El componente no maneja su propio timer: recibe
+        <code>segundosRestantes</code> ya calculado, así el backend sigue siendo el que decide
+        los límites. Se usa <code>role="timer"</code> y se evita <code>aria-live</code>, porque
+        el valor cambia cada segundo y saturaría al lector de pantalla.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="app-puntaje-zona"
+    descripcion="Puntaje de una zona para un lado del tablero. El badge late cuando va ganando y el número rebota con GSAP al cambiar; el latido y el rebote usan capas distintas para no pisarse."
+  >
+    <div class="flex flex-wrap items-center gap-4">
+      <app-puntaje-zona [puntos]="6" estado="ganando" lado="propio" />
+      <app-puntaje-zona [puntos]="2" estado="perdiendo" lado="propio" />
+      <app-puntaje-zona [puntos]="5" estado="empate" lado="propio" />
+      <app-puntaje-zona [puntos]="4" estado="ganando" lado="rival" />
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        El estado <code>ganando</code> suma la animación continua <code>latidoZona</code>; el
+        rebote de puntos se anima sobre un <code>span</code> interno, para no competir con el
+        <code>transform</code> del latido.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+  <app-tarjeta-muestra
+  titulo="app-control-turno"
+  descripcion="Un solo botón muestra el turno y lo finaliza. Arriba, el tiempo con su barra; abajo, Rendirme con alerta de confirmación."
+>
+  <div class="flex flex-wrap items-start gap-6">
+    <app-control-turno [turno]="2" [totalTurnos]="6" [segundosRestantes]="25" estado="jugando" />
+    <app-control-turno [turno]="3" [totalTurnos]="6" [segundosRestantes]="8" estado="jugando" />
+    <app-control-turno [turno]="6" [totalTurnos]="6" [segundosRestantes]="30" estado="jugando" />
+    <app-control-turno [turno]="2" [totalTurnos]="6" [segundosRestantes]="20" estado="esperando" />
+    <app-control-turno [turno]="2" [totalTurnos]="6" [segundosRestantes]="0" estado="resolviendo" />
+  </div>
+</app-tarjeta-muestra>
+<app-tarjeta-muestra
+  titulo="app-mano"
+  descripcion="Cartas solapadas que suben con hover o foco. Tocar una abre su detalle."
+>
+  <app-mano [cartas]="cartasMano" />
+</app-tarjeta-muestra>
+</div>

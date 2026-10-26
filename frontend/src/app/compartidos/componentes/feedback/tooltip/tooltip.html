@@ -1,0 +1,27 @@
+<span
+  class="tip"
+  [class.tip--abajo]="abajo()"
+  [class.tip--arriba]="!abajo()"
+  [class.tip--derecha]="haciaDerecha()"
+  [class.tip--izquierda]="!haciaDerecha()"
+>
+  @if (icono()) {
+    <button
+      type="button"
+      class="tip__disparador"
+      [attr.aria-label]="etiqueta()"
+      [attr.aria-describedby]="idGlobo"
+    >
+      <ng-icon name="phosphorInfoFill" class="tip__icono" aria-hidden="true" />
+    </button>
+  } @else {
+    <span class="tip__objetivo" tabindex="0" [attr.aria-describedby]="idGlobo">
+      <ng-content />
+    </span>
+  }
+
+  <span class="tip__globo" role="tooltip" [id]="idGlobo">
+    {{ texto() }}
+    <span class="tip__flecha" aria-hidden="true"></span>
+  </span>
+</span>

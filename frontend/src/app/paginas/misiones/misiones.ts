@@ -2,14 +2,15 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
+
 import { RouterLink } from '@angular/router';
-import { DesplegableSeleccion, type OpcionDesplegable } from '../../compartidos/componentes/desplegable-seleccion/desplegable-seleccion';
-import { FlujoAperturaSobres, type SobreInicialApertura } from '../../compartidos/componentes/flujo-apertura-sobres/flujo-apertura-sobres';
-import { PanelMisiones, type SeccionMisiones } from '../../compartidos/componentes/panel-misiones/panel-misiones';
-import { Header } from '../../compartidos/componentes/header/header';
-import { TarjetaMision } from '../../compartidos/componentes/tarjeta-mision/tarjeta-mision';
-import { TarjetaPity } from '../../compartidos/componentes/tarjeta-pity/tarjeta-pity';
-import { CATEGORIAS_SOBRE, ETIQUETAS_CATEGORIA } from '../../modelos/categoria.model';
+import { DesplegableSeleccion, type OpcionDesplegable } from '@compartidos/componentes/controles/desplegable-seleccion/desplegable-seleccion';
+import { FlujoAperturaSobres, type SobreInicialApertura } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
+import { PanelMisiones, type SeccionMisiones } from '@compartidos/componentes/usuario/panel-misiones/panel-misiones';
+import { Header } from '@compartidos/componentes/layout/header/header';
+import { TarjetaMision } from '@compartidos/componentes/usuario/tarjeta-mision/tarjeta-mision';
+import { TarjetaPity } from '@compartidos/componentes/usuario/tarjeta-pity/tarjeta-pity';
+import { CATEGORIAS_SOBRE, ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
 import {
   ETIQUETAS_PERIODICIDAD,
   PERIODICIDADES,
@@ -19,11 +20,11 @@ import {
   type Periodicidad,
   type ProgresoPity,
   type SobreReferencia,
-} from '../../modelos/misiones.model';
-import type { SobreRespuesta } from '../../modelos/sobre.model';
+} from '@modelos/misiones.model';
+import type { SobreRespuesta } from '@modelos/sobre.model';
 
-import { MisionesService } from '../../servicios/mision.services';
-import { SobresService } from '../../servicios/sobres.service';
+import { MisionesService } from '@servicios/mision.services';
+import { SobresService } from '@servicios/sobres.service';
 
 
 type CriterioOrdenPity = 'cercania' | 'nombre';
@@ -55,6 +56,7 @@ export class Misiones implements OnInit {
   protected readonly categoriaPity = signal<string | null>(null);
   protected readonly marcaPity = signal<string | null>(null);
   protected readonly ordenPity = signal<CriterioOrdenPity>('cercania');
+  protected readonly modalPityAbierto = signal(false);
 
   /** Id de la misión cuyo reclamo está en vuelo; evita el doble clic. */
   private readonly reclamando = signal<number | null>(null);
@@ -180,6 +182,14 @@ export class Misiones implements OnInit {
     this.marcaPity.set(null);
   }
 
+  protected abrirModalPity(): void {
+    this.modalPityAbierto.set(true);
+  }
+
+  protected cerrarModalPity(): void {
+    this.modalPityAbierto.set(false);
+  }
+
   protected reclamarMision(id: number): void {
     if (this.reclamando() !== null) return;
     this.reclamando.set(id);
@@ -208,8 +218,15 @@ export class Misiones implements OnInit {
     this.modalAperturaAbierto.set(true);
   }
 
+  private notificadoMision3 = false;
+
   protected cerrarAperturaSobres(): void {
     this.modalAperturaAbierto.set(false);
+    const mision3 = this.servicio.misiones().find((m) => m.id === 3);
+    if (mision3?.estado === 'completada' && !this.notificadoMision3) {
+      this.notificadoMision3 = true;
+      toast.success('¡Completaste la misión "Abrí 2 sobres"! Ya podés reclamarla.');
+    }
   }
 
   /** Traduce la recompensa de una misión al descriptor que consume el modal. */

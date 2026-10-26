@@ -1,0 +1,101 @@
+<footer>
+  <div class="contenedor-landing py-10 md:py-14 lg:py-16">
+    <div class="grid grid-cols-2 gap-x-6 gap-y-8 md:gap-x-10 lg:grid-cols-[1.5fr_1fr_1fr] lg:gap-12">
+      <!-- Marca: ocupa todo el ancho hasta 1023px -->
+      <div class="col-span-2 max-w-sm lg:col-span-1">
+        <a routerLink="/" class="inline-block" aria-label="Falta Una, ir al inicio">
+          <img [src]="urlLogo()" alt="Falta Una" class="h-12 w-auto md:h-14 lg:h-16" />
+        </a>
+        <p
+          class="mt-4 font-interfaz text-sm leading-relaxed"
+          [ngClass]="clasesTextoTenue()"
+        >
+          {{ descripcion }}
+        </p>
+      </div>
+
+      <!-- Navegación -->
+      <nav class="flex flex-col gap-3" aria-labelledby="footer-navegacion-titulo">
+        <h2
+          id="footer-navegacion-titulo"
+          class="font-interfaz text-xs font-bold uppercase tracking-widest"
+          [ngClass]="clasesTextoTenue()"
+        >
+          Navegación
+        </h2>
+        @for (enlace of navegacion(); track enlace.etiqueta) {
+          <a
+            [routerLink]="enlace.ruta"
+            [queryParams]="enlace.queryParams"
+            class="w-fit font-interfaz text-sm font-semibold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          >
+            {{ enlace.etiqueta }}
+          </a>
+        }
+      </nav>
+
+      <!-- Cuenta -->
+      <nav class="flex flex-col gap-3" aria-labelledby="footer-cuenta-titulo">
+        <h2
+          id="footer-cuenta-titulo"
+          class="font-interfaz text-xs font-bold uppercase tracking-widest"
+          [ngClass]="clasesTextoTenue()"
+        >
+          Cuenta
+        </h2>
+        @for (enlace of cuenta(); track enlace.etiqueta) {
+          <a
+            [routerLink]="enlace.ruta"
+            [queryParams]="enlace.queryParams"
+            class="w-fit font-interfaz text-sm font-semibold transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          >
+            {{ enlace.etiqueta }}
+          </a>
+        }
+      </nav>
+    </div>
+
+    <!-- Franja inferior: copyright, descargo e Instagram -->
+    <div class="mt-10 border-t pt-6 md:mt-12" [ngClass]="claseBorde()">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-8">
+        <div class="flex min-w-0 flex-col gap-3 md:flex-1 md:flex-row md:items-end md:justify-between md:gap-8">
+          <p class="font-interfaz text-xs" [ngClass]="clasesTextoTenue()">
+            © {{ anio }} Falta Una. Todos los derechos reservados.
+          </p>
+          <p
+            class="max-w-2xl font-interfaz text-xs leading-relaxed"
+            [ngClass]="clasesTextoTenue()"
+          >
+            {{ descargo }}
+          </p>
+        </div>
+
+        <!-- Redes sociales: esquina inferior derecha -->
+        <a
+          [href]="urlInstagram"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Instagram de Falta Una (se abre en una pestaña nueva)"
+          class="inline-flex size-10 shrink-0 items-center justify-center self-end rounded-full border-2 border-current transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+        >
+          <svg
+            class="size-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Enlaces legales/de ayuda: omitidos hasta contar con rutas reales (Open Decision). -->
+  </div>
+</footer>

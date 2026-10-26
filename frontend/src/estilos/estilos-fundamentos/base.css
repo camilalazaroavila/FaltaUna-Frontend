@@ -8,11 +8,15 @@
 
 /* ==========================================================================
    TIPOGRAFÍAS
-   - Titulares (Headings): 'Rock Salt' / 'Russo One' como alternativa libre a Rockstone
-     (estilo display rústico, enérgico, de impacto deportivo y urbano).
+   El sistema usa DOS familias de marca, más una excepción para controles:
+   - Titulares (Headings): 'Russo One' (estilo display enérgico, de impacto
+     deportivo y urbano).
    - Textos / Lectura: 'Merriweather' (serifa de altísima legibilidad y fuerte
      contraste visual con los títulos).
-   - UI / Interfaz: Sistema de fuentes sans-serif moderno para badges y tablas.
+   - UI / Interfaz (EXCEPCIÓN): System sans-serif moderno, reservado a botones,
+     inputs, badges, tablas y datos técnicos. No es una familia de marca.
+   La escala de tamaños y pesos por rol vive en los tokens semánticos
+   `--tipografia-*`, `--peso-*`, `--interlineado-*` y `--interletrado-*`.
    ========================================================================== */
 
 /* ==========================================================================

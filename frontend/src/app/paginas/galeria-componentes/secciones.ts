@@ -81,4 +81,28 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     descripcion:
       'Header, tarjeta de álbum, KPI, medidor de rareza y cupón de recompensa del panel de marcas (revisar en modo empresa).',
   },
+  {
+    id: 'texto',
+    titulo: 'Texto',
+    descripcion:
+      'Directivas de contenido textual con todos sus tamaños, colores y etiquetas semánticas, en modo jugador y empresa a la vez.',
+  },
+   {
+    id: 'tablero',
+    titulo: 'tablero',
+    descripcion:
+      'Pantalla de partida armada con los átomos. Todo es mock: las zonas, las cartas, los puntajes y las barras salen de PartidaEstadoService.',
+  },
+  {
+    id: 'cajas',
+    titulo: 'Cajas',
+    descripcion:
+      'Contenedor de contenido con variantes, sombras, paddings, radios y slots, en modo jugador y empresa a la vez.',
+  },
+  {
+    id: 'partida',
+    titulo: 'Partida',
+    descripcion:
+      'Átomos de la pantalla de partida: casilla, contador de cupones, barra de puntos, chip de jugador, cabecera de turno y puntaje por zona.',
+  },
 ] as const;
