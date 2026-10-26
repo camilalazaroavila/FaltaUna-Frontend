@@ -30,10 +30,10 @@ interface BotonCategoria {
   readonly urlIcono: string;
 }
 
-interface OpcionObtencion {
+/* interface OpcionObtencion {
   readonly valor: FiltroObtencion;
   readonly etiqueta: string;
-}
+} */
 
 const ORDEN_RAREZA: Record<RarezaCarta, number> = {
   comun: 0,
@@ -80,11 +80,12 @@ export class MisCartas implements OnInit {
   protected readonly categoriaActiva = signal<CategoriaCarta | null>(null);
   protected readonly criterioOrden = signal<CriterioOrden>('nombre-asc');
 
+  /*
   protected readonly opcionesObtencion: readonly OpcionObtencion[] = [
     { valor: 'todas', etiqueta: 'Todas' },
-    { valor: 'obtenidas', etiqueta: 'Obtenidas' },
-    { valor: 'no-obtenidas', etiqueta: 'No obtenidas' },
-  ];
+    { valor: 'obtenidas', etiqueta: 'Obtenidas' }
+    { valor: 'no-obtenidas', etiqueta: 'No obtenidas' }, 
+  ]; */
 
   // Botones de categoría
   protected readonly categoriasDisponibles: readonly BotonCategoria[] = [
