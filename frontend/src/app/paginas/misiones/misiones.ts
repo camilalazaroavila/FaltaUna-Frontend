@@ -19,12 +19,14 @@ import {
   type Mision,
   type Periodicidad,
   type ProgresoPity,
+  type RecompensaMisionRespuesta,
   type SobreReferencia,
 } from '@modelos/misiones.model';
 import type { SobreRespuesta } from '@modelos/sobre.model';
 
+import { AuthService } from '@servicios/auth.service';
 import { MisionesService } from '@servicios/mision.services';
-import { SobresService } from '@servicios/sobres.service';
+import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 
 
 type CriterioOrdenPity = 'cercania' | 'nombre';
@@ -44,6 +46,7 @@ type CriterioOrdenPity = 'cercania' | 'nombre';
 export class Misiones implements OnInit {
   private readonly servicio = inject(MisionesService);
   private readonly sobresService = inject(SobresService);
+  private readonly authService = inject(AuthService);
 
   private readonly router = inject(Router);
 
@@ -52,6 +55,10 @@ export class Misiones implements OnInit {
 
   protected readonly seccionActiva = signal<SeccionMisiones>('misiones');
   protected readonly periodicidadActiva = signal<Periodicidad>('diaria');
+
+  /** Estado de la carga real de misiones. */
+  protected readonly cargando = this.servicio.cargando;
+  protected readonly error = this.servicio.error;
 
   protected readonly categoriaPity = signal<string | null>(null);
   protected readonly marcaPity = signal<string | null>(null);
@@ -68,19 +75,60 @@ export class Misiones implements OnInit {
 
   /** Catálogo de sobres del backend para el modal de apertura (puede quedar vacío). */
   protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
+  /** Sobres que el usuario tiene en el inventario (incluye la recompensa reclamada). */
+  protected readonly sobresInventario = signal<readonly SobreInventarioUsuario[]>([]);
+  /** Cargas diarias disponibles: la grilla del modal no debe ofrecer de más. */
+  protected readonly sobresDiariosDisponibles = computed(
+    () => this.sobresService.sobresDisponibles().actuales,
+  );
   protected readonly modalAperturaAbierto = signal(false);
-  /** Sobre con el que abrir el modal tras reclamar (lo resuelve el modal contra el catálogo). */
+  /** Sobre con el que abrir el modal tras reclamar; se resuelve por id. */
   protected readonly sobreReclamado = signal<SobreInicialApertura | null>(null);
 
   ngOnInit(): void {
+    this.cargarMisiones();
     this.cargarSobres();
+    this.cargarInventario();
+    this.cargarEstadoDiario();
+  }
+
+  protected cargarMisiones(): void {
+    this.servicio.cargarMisiones().subscribe({
+      error: () => {
+        // El servicio ya expone `error()`; la vista muestra el estado con reintento.
+      },
+    });
   }
 
   private cargarSobres(): void {
     this.sobresService.obtenerSobres().subscribe({
       next: (sobres) => this.sobresCatalogo.set(sobres),
       error: () => {
-        // Si el backend no responde, el modal cae al sobre genérico.
+        // Si el backend no responde, el modal puede resolver contra el inventario.
+      },
+    });
+  }
+
+  private cargarInventario(): void {
+    const usuarioId = this.authService.usuarioActual()?.id;
+    if (usuarioId === undefined) {
+      this.sobresInventario.set([]);
+      return;
+    }
+
+    this.sobresService.obtenerInventarioSobres(usuarioId).subscribe({
+      next: (inventario) => this.sobresInventario.set(inventario),
+      error: () => this.sobresInventario.set([]),
+    });
+  }
+
+  private cargarEstadoDiario(): void {
+    const usuarioId = this.authService.usuarioActual()?.id;
+    if (usuarioId === undefined) return;
+
+    this.sobresService.cargarEstadoDiario(usuarioId).subscribe({
+      error: () => {
+        // Si falla, el modal conserva el último estado conocido.
       },
     });
   }
@@ -192,13 +240,18 @@ export class Misiones implements OnInit {
 
   protected reclamarMision(id: number): void {
     if (this.reclamando() !== null) return;
+
+    const mision = this.servicio.misiones().find((m) => m.id === id);
+    const descriptor = mision ? this.descriptorApertura(mision.recompensa) : null;
     this.reclamando.set(id);
 
     this.servicio.reclamar(id).subscribe({
-      next: (mision) => {
+      next: (recompensa) => {
         this.reclamando.set(null);
         toast.success('¡Recompensa reclamada! Ya está en tu colección.');
-        this.abrirAperturaDeMision(mision);
+        this.cargarMisiones();
+        this.cargarInventario();
+        this.abrirAperturaDeMision(recompensa, descriptor);
       },
       error: (error: Error) => {
         this.reclamando.set(null);
@@ -208,37 +261,48 @@ export class Misiones implements OnInit {
   }
 
   /**
-   * Abre el modal de apertura sobre la recompensa reclamada. `iniciar()` del
-   * modal no toca el backend: solo la animación de corte dispara la apertura.
-   * Si el jugador cierra el modal sin cortar, la misión ya quedó reclamada y el
-   * sobre se pierde (comportamiento aceptado con datos de prueba).
+   * Abre el modal directamente sobre el sobre acreditado. Se usa su `sobreId`
+   * para que nunca se confunda con un sobre diario (que tiene su propio límite).
    */
-  private abrirAperturaDeMision(mision: Mision): void {
-    this.sobreReclamado.set(this.descriptorApertura(mision.recompensa));
+  private abrirAperturaDeMision(
+    recompensa: RecompensaMisionRespuesta,
+    descriptor: SobreInicialApertura | null,
+  ): void {
+    this.sobreReclamado.set({
+      sobreId: recompensa.sobreId,
+      tipo: descriptor?.tipo ?? 'GENERAL',
+      etiqueta: descriptor?.etiqueta,
+    });
     this.modalAperturaAbierto.set(true);
   }
 
-  private notificadoMision3 = false;
+  /** Abrir el sobre hace avanzar misiones y consume inventario. */
+  protected alAbrirSobreRecompensa(): void {
+    this.cargarMisiones();
+    this.cargarInventario();
+    this.cargarEstadoDiario();
+  }
 
   protected cerrarAperturaSobres(): void {
     this.modalAperturaAbierto.set(false);
-    const mision3 = this.servicio.misiones().find((m) => m.id === 3);
-    if (mision3?.estado === 'completada' && !this.notificadoMision3) {
-      this.notificadoMision3 = true;
-      toast.success('¡Completaste la misión "Abrí 2 sobres"! Ya podés reclamarla.');
-    }
+    this.sobreReclamado.set(null);
   }
 
   /** Traduce la recompensa de una misión al descriptor que consume el modal. */
   private descriptorApertura(recompensa: SobreReferencia | null): SobreInicialApertura | null {
-    if (!recompensa) return null;
+    if (!recompensa || recompensa.sobreId === undefined) return null;
+
     switch (recompensa.tipo) {
       case 'categoria':
-        return { tipo: 'CATEGORIA', etiqueta: ETIQUETAS_CATEGORIA[recompensa.categoria] };
+        return {
+          sobreId: recompensa.sobreId,
+          tipo: 'CATEGORIA',
+          etiqueta: ETIQUETAS_CATEGORIA[recompensa.categoria],
+        };
       case 'marca':
-        return { tipo: 'MARCA', etiqueta: recompensa.nombre };
+        return { sobreId: recompensa.sobreId, tipo: 'MARCA', etiqueta: recompensa.nombre };
       default:
-        return { tipo: 'GENERAL' };
+        return { sobreId: recompensa.sobreId, tipo: 'GENERAL' };
     }
   }
 

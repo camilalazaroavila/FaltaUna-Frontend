@@ -42,6 +42,7 @@ export interface PropsSobre {
 }
 
 export interface SobreInicialApertura {
+  readonly sobreId: number;
   readonly tipo: 'GENERAL' | 'CATEGORIA' | 'MARCA';
   readonly etiqueta?: string;
 }
@@ -189,32 +190,56 @@ export class FlujoAperturaSobres {
       untracked(() => {
         this.iniciar();
         if (inicial) {
-          const sobre = this.resolverSobreInicial(inicial);
-          if (sobre) {
-            this.seleccionarSobre(sobre);
-          }
+          this.seleccionarSobre(this.resolverSobreInicial(inicial));
         }
       });
     });
   }
 
   /**
-   * Resuelve el sobre de apertura contra la lista UI. Empareja por tipo y
-   * etiqueta cuando se indica; si no hay coincidencia (o el catálogo todavía no
-   * cargó), devuelve el sobre genérico: el diario disponible.
+   * Resuelve el sobre acreditado por su `sobreId`. Primero contra la grilla
+   * (inventario ya cargado) y, si todavía no llegó la respuesta, contra el
+   * catálogo. Nunca cae al sobre diario: ese tiene su propio límite de cargas y
+   * abrirlo por error consumiría una apertura del día.
    */
-  private resolverSobreInicial(descriptor: SobreInicialApertura): SobreItemUI | null {
-    const items = this.listaSobresUI();
-    const buscado = descriptor.etiqueta?.trim().toUpperCase();
+  private resolverSobreInicial(descriptor: SobreInicialApertura): SobreItemUI {
+    const enGrilla = this.listaSobresUI().find(
+      (item) => !item.esDiario && Number(item.id) === descriptor.sobreId,
+    );
+    if (enGrilla) return enGrilla;
 
-    if (buscado) {
-      const porEtiqueta = items.find(
-        (item) => !item.esDiario && item.tipo === descriptor.tipo && item.etiqueta === buscado,
-      );
-      if (porEtiqueta) return porEtiqueta;
+    const delCatalogo = this.sobresCatalogo().find((s) => s.id === descriptor.sobreId);
+    if (delCatalogo) {
+      return {
+        id: delCatalogo.id,
+        nombre: delCatalogo.nombre,
+        etiqueta: (delCatalogo.marca ?? delCatalogo.categoria ?? delCatalogo.nombre).toUpperCase(),
+        tipo: delCatalogo.tipo,
+        precio: delCatalogo.precio ?? 0,
+        cantidadCartas: delCatalogo.cantidadCartas,
+        esDiario: false,
+        disponible: true,
+        categoria: delCatalogo.categoria ?? null,
+        marca: delCatalogo.marca ?? null,
+        logoUrl: delCatalogo.logoUrl ?? null,
+      };
     }
 
-    return items.find((item) => item.esDiario && item.disponible) ?? items.find((item) => item.esDiario) ?? null;
+    // Último recurso: el descriptor ya trae lo necesario para abrir por id.
+    return {
+      id: descriptor.sobreId,
+      nombre: descriptor.etiqueta ?? 'Sobre',
+      etiqueta: (descriptor.etiqueta ?? 'SOBRE').toUpperCase(),
+      tipo: descriptor.tipo,
+      precio: 0,
+      cantidadCartas: this.cantidadCartasPorTipo(descriptor.tipo),
+      esDiario: false,
+      disponible: true,
+    };
+  }
+
+  private cantidadCartasPorTipo(tipo: SobreInicialApertura['tipo']): number {
+    return tipo === 'MARCA' ? 1 : tipo === 'CATEGORIA' ? 3 : CARTAS_SOBRE_DIARIO;
   }
 
   /**
@@ -610,7 +635,7 @@ export class FlujoAperturaSobres {
           id: `${cartaBackend.cartaId}-${i}`,
           cartaId: cartaBackend.cartaId,
           nombre: cartaBackend.nombre,
-          imagenUrl: cartaBackend.imagenUrl,
+          imagenUrl: cartaBackend.imagenUrl ?? '',
           rareza: rarezaDesdeNombre(cartaBackend.rareza),
           categoria: categoriaCartaDesdeNombre(cartaBackend.categoria),
           atributoIzquierdo: cartaBackend.poder ?? 0,
