@@ -38,18 +38,18 @@
     }
   </section>
  
-  <div class="hidden items-end justify-end pr-12 pb-16 md:flex lg:pr-24 lg:pb-24">
-    <div class="grid w-2/3 max-w-md" aria-hidden="true">
-      <img
-        src="imagenes/pantalla-carga-juego/Gata-Dormida-Falta-Una.png"
-        alt="cara-dormida"
-        class="col-start-1 row-start-1 w-full object-contain transition-opacity duration-500 motion-reduce:transition-none"
-        [class.opacity-0]="encontrado()" />
-      <img
-        src="imagenes/pantalla-carga-juego/Gata-Despierta-Falta-Una.png"
-        alt="cara-despierta"
-        class="col-start-1 row-start-1 w-full object-contain transition-opacity duration-500 motion-reduce:transition-none"
-        [class.opacity-0]="!encontrado()" />
-    </div>
-  </div> 
+  <div class="hidden items-end justify-end pr-8 pb-8 md:flex lg:pr-12 lg:pb-12">
+  <div class="grid w-full max-w-2xl" aria-hidden="true">
+    <img
+      src="imagenes/pantalla-carga-juego/Gata-Dormida-Falta-Una.png"
+      alt=""
+      class="col-start-1 row-start-1 w-full object-contain transition-opacity duration-500 motion-reduce:transition-none"
+      [class.opacity-0]="encontrado()" />
+    <img
+      src="imagenes/pantalla-carga-juego/Gata-Despierta-Falta-Una.png"
+      alt=""
+      class="col-start-1 row-start-1 w-full object-contain transition-opacity duration-500 motion-reduce:transition-none"
+      [class.opacity-0]="!encontrado()" />
+  </div>
+</div> 
 </main>
