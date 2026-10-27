@@ -19,6 +19,9 @@ import urlIconoIntercambios from '@svgs/Icon_Intercambio.svg';
 import urlIconoQr from '@svgs/Icon_Qr.svg';
 import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 
+import { ExpoPopout } from '@compartidos/componentes/layout/expo-popout/expo-popout';
+import { PopoutSesionService } from '@servicios/popout-sesion.service';
+
 export interface DestinoNavegacion {
   readonly id: string;
   readonly nombre: string;
@@ -40,7 +43,7 @@ export interface SobreOpcion {
 @Component({
   selector: 'app-usuario-dashboard',
   standalone: true,
-  imports: [Header, BotonNavegacionCircular, FlujoAperturaSobres, SobreMarca],
+  imports: [Header, BotonNavegacionCircular, FlujoAperturaSobres, SobreMarca, ExpoPopout],
   templateUrl: './usuario-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -56,6 +59,9 @@ export class UsuarioDashboard implements OnInit {
   protected readonly urlSobreDerecha = urlSobreDerecha;
   protected readonly urlIconPelea = urlIconPelea;
 
+  private readonly popoutSesion = inject(PopoutSesionService);
+  protected readonly urlImagenExpo = 'imagenes/ExpoPopout.png';
+  protected readonly expoPopoutAbierto = signal<boolean>(false);
 
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
@@ -108,6 +114,9 @@ export class UsuarioDashboard implements OnInit {
     this.cargarSobres();
     this.cargarEstadoDiario();
     this.cargarInventarioSobres();
+    if (this.popoutSesion.consumirPendiente()) {
+      this.expoPopoutAbierto.set(true);
+    }
   }
 
   private cargarSobres(): void {
@@ -172,5 +181,9 @@ export class UsuarioDashboard implements OnInit {
   abrirSobre(opcion: SobreOpcion): void {
     if (!opcion.disponible) return;
     this.cerrarSelectorSobres();
+  }
+
+  cerrarExpoPopout(): void {
+    this.expoPopoutAbierto.set(false);
   }
 }
