@@ -3,11 +3,21 @@
 
   <div class="w-full px-5 pt-2 pb-12 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
     <div class="px-3 pt-1 sm:px-0">
-      <a routerLink="/usuario"
-        class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion">
-        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M15 6l-6 6 6 6" />
+      <a
+        routerLink="/usuario"
+        class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] uppercase transition-colors hover:text-marca-primaria"
+      >
+        <svg
+          class="h-4 w-6"
+          viewBox="0 0 28 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M27 8H2M9 1L2 8l7 7" />
         </svg>
         Volver
       </a>
@@ -15,8 +25,8 @@
 
     <!-- Fila 1: título + controles/filtros alineados -->
     <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-      <h1 class="shrink-0 font-titulo text-misiones-titulo tracking-[0.04em] text-marca-acento">
-        Misiones
+      <h1 class="shrink-0 titulo-sombreado font-titulo text-misiones-titulo uppercase tracking-[0.04em] text-marca-acento">
+        MISIONES
       </h1>
 
       @if (seccionActiva() === 'misiones') {

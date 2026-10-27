@@ -13,6 +13,7 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
 import QRCode from 'qrcode';
 import { Header } from '@compartidos/componentes/layout/header/header';
+import { TarjetaCupon } from '@compartidos/componentes/cupones/tarjeta-cupon/tarjeta-cupon';
 import { Confeti } from '@compartidos/componentes/confeti/confeti';
 import { CuponesService } from '@servicios/cupones.service';
 import { SonidoService } from '@servicios/sonido.service';
@@ -39,7 +40,7 @@ interface FiltroCategoria {
 @Component({
   selector: 'app-usuario-cupones',
   standalone: true,
-  imports: [RouterLink, DatePipe, Header, Confeti],
+  imports: [RouterLink, DatePipe, Header, Confeti, TarjetaCupon],
   templateUrl: './usuario-cupones.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -47,25 +48,6 @@ interface FiltroCategoria {
     '(document:click)': 'cerrarMenu()',
   },
   styles: `
-    /* Sello postal: borde ondulado fino (perforaciones) alrededor de un fondo crema. */
-    .sello {
-      --perf: 3.5px;
-      --linea: 2px;
-      /* Sobre fondo oscuro: la línea del sello es crema y las perforaciones dejan ver el fondo. */
-      --tinta: var(--crema);
-      --papel: var(--fondo);
-      position: relative;
-      background-color: var(--tinta);
-      background-image:
-        radial-gradient(circle at 6px 0, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px)),
-        radial-gradient(circle at 6px 8px, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px)),
-        radial-gradient(circle at 0 6px, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px)),
-        radial-gradient(circle at 8px 6px, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px));
-      background-size: 12px 8px, 12px 8px, 8px 12px, 8px 12px;
-      background-position: 0 0, 0 100%, 0 0, 100% 0;
-      background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
-    }
-
     /* Hoja crema interior: deja a la vista solo una línea fina de tinta en el borde. */
     .sello__hoja {
       position: absolute;
@@ -110,153 +92,33 @@ interface FiltroCategoria {
       color: var(--crema);
     }
 
-    /* Columna de categorías: íconos en cuadrados crema, uno debajo del otro. */
-    .vista-cupones {
-      --visible: 6.25rem;
-      --tam-icono: 2.75rem;
-      --sep-icono: 0.65rem;
-    }
-
-    @media (max-width: 639px) {
-      .vista-cupones {
-        --visible: 4.25rem;
-        --tam-icono: 2.25rem;
-        --sep-icono: 0.5rem;
-      }
-    }
-
-    .rail {
-      position: absolute;
-      left: 0;
-      top: 8rem;
-      z-index: 35;
-      width: var(--visible);
-    }
-
-    .rail__lista {
+    .coleccion__layout {
       display: flex;
       flex-direction: column;
-      gap: var(--sep-icono);
-      margin: 0;
-      padding: 0 0 0 calc(var(--visible) - var(--tam-icono) - 0.4rem);
-      list-style: none;
+      gap: 1.5rem;
     }
 
-    /* Triángulo verde: se desliza hasta la categoría elegida. */
-    .rail__puntero {
-      --i: 0;
-      position: absolute;
-      left: calc(var(--visible) - var(--tam-icono) - 1.6rem);
-      top: calc(var(--tam-icono) / 2 - 0.55rem);
-      width: 0.85rem;
-      height: 1.1rem;
-      background: var(--color-verde-jugador);
-      clip-path: polygon(0 0, 100% 50%, 0 100%);
-      filter: drop-shadow(0 0 0.35rem var(--color-verde-jugador));
-      transform: translateY(calc(var(--i) * (var(--tam-icono) + var(--sep-icono))));
-      transition: transform 0.45s cubic-bezier(0.5, 0, 0.2, 1);
-    }
-
-    .rail__item {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: var(--tam-icono);
-      height: var(--tam-icono);
-      border-radius: 0.75rem;
-      background-color: var(--crema);
-      cursor: pointer;
-      transition:
-        transform 0.28s cubic-bezier(0.3, 0.7, 0.2, 1),
-        box-shadow 0.28s ease,
-        background-color 0.28s ease,
-        filter 0.28s ease;
-    }
-
-    .rail__item img {
-      width: 60%;
-      height: 60%;
-      object-fit: contain;
-      transition: transform 0.28s cubic-bezier(0.3, 0.7, 0.2, 1);
-    }
-
-    /* Hover / foco: se corre un poco hacia el contenido y se ilumina con un halo crema. */
-    .rail__item:hover,
-    .rail__item:focus-visible {
-      transform: translateX(4px) scale(1.07);
-      filter: brightness(1.06);
-      box-shadow:
-        0 0 0 2px color-mix(in srgb, var(--crema) 70%, transparent),
-        0 0 1rem 0.1rem color-mix(in srgb, var(--crema) 55%, transparent);
-    }
-
-    .rail__item:hover img,
-    .rail__item:focus-visible img {
-      transform: scale(1.08);
-    }
-
-    /* Categoría elegida: queda iluminada en verde y late una vez al activarse. */
-    .rail__item--activo,
-    .rail__item--activo:hover,
-    .rail__item--activo:focus-visible {
-      transform: translateX(4px) scale(1.07);
-      background-color: color-mix(in srgb, var(--color-verde-jugador) 38%, var(--crema));
-      box-shadow:
-        0 0 0 2px var(--color-verde-jugador),
-        0 0 1.3rem 0.25rem color-mix(in srgb, var(--color-verde-jugador) 70%, transparent);
-      animation: rail-latido 0.9s ease-out;
-    }
-
-    @keyframes rail-latido {
-      0% {
-        box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 0 0 color-mix(in srgb, var(--color-verde-jugador) 80%, transparent);
-      }
-      60% {
-        box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 2.2rem 0.6rem color-mix(in srgb, var(--color-verde-jugador) 80%, transparent);
-      }
-      100% {
-        box-shadow: 0 0 0 2px var(--color-verde-jugador), 0 0 1.3rem 0.25rem color-mix(in srgb, var(--color-verde-jugador) 70%, transparent);
+    @media (min-width: 768px) {
+      .coleccion__layout {
+        flex-direction: row;
+        align-items: flex-start;
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .rail__puntero,
-      .rail__item,
-      .rail__item img {
-        transition: none;
-        animation: none;
-      }
+    .coleccion__aside {
+      width: 100%;
+    }
 
-      .rail__item:hover,
-      .rail__item:focus-visible,
-      .rail__item--activo {
-        transform: none;
-        animation: none;
+    @media (min-width: 768px) {
+      .coleccion__aside {
+        width: 16rem;
+        flex-shrink: 0;
       }
     }
 
-    /* Cupón: al pasar el mouse o enfocarlo se ilumina. */
-    .sello:hover,
-    .sello:focus-visible {
-      filter: brightness(1.07) saturate(1.15)
-        drop-shadow(0 0 0.7rem color-mix(in srgb, var(--color-verde-jugador) 85%, transparent));
-    }
-
-    /* Sello: las bandas del arte se mecen apenas al pasar el mouse. */
-    .sello__arte {
-      transition: transform 0.6s ease;
-    }
-
-    .sello:hover .sello__arte,
-    .sello:focus-visible .sello__arte {
-      transform: scale(1.06);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .sello__arte {
-        transition: none;
-      }
+    .coleccion__contenido {
+      min-width: 0;
+      flex: 1 1 auto;
     }
   `,
 })
@@ -464,29 +326,6 @@ export class UsuarioCupones {
         },
       });
   }
-
-  /** Texto de la franja inferior del sello: "20% OFF". */
-  protected etiquetaDescuento(cupon: CuponDescuento): string {
-    const porcentaje =
-      cupon.porcentajeDescuento ??
-      Number(
-        /(\d{1,3})\s*%/.exec(
-          `${cupon.titulo} ${cupon.detalles} ${cupon.descripcion}`,
-        )?.[1],
-      );
-
-    return Number.isFinite(porcentaje) && porcentaje > 0
-      ? `${porcentaje}% OFF`
-      : 'Ver cupón';
-  }
-
-  /** Posición de la categoría elegida en la columna: mueve el triángulo verde. */
-  protected readonly indiceActivo = computed(() =>
-    Math.max(
-      0,
-      this.categorias.findIndex((c) => c.id === this.categoriaActiva()),
-    ),
-  );
 
   protected elegirCategoria(id: CategoriaCupon): void {
     this.categoriaActiva.set(id);
