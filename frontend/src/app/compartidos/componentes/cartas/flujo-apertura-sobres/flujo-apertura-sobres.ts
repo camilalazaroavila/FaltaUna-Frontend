@@ -14,7 +14,7 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { SobresService } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
-import type { SobreInventarioUsuario } from '@servicios/sobres.service';
+import type { SobreInventarioUsuario, SobreAbiertoUsuario} from '@servicios/sobres.service';
 import { PanelDesplazable } from '@compartidos/componentes/controles/panel-desplazable/panel-desplazable';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
@@ -161,6 +161,38 @@ export class FlujoAperturaSobres {
   protected readonly repetidas = signal<boolean[]>([]);
   protected readonly esRepetida = computed(() => this.repetidas()[this.indiceCartaActual()] ?? false);
 
+  readonly sobresAbiertos = input<readonly SobreAbiertoUsuario[]>([]);
+
+  private readonly abiertosLocal = signal<SobreAbiertoUsuario[]>([]);
+
+  private claveAbiertos(): string {
+    const usuarioId = this.authService.usuarioActual()?.id ?? 1;
+    return `faltauna.sobres-abiertos.${usuarioId}`;
+  }
+
+  private leerAbiertosLocal(): SobreAbiertoUsuario[] {
+    try {
+      return JSON.parse(localStorage.getItem(this.claveAbiertos()) ?? '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  private registrarAbierto(sobre: SobreItemUI): void {
+    const id = Number(sobre.id);
+    const lista = [...this.abiertosLocal()];
+    const i = lista.findIndex((a) => a.sobreId === id);
+    if (i >= 0) {
+      lista[i] = { ...lista[i], cantidadAbiertos: lista[i].cantidadAbiertos + 1 };
+    } else {
+      lista.push({ sobreId: id, nombre: sobre.nombre, tipo: sobre.tipo, cantidadAbiertos: 1 });
+    }
+    this.abiertosLocal.set(lista);
+    try {
+      localStorage.setItem(this.claveAbiertos(), JSON.stringify(lista));
+    } catch { }
+  }
+
   // Animación de corte
   protected readonly lineaCorte = LINEA_CORTE;
   protected readonly clipSuperior = CLIP_SUPERIOR;
@@ -204,8 +236,9 @@ export class FlujoAperturaSobres {
    */
   private resolverSobreInicial(descriptor: SobreInicialApertura): SobreItemUI {
     const enGrilla = this.listaSobresUI().find(
-      (item) => !item.esDiario && Number(item.id) === descriptor.sobreId,
+      (item) => !item.esDiario && item.disponible && Number(item.id) === descriptor.sobreId,
     );
+    
     if (enGrilla) return enGrilla;
 
     const delCatalogo = this.sobresCatalogo().find((s) => s.id === descriptor.sobreId);
@@ -271,7 +304,6 @@ export class FlujoAperturaSobres {
     }
   }
 
-  // Lista normalizada de sobres UI para mostrar en el grid
   protected readonly listaSobresUI = computed<SobreItemUI[]>(() => {
     const catalogo = this.sobresCatalogo();
     const diarios = this.sobresDiariosDisponibles();
@@ -292,28 +324,53 @@ export class FlujoAperturaSobres {
         cantidadCartas: CARTAS_SOBRE_DIARIO,
         esDiario: true,
         disponible,
+        abierto: !disponible,
       });
     }
 
+    // Sobres del inventario (todavía sin abrir)
     for (const inv of inventario) {
       if (!inv || inv.cantidad <= 0) continue;
       const sobreCatalogo = catalogo.find((s) => s.id === inv.sobreId);
       const tipo = (sobreCatalogo?.tipo ?? inv.tipo) as 'GENERAL' | 'CATEGORIA' | 'MARCA';
       const etiqueta = sobreCatalogo?.marca ?? sobreCatalogo?.categoria ?? inv.nombre;
-      const cantidad = inv.cantidad;
-      for (let i = 0; i < cantidad; i++) {
+      for (let i = 0; i < inv.cantidad; i++) {
         items.push({
           id: inv.sobreId,
           nombre: inv.nombre,
           etiqueta: etiqueta.toUpperCase(),
           tipo,
           precio: sobreCatalogo?.precio ?? 0,
-          cantidadCartas: sobreCatalogo?.cantidadCartas ?? (tipo === 'MARCA' ? 1 : tipo === 'CATEGORIA' ? 3 : 5),
+          cantidadCartas:
+            sobreCatalogo?.cantidadCartas ?? this.cantidadCartasPorTipo(tipo),
           esDiario: false,
           disponible: true,
           categoria: sobreCatalogo?.categoria ?? null,
           marca: sobreCatalogo?.marca ?? null,
           logoUrl: sobreCatalogo?.logoUrl ?? null,
+        });
+      }
+    }
+
+    // Sobres ya abiertos (solo informativos, no se pueden volver a elegir)
+    const abiertos = this.sobresAbiertos().length > 0 ? this.sobresAbiertos() : this.abiertosLocal();
+    for (const ab of abiertos) {
+      const cat = catalogo.find((s) => s.id === ab.sobreId);
+      const tipo = (cat?.tipo ?? ab.tipo) as 'GENERAL' | 'CATEGORIA' | 'MARCA';
+      for (let i = 0; i < ab.cantidadAbiertos; i++) {
+        items.push({
+          id: ab.sobreId,
+          nombre: ab.nombre,
+          etiqueta: 'ABIERTO',
+          tipo,
+          precio: cat?.precio ?? 0,
+          cantidadCartas: cat?.cantidadCartas ?? this.cantidadCartasPorTipo(tipo),
+          esDiario: false,
+          disponible: false,
+          abierto: true,
+          categoria: cat?.categoria ?? null,
+          marca: cat?.marca ?? null,
+          logoUrl: cat?.logoUrl ?? null,
         });
       }
     }
@@ -380,6 +437,7 @@ export class FlujoAperturaSobres {
 
   // Manejo de navegación entre fases
   iniciar(): void {
+    this.abiertosLocal.set(this.leerAbiertosLocal());
     this.fase.set('seleccion');
     this.sobreSeleccionado.set(null);
     this.sobreCortado.set(false);
@@ -396,6 +454,7 @@ export class FlujoAperturaSobres {
   }
 
   seleccionarSobre(sobre: SobreItemUI): void {
+    if(!sobre.disponible) return; 
     this.sobreSeleccionado.set(sobre);
     this.fase.set('preview');
   }
@@ -560,6 +619,7 @@ export class FlujoAperturaSobres {
 
     llamada$.subscribe({
       next: (resp) => {
+        if (!esDiario && sobre) this.registrarAbierto(sobre);
         this.cargandoApertura.set(false);
         this.errorApertura.set(null);
 
