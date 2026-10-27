@@ -22,31 +22,30 @@ describe('ExpoService', () => {
 
   afterEach(() => http.verify());
 
-  it('obtenerConfiguracion hace GET con el header X-Expo-Key', () => {
+  it('obtenerConfiguracion hace GET a /expo/sobre-regalo', () => {
     let resultado: ConfiguracionExpo | undefined;
-    servicio.obtenerConfiguracion('mi-clave').subscribe((r) => (resultado = r));
+    servicio.obtenerConfiguracion().subscribe((r) => (resultado = r));
 
     const req = http.expectOne(URL_EXPO);
     expect(req.request.method).toBe('GET');
-    expect(req.request.headers.get('X-Expo-Key')).toBe('mi-clave');
+    expect(req.request.headers.has('X-Expo-Key')).toBe(false);
 
     req.flush({ sobreRegaloId: 2, activo: true });
     expect(resultado).toEqual({ sobreRegaloId: 2, activo: true });
   });
 
-  it('cambiarSobreRegalo hace PUT con el body y el header', () => {
-    servicio.cambiarSobreRegalo('mi-clave', 3, true).subscribe();
+  it('cambiarSobreRegalo hace PUT con el body', () => {
+    servicio.cambiarSobreRegalo(3, true).subscribe();
 
     const req = http.expectOne(URL_EXPO);
     expect(req.request.method).toBe('PUT');
-    expect(req.request.headers.get('X-Expo-Key')).toBe('mi-clave');
     expect(req.request.body).toEqual({ sobreRegaloId: 3, activo: true });
 
     req.flush({ sobreRegaloId: 3, activo: true });
   });
 
   it('cambiarSobreRegalo permite desactivar mandando null', () => {
-    servicio.cambiarSobreRegalo('mi-clave', null, false).subscribe();
+    servicio.cambiarSobreRegalo(null, false).subscribe();
 
     const req = http.expectOne(URL_EXPO);
     expect(req.request.body).toEqual({ sobreRegaloId: null, activo: false });
