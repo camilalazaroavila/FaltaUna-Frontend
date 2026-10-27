@@ -13,9 +13,9 @@ import type { Carta } from '@modelos/carta.model';
 import { GsapService } from '@servicios/gsap.service';
 
 /** Grados de inclinación entre la primera y la última carta. */
-const ABANICO_TOTAL_GRADOS = 28;
+const ABANICO_TOTAL_GRADOS = 36;
 /** Cuánto baja (rem) la carta más alejada del centro. */
-const CAIDA_MAXIMA_REM = 1;
+const CAIDA_MAXIMA_REM = 1.25;
 /** Píxeles que hay que mover antes de considerar que empezó un arrastre. */
 const UMBRAL_ARRASTRE_PX = 6;
 

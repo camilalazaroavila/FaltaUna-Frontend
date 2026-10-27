@@ -9,7 +9,11 @@
     <!-- Partida activa: pantalla completa sin cabecera superior -->
     <main class="partida-activa flex flex-1 min-h-0 flex-col p-1 sm:p-2 overflow-hidden">
       <div class="area-tablero min-h-0 flex-1 h-full w-full">
-        <app-tablero (rendirse)="servicio.rendirse()" (abandonar)="abandonar()" />
+        <app-tablero
+          (rendirse)="servicio.rendirse()"
+          (abandonar)="abandonar()"
+          (conteoCambio)="enConteoRonda.set($event)"
+        />
       </div>
 
       @if (mostrarPantallaResultado()) {
