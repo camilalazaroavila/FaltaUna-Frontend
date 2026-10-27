@@ -154,6 +154,9 @@ export class Zona implements AfterViewInit {
     if (this.falloImagen()) {
       return;
     }
+    console.warn(
+      `[Zona] La imagen de la zona "${this.zona().nombre}" no pudo cargarse desde "${this.zona().imagenUrl}". Usando imagen de respaldo.`
+    );
     this.falloImagen.set(true);
   }
 

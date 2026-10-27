@@ -99,11 +99,18 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: clamp(0.75rem, 3cqw, 3rem);
+    row-gap: clamp(1.25rem, 3.5vh, 2.75rem);
     min-width: 0;
 }
 
 .area-zonas app-zona {
     min-width: 0;
+}
+
+.area-zonas app-cupon-recurso {
+    margin-top: clamp(1.25rem, 3.5vh, 2.75rem);
+    justify-self: start;
+    align-self: start;
 }
 
 /* ---- Fila de abajo ---- */

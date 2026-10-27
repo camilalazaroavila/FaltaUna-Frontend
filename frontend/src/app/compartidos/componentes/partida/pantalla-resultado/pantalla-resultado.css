@@ -4,8 +4,8 @@
 
 .pantalla-resultado-contenedor--flotante {
   position: fixed;
-  inset-block-start: 1rem;
-  margin-top: clamp(0.75rem, 2.5vh, 1.5rem);
+  inset-block-start: clamp(2.25rem, 5.5vh, 4.5rem);
+  margin-top: clamp(1.25rem, 3vh, 2.25rem);
   inset-inline: 0;
   z-index: 45;
   pointer-events: none;

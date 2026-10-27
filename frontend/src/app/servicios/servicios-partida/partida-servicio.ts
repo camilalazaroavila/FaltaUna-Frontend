@@ -43,6 +43,42 @@ const SLOTS_POR_LADO = 6;
 const IMAGEN_ZONA_RESPALDO_IZQ = '/imagenes/zona-generica.svg';
 const IMAGEN_ZONA_RESPALDO_DER = '/imagenes/zona-generica-derecha.svg';
 
+/**
+ * URLs de Cloudinary registradas en la base de datos que devuelven HTTP 404 (assets expirados o borrados).
+ */
+const URLS_404_CLOUDINARY = new Set([
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861798/Pixel_Glam.jpg',
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861798/Boutique_de_Belleza.jpg',
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861314/Arcade_Central.jpg',
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861314/Taberna_de_Rol.jpg',
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861313/Cyber_Lounge.jpg',
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/refugio_de_sabores.jpg',
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/Ritmo_Urbano.jpg',
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/Nexo_Digital.jpg',
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861799/Acuarela_Essence.jpg',
+  'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861799/Minimal_Studio.jpg',
+]);
+
+/**
+ * Fotos reales y activas (HTTP 200 en Cloudinary) del catálogo para zonas cuya URL remota quedó inaccesible.
+ */
+const FOTOS_ZONAS_ACTIVAS: Readonly<Record<string, string>> = {
+  'pixel glam': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882714/atelier_zona.jpg',
+  'boutique de belleza': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792887041/abd30047-37c9-41c2-9fcc-6f086ec7584f.jpg',
+  'arcade central': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882710/Vortex_Zona.jpg',
+  'taberna de rol': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882710/Vortex_Zona.jpg',
+  'cyber lounge': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882710/Vortex_Zona.jpg',
+  'refugio de sabores': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797101/El_horno_de_maialia.jpg',
+  'ritmo urbano': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/Distrito_Sonoro.jpg',
+  'nexo digital': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882718/Axis_zona.jpg',
+  'acuarela essence': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792944693/zona_tierra_warm.jpg',
+  'minimal studio': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792944693/zona_tierra_warm.jpg',
+  'plaza central': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882711/harmony_zona.jpg',
+  'estadio': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882718/Axis_zona.jpg',
+  'universidad': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882716/Aura_Zona.jpg',
+  'barrio': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/CASA_DELLA_PASTA_COMIDA.jpg',
+};
+
 /** Clave de `localStorage` con la partida activa, para reconectar al recargar. */
 const CLAVE_PARTIDA = 'faltauna_partida_activa';
 
@@ -2090,7 +2126,16 @@ export class PartidaServicio {
 
   private construirZona(zona: ZonaPartidaApi, lugar: NombreLugar = 'izquierda'): ZonaTablero {
     const respaldo = lugar === 'derecha' ? IMAGEN_ZONA_RESPALDO_DER : IMAGEN_ZONA_RESPALDO_IZQ;
-    const imagenNormalizada = normalizarUrlImagen(zona.imagenUrl);
+    let imagenNormalizada = normalizarUrlImagen(zona.imagenUrl);
+    const nombreClave = normalizar(zona.nombre);
+
+    if (imagenNormalizada && URLS_404_CLOUDINARY.has(imagenNormalizada)) {
+      const fotoActiva = FOTOS_ZONAS_ACTIVAS[nombreClave];
+      if (fotoActiva) {
+        imagenNormalizada = fotoActiva;
+      }
+    }
+
     return {
       id: zona.zonaPartidaId,
       zonaPartidaId: zona.zonaPartidaId,
