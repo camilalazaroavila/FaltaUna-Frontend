@@ -27,6 +27,7 @@ import type {
   SlotsLado,
   ZonaTablero,
 } from '@modelos/partida.model';
+import type { PasoBurbuja } from '@compartidos/componentes/partida/conteo-ronda/secuencia-conteo-ronda';
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
@@ -98,6 +99,8 @@ export class Zona implements AfterViewInit {
   readonly puntajePropio = input.required<number>();
   readonly estadoRival = input<EstadoPuntajeZona>('empate');
   readonly estadoPropio = input<EstadoPuntajeZona>('empate');
+  /** Burbuja de puntaje flotante activa para un slot de esta zona durante el conteo. */
+  readonly burbujaActiva = input<PasoBurbuja | null>(null);
 
   protected readonly efectosCategoria = computed(() => {
     const zona = this.zona();
@@ -151,6 +154,9 @@ export class Zona implements AfterViewInit {
     if (this.falloImagen()) {
       return;
     }
+    console.warn(
+      `[Zona] La imagen de la zona "${this.zona().nombre}" no pudo cargarse desde "${this.zona().imagenUrl}". Usando imagen de respaldo.`
+    );
     this.falloImagen.set(true);
   }
 

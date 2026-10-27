@@ -103,6 +103,23 @@ const HISTORIAL_RONDAS_MOCK: readonly ResultadoRonda[] = [
   },
 ];
 
+import { Zona } from '@compartidos/componentes/partida/zona/zona';
+import type { PasoBurbuja } from '@compartidos/componentes/partida/conteo-ronda/secuencia-conteo-ronda';
+import type { ZonaTablero } from '@modelos/partida.model';
+
+const ZONA_MOCK: ZonaTablero = {
+  id: 1,
+  zonaPartidaId: 1,
+  nombre: 'Obelisco de Buenos Aires',
+  imagenUrl: '/imagenes/obelisco.jpg',
+  efecto: { categoria: 'gastronomia', bonus: 2, texto: 'Los campeones suman +2' },
+  poderPropio: 18,
+  poderRival: 12,
+  bonusPorCategoria: {},
+  ganador: 'propio',
+  efectosCategoria: [],
+};
+
 /**
  * Sección de galería de los átomos de partida en `compartidos/componentes/partida/`.
  * Sigue el interruptor global de modo (no fija `data-modo` propio, como texto y
@@ -123,6 +140,7 @@ const HISTORIAL_RONDAS_MOCK: readonly ResultadoRonda[] = [
     ControlTurno,
     Mano,
     PantallaResultado,
+    Zona,
   ],
   templateUrl: './seccion-partida.html',
   host: { class: 'block scroll-mt-44' },
@@ -138,4 +156,37 @@ export class SeccionPartida {
   protected readonly resultadoDerrota = RESULTADO_DERROTA_MOCK;
   protected readonly resultadoEmpate = RESULTADO_EMPATE_MOCK;
   protected readonly historialRondas = HISTORIAL_RONDAS_MOCK;
+
+  protected readonly zonaMock = ZONA_MOCK;
+  protected readonly cartasZonaPropia = [CARTAS_MOCK[0], CARTAS_MOCK[1], null, null, null, null] as const;
+  protected readonly cartasZonaRival = [CARTAS_MOCK[2], null, null, null, null, null] as const;
+  protected readonly burbujaDemo = signal<PasoBurbuja | null>(null);
+
+  protected probarBurbujaPropia(): void {
+    this.burbujaDemo.set({
+      tipo: 'burbuja',
+      lugar: 'izquierda',
+      lado: 'propio',
+      indice: 0,
+      carta: CARTAS_MOCK[0],
+      poder: CARTAS_MOCK[0].atributoDerecho,
+      id: Date.now(),
+    });
+  }
+
+  protected probarBurbujaRival(): void {
+    this.burbujaDemo.set({
+      tipo: 'burbuja',
+      lugar: 'izquierda',
+      lado: 'rival',
+      indice: 0,
+      carta: CARTAS_MOCK[2],
+      poder: CARTAS_MOCK[2].atributoDerecho,
+      id: Date.now(),
+    });
+  }
+
+  protected limpiarBurbujaDemo(): void {
+    this.burbujaDemo.set(null);
+  }
 }

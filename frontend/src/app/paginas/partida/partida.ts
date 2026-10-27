@@ -66,8 +66,11 @@ export class Partida implements OnInit, OnDestroy {
   protected readonly resultadoFinal = this.servicio.resultadoFinal;
   protected readonly terminada = this.servicio.terminada;
   protected readonly gane = this.servicio.gane;
+  /** Estado del conteo secuencial de puntos de ronda. */
+  protected readonly enConteoRonda = signal<boolean>(false);
+  /** La pantalla de resultado solo aparece una vez concluido el conteo de la ronda. */
   protected readonly mostrarPantallaResultado = computed(
-    () => this.terminada() || this.resultadoFinal() !== null,
+    () => !this.enConteoRonda() && (this.terminada() || this.resultadoFinal() !== null),
   );
 
   protected readonly mazos = signal<readonly MazoApi[]>([]);

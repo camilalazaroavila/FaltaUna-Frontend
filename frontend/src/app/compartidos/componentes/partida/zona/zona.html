@@ -1,19 +1,24 @@
 <div class="zona-contenido">
-  <!-- Lado del rival (arriba) -->
-  <span
-    class="zona-etiqueta self-center justify-self-center rounded-pildora border-2 border-slot-borde bg-etiqueta-lado-rival-fondo px-2.5 py-0.5 font-titulo text-etiqueta tracking-etiqueta text-etiqueta-lado-rival-texto uppercase"
-  >
-    Rival
-  </span>
-
   <div class="zona-slots">
     @for (slot of slotsRival(); track slot.indice) {
       <div
-        class="zona-celda"
+        class="zona-celda relative"
         [attr.data-lugar]="lugar()"
         data-lado="rival"
         [attr.data-indice]="slot.indice"
       >
+        @if (burbujaActiva(); as b) {
+          @if (b.lugar === lugar() && b.lado === 'rival' && b.indice === slot.indice) {
+            <div
+              class="burbuja-puntaje burbuja-puntaje--rival"
+              role="status"
+              [attr.aria-label]="'Aporte de rival: ' + b.poder"
+            >
+              <span class="burbuja-puntaje__icono" aria-hidden="true">◆</span>
+              <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
+            </div>
+          }
+        }
         <app-slot-carta lado="rival" [estado]="slot.estado">
           @if (slot.carta; as carta) {
             @if (carta.oculta) {
@@ -140,11 +145,23 @@
   <div class="zona-slots">
     @for (slot of slotsPropios(); track slot.indice) {
       <div
-        class="zona-celda"
+        class="zona-celda relative"
         [attr.data-lugar]="lugar()"
         data-lado="propio"
         [attr.data-indice]="slot.indice"
       >
+        @if (burbujaActiva(); as b) {
+          @if (b.lugar === lugar() && b.lado === 'propio' && b.indice === slot.indice) {
+            <div
+              class="burbuja-puntaje burbuja-puntaje--propio"
+              role="status"
+              [attr.aria-label]="'Tu aporte: ' + b.poder"
+            >
+              <span class="burbuja-puntaje__icono" aria-hidden="true">★</span>
+              <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
+            </div>
+          }
+        }
         <app-slot-carta lado="propio" [estado]="slot.estado" (jugar)="jugarSlot.emit(slot.indice)">
           @if (slot.carta; as carta) {
             <div class="relative h-full w-full">
@@ -174,10 +191,4 @@
       </div>
     }
   </div>
-
-  <span
-    class="zona-etiqueta self-center justify-self-center rounded-pildora border-2 border-slot-borde bg-etiqueta-lado-propio-fondo px-2.5 py-0.5 font-titulo text-etiqueta tracking-etiqueta text-etiqueta-lado-propio-texto uppercase"
-  >
-    Vos
-  </span>
 </div>

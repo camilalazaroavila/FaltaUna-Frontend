@@ -2,11 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  HostListener,
+  OnDestroy,
   computed,
+  effect,
   inject,
   input,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup/carta-popup';
@@ -19,8 +23,19 @@ import type { PosicionArrastre } from '@compartidos/componentes/partida/mano/man
 import { Zona } from '@compartidos/componentes/partida/zona/zona';
 import { ZonaPopupComponent } from '@compartidos/componentes/partida/zona-popup/zona-popup';
 import type { Carta } from '@modelos/carta.model';
-import type { NombreLugar } from '@modelos/partida.model';
+import type { NombreLugar, ResultadoRonda } from '@modelos/partida.model';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
+import { GsapService } from '@servicios/gsap.service';
+import type {
+  ContextoCartasLugar,
+  PasoBurbuja,
+  PasoSecuenciaConteo,
+} from '@compartidos/componentes/partida/conteo-ronda/secuencia-conteo-ronda';
+import {
+  ESCALONADO_BURBUJAS_MS,
+  PAUSA_ENTRE_ZONAS_MS,
+  construirColaPasos,
+} from '@compartidos/componentes/partida/conteo-ronda/secuencia-conteo-ronda';
 
 /** Grados del extremo del abanico que forman los reversos de la mano rival. */
 const ABANICO_RIVAL_GRADOS = 12;
@@ -60,8 +75,9 @@ interface SlotSobrevolado {
     Mano,
   ],
 })
-export class Tablero {
+export class Tablero implements OnDestroy {
   protected readonly servicio = inject(PartidaServicio);
+  private readonly gsapServicio = inject(GsapService);
   private readonly mano = viewChild(Mano);
   /**
    * Host del tablero: referencia de coordenadas de la mano. El containing block
@@ -74,22 +90,162 @@ export class Tablero {
   readonly cartaAgarrada = input(false);
   readonly abandonar = output<void>();
   readonly rendirse = output<void>();
+  /** Emite true cuando arranca el conteo secuencial y false al terminar o saltar. */
+  readonly conteoCambio = output<boolean>();
 
   protected readonly lugares: readonly NombreLugar[] = ['izquierda', 'derecha'];
   protected readonly lugarAbierto = signal<NombreLugar | null>(null);
   protected readonly cartaAbierta = signal<Carta | null>(null);
+
+  /** Burbuja de puntaje activa en este instante del conteo. */
+  readonly burbujaActiva = signal<PasoBurbuja | null>(null);
+  /** Indica si la secuencia de conteo lento de ronda se encuentra en ejecución. */
+  readonly enConteo = signal<boolean>(false);
+
+  private temporizadoresConteo: ReturnType<typeof setTimeout>[] = [];
+  private colaPasos: PasoSecuenciaConteo[] = [];
+  private indicePaso = 0;
+  private ultimoResultadoAnimado = -1;
 
   /** Carta que el usuario está arrastrando ahora mismo. */
   private readonly cartaEnArrastre = signal<Carta | null>(null);
   /** Carta enfocada con teclado: alternativa accesible al arrastre. */
   private readonly cartaSeleccionada = signal<Carta | null>(null);
 
+  constructor() {
+    effect(() => {
+      const resultado = this.servicio.resultadoRonda();
+      if (resultado && resultado.numero !== this.ultimoResultadoAnimado) {
+        this.ultimoResultadoAnimado = resultado.numero;
+        untracked(() => {
+          this.iniciarConteoSecuencial(resultado);
+        });
+      }
+    });
+  }
+
+  @HostListener('keydown.escape', ['$event'])
+  alPresionarEscape(evento: Event): void {
+    if (this.enConteo()) {
+      evento.preventDefault();
+      this.saltarConteo();
+    }
+  }
+
+  /**
+   * Inicia el conteo secuencial lento de la ronda: burbuja por carta (propias y rivales),
+   * revelación de totales por zona y avance final de la barra general de puntos.
+   */
+  iniciarConteoSecuencial(resultado: ResultadoRonda): void {
+    this.limpiarTemporizadores();
+    this.enConteo.set(true);
+    this.conteoCambio.emit(true);
+
+    const lugaresMap: Record<NombreLugar, ContextoCartasLugar> = {
+      izquierda: {
+        propio: this.servicio.lugares().izquierda.propio,
+        rival: this.servicio.lugares().izquierda.rival,
+      },
+      derecha: {
+        propio: this.servicio.lugares().derecha.propio,
+        rival: this.servicio.lugares().derecha.rival,
+      },
+    };
+
+    this.colaPasos = [...construirColaPasos(this.lugares, lugaresMap, resultado)];
+    this.indicePaso = 0;
+
+    if (this.gsapServicio.movimientoReducido()) {
+      // Con movimiento reducido: números quietos un breve instante y resolución directa
+      const primerPaso = this.colaPasos.find((p) => p.tipo === 'burbuja');
+      if (primerPaso && primerPaso.tipo === 'burbuja') {
+        this.burbujaActiva.set(primerPaso);
+      }
+      const t = setTimeout(() => {
+        this.saltarConteo();
+      }, 750);
+      this.temporizadoresConteo.push(t);
+      return;
+    }
+
+    const ejecutarSiguientePaso = () => {
+      if (!this.enConteo()) {
+        return;
+      }
+
+      if (this.indicePaso >= this.colaPasos.length) {
+        this.finalizarConteo();
+        return;
+      }
+
+      const paso = this.colaPasos[this.indicePaso++];
+      if (paso.tipo === 'burbuja') {
+        this.burbujaActiva.set(paso);
+        const t = setTimeout(() => {
+          ejecutarSiguientePaso();
+        }, ESCALONADO_BURBUJAS_MS);
+        this.temporizadoresConteo.push(t);
+      } else if (paso.tipo === 'zona') {
+        this.burbujaActiva.set(null);
+        const t = setTimeout(() => {
+          ejecutarSiguientePaso();
+        }, PAUSA_ENTRE_ZONAS_MS);
+        this.temporizadoresConteo.push(t);
+      } else if (paso.tipo === 'barra') {
+        this.burbujaActiva.set(null);
+        const t = setTimeout(() => {
+          this.finalizarConteo();
+        }, PAUSA_ENTRE_ZONAS_MS);
+        this.temporizadoresConteo.push(t);
+      }
+    };
+
+    ejecutarSiguientePaso();
+  }
+
+  /**
+   * Salta inmediatamente la secuencia de conteo y libera el bloqueo de acciones.
+   * Idempotente frente a doble clic.
+   */
+  saltarConteo(): void {
+    if (!this.enConteo()) {
+      return;
+    }
+    this.finalizarConteo();
+  }
+
+  /** Cancela limpiamente el conteo en curso (rendición, recarga o abandono). */
+  cancelarConteo(): void {
+    this.limpiarTemporizadores();
+    this.burbujaActiva.set(null);
+    this.enConteo.set(false);
+    this.conteoCambio.emit(false);
+  }
+
+  private finalizarConteo(): void {
+    this.limpiarTemporizadores();
+    this.burbujaActiva.set(null);
+    this.enConteo.set(false);
+    this.conteoCambio.emit(false);
+  }
+
+  private limpiarTemporizadores(): void {
+    for (const t of this.temporizadoresConteo) {
+      clearTimeout(t);
+    }
+    this.temporizadoresConteo = [];
+  }
+
+  ngOnDestroy(): void {
+    this.cancelarConteo();
+  }
+
   /**
    * Resalta los slots disponibles cuando hay una carta en juego: por el drag
    * real, por la selección con teclado o por el flag de la galería.
    */
   protected readonly resaltarSlots = computed(
-    () => this.cartaEnArrastre() !== null || this.cartaSeleccionada() !== null || this.cartaAgarrada(),
+    () => !this.enConteo() && (this.cartaEnArrastre() !== null || this.cartaSeleccionada() !== null || this.cartaAgarrada()),
   );
 
   protected readonly zonaAbierta = computed(() => {
@@ -110,14 +266,25 @@ export class Tablero {
   });
 
   protected alIniciarArrastre(carta: Carta): void {
+    if (this.enConteo()) {
+      return;
+    }
     this.cartaEnArrastre.set(carta);
   }
 
   protected alSeleccionar(carta: Carta | null): void {
+    if (this.enConteo()) {
+      return;
+    }
     this.cartaSeleccionada.set(carta);
   }
 
   protected alTerminarArrastre(posicion: PosicionArrastre): void {
+    if (this.enConteo()) {
+      this.mano()?.cancelarArrastre();
+      return;
+    }
+
     const carta = this.cartaEnArrastre();
     this.cartaEnArrastre.set(null);
 
@@ -141,6 +308,9 @@ export class Tablero {
     this.servicio.esCartaProvisional(carta);
 
   protected alRetirarCarta(carta: Carta): void {
+    if (this.enConteo()) {
+      return;
+    }
     this.servicio.retirarCarta(carta);
     if (this.cartaAbierta()?.id === carta.id) {
       this.cartaAbierta.set(null);
@@ -149,6 +319,9 @@ export class Tablero {
 
   /** Jugar con el botón de un slot disponible (alternativa accesible al drag). */
   protected alJugarEnSlot(lugar: NombreLugar, indice: number): void {
+    if (this.enConteo()) {
+      return;
+    }
     const carta = this.cartaEnArrastre() ?? this.cartaSeleccionada();
 
     if (carta && this.servicio.jugarCarta(carta, lugar, indice)) {

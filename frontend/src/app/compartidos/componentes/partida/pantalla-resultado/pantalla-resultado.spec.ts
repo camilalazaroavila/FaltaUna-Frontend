@@ -253,4 +253,34 @@ describe('PantallaResultado', () => {
       expect(panelDetalle.nativeElement.textContent).toContain('Obelisco');
     });
   });
+
+  describe('Fase heroica y celebración con confeti', () => {
+    it('muestra el componente app-confeti en la plantilla', () => {
+      fixture.detectChanges();
+      const confetiEl = fixture.debugElement.query(By.css('app-confeti'));
+      expect(confetiEl).toBeTruthy();
+    });
+
+    it('inicia en fase heroica destacada en modo flotante y se cierra al hacer clic', () => {
+      host.resultado.set({
+        partidaId: 1,
+        ganador: 'propio',
+        motivo: 'cien-puntos',
+        puntosPropio: 100,
+        puntosRival: 80,
+        fechaFin: '2026-10-25T12:00:00Z',
+      });
+      fixture.detectChanges();
+
+      const heroico = fixture.debugElement.query(By.css('.pantalla-resultado-heroica'));
+      expect(heroico).toBeTruthy();
+
+      // Clic para cerrar la fase heroica
+      heroico.nativeElement.click();
+      fixture.detectChanges();
+
+      const heroicoCerrado = fixture.debugElement.query(By.css('.pantalla-resultado-heroica'));
+      expect(heroicoCerrado).toBeNull();
+    });
+  });
 });
