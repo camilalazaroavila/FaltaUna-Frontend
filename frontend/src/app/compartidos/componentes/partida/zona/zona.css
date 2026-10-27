@@ -98,12 +98,6 @@
     }
 }
 
-@container (max-width: 12rem) {
-    .zona-etiqueta {
-        display: none;
-    }
-}
-
 .burbuja-puntaje {
     position: absolute;
     top: 15%;
@@ -136,13 +130,6 @@
     color: var(--color-error);
     border: 2px dashed var(--color-error);
     box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6), 0 4px 12px rgba(239, 68, 68, 0.45);
-}
-
-.burbuja-puntaje__bando {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0.85;
 }
 
 .burbuja-puntaje__icono {

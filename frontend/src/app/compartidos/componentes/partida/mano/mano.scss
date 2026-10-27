@@ -21,86 +21,19 @@
     flex-shrink: 0;
     transform-origin: bottom center;
     transform: rotate(var(--angulo, 0deg)) translateY(var(--caida, 0rem));
-    transition: transform 250ms cubic-bezier(0.2, 0, 0, 1), margin-left 300ms cubic-bezier(0.2, 0, 0, 1), opacity 200ms ease;
+    transition: transform 200ms ease-out;
     touch-action: none;
     pointer-events: auto;
 }
 
 .mano-carta+.mano-carta {
-    margin-left: calc(min(0.5rem,
+    margin-left: calc(min(calc(var(--ancho-carta) * 0.72),
                 calc((100% - var(--ancho-carta)) / var(--separaciones))) - var(--ancho-carta));
 }
 
 .mano-carta:hover,
 .mano-carta:focus-visible {
-    transform: translateY(-2.25rem) scale(1.35) rotate(0deg);
-    z-index: 40 !important;
-}
-
-.mano-carta-tab {
-    position: absolute;
-    top: 0.2rem;
-    left: 0.25rem;
-    z-index: 10;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-    padding: 0.1rem 0.35rem;
-    border-radius: 0.35rem;
-    background-color: var(--color-superficie-elevada);
-    border: 1.5px solid var(--color-borde-default);
-    font-family: var(--fuente-titulo, inherit);
-    font-size: 0.75rem;
-    font-weight: 800;
-    line-height: 1;
-    box-shadow: 0 2px 4px rgb(0 0 0 / 0.4);
-    pointer-events: none;
-}
-
-.mano-carta-tab__costo {
-    color: var(--color-amarillo-acento);
-}
-
-.mano-carta-tab__separador {
-    color: var(--color-texto-secundario);
-    font-size: 0.65rem;
-}
-
-.mano-carta-tab__poder {
-    color: var(--color-exito);
-}
-
-.mano-carta--no-jugable {
-    opacity: 0.65;
-    filter: grayscale(0.45);
-}
-
-.mano-carta-bloqueo {
-    position: absolute;
-    bottom: 0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 15;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.15rem 0.45rem;
-    border-radius: 0.35rem;
-    background-color: var(--color-error);
-    color: var(--color-error-sobre);
-    border: 1px solid var(--color-error-borde);
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-    white-space: nowrap;
-    pointer-events: none;
-    box-shadow: 0 2px 4px rgb(0 0 0 / 0.5);
-}
-
-.mano-carta-bloqueo__icono {
-    width: 0.75rem;
-    height: 0.75rem;
+    transform: translateY(-1.75rem) scale(1.5) rotate(0deg);
 }
 
 /* Si alguna carta se está arrastrando, anular el hover en todas las cartas para no tapar slots */
@@ -116,12 +49,6 @@
     opacity: 0.3;
     transform: rotate(0deg) translateY(-0.5rem);
     pointer-events: none;
-}
-
-@media (max-width: 640px) {
-    .mano-carta {
-        transform: rotate(0deg) translateY(0rem);
-    }
 }
 
 /*

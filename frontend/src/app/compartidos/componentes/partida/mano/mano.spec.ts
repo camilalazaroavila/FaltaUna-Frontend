@@ -41,7 +41,7 @@ describe('Mano', () => {
     expect(component).toBeTruthy();
   });
 
-  it('debe inclinar las cartas hacia los extremos y dejar el centro recto con caida maxima reducida', () => {
+  it('debe inclinar las cartas hacia los extremos y dejar el centro recto', () => {
     const botones = Array.from(
       fixture.nativeElement.querySelectorAll('button'),
     ) as HTMLElement[];
@@ -49,7 +49,7 @@ describe('Mano', () => {
     expect(botones[0].style.getPropertyValue('--angulo')).toBe('-14deg');
     expect(botones[1].style.getPropertyValue('--angulo')).toBe('0deg');
     expect(botones[2].style.getPropertyValue('--angulo')).toBe('14deg');
-    expect(botones[0].style.getPropertyValue('--caida')).toBe('0.5rem');
+    expect(botones[0].style.getPropertyValue('--caida')).toBe('1rem');
     expect(botones[1].style.getPropertyValue('--caida')).toBe('0rem');
   });
 
@@ -62,61 +62,6 @@ describe('Mano', () => {
     expect(contenedor.style.getPropertyValue('--separaciones')).toBe('2');
     expect(botones[0].style.marginLeft).toBe('');
     expect(botones[1].style.marginLeft).toBe('');
-  });
-
-  it('debe calcular separaciones correctas con 1, 3, 6 y 12 cartas y aplanar el abanico progresivamente', () => {
-    const contenedor = fixture.nativeElement.querySelector('.mano') as HTMLElement;
-
-    // 1 carta
-    fixture.componentRef.setInput('cartas', [crearCarta('c1')]);
-    fixture.detectChanges();
-    expect(contenedor.style.getPropertyValue('--separaciones')).toBe('1');
-
-    // 6 cartas
-    const seisCartas = Array.from({ length: 6 }, (_, i) => crearCarta(`c${i}`));
-    fixture.componentRef.setInput('cartas', seisCartas);
-    fixture.detectChanges();
-    expect(contenedor.style.getPropertyValue('--separaciones')).toBe('5');
-    const botonesSeis = Array.from(
-      fixture.nativeElement.querySelectorAll('.mano-carta'),
-    ) as HTMLElement[];
-    expect(botonesSeis.length).toBe(6);
-
-    // 12 cartas
-    const doceCartas = Array.from({ length: 12 }, (_, i) => crearCarta(`c${i}`));
-    fixture.componentRef.setInput('cartas', doceCartas);
-    fixture.detectChanges();
-    expect(contenedor.style.getPropertyValue('--separaciones')).toBe('11');
-    const botonesDoce = Array.from(
-      fixture.nativeElement.querySelectorAll('.mano-carta'),
-    ) as HTMLElement[];
-    expect(botonesDoce.length).toBe(12);
-
-    // Cada carta debe contar con su pestana superior legible con costo y poder
-    const pestanas = fixture.nativeElement.querySelectorAll('.mano-carta-tab');
-    expect(pestanas.length).toBe(12);
-  });
-
-  it('debe marcar visual y accesiblemente las cartas que no alcanzan el cupon', () => {
-    const cartaNoJugable: Carta = {
-      ...crearCarta('bloqueada'),
-      jugable: false,
-      nombre: 'Carta Bloqueada',
-      atributoIzquierdo: 5,
-      atributoDerecho: 8,
-    };
-
-    fixture.componentRef.setInput('cartas', [cartaNoJugable]);
-    fixture.detectChanges();
-
-    const boton = fixture.nativeElement.querySelector('.mano-carta') as HTMLButtonElement;
-    expect(boton.disabled).toBe(true);
-    expect(boton.classList.contains('mano-carta--no-jugable')).toBe(true);
-    expect(boton.getAttribute('aria-label')).toContain('No jugable por costo de cupón');
-
-    const bloqueo = fixture.nativeElement.querySelector('.mano-carta-bloqueo');
-    expect(bloqueo).toBeTruthy();
-    expect(bloqueo.textContent).toContain('Sin cupón');
   });
 
   it('debe emitir ver al tocar una carta sin arrastrar', () => {

@@ -2,13 +2,16 @@
   @for (item of disposicion(); track idCarta(item.carta)) {
     <button
       type="button"
-      class="mano-carta cursor-grab hover:z-30 focus-visible:z-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed"
+      class="mano-carta cursor-grab hover:z-20 focus-visible:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed disabled:opacity-60"
       [class.mano-carta--arrastrando]="arrastrando()?.id === item.carta.id"
-      [class.mano-carta--no-jugable]="item.carta.jugable === false"
       [style.--angulo]="item.angulo"
       [style.--caida]="item.caida"
       [disabled]="item.carta.jugable === false"
-      [attr.aria-label]="etiquetaAria(item.carta)"
+      [attr.aria-label]="
+        item.carta.jugable === false
+          ? 'Carta no jugable: ' + item.carta.nombre
+          : 'Ver carta ' + item.carta.nombre
+      "
       (pointerdown)="alPulsar(item.carta, $event)"
       (pointermove)="alMover($event)"
       (pointerup)="alSoltar($event)"
@@ -16,24 +19,6 @@
       (keydown)="alTeclear(item.carta, $event)"
       (blur)="seleccion.emit(null)"
     >
-      <!-- Pestaña superior visible siempre para asegurar lectura de costo y poder aun solapadas -->
-      <div class="mano-carta-tab" aria-hidden="true">
-        <span class="mano-carta-tab__costo" title="Costo">{{ item.carta.atributoIzquierdo }}</span>
-        <span class="mano-carta-tab__separador">|</span>
-        <span class="mano-carta-tab__poder" title="Poder">{{ item.carta.atributoDerecho }}</span>
-      </div>
-
-      <!-- Indicador accesible cuando no alcanza el cupón (no depende solo del color) -->
-      @if (item.carta.jugable === false) {
-        <div class="mano-carta-bloqueo" aria-hidden="true">
-          <svg class="mano-carta-bloqueo__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <span class="mano-carta-bloqueo__texto">Sin cupón</span>
-        </div>
-      }
-
       <app-carta [carta]="item.carta" />
     </button>
   }

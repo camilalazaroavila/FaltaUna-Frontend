@@ -14,10 +14,8 @@ import { GsapService } from '@servicios/gsap.service';
 
 /** Grados de inclinación entre la primera y la última carta. */
 const ABANICO_TOTAL_GRADOS = 28;
-/** Cuánto baja (rem) la carta más alejada del centro. Decisión tomada, a revisar: 0.5rem para evitar cortes. */
-const CAIDA_MAXIMA_REM = 0.5;
-/** Habilita aplanado progresivo del abanico en pantallas angostas o con muchas cartas. Decisión tomada, a revisar. */
-const APLANAR_ABANICO_PANTALLAS_ANGOSTAS = true;
+/** Cuánto baja (rem) la carta más alejada del centro. */
+const CAIDA_MAXIMA_REM = 1;
 /** Píxeles que hay que mover antes de considerar que empezó un arrastre. */
 const UMBRAL_ARRASTRE_PX = 6;
 
@@ -87,18 +85,14 @@ export class Mano {
     const cartas = this.cartas();
     const total = cartas.length;
 
-    // Aplanado progresivo con muchas cartas para que las esquinas y nombres sigan legibles
-    const factorAplanado =
-      APLANAR_ABANICO_PANTALLAS_ANGOSTAS && total > 5 ? Math.max(0.35, 5 / total) : 1;
-
     return cartas.map((carta, i) => {
       // -1 (izquierda) … 0 (centro) … 1 (derecha)
       const posicion = total > 1 ? (i / (total - 1)) * 2 - 1 : 0;
 
       return {
         carta,
-        angulo: `${posicion * (ABANICO_TOTAL_GRADOS / 2) * factorAplanado}deg`,
-        caida: `${Math.abs(posicion) ** 2 * CAIDA_MAXIMA_REM * factorAplanado}rem`,
+        angulo: `${posicion * (ABANICO_TOTAL_GRADOS / 2)}deg`,
+        caida: `${Math.abs(posicion) ** 2 * CAIDA_MAXIMA_REM}rem`,
       };
     });
   });
@@ -110,12 +104,6 @@ export class Mano {
   protected readonly separaciones = computed(() => Math.max(1, this.cartas().length - 1));
 
   protected readonly cartaArrastradaVisible = computed(() => this.arrastrando() !== null);
-
-  /** Etiqueta accesible con nombre, costo, poder y estado jugable sin depender solo de color. */
-  protected etiquetaAria(carta: Carta): string {
-    const estado = carta.jugable === false ? 'No jugable por costo de cupón' : 'Jugable';
-    return `${carta.nombre}, Costo: ${carta.atributoIzquierdo}, Poder: ${carta.atributoDerecho}. ${estado}.`;
-  }
 
   /** Identifica copias repetidas de una misma carta dentro de la partida. */
   protected idCarta(carta: Carta): string {
