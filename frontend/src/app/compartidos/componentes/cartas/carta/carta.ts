@@ -4,6 +4,7 @@ import {
   ESTRELLAS_POR_RAREZA,
   ETIQUETA_RAREZA,
   ETIQUETA_CATEGORIA,
+  normalizarUrlImagen,
 } from '@modelos/carta.model';
 
 import urlFondoComun from '@svgs/FondoCartaComun.svg';
@@ -36,6 +37,7 @@ const FONDO_POR_RAREZA: Record<RarezaCarta, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.carta--no-obtenida]': '!carta().obtenida',
+    '[class.carta--oculta]': 'carta().oculta',
     '[class.carta--legendaria]': 'carta().rareza === "legendaria"',
     '[attr.aria-label]': 'ariaLabel()',
     role: 'article',
@@ -51,12 +53,20 @@ export class CartaComponent {
     () => !this.carta().oculta && this.efectosCategoria().length > 0,
   );
 
-  /** `true` cuando la imagen no carga: se oculta y queda el marco de la carta. */
+  /** `true` cuando la imagen no carga: se muestra el fallback con la categoría y nombre. */
   protected readonly imagenRota = signal(false);
 
   protected alFallarImagen(): void {
+    if (this.imagenRota()) {
+      return;
+    }
     this.imagenRota.set(true);
   }
+
+  protected readonly urlImagen = computed(() =>
+    normalizarUrlImagen(this.carta().imagenUrl),
+  );
+
 
   protected readonly urlFondo = computed(
     () => FONDO_POR_RAREZA[this.carta().rareza],

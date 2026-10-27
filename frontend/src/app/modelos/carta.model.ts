@@ -189,3 +189,27 @@ export const ETIQUETA_CATEGORIA: Record<CategoriaCarta, string> = {
   musica: 'Música',
   tecnologia: 'Tecnología',
 };
+
+/**
+ * Normaliza una URL de imagen para garantizar que sea absoluta y resuelva contra
+ * la raíz de la aplicación si es relativa, o que devuelva null si es nula o vacía.
+ */
+export function normalizarUrlImagen(url: string | null | undefined): string | null {
+  if (!url || typeof url !== 'string') {
+    return null;
+  }
+  const limpia = url.trim();
+  if (!limpia) {
+    return null;
+  }
+  if (
+    limpia.startsWith('http://') ||
+    limpia.startsWith('https://') ||
+    limpia.startsWith('data:') ||
+    limpia.startsWith('blob:')
+  ) {
+    return limpia;
+  }
+  return limpia.startsWith('/') ? limpia : `/${limpia}`;
+}
+

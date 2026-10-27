@@ -36,6 +36,7 @@ describe('Partida', () => {
       rondasTotales: signal(6),
       resultadoRonda: resultadoSignal,
       resultadoFinal: signal(null),
+      historialRondas: signal<readonly ResultadoRonda[]>([]),
       jugadores: signal({
         propio: { nombre: 'Vos', avatarUrl: null },
         rival: { nombre: 'Bot', avatarUrl: null },

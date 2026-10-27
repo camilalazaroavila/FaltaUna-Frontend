@@ -17,6 +17,8 @@
           [resultado]="resultadoFinal()"
           [nombreJugador]="servicio.jugadores().propio.nombre"
           [nombreRival]="servicio.jugadores().rival.nombre"
+          [historialRondas]="servicio.historialRondas()"
+          [ultimoResultado]="servicio.resultadoRonda()"
           (jugarOtraVez)="reintentarPartida()"
           (volverAlMenu)="volverAlMenu()"
         />

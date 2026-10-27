@@ -19,7 +19,7 @@ import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-cart
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { IndicadorCategoriasHabilidad } from '@compartidos/componentes/cartas/indicador-categorias-habilidad/indicador-categorias-habilidad';
 import type { Carta, EfectoCategoriaCarta } from '@modelos/carta.model';
-import { categoriaCartaDesdeNombre } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre, normalizarUrlImagen } from '@modelos/carta.model';
 import type {
   EstadoPuntajeZona,
   EstadoSlot,
@@ -30,10 +30,12 @@ import type {
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
-const IMAGEN_RESPALDO = 'imagenes/zona-generica.svg';
+const IMAGEN_RESPALDO_IZQ = '/imagenes/zona-generica.svg';
+const IMAGEN_RESPALDO_DER = '/imagenes/zona-generica-derecha.svg';
 
 /** Visibilidad en segundos del delta cuando no se anima (movimiento reducido). */
 const MS_DELTA_ESTATICO = 2000;
+
 
 interface SlotVista {
   readonly indice: number;
@@ -144,9 +146,20 @@ export class Zona implements AfterViewInit {
     source: () => this.zona().imagenUrl,
     computation: () => false,
   });
-  protected readonly imagen = computed(() =>
-    this.falloImagen() || !this.zona().imagenUrl ? IMAGEN_RESPALDO : this.zona().imagenUrl,
-  );
+
+  protected alFallarImagen(): void {
+    if (this.falloImagen()) {
+      return;
+    }
+    this.falloImagen.set(true);
+  }
+
+  protected readonly imagen = computed(() => {
+    const url = normalizarUrlImagen(this.zona().imagenUrl);
+    const respaldo = this.lugar() === 'derecha' ? IMAGEN_RESPALDO_DER : IMAGEN_RESPALDO_IZQ;
+    return this.falloImagen() || !url ? respaldo : url;
+  });
+
 
   /** Decisión visual (mock): el marco se destaca cuando el lado propio va ganando. */
   protected readonly marcoDestacado = computed(() => this.estadoPropio() === 'ganando');

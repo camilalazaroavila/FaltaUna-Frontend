@@ -222,7 +222,8 @@ describe('Zona', () => {
     });
   });
 
-  it('usa la imagen genérica de respaldo cuando la zona no tiene foto o falla', () => {
+  it('usa la imagen genérica de respaldo izquierda cuando la zona no tiene foto o falla', () => {
+    fixture.componentRef.setInput('lugar', 'izquierda');
     fixture.componentRef.setInput('zona', {
       ...ZONAS_MOCK[0],
       imagenUrl: '',
@@ -230,6 +231,19 @@ describe('Zona', () => {
     fixture.detectChanges();
 
     const img = fixture.nativeElement.querySelector('.zona-foto img') as HTMLImageElement;
-    expect(img.getAttribute('src')).toBe('imagenes/zona-generica.svg');
+    expect(img.getAttribute('src')).toBe('/imagenes/zona-generica.svg');
+  });
+
+  it('usa la imagen genérica de respaldo derecha cuando la zona derecha no tiene foto', () => {
+    fixture.componentRef.setInput('lugar', 'derecha');
+    fixture.componentRef.setInput('zona', {
+      ...ZONAS_MOCK[1],
+      imagenUrl: '',
+    });
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('.zona-foto img') as HTMLImageElement;
+    expect(img.getAttribute('src')).toBe('/imagenes/zona-generica-derecha.svg');
   });
 });
+

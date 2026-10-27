@@ -11,11 +11,11 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
+import { ETIQUETA_CATEGORIA, normalizarUrlImagen } from '@modelos/carta.model';
 import type { EfectoZona } from '@modelos/partida.model';
 
 /** Imagen de respaldo si la foto de la zona no carga. */
-const IMAGEN_RESPALDO = 'imagenes/Sprite.png';
+const IMAGEN_RESPALDO = '/imagenes/zona-generica.svg';
 
 /** Id del título del diálogo (usado por `aria-labelledby`). */
 const ID_TITULO = 'zona-popup-titulo';
@@ -43,9 +43,11 @@ export class ZonaPopupComponent implements AfterViewInit {
 
   protected readonly idTitulo = ID_TITULO;
   protected readonly falloImagen = signal(false);
-  protected readonly imagen = computed(() =>
-    this.falloImagen() ? IMAGEN_RESPALDO : this.imagenUrl(),
-  );
+  protected readonly imagen = computed(() => {
+    const url = normalizarUrlImagen(this.imagenUrl());
+    return this.falloImagen() || !url ? IMAGEN_RESPALDO : url;
+  });
+
   protected readonly categoriaEtiqueta = computed(
     () => ETIQUETA_CATEGORIA[this.efecto().categoria],
   );

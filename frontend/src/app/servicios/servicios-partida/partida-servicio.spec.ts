@@ -1665,5 +1665,219 @@ describe('PartidaServicio', () => {
       expect(servicio.lugares().izquierda.propio[0]?.nombre).toBe('Super Grido');
     });
   });
+
+  describe('Zonas y cartas del rival (imágenes, lugares y rotación)', () => {
+    it('resuelve zonas distintas para izquierda y derecha aunque el backend omita el campo lugar', () => {
+      iniciar(
+        estadoApi({
+          zonas: [
+            {
+              zonaPartidaId: 163,
+              nombre: 'Ritmo Urbano',
+              lugar: '' as any,
+              imagenUrl: null,
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+            {
+              zonaPartidaId: 164,
+              nombre: 'Barrio',
+              lugar: '' as any,
+              imagenUrl: null,
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+          ],
+        }),
+      );
+
+      const zonas = {
+        izquierda: servicio.lugares().izquierda.zona,
+        derecha: servicio.lugares().derecha.zona,
+      };
+
+      expect(zonas.izquierda.zonaPartidaId).toBe(163);
+      expect(zonas.derecha.zonaPartidaId).toBe(164);
+      expect(zonas.izquierda.nombre).toBe('Ritmo Urbano');
+      expect(zonas.derecha.nombre).toBe('Barrio');
+
+      // Imágenes de respaldo absolutas y diferenciadas por lugar
+      expect(zonas.izquierda.imagenUrl).toBe('/imagenes/zona-generica.svg');
+      expect(zonas.derecha.imagenUrl).toBe('/imagenes/zona-generica-derecha.svg');
+    });
+
+    it('conserva el arte y estado revelado de una carta rival en rondas posteriores si el backend manda imagenUrl nulo', () => {
+      // Ronda 1: Carta revelada del rival en el resultado
+      iniciar(
+        estadoApi({
+          ronda: 1,
+          zonas: [
+            {
+              zonaPartidaId: 163,
+              nombre: 'Ritmo Urbano',
+              lugar: 'izquierda',
+              imagenUrl: 'https://img.com/ritmo.jpg',
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 4,
+              diferencia: -4,
+              ganador: 'rival',
+              modificadores: [],
+              cartas: [],
+            },
+            {
+              zonaPartidaId: 164,
+              nombre: 'Barrio',
+              lugar: 'derecha',
+              imagenUrl: null,
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+          ],
+          ultimoResultado: {
+            ronda: 1,
+            cartasReveladas: [
+              {
+                cartaPartidaId: 880,
+                zonaPartidaId: 163,
+                indice: 0,
+                lado: 'rival',
+                oculta: false,
+                carta: {
+                  cartaId: 26,
+                  nombre: 'Super Cono',
+                  descripcion: 'Cono de helado',
+                  poder: 4,
+                  costoCupon: 1,
+                  rareza: 'Común',
+                  categoria: 'Gastronomía',
+                  imagenUrl: 'https://cloudinary.com/supercono.png',
+                  habilidad: null,
+                },
+              },
+            ],
+            efectos: [],
+            zonas: [
+              {
+                zonaPartidaId: 163,
+                puntajePropio: 0,
+                puntajeRival: 4,
+                diferencia: -4,
+                puntosGanadosPropio: 0,
+                puntosGanadosRival: 4,
+                ganador: 'rival',
+              },
+            ],
+            puntosTotalesPropio: 0,
+            puntosTotalesRival: 4,
+            zonasNuevas: [],
+            cartaRobada: null,
+          },
+        }),
+      );
+
+      const rivalRonda1 = servicio.lugares().izquierda.rival[0];
+      expect(rivalRonda1).toBeTruthy();
+      expect(rivalRonda1?.oculta).toBeFalsy();
+      expect(rivalRonda1?.imagenUrl).toBe('https://cloudinary.com/supercono.png');
+
+
+      // Ronda 2: El polling del backend llega con la carta en mesa pero con imagenUrl: null
+      const estadoPolling = estadoApi({
+        ronda: 2,
+        cartasEnMesa: [
+          {
+            cartaPartidaId: 880,
+            zonaPartidaId: 163,
+            indice: 0,
+            lado: 'rival',
+            oculta: false,
+            carta: {
+              cartaId: 26,
+              nombre: 'Super Cono',
+              descripcion: 'Cono de helado',
+              poder: 4,
+              costoCupon: 1,
+              rareza: 'Común',
+              categoria: 'Gastronomía',
+              imagenUrl: null,
+              habilidad: null,
+            },
+            poderActual: 4,
+          },
+        ],
+      });
+
+      (servicio as any).aplicarEstado(estadoPolling);
+
+      const rivalRonda2 = servicio.lugares().izquierda.rival[0];
+      expect(rivalRonda2).toBeTruthy();
+      expect(rivalRonda2?.oculta).toBeFalsy();
+
+      // Debe conservar la imagen de la ronda previa
+      expect(rivalRonda2?.imagenUrl).toBe('https://cloudinary.com/supercono.png');
+    });
+
+    it('normaliza URLs relativas de imágenes agregando barra inicial', () => {
+      iniciar(
+        estadoApi({
+          zonas: [
+            {
+              zonaPartidaId: 10,
+              nombre: 'Grido',
+              lugar: 'izquierda',
+              imagenUrl: 'imagenes/grido.jpg',
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+            {
+              zonaPartidaId: 20,
+              nombre: 'Sprite',
+              lugar: 'derecha',
+              imagenUrl: 'imagenes/Sprite.png',
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+          ],
+        }),
+      );
+
+      expect(servicio.lugares().izquierda.zona.imagenUrl).toBe('/imagenes/grido.jpg');
+      expect(servicio.lugares().derecha.zona.imagenUrl).toBe('/imagenes/Sprite.png');
+
+    });
+  });
 });
+
 

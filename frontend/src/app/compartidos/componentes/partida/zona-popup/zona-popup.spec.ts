@@ -84,7 +84,7 @@ describe('ZonaPopupComponent', () => {
     fixture.detectChanges();
 
     expect((host().querySelector('img') as HTMLImageElement).getAttribute('src')).toContain(
-      'Sprite.png',
+      'zona-generica',
     );
   });
 });

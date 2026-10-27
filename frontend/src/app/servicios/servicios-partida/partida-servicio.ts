@@ -5,8 +5,14 @@ import { toast } from 'ngx-sonner';
 import { PartidaApiService } from '@servicios/servicios-partida/partida-api.service';
 import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
 import { JUGADORES_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
+import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import type { Carta, EfectoCategoriaCarta, RarezaCarta } from '@modelos/carta.model';
-import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre, rarezaDesdeNombre } from '@modelos/carta.model';
+import {
+  CATEGORIA_POR_DEFECTO,
+  categoriaCartaDesdeNombre,
+  normalizarUrlImagen,
+  rarezaDesdeNombre,
+} from '@modelos/carta.model';
 import type {
   CartaApi,
   CartaEnMesaApi,
@@ -33,8 +39,9 @@ import type {
 /** Slots por lado en el tablero. */
 const SLOTS_POR_LADO = 6;
 
-/** Foto de la zona mientras el backend no mande `imagenUrl`. */
-const IMAGEN_ZONA_RESPALDO = 'imagenes/zona-generica.svg';
+/** Fotos de la zona con rutas absolutas cuando el backend no mande `imagenUrl` o falle la carga. */
+const IMAGEN_ZONA_RESPALDO_IZQ = '/imagenes/zona-generica.svg';
+const IMAGEN_ZONA_RESPALDO_DER = '/imagenes/zona-generica-derecha.svg';
 
 /** Clave de `localStorage` con la partida activa, para reconectar al recargar. */
 const CLAVE_PARTIDA = 'faltauna_partida_activa';
@@ -53,11 +60,11 @@ const normalizar = (valor: string | null | undefined): string =>
         .replace(/[\u0300-\u036f]/g, '')
     : '';
 
-const zonaVacia = (): ZonaTablero => ({
+const zonaVacia = (lugar: NombreLugar = 'izquierda'): ZonaTablero => ({
   id: 0,
   zonaPartidaId: 0,
   nombre: '',
-  imagenUrl: IMAGEN_ZONA_RESPALDO,
+  imagenUrl: lugar === 'derecha' ? IMAGEN_ZONA_RESPALDO_DER : IMAGEN_ZONA_RESPALDO_IZQ,
   efecto: { categoria: CATEGORIA_POR_DEFECTO, bonus: 0 },
   poderPropio: 0,
   poderRival: 0,
@@ -67,9 +74,10 @@ const zonaVacia = (): ZonaTablero => ({
 });
 
 const LUGARES_VACIOS: PorLugar<LugarPartida> = {
-  izquierda: { zona: zonaVacia(), rival: [], propio: [] },
-  derecha: { zona: zonaVacia(), rival: [], propio: [] },
+  izquierda: { zona: zonaVacia('izquierda'), rival: [], propio: [] },
+  derecha: { zona: zonaVacia('derecha'), rival: [], propio: [] },
 };
+
 
 const PUNTAJES_VACIOS: PorLugar<PuntajeLugar> = {
   izquierda: { propio: 0, rival: 0, estadoPropio: 'empate', estadoRival: 'empate' },
@@ -178,6 +186,7 @@ export class PartidaServicio {
   private readonly confirmandoSignal = signal(false);
   private readonly resultadoSignal = signal<ResultadoRonda | null>(null);
   private readonly resultadoFinalSignal = signal<ResultadoPartidaApi | null>(null);
+  private readonly historialRondasSignal = signal<readonly ResultadoRonda[]>([]);
   private readonly errorSignal = signal<string | null>(null);
   private readonly rondaCerradaSignal = signal(false);
   private readonly cartasConfirmadasRonda = new Set<number>();
@@ -213,6 +222,7 @@ export class PartidaServicio {
   readonly error = this.errorSignal.asReadonly();
   readonly resultadoRonda = this.resultadoSignal.asReadonly();
   readonly resultadoFinal = this.resultadoFinalSignal.asReadonly();
+  readonly historialRondas = this.historialRondasSignal.asReadonly();
   /** `true` mientras hay una acción viajando al servidor. */
   readonly enviandoCarta = this.enviandoCartaSignal.asReadonly();
   /** `true` mientras se está cerrando la ronda o abandonando. */
@@ -1570,6 +1580,14 @@ export class PartidaServicio {
     }
 
     this.resultadoSignal.set(resultado);
+    if (resultado && resultado.numero > 0) {
+      this.historialRondasSignal.update((historial) => {
+        if (historial.some((r) => r.numero === resultado.numero)) {
+          return historial.map((r) => (r.numero === resultado.numero ? resultado : r));
+        }
+        return [...historial, resultado];
+      });
+    }
 
     // Construir el mapa de zonas ANTES de fijar el estado para que
     // `construirLugar` pueda ubicar cartas de zonas que ya rotaron.
@@ -1623,8 +1641,9 @@ export class PartidaServicio {
     for (const item of cartasEnMesaProcesadas) {
       const { lugar, slot } = this.deducirLugarCarta(item, anterior, zonas, mapaZonaLugar);
       if (lugar !== null) {
-        cartasMesaAdaptadas.push(this.cartaMesaDesdeApi(item, lugar, slot));
+        cartasMesaAdaptadas.push(this.cartaMesaDesdeApi(item, lugar, slot, anterior));
       }
+
     }
 
     // Retención transitoria de cartas de rondas previas ante omisión del backend al rotar zonas (Hipótesis A)
@@ -1944,47 +1963,79 @@ export class PartidaServicio {
   private mapaZonaALugar(estado: EstadoPartidaApi): Map<number, NombreLugar> {
     const mapa = new Map<number, NombreLugar>();
 
-    const clasificar = (zona: ZonaPartidaApi, indice: number): void => {
-      const lugarNorm = normalizar(zona.lugar);
-      const nombre: NombreLugar =
-        lugarNorm.includes('der') || (!lugarNorm.includes('izq') && indice === 1)
-          ? 'derecha'
-          : 'izquierda';
+    const clasificarLista = (zonasApi: readonly ZonaPartidaApi[]): void => {
+      if (!zonasApi || zonasApi.length === 0) return;
 
-      mapa.set(zona.zonaPartidaId, nombre);
+      let zonaIzqApi = zonasApi.find((z) => normalizar(z.lugar).includes('izq'));
+      let zonaDerApi = zonasApi.find((z) => normalizar(z.lugar).includes('der'));
 
-      // Usar zonas[].cartas para mapear zonas que solo aparecen dentro de cartas
-      if (zona.cartas) {
-        for (const c of zona.cartas) {
-          if (c.zonaPartidaId != null && !mapa.has(c.zonaPartidaId)) {
-            mapa.set(c.zonaPartidaId, nombre);
-          }
+      if (!zonaIzqApi && !zonaDerApi) {
+        zonaIzqApi = zonasApi[0];
+        zonaDerApi = zonasApi[1];
+      } else if (!zonaIzqApi && zonaDerApi) {
+        zonaIzqApi = zonasApi.find((z) => z.zonaPartidaId !== zonaDerApi!.zonaPartidaId) ?? zonasApi[0];
+      } else if (zonaIzqApi && !zonaDerApi) {
+        zonaDerApi = zonasApi.find((z) => z.zonaPartidaId !== zonaIzqApi!.zonaPartidaId) ?? zonasApi[1];
+      }
+
+      if (zonaIzqApi && zonaDerApi && zonaIzqApi.zonaPartidaId === zonaDerApi.zonaPartidaId && zonasApi.length > 1) {
+        const otra = zonasApi.find((z) => z.zonaPartidaId !== zonaIzqApi!.zonaPartidaId);
+        if (otra) {
+          zonaDerApi = otra;
         }
+      }
+
+      if (zonaIzqApi) {
+        mapa.set(zonaIzqApi.zonaPartidaId, 'izquierda');
+        zonaIzqApi.cartas?.forEach((c) => {
+          if (c.zonaPartidaId != null && !mapa.has(c.zonaPartidaId)) {
+            mapa.set(c.zonaPartidaId, 'izquierda');
+          }
+        });
+      }
+
+      if (zonaDerApi && zonaDerApi.zonaPartidaId !== zonaIzqApi?.zonaPartidaId) {
+        mapa.set(zonaDerApi.zonaPartidaId, 'derecha');
+        zonaDerApi.cartas?.forEach((c) => {
+          if (c.zonaPartidaId != null && !mapa.has(c.zonaPartidaId)) {
+            mapa.set(c.zonaPartidaId, 'derecha');
+          }
+        });
       }
     };
 
-    estado.zonas.forEach((zona, i) => clasificar(zona, i));
-    estado.ultimoResultado?.zonasNuevas.forEach((zona, i) => clasificar(zona, i));
+    clasificarLista(estado.zonas);
+    if (estado.ultimoResultado?.zonasNuevas) {
+      clasificarLista(estado.ultimoResultado.zonasNuevas);
+    }
 
     return mapa;
   }
 
   private construirZonas(estado: EstadoPartidaApi): PorLugar<ZonaTablero> {
-    const buscar = (lugar: NombreLugar, indice: number): ZonaTablero | undefined => {
-      const zona = estado.zonas.find((item) =>
-        lugar === 'derecha'
-          ? normalizar(item.lugar).includes('der') ||
-            (!normalizar(item.lugar).includes('izq') && indice === 1)
-          : normalizar(item.lugar).includes('izq') ||
-            (!normalizar(item.lugar).includes('der') && indice === 0),
-      );
+    const zonasApi = estado.zonas ?? [];
+    let zonaIzqApi = zonasApi.find((z) => normalizar(z.lugar).includes('izq'));
+    let zonaDerApi = zonasApi.find((z) => normalizar(z.lugar).includes('der'));
 
-      return zona ? this.construirZona(zona) : undefined;
-    };
+    if (!zonaIzqApi && !zonaDerApi) {
+      zonaIzqApi = zonasApi[0];
+      zonaDerApi = zonasApi[1];
+    } else if (!zonaIzqApi && zonaDerApi) {
+      zonaIzqApi = zonasApi.find((z) => z.zonaPartidaId !== zonaDerApi!.zonaPartidaId) ?? zonasApi[0];
+    } else if (zonaIzqApi && !zonaDerApi) {
+      zonaDerApi = zonasApi.find((z) => z.zonaPartidaId !== zonaIzqApi!.zonaPartidaId) ?? zonasApi[1];
+    }
+
+    if (zonaIzqApi && zonaDerApi && zonaIzqApi.zonaPartidaId === zonaDerApi.zonaPartidaId && zonasApi.length > 1) {
+      const otra = zonasApi.find((z) => z.zonaPartidaId !== zonaIzqApi!.zonaPartidaId);
+      if (otra) {
+        zonaDerApi = otra;
+      }
+    }
 
     return {
-      izquierda: buscar('izquierda', 0) ?? zonaVacia(),
-      derecha: buscar('derecha', 1) ?? zonaVacia(),
+      izquierda: zonaIzqApi ? this.construirZona(zonaIzqApi, 'izquierda') : zonaVacia('izquierda'),
+      derecha: zonaDerApi ? this.construirZona(zonaDerApi, 'derecha') : zonaVacia('derecha'),
     };
   }
 
@@ -2037,12 +2088,14 @@ export class PartidaServicio {
     return efectos;
   }
 
-  private construirZona(zona: ZonaPartidaApi): ZonaTablero {
+  private construirZona(zona: ZonaPartidaApi, lugar: NombreLugar = 'izquierda'): ZonaTablero {
+    const respaldo = lugar === 'derecha' ? IMAGEN_ZONA_RESPALDO_DER : IMAGEN_ZONA_RESPALDO_IZQ;
+    const imagenNormalizada = normalizarUrlImagen(zona.imagenUrl);
     return {
       id: zona.zonaPartidaId,
       zonaPartidaId: zona.zonaPartidaId,
       nombre: zona.nombre,
-      imagenUrl: zona.imagenUrl || IMAGEN_ZONA_RESPALDO,
+      imagenUrl: imagenNormalizada || respaldo,
       efecto: {
         categoria: CATEGORIA_POR_DEFECTO,
         bonus: 0,
@@ -2055,6 +2108,7 @@ export class PartidaServicio {
       efectosCategoria: this.extraerEfectosCategoria(zona),
     };
   }
+
 
   /**
    * Construye los slots de un lugar físico (izquierda/derecha).
@@ -2182,14 +2236,22 @@ export class PartidaServicio {
       // Carta rival
       if (carta.cartaPartidaId != null && reveladasPorId.has(carta.cartaPartidaId)) {
         const revelada = reveladasPorId.get(carta.cartaPartidaId)!;
-        if (carta.oculta) {
-          resultado.push(revelada);
-        } else {
-          resultado.push(carta);
-        }
+        const cartaBase = revelada.carta ?? carta.carta;
+        resultado.push({
+          ...carta,
+          ...revelada,
+          oculta: false,
+          carta: cartaBase
+            ? {
+                ...cartaBase,
+                imagenUrl: revelada.carta?.imagenUrl || carta.carta?.imagenUrl || null,
+              }
+            : null,
+        });
         idsProcesados.add(carta.cartaPartidaId);
         reveladasPorId.delete(carta.cartaPartidaId);
       } else {
+
         resultado.push(carta);
         if (carta.cartaPartidaId != null) {
           idsProcesados.add(carta.cartaPartidaId);
@@ -2321,15 +2383,70 @@ export class PartidaServicio {
     return { lugar: null, slot: null };
   }
 
-  private cartaMesaDesdeApi(item: CartaEnMesaApi, lugar: NombreLugar, slot?: number | null): CartaMesaVista {
-    const carta =
-      item.oculta || !item.carta
-        ? this.cartaOculta(item.cartaPartidaId)
-        : this.cartaDesdeApi(item.carta, {
-            cartaPartidaId: item.cartaPartidaId,
-            poderActual: item.poderActual,
-            poderBase: item.carta.poder,
-          });
+  private cartaMesaDesdeApi(
+    item: CartaEnMesaApi,
+    lugar: NombreLugar,
+    slot?: number | null,
+    anterior?: EstadoReal | null,
+  ): CartaMesaVista {
+    let cartaPrevia: Carta | undefined;
+    if (anterior) {
+      const match = anterior.cartasMesa.find(
+        (c) =>
+          (item.cartaPartidaId != null && c.carta.cartaPartidaId === item.cartaPartidaId) ||
+          (item.carta?.cartaId != null && c.carta.cartaId === item.carta.cartaId),
+      );
+      if (match) {
+        cartaPrevia = match.carta;
+      }
+    }
+
+    const estaOculta = item.oculta && (!cartaPrevia || cartaPrevia.oculta);
+
+    let carta: Carta;
+    if (estaOculta || !item.carta) {
+      if (cartaPrevia && !cartaPrevia.oculta) {
+        carta = cartaPrevia;
+      } else {
+        carta = this.cartaOculta(item.cartaPartidaId);
+      }
+    } else {
+      carta = this.cartaDesdeApi(item.carta, {
+        cartaPartidaId: item.cartaPartidaId,
+        poderActual: item.poderActual,
+        poderBase: item.carta.poder,
+      });
+
+      // Si la carta del servidor vino sin imagen pero la previa sí la tenía, conservarla
+      if (!carta.imagenUrl && cartaPrevia?.imagenUrl) {
+        carta = {
+          ...carta,
+          imagenUrl: cartaPrevia.imagenUrl,
+        };
+      }
+    }
+
+    // Normalizar la URL de la imagen si está presente
+    if (carta.imagenUrl) {
+      carta = {
+        ...carta,
+        imagenUrl: normalizarUrlImagen(carta.imagenUrl) ?? carta.imagenUrl,
+      };
+    } else if (!carta.oculta) {
+      // Si la carta está revelada pero vino sin imagenUrl, buscar en CARTAS_MOCK
+      const nombreNorm = carta.nombre?.toLowerCase().trim();
+      const mock = CARTAS_MOCK.find(
+        (m) =>
+          (carta.cartaId != null && (m.id === String(carta.cartaId) || m.id === `c-${carta.cartaId}`)) ||
+          (m.nombre && nombreNorm && m.nombre.toLowerCase().trim() === nombreNorm),
+      );
+      if (mock?.imagenUrl) {
+        carta = {
+          ...carta,
+          imagenUrl: normalizarUrlImagen(mock.imagenUrl) ?? mock.imagenUrl,
+        };
+      }
+    }
 
     return {
       carta,
@@ -2352,6 +2469,20 @@ export class PartidaServicio {
     const poderBase = opciones.poderBase ?? carta.poder;
     const poderActual = opciones.poderActual ?? carta.poder;
 
+    const urlNormal = normalizarUrlImagen(carta.imagenUrl);
+    let urlFinal = urlNormal ?? '';
+    if (!urlFinal && carta.nombre) {
+      const nombreNorm = carta.nombre.toLowerCase().trim();
+      const mock = CARTAS_MOCK.find(
+        (m) =>
+          (carta.cartaId != null && (m.id === String(carta.cartaId) || m.id === `c-${carta.cartaId}`)) ||
+          (m.nombre && m.nombre.toLowerCase().trim() === nombreNorm),
+      );
+      if (mock?.imagenUrl) {
+        urlFinal = normalizarUrlImagen(mock.imagenUrl) ?? mock.imagenUrl;
+      }
+    }
+
     return {
       id:
         opciones.cartaPartidaId !== undefined
@@ -2360,7 +2491,7 @@ export class PartidaServicio {
       cartaId: carta.cartaId,
       cartaPartidaId: opciones.cartaPartidaId,
       nombre: carta.nombre || 'Carta',
-      imagenUrl: carta.imagenUrl ?? '',
+      imagenUrl: urlFinal,
       rareza: rarezaDesdeNombre(carta.rareza),
       categoria: categoriaCartaDesdeNombre(carta.categoria),
       atributoIzquierdo: carta.costoCupon,
@@ -2368,6 +2499,7 @@ export class PartidaServicio {
       poderBase,
       obtenida: true,
       jugable: opciones.jugable,
+
       habilidad: carta.habilidad,
       descripcion: carta.descripcion,
       descripcionHabilidad:
@@ -2773,6 +2905,7 @@ export class PartidaServicio {
     this.estadoRealSignal.set(null);
     this.resultadoSignal.set(null);
     this.resultadoFinalSignal.set(null);
+    this.historialRondasSignal.set([]);
     this.deltasSignal.set(DELTAS_VACIOS);
     this.anuncioSignal.set('');
     this.segundosSignal.set(0);
