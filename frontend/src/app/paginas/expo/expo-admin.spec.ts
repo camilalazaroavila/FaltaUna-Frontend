@@ -6,8 +6,6 @@ import { ExpoAdmin } from './expo-admin';
 
 const URL_EXPO = `${environment.apiUrl}/expo/sobre-regalo`;
 const URL_SOBRES = `${environment.apiUrl}/Sobres`;
-const CLAVE_STORAGE = 'expo-clave';
-const CLAVE = 'clave-de-prueba-1234';
 
 const SOBRES = [
   { id: 1, nombre: 'Sobre común' },
@@ -30,21 +28,15 @@ describe('ExpoAdmin', () => {
     fixture.detectChanges();
   };
 
-  const escribirClaveYEnviar = (clave: string) => {
-    (el.querySelector('input') as HTMLInputElement).value = clave;
-    el.querySelector('form')!.dispatchEvent(new Event('submit'));
-  };
-
-  /** Entra al panel con clave válida y resuelve las dos requests iniciales. */
-  const entrarAlPanel = () => {
-    escribirClaveYEnviar(CLAVE);
+  /** Crea el panel y resuelve las dos requests iniciales. */
+  const cargarPanel = () => {
+    crear();
     http.expectOne(URL_EXPO).flush({ sobreRegaloId: null, activo: false });
     http.expectOne(URL_SOBRES).flush(SOBRES);
     fixture.detectChanges();
   };
 
   beforeEach(() => {
-    sessionStorage.clear();
     TestBed.configureTestingModule({
       imports: [ExpoAdmin],
       providers: [provideHttpClient(), provideHttpClientTesting()],
@@ -53,65 +45,44 @@ describe('ExpoAdmin', () => {
   });
 
   afterEach(() => {
+    fixture?.destroy();
     http.verify();
-    sessionStorage.clear();
   });
 
-  it('sin clave guardada muestra el formulario de clave', () => {
+  it('carga la configuración y los sobres sin pedir clave', () => {
     crear();
-
-    expect(el.querySelector('form')).not.toBeNull();
-    expect(el.textContent).toContain('Clave de la expo');
-  });
-
-  it('con una clave incorrecta (401) muestra el error y no guarda la clave', () => {
-    crear();
-    escribirClaveYEnviar('clave-mala');
-
-    http.expectOne(URL_EXPO).flush('', { status: 401, statusText: 'Unauthorized' });
-    fixture.detectChanges();
-
-    expect(el.textContent).toContain('Clave incorrecta.');
-    expect(el.querySelector('form')).not.toBeNull();
-    expect(sessionStorage.getItem(CLAVE_STORAGE)).toBeNull();
-  });
-
-  it('con la clave correcta manda el header, guarda la clave y lista los sobres', () => {
-    crear();
-    escribirClaveYEnviar(CLAVE);
 
     const req = http.expectOne(URL_EXPO);
-    expect(req.request.headers.get('X-Expo-Key')).toBe(CLAVE);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.has('X-Expo-Key')).toBe(false);
+    expect(el.querySelector('form')).toBeNull();
+    expect(el.querySelector('input')).toBeNull();
+
     req.flush({ sobreRegaloId: null, activo: false });
     http.expectOne(URL_SOBRES).flush(SOBRES);
     fixture.detectChanges();
 
-    expect(el.querySelector('form')).toBeNull();
-    expect(sessionStorage.getItem(CLAVE_STORAGE)).toBe(CLAVE);
     expect(boton('Sobre común')).toBeTruthy();
     expect(boton('Sobre épico')).toBeTruthy();
   });
 
-  it('si ya hay clave guardada entra directo sin pedirla', () => {
-    sessionStorage.setItem(CLAVE_STORAGE, CLAVE);
+  it('si falla la carga muestra el error', () => {
     crear();
 
-    http.expectOne(URL_EXPO).flush({ sobreRegaloId: null, activo: false });
+    http.expectOne(URL_EXPO).flush('', { status: 500, statusText: 'Server Error' });
     http.expectOne(URL_SOBRES).flush(SOBRES);
     fixture.detectChanges();
 
-    expect(el.querySelector('form')).toBeNull();
-    expect(boton('Sobre común')).toBeTruthy();
+    expect(el.textContent).toContain('No se pudo conectar con el servidor.');
   });
 
   it('al tocar un sobre manda PUT con ese id y activo=true', () => {
-    crear();
-    entrarAlPanel();
+    cargarPanel();
 
     boton('Sobre épico').click();
 
     const put = http.expectOne((r) => r.method === 'PUT' && r.url === URL_EXPO);
-    expect(put.request.headers.get('X-Expo-Key')).toBe(CLAVE);
+    expect(put.request.headers.has('X-Expo-Key')).toBe(false);
     expect(put.request.body).toEqual({ sobreRegaloId: 2, activo: true });
 
     put.flush({ sobreRegaloId: 2, activo: true });
@@ -121,8 +92,7 @@ describe('ExpoAdmin', () => {
   });
 
   it('"Desactivar regalo" manda sobreRegaloId null y activo=false', () => {
-    crear();
-    entrarAlPanel();
+    cargarPanel();
 
     boton('Desactivar regalo').click();
 
@@ -135,27 +105,15 @@ describe('ExpoAdmin', () => {
     expect(el.textContent).toContain('Regalo desactivado');
   });
 
-  it('si el PUT devuelve 401 muestra que la clave dejó de ser válida', () => {
-    crear();
-    entrarAlPanel();
+  it('si el PUT falla muestra el error', () => {
+    cargarPanel();
 
     boton('Sobre común').click();
     http
       .expectOne((r) => r.method === 'PUT')
-      .flush('', { status: 401, statusText: 'Unauthorized' });
+      .flush('', { status: 500, statusText: 'Server Error' });
     fixture.detectChanges();
 
-    expect(el.textContent).toContain('La clave dejó de ser válida.');
-  });
-
-  it('"Salir" borra la clave guardada y vuelve al formulario', () => {
-    crear();
-    entrarAlPanel();
-
-    boton('Salir').click();
-    fixture.detectChanges();
-
-    expect(sessionStorage.getItem(CLAVE_STORAGE)).toBeNull();
-    expect(el.querySelector('form')).not.toBeNull();
+    expect(el.textContent).toContain('No se pudo guardar el cambio.');
   });
 });

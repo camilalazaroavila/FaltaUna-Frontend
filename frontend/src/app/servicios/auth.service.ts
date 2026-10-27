@@ -10,6 +10,7 @@ import {
   Usuario,
   UsuarioRespuesta
 } from '@modelos/usuario.model';
+import { PopoutSesionService } from './popout-sesion.service';
 
 const CLAVE_TOKEN = 'faltauna_token';
 const CLAVE_USUARIO = 'faltauna_usuario';
@@ -19,6 +20,7 @@ const CLAVE_USUARIO = 'faltauna_usuario';
 })
 export class AuthService {
   private readonly api = inject(ApiService);
+  private readonly popoutSesion = inject(PopoutSesionService); 
 
   /** Señal con el usuario logueado (null si no hay sesión). Se actualiza sola al hacer login/logout. */
   usuarioActual = signal<Usuario | null>(this.leerUsuarioGuardado());
@@ -70,6 +72,7 @@ export class AuthService {
     localStorage.setItem(CLAVE_TOKEN, respuesta.token);
     localStorage.setItem(CLAVE_USUARIO, JSON.stringify(respuesta.usuario));
     this.usuarioActual.set(respuesta.usuario);
+    this.popoutSesion.marcarPendiente();
   }
 
   private leerUsuarioGuardado(): Usuario | null {

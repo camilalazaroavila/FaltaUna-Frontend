@@ -1,27 +1,10 @@
 <div class="flex min-h-dvh flex-col items-center bg-usuario-gradiente-amarillo-verde px-4 py-8 text-white">
   <h1 class="mb-6 font-titulo text-2xl tracking-wider text-marca-acento sm:text-3xl">PANEL EXPO</h1>
 
-  @if (!autenticado()) {
-    <form class="flex w-full max-w-sm flex-col gap-3" (submit)="ingresar($event, inputClave.value)">
-      <label for="clave" class="text-sm">Clave de la expo</label>
-      <input
-        #inputClave
-        id="clave"
-        type="password"
-        autocomplete="off"
-        class="rounded-xl border border-white/20 bg-[#072428]/90 px-4 py-3 text-white"
-      />
-      <button
-        type="submit"
-        [disabled]="cargando()"
-        class="rounded-xl bg-marca-acento px-4 py-3 font-titulo text-black disabled:opacity-50"
-      >
-        {{ cargando() ? 'VERIFICANDO...' : 'ENTRAR' }}
-      </button>
-      @if (error()) {
-        <p class="text-sm text-red-300" role="alert">{{ error() }}</p>
-      }
-    </form>
+  @if (cargando() && !configuracion()) {
+    <section class="mb-6 w-full max-w-xl rounded-2xl border border-white/10 bg-[#072428]/95 p-4 text-center">
+      <p class="font-titulo text-xl">Cargando panel...</p>
+    </section>
   } @else {
     <!-- Estado actual -->
     <section class="mb-6 w-full max-w-xl rounded-2xl border border-white/10 bg-[#072428]/95 p-4 text-center">
@@ -57,17 +40,15 @@
     @if (mensaje()) {
       <p class="mt-4 text-sm text-marca-acento" role="status">{{ mensaje() }}</p>
     }
-    @if (error()) {
-      <p class="mt-4 text-sm text-red-300" role="alert">{{ error() }}</p>
-    }
 
     <div class="mt-8 flex gap-3">
       <button type="button" (click)="desactivar()" class="rounded-xl border border-white/30 px-4 py-2 text-sm">
         Desactivar regalo
       </button>
-      <button type="button" (click)="salir()" class="rounded-xl border border-white/30 px-4 py-2 text-sm">
-        Salir
-      </button>
     </div>
+  }
+
+  @if (error()) {
+    <p class="mt-4 text-sm text-red-300" role="alert">{{ error() }}</p>
   }
 </div>
