@@ -17,7 +17,7 @@ interface OpcionJuego {
 const OPCIONES_JUEGO: readonly OpcionJuego[] = [
   { id: 'jugador', texto: 'Partida contra jugador', ruta: '/juego/jugador', requiereTutorial: true },
   { id: 'ia', texto: 'Partida contra la IA', ruta: '/juego/ia' },
-  { id: 'tutorial', texto: 'Tutorial', ruta: '/juego/tutorial' },
+  { id: 'tutorial', texto: 'Tutorial', ruta: '/juego/tutorial', requiereTutorial: true },
 ];
  
 @Component({

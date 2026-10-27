@@ -1,4 +1,4 @@
-<div class="pantalla-combate bg-tablero-fondo relative flex min-h-dvh flex-col overflow-x-hidden text-white">
+<div class="pantalla-combate bg-tablero-fondo relative flex min-h-dvh flex-col overflow-x-hidden text-white md:h-dvh md:overflow-hidden">
   <app-header [logueado]="true" />
     <div class="px-4 pt-4 sm:px-6 lg:px-8">
       <a routerLink="/usuario"
@@ -10,18 +10,17 @@
              Volver
        </a>
     </div>
-  <main class="grid flex-1 grid-cols-1 gap-6 pt-6 md:grid-cols-[30%_1fr] md:gap-0 md:pt-8">
+  <main class="grid min-h-0 flex-1 grid-cols-1 gap-6 pt-4 md:grid-cols-[30%_1fr] md:gap-0 md:grid-rows-[minmax(0,1fr)]">
     <!-- Menú: 30% del ancho, pegado al borde izquierdo. En escritorio los botones se reparten el alto -->
-    <nav
-      aria-label="Opciones de juego"
-      class="flex flex-col gap-4 pr-4 pb-8 sm:pr-6 md:gap-6 md:pr-0">
+   <nav aria-label="Opciones de juego"
+     class="flex min-h-0 flex-col gap-3 pr-4 sm:pr-6 md:justify-start md:gap-[clamp(1.5rem,4dvh,2.5rem)] md:pr-0">
       @for (opcion of opciones(); track opcion.id) 
        {
         <a
           app-boton-opcion-juego
           ancho="completo"
           tamanio="lg"
-          class="md:flex-1"
+          class="md:h-[clamp(5.5rem,22dvh,11rem)] md:flex-none md:text-3xl! lg:text-4xl!"
           [routerLink]="opcion.ruta"
           [disabled]="opcion.bloqueada">
           {{ opcion.texto }}
@@ -30,15 +29,16 @@
     </nav>
 
     <!-- En móvil el título va arriba del menú (order-first); desde md, a la derecha -->
-    <section
-      class="order-first flex flex-col items-center gap-6 px-4 sm:px-6 md:order-none md:self-stretch lg:px-8">
-      <h1
-        class="text-center font-titulo text-5xl leading-none uppercase text-combate-titulo sm:text-6xl md:text-7xl lg:text-[max(4.5rem,6vw)]">
-        ¡A combatir!
-      </h1>
-      <img 
-        src="imagenes/pantalla-inicial-juego/Gata-Jugando-Falta-Una.png"
-        alt="Ilustracion gatito">
-    </section>
+    <section class="order-first flex min-h-0 flex-col items-center gap-4 px-4 sm:px-6 md:order-none lg:px-8">
+  <h1 class="text-center font-titulo leading-none uppercase text-combate-titulo
+             text-5xl sm:text-6xl md:text-[clamp(3.5rem,10dvh,8rem)]">
+    ¡A combatir!
+  </h1>
+
+  <div class="hidden min-h-0 w-full flex-1 items-end justify-center md:flex">
+    <img src="imagenes/pantalla-inicial-juego/Gata-Jugando-Falta-Una.png" alt="Gata-Jugando" aria-hidden="true"
+         class="max-h-full max-w-full object-contain object-bottom" />
+  </div>
+</section>
   </main>
 </div>
