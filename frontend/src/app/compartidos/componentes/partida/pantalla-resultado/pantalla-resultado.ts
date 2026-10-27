@@ -16,6 +16,7 @@ import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { Confeti } from '@compartidos/componentes/confeti/confeti';
 import type { ResultadoPartidaApi, ResultadoRonda } from '@modelos/partida.model';
 import { GsapService } from '@servicios/gsap.service';
+import { SONIDOS_PARTIDA, SonidoService } from '@servicios/sonido.service';
 
 export type TipoResultadoVisual = 'victoria' | 'derrota' | 'empate' | 'finalizada';
 
@@ -39,6 +40,7 @@ const DURACION_HEROICA_MS = 5000;
 })
 export class PantallaResultado implements AfterViewInit, OnDestroy {
   private readonly gsapServicio = inject(GsapService);
+  private readonly sonido = inject(SonidoService);
 
   readonly resultado = input<ResultadoPartidaApi | null>(null);
   readonly nombreJugador = input<string>('Vos');
@@ -181,9 +183,22 @@ export class PantallaResultado implements AfterViewInit, OnDestroy {
     return `Ronda ${ronda.numero}`;
   }
 
+  private sonidoReproducido = false;
+
   ngAfterViewInit(): void {
     if (this.modoIncrustado()) {
       return;
+    }
+
+    if (!this.sonidoReproducido) {
+      const t = this.tipo();
+      if (t === 'victoria') {
+        this.sonidoReproducido = true;
+        this.sonido.reproducir(SONIDOS_PARTIDA.victoria);
+      } else if (t === 'derrota' || t === 'empate') {
+        this.sonidoReproducido = true;
+        this.sonido.reproducir(SONIDOS_PARTIDA.derrota);
+      }
     }
 
     // Celebración heroica inicial durante 5 segundos para destacar el resultado

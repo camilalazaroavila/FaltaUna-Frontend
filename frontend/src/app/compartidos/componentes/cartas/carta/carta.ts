@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, linkedSignal } from '@angular/core';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import {
   ESTRELLAS_POR_RAREZA,
@@ -54,7 +54,10 @@ export class CartaComponent {
   );
 
   /** `true` cuando la imagen no carga: se muestra el fallback con la categoría y nombre. */
-  protected readonly imagenRota = signal(false);
+  protected readonly imagenRota = linkedSignal(() => {
+    this.carta();
+    return false;
+  });
 
   protected alFallarImagen(): void {
     if (this.imagenRota()) {

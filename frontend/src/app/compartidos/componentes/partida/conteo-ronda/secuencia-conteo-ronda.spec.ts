@@ -53,7 +53,7 @@ describe('SecuenciaConteoRonda (Cola única de animación)', () => {
     cartasReveladasRival: [],
   };
 
-  it('debe respetar el orden exacto: zona 1 propias -> zona 1 rival -> total zona 1 -> zona 2 propias -> zona 2 rival -> total zona 2 -> barra puntos', () => {
+  it('debe respetar el orden exacto: zona 1 propias -> zona 1 rival -> total zona 1 -> zona 2 propias -> zona 2 rival -> total zona 2 -> cambio de zonas -> barra puntos', () => {
     const cartasPorLugar: Record<NombreLugar, ContextoCartasLugar> = {
       izquierda: {
         propio: [crearCartaMock('izq-p1', 4), crearCartaMock('izq-p2', 6)],
@@ -75,8 +75,9 @@ describe('SecuenciaConteoRonda (Cola única de animación)', () => {
     // 4: burbuja derecha propio der-p1
     // 5: burbuja derecha rival der-r1
     // 6: zona derecha resolución
-    // 7: barra puntos
-    expect(cola).toHaveLength(8);
+    // 7: cambio de zonas (rotación)
+    // 8: barra puntos
+    expect(cola).toHaveLength(9);
 
     const p0 = cola[0] as PasoBurbuja;
     expect(p0.tipo).toBe('burbuja');
@@ -114,10 +115,12 @@ describe('SecuenciaConteoRonda (Cola única de animación)', () => {
     expect(p6.tipo).toBe('zona');
     expect(p6.lugar).toBe('derecha');
 
-    const p7 = cola[7] as PasoBarra;
-    expect(p7.tipo).toBe('barra');
-    expect(p7.puntosPropio).toBe(15);
-    expect(p7.puntosRival).toBe(10);
+    expect(cola[7].tipo).toBe('cambio-zonas');
+
+    const p8 = cola[8] as PasoBarra;
+    expect(p8.tipo).toBe('barra');
+    expect(p8.puntosPropio).toBe(15);
+    expect(p8.puntosRival).toBe(10);
   });
 
   it('no debe generar burbujas para cartas ocultas o sin poder definido', () => {
@@ -139,7 +142,7 @@ describe('SecuenciaConteoRonda (Cola única de animación)', () => {
     expect(burbujas).toHaveLength(0);
   });
 
-  it('funciona correctamente con zonas sin cartas (salta directamente a resolucion de zona)', () => {
+  it('funciona correctamente con zonas sin cartas (salta directamente a resolucion de zona, cambio y barra)', () => {
     const cartasPorLugar: Record<NombreLugar, ContextoCartasLugar> = {
       izquierda: { propio: [], rival: [] },
       derecha: { propio: [], rival: [] },
@@ -147,10 +150,40 @@ describe('SecuenciaConteoRonda (Cola única de animación)', () => {
 
     const cola = construirColaPasos(lugares, cartasPorLugar, resultadoRondaMock);
 
-    expect(cola).toHaveLength(3); // zona izquierda, zona derecha, barra puntos
+    expect(cola).toHaveLength(4); // zona izquierda, zona derecha, cambio-zonas, barra puntos
     expect(cola[0].tipo).toBe('zona');
     expect(cola[1].tipo).toBe('zona');
-    expect(cola[2].tipo).toBe('barra');
+    expect(cola[2].tipo).toBe('cambio-zonas');
+    expect(cola[3].tipo).toBe('barra');
+  });
+
+  it('detecta aumento y reducción de poder en cartas con efecto y genera el paso inicial efectos-cartas', () => {
+    const cartaBuff: Carta = { ...crearCartaMock('buff', 8), poderBase: 5 };
+    const cartaDebuff: Carta = { ...crearCartaMock('debuff', 3), poderBase: 6 };
+    const cartasPorLugar: Record<NombreLugar, ContextoCartasLugar> = {
+      izquierda: { propio: [cartaBuff, cartaDebuff], rival: [] },
+      derecha: { propio: [], rival: [] },
+    };
+
+    const cola = construirColaPasos(lugares, cartasPorLugar, resultadoRondaMock);
+    expect(cola[0].tipo).toBe('efectos-cartas');
+    if (cola[0].tipo === 'efectos-cartas') {
+      expect(cola[0].modificaciones).toHaveLength(2);
+      expect(cola[0].modificaciones[0].tipo).toBe('aumento');
+      expect(cola[0].modificaciones[0].delta).toBe(3);
+      expect(cola[0].modificaciones[1].tipo).toBe('reduccion');
+      expect(cola[0].modificaciones[1].delta).toBe(-3);
+    }
+
+    const b0 = cola[1] as PasoBurbuja;
+    expect(b0.tipo).toBe('burbuja');
+    expect(b0.modificador).toBe('aumento');
+    expect(b0.deltaPoder).toBe(3);
+
+    const b1 = cola[2] as PasoBurbuja;
+    expect(b1.tipo).toBe('burbuja');
+    expect(b1.modificador).toBe('reduccion');
+    expect(b1.deltaPoder).toBe(-3);
   });
 
   it('soporta 6 cartas por lado en una misma zona sin errores', () => {

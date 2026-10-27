@@ -34,20 +34,22 @@
     tamanio="lg"
     class="control-boton"
     [attr.aria-label]="nombreAccesible()"
-    [disabled]="!activo()"
-    [cargando]="!activo()"
+    [disabled]="!activo() || terminada()"
+    [cargando]="!activo() && !terminada()"
     (click)="pulsarFinalizar()"
   >
     <span class="control-accion">
       <span class="control-texto control-texto--largo">{{ accionBoton() }}</span>
       <span class="control-texto control-texto--corto">{{ accionBotonCorto() }}</span>
     </span>
-    <span class="control-insignia-turno" aria-hidden="true">
-      {{ contadorTurno() }}
-    </span>
+    @if (!terminada()) {
+      <span class="control-insignia-turno" aria-hidden="true">
+        {{ contadorTurno() }}
+      </span>
+    }
   </button>
 
-  @if (!resolviendo()) {
+  @if (!resolviendo() && !terminada()) {
     <div class="flex items-center justify-between gap-1.5 pt-1">
       <button
         type="button"
