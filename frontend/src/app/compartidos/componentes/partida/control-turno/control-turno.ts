@@ -4,9 +4,13 @@ import {
   computed,
   input,
   output,
+  signal,
 } from '@angular/core';
-import { NgIcon } from '@ng-icons/core';
-import Swal from 'sweetalert2';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  phosphorWarningFill,
+  phosphorHourglassMediumFill,
+} from '@ng-icons/phosphor-icons/fill';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import type { EstadoBotonListo } from '@compartidos/componentes/partida/boton-listo/boton-listo';
 
@@ -17,7 +21,7 @@ const CLASES_TIEMPO_BASE =
 
 /**
  * Control del turno: botón principal "Finalizar turno" y acciones secundarias
- * "Abandonar" y "Rendirme" con cuadro de confirmación SweetAlert.
+ * "Abandonar" y "Rendirse" con modal temático del sistema de diseño de Falta Una.
  */
 @Component({
   selector: 'app-control-turno',
@@ -25,6 +29,7 @@ const CLASES_TIEMPO_BASE =
   styleUrl: './control-turno.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgIcon, Boton],
+  viewProviders: [provideIcons({ phosphorWarningFill, phosphorHourglassMediumFill })],
   host: { class: 'block' },
 })
 export class ControlTurno {
@@ -138,63 +143,42 @@ export class ControlTurno {
     }
   }
 
-  async pedirConfirmacionAbandonar(): Promise<void> {
+  protected readonly modalRendirseVisible = signal(false);
+  protected readonly modalAbandonarVisible = signal(false);
+
+  pedirConfirmacionAbandonar(): void {
     if (this.procesandoAccion) return;
-
-    const resultado = await Swal.fire({
-      title: '¿Abandonar la partida?',
-      text: 'Si abandonás, la partida se dará por terminada por desconexión y se registrará tu salida.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, abandonar',
-      cancelButtonText: 'No, volver',
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#4b5563',
-      background: '#1a1f2c',
-      color: '#f3f4f6',
-      customClass: {
-        popup: 'rounded-2xl border border-borde-default shadow-cartoon',
-        confirmButton: 'font-titulo font-bold tracking-wide uppercase',
-        cancelButton: 'font-interfaz font-bold',
-      },
-    });
-
-    if (resultado.isConfirmed) {
-      this.procesandoAccion = true;
-      this.abandonar.emit();
-      setTimeout(() => {
-        this.procesandoAccion = false;
-      }, 1000);
-    }
+    this.modalAbandonarVisible.set(true);
   }
 
-  async pedirConfirmacionRendirse(): Promise<void> {
+  cancelarAbandonar(): void {
+    this.modalAbandonarVisible.set(false);
+  }
+
+  confirmarAbandonar(): void {
+    this.modalAbandonarVisible.set(false);
+    this.procesandoAccion = true;
+    this.abandonar.emit();
+    setTimeout(() => {
+      this.procesandoAccion = false;
+    }, 1000);
+  }
+
+  pedirConfirmacionRendirse(): void {
     if (this.procesandoAccion) return;
+    this.modalRendirseVisible.set(true);
+  }
 
-    const resultado = await Swal.fire({
-      title: '¿Rendirte?',
-      text: 'Si te rendís, se le otorgará la victoria a tu rival y la partida finalizará como derrota.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, rendirme',
-      cancelButtonText: 'No, volver',
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#4b5563',
-      background: '#1a1f2c',
-      color: '#f3f4f6',
-      customClass: {
-        popup: 'rounded-2xl border border-borde-default shadow-cartoon',
-        confirmButton: 'font-titulo font-bold tracking-wide uppercase',
-        cancelButton: 'font-interfaz font-bold',
-      },
-    });
+  cancelarRendirse(): void {
+    this.modalRendirseVisible.set(false);
+  }
 
-    if (resultado.isConfirmed) {
-      this.procesandoAccion = true;
-      this.rendirse.emit();
-      setTimeout(() => {
-        this.procesandoAccion = false;
-      }, 1000);
-    }
+  confirmarRendirse(): void {
+    this.modalRendirseVisible.set(false);
+    this.procesandoAccion = true;
+    this.rendirse.emit();
+    setTimeout(() => {
+      this.procesandoAccion = false;
+    }, 1000);
   }
 }
