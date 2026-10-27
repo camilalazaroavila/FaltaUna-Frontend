@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, shareReplay, tap } from 'rxjs';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
-import { categoriaCartaDesdeNombre } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre, efectosDesdeHabilidad } from '@modelos/carta.model';
 import { ApiService } from './api.service';
 import type { CartaInventarioApi, GuardarMazoRequest, MazoApi } from '@modelos/mazo.model';
 /**
@@ -67,6 +67,7 @@ function mapearCartaInventario(carta: CartaInventarioApi): Carta {
     atributoDerecho: carta.poder,
     atributoIzquierdo: carta.costoCupon,
     obtenida: true,
+    efectosCategoria: efectosDesdeHabilidad(carta.habilidad),
   };
 }
 export function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {

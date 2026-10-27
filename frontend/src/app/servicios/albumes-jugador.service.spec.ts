@@ -120,6 +120,7 @@ describe('AlbumesJugadorService', () => {
             obtenida: true,
             cantidad: 2,
             favorita: true,
+            efectosCategoria: [],
           },
         ],
       });
