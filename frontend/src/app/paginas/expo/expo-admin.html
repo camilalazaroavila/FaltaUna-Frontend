@@ -1,51 +1,182 @@
 <div class="flex min-h-dvh flex-col items-center bg-usuario-gradiente-amarillo-verde px-4 py-8 text-white">
-  <h1 class="mb-6 font-titulo text-2xl tracking-wider text-marca-acento sm:text-3xl">PANEL EXPO</h1>
+  <h1 class="mb-4 font-titulo text-2xl tracking-wider text-marca-acento sm:text-3xl">PANEL EXPO</h1>
+
+  <p
+    role="note"
+    class="mb-6 w-full max-w-xl rounded-2xl border-2 border-marca-acento bg-marca-acento/15 px-4 py-3 text-center font-titulo text-base leading-snug text-marca-acento sm:text-lg"
+  >
+    Entregá el premio DIRECTO al usuario: queda en su inventario, sin importar cuándo se
+    registre o inicie sesión.
+  </p>
 
   @if (cargando() && !configuracion()) {
     <section class="mb-6 w-full max-w-xl rounded-2xl border border-white/10 bg-[#072428]/95 p-4 text-center">
       <p class="font-titulo text-xl">Cargando panel...</p>
     </section>
   } @else {
-    <!-- Estado actual -->
+    <!-- Estado actual (modo automático) -->
     <section class="mb-6 w-full max-w-xl rounded-2xl border border-white/10 bg-[#072428]/95 p-4 text-center">
-      <p class="text-sm opacity-80">Sobre regalo actual</p>
+      <p class="text-xs uppercase tracking-wide opacity-70">Pendiente para el próximo registro</p>
       @if (sobreActual(); as actual) {
         <p class="font-titulo text-2xl text-marca-acento">{{ etiqueta(actual) }}</p>
       } @else {
         <p class="font-titulo text-xl">
           {{ configuracion()?.activo ? 'Sin sobre cargado' : 'Regalo desactivado' }}
         </p>
-        <p class="text-xs opacity-70">Girá la ruleta y elegí el premio.</p>
       }
     </section>
 
-    <!-- Premios -->
-    <section class="grid w-full max-w-xl grid-cols-2 gap-3 sm:grid-cols-3">
+    <!-- 1. Elegir el premio -->
+    <h2 class="mb-2 w-full max-w-xl text-xs uppercase tracking-wide opacity-80">1 · Elegí el premio</h2>
+
+    <section class="mb-6 grid w-full max-w-xl grid-cols-2 gap-3 sm:grid-cols-3">
       @for (sobre of sobres(); track sobre.id) {
         <button
           type="button"
           (click)="elegirSobre(sobre)"
-          class="min-h-20 rounded-2xl border-2 px-3 py-4 font-titulo text-lg transition-colors"
+          [attr.aria-pressed]="sobreElegido() === sobre.id"
+          class="relative min-h-20 rounded-2xl border-2 px-3 py-4 font-titulo text-lg transition-colors"
           [class]="
-            configuracion()?.sobreRegaloId === sobre.id
+            sobreElegido() === sobre.id
               ? 'border-marca-acento bg-marca-acento text-black'
               : 'border-white/20 bg-[#072428]/95 text-white'
           "
         >
           {{ etiqueta(sobre) }}
+          @if (configuracion()?.sobreRegaloId === sobre.id) {
+            <span
+              class="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-0.5 font-sans text-[10px] font-bold tracking-wide text-white"
+            >
+              PENDIENTE
+            </span>
+          }
         </button>
       }
     </section>
 
-    @if (mensaje()) {
-      <p class="mt-4 text-sm text-marca-acento" role="status">{{ mensaje() }}</p>
-    }
+    <!-- 2. Entregar el premio -->
+    <h2 class="mb-2 w-full max-w-xl text-xs uppercase tracking-wide opacity-80">2 · Entregá el premio</h2>
 
-    <div class="mt-8 flex gap-3">
-      <button type="button" (click)="desactivar()" class="rounded-xl border border-white/30 px-4 py-2 text-sm">
-        Desactivar regalo
-      </button>
-    </div>
+    <section class="mb-4 w-full max-w-xl rounded-2xl border-2 border-marca-acento/60 bg-[#072428]/95 p-4">
+      <p class="font-titulo text-lg text-marca-acento">A UN USUARIO (RECOMENDADO)</p>
+      <p class="mb-3 text-xs opacity-80">
+        Se suma a su inventario al instante y no se lo puede llevar otra persona.
+      </p>
+
+      <label for="buscar-usuario" class="text-xs uppercase tracking-wide opacity-80">
+        Buscar por nombre o email
+      </label>
+      <input
+        #inputBusqueda
+        id="buscar-usuario"
+        type="search"
+        autocomplete="off"
+        [value]="busqueda()"
+        (input)="buscar(inputBusqueda.value)"
+        placeholder="Ej: gonza123 o gonza@mail.com"
+        class="mt-1 w-full rounded-xl border border-white/20 bg-[#04181b] px-4 py-3 text-white placeholder:text-white/40"
+      />
+
+      @if (busquedaCorta()) {
+        <p class="mt-2 text-xs opacity-60">Escribí al menos 2 letras.</p>
+      } @else if (resultados().length === 0) {
+        <p class="mt-2 text-xs opacity-70">No se encontró ningún usuario con ese nombre o email.</p>
+      } @else {
+        <ul class="mt-2 flex flex-col gap-2">
+          @for (usuario of resultados(); track usuario.id) {
+            <li>
+              <button
+                type="button"
+                (click)="elegirUsuario(usuario)"
+                [attr.aria-pressed]="usuarioElegido()?.id === usuario.id"
+                class="w-full rounded-xl border px-3 py-2 text-left text-sm"
+                [class]="
+                  usuarioElegido()?.id === usuario.id
+                    ? 'border-marca-acento bg-marca-acento/20'
+                    : 'border-white/15 bg-[#04181b]'
+                "
+              >
+                <span class="font-titulo">{{ usuario.nombreUsuario }}</span>
+                <span class="ml-2 text-xs opacity-70">{{ usuario.email }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (usuarioElegido(); as usuario) {
+        <div class="mt-3 rounded-xl border border-marca-acento/50 bg-black/20 p-3">
+          @if (etiquetaElegida(); as sobre) {
+            <p class="text-sm">
+              ¿Entregar <strong>{{ sobre }}</strong> a
+              <strong>{{ usuario.nombreUsuario }}</strong>?
+            </p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <button
+                type="button"
+                (click)="entregar()"
+                [disabled]="entregando()"
+                class="rounded-xl bg-marca-acento px-4 py-2 font-titulo text-black disabled:opacity-50"
+              >
+                {{ entregando() ? 'ENTREGANDO...' : 'CONFIRMAR ENTREGA' }}
+              </button>
+              <button
+                type="button"
+                (click)="cancelarEntrega()"
+                class="rounded-xl border border-white/30 px-4 py-2 text-sm"
+              >
+                Cancelar
+              </button>
+            </div>
+          } @else {
+            <p class="text-sm text-red-300">Elegí primero un sobre en el paso 1.</p>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="w-full max-w-xl rounded-2xl border border-white/15 bg-[#072428]/95 p-4">
+      <p class="font-titulo text-base opacity-90">AUTOMÁTICO: PRÓXIMO REGISTRO</p>
+      <p class="mb-3 text-xs opacity-70">
+        El sobre se entrega al próximo usuario que se registre. Si se registra otra persona
+        antes, se lo lleva: usalo solo si estás seguro de quién es el siguiente.
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          (click)="dejarParaProximoRegistro()"
+          [disabled]="etiquetaElegida() === null"
+          class="rounded-xl border border-white/30 px-4 py-2 text-sm disabled:opacity-40"
+        >
+          Dejar el sobre elegido para el próximo registro
+        </button>
+        <button
+          type="button"
+          (click)="desactivar()"
+          class="rounded-xl border border-white/30 px-4 py-2 text-sm"
+        >
+          Desactivar regalo
+        </button>
+      </div>
+    </section>
+
+    @if (entregas().length > 0) {
+      <section class="mt-4 w-full max-w-xl rounded-2xl border border-white/10 bg-[#072428]/70 p-4">
+        <p class="mb-2 text-xs uppercase tracking-wide opacity-70">Entregas de esta sesión</p>
+        <ul class="flex flex-col gap-1 text-sm">
+          @for (entrega of entregas(); track $index) {
+            <li class="flex justify-between gap-3 opacity-90">
+              <span>{{ entrega.sobre }} → <strong>{{ entrega.usuario }}</strong></span>
+              <span class="opacity-60">{{ entrega.hora }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+
+  @if (mensaje()) {
+    <p class="mt-4 text-sm text-marca-acento" role="status">{{ mensaje() }}</p>
   }
 
   @if (error()) {
