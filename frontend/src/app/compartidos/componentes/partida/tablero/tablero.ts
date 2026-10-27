@@ -21,9 +21,10 @@ import { JugadorChip } from '@compartidos/componentes/partida/jugador-chip/jugad
 import { Mano } from '@compartidos/componentes/partida/mano/mano';
 import type { PosicionArrastre } from '@compartidos/componentes/partida/mano/mano';
 import { Zona } from '@compartidos/componentes/partida/zona/zona';
+import type { InfoModificadorPoder } from '@compartidos/componentes/partida/zona/zona';
 import { ZonaPopupComponent } from '@compartidos/componentes/partida/zona-popup/zona-popup';
 import type { Carta } from '@modelos/carta.model';
-import type { NombreLugar, ResultadoRonda } from '@modelos/partida.model';
+import type { NombreLugar, PorLugar, ResultadoRonda, ZonaTablero } from '@modelos/partida.model';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
 import { GsapService } from '@servicios/gsap.service';
 import { SONIDOS_PARTIDA, SonidoService } from '@servicios/sonido.service';
@@ -33,6 +34,7 @@ import type {
   PasoSecuenciaConteo,
 } from '@compartidos/componentes/partida/conteo-ronda/secuencia-conteo-ronda';
 import {
+  DURACION_EFECTOS_CARTAS_MS,
   ESCALONADO_BURBUJAS_MS,
   PAUSA_ENTRE_ZONAS_MS,
   construirColaPasos,
@@ -94,6 +96,8 @@ export class Tablero implements OnDestroy {
   readonly rendirse = output<void>();
   /** Emite true cuando arranca el conteo secuencial y false al terminar o saltar. */
   readonly conteoCambio = output<boolean>();
+  /** Emite el número de la ronda cuyo conteo secuencial acaba de finalizar por completo. */
+  readonly conteoRondaTerminada = output<number>();
 
   protected readonly lugares: readonly NombreLugar[] = ['izquierda', 'derecha'];
   protected readonly lugarAbierto = signal<NombreLugar | null>(null);
@@ -103,6 +107,37 @@ export class Tablero implements OnDestroy {
   readonly burbujaActiva = signal<PasoBurbuja | null>(null);
   /** Indica si la secuencia de conteo lento de ronda se encuentra en ejecución. */
   readonly enConteo = signal<boolean>(false);
+
+  /** Puntos visuales reflejados en las barras laterales de la partida. */
+  protected readonly puntosBarraPropiaVisual = signal<number>(0);
+  protected readonly puntosBarraRivalVisual = signal<number>(0);
+  protected readonly deltaBarraPropiaVisual = signal<number | null>(null);
+  protected readonly deltaBarraRivalVisual = signal<number | null>(null);
+  /** Estado de carga visual llamativa en las barras laterales. */
+  protected readonly barraCargando = signal<boolean>(false);
+
+  /** Zonas visuales mostradas en el tablero; se congelan durante el conteo hasta que todas las cartas sumen. */
+  protected readonly zonasVisuales = signal<PorLugar<ZonaTablero>>({
+    izquierda: this.servicio.lugares().izquierda.zona,
+    derecha: this.servicio.lugares().derecha.zona,
+  });
+
+  /** Modificadores visuales de poder (+delta verde o -delta rojo) activos en cada lugar del tablero. */
+  protected readonly modificadoresPorLugar = signal<
+    Record<
+      NombreLugar,
+      {
+        propio: Record<number, InfoModificadorPoder>;
+        rival: Record<number, InfoModificadorPoder>;
+      }
+    >
+  >({
+    izquierda: { propio: {}, rival: {} },
+    derecha: { propio: {}, rival: {} },
+  });
+
+  private deltaPropioActual: number | null = null;
+  private deltaRivalActual: number | null = null;
 
   private temporizadoresConteo: ReturnType<typeof setTimeout>[] = [];
   private colaPasos: PasoSecuenciaConteo[] = [];
@@ -116,6 +151,25 @@ export class Tablero implements OnDestroy {
 
   constructor() {
     this.sonido.precargarSonidosPartida();
+
+    effect(() => {
+      const propia = this.servicio.barraPropia();
+      const rival = this.servicio.barraRival();
+      const deltaPropio = this.servicio.deltaPuntosPropio();
+      const deltaRival = this.servicio.deltaPuntosRival();
+      const lugares = this.servicio.lugares();
+
+      if (!this.enConteo()) {
+        this.puntosBarraPropiaVisual.set(propia);
+        this.puntosBarraRivalVisual.set(rival);
+        this.deltaBarraPropiaVisual.set(deltaPropio);
+        this.deltaBarraRivalVisual.set(deltaRival);
+        this.zonasVisuales.set({
+          izquierda: lugares.izquierda.zona,
+          derecha: lugares.derecha.zona,
+        });
+      }
+    });
 
     effect(() => {
       const resultado = this.servicio.resultadoRonda();
@@ -145,6 +199,25 @@ export class Tablero implements OnDestroy {
     this.enConteo.set(true);
     this.conteoCambio.emit(true);
     this.sonido.reproducir(SONIDOS_PARTIDA.darVueltaCartas);
+
+    const deltaPropio = resultado.zonas.reduce(
+      (acc, z) => acc + (z.puntosGanadosPropio ?? 0),
+      0,
+    );
+    const deltaRival = resultado.zonas.reduce(
+      (acc, z) => acc + (z.puntosGanadosRival ?? 0),
+      0,
+    );
+    this.deltaPropioActual = deltaPropio > 0 ? deltaPropio : null;
+    this.deltaRivalActual = deltaRival > 0 ? deltaRival : null;
+
+    // Congelar visualmente la barra en los puntos previos a resolver esta ronda
+    const puntosPreviosPropio = Math.max(0, resultado.puntosPropio - deltaPropio);
+    const puntosPreviosRival = Math.max(0, resultado.puntosRival - deltaRival);
+    this.puntosBarraPropiaVisual.set(puntosPreviosPropio);
+    this.puntosBarraRivalVisual.set(puntosPreviosRival);
+    this.deltaBarraPropiaVisual.set(null);
+    this.deltaBarraRivalVisual.set(null);
 
     const lugaresMap: Record<NombreLugar, ContextoCartasLugar> = {
       izquierda: {
@@ -184,7 +257,54 @@ export class Tablero implements OnDestroy {
       }
 
       const paso = this.colaPasos[this.indicePaso++];
-      if (paso.tipo === 'burbuja') {
+      if (paso.tipo === 'efectos-cartas') {
+        this.burbujaActiva.set(null);
+        let idMod = 1;
+        const nuevo: Record<
+          NombreLugar,
+          {
+            propio: Record<number, InfoModificadorPoder>;
+            rival: Record<number, InfoModificadorPoder>;
+          }
+        > = {
+          izquierda: { propio: {}, rival: {} },
+          derecha: { propio: {}, rival: {} },
+        };
+
+        let huboAumento = false;
+        let huboReduccion = false;
+
+        paso.modificaciones.forEach((m) => {
+          nuevo[m.lugar][m.lado][m.indice] = {
+            tipo: m.tipo,
+            delta: m.delta,
+            id: idMod++,
+          };
+          if (m.tipo === 'aumento') {
+            huboAumento = true;
+          } else {
+            huboReduccion = true;
+          }
+        });
+
+        this.modificadoresPorLugar.set(nuevo);
+
+        if (huboAumento) {
+          this.sonido.reproducir(SONIDOS_PARTIDA.powerUp);
+        }
+        if (huboReduccion) {
+          this.sonido.reproducir(SONIDOS_PARTIDA.powerDown);
+        }
+
+        const t = setTimeout(() => {
+          this.modificadoresPorLugar.set({
+            izquierda: { propio: {}, rival: {} },
+            derecha: { propio: {}, rival: {} },
+          });
+          ejecutarSiguientePaso();
+        }, DURACION_EFECTOS_CARTAS_MS);
+        this.temporizadoresConteo.push(t);
+      } else if (paso.tipo === 'burbuja') {
         this.burbujaActiva.set(paso);
         this.sonido.reproducir(SONIDOS_PARTIDA.cartaSumaPoder);
         const t = setTimeout(() => {
@@ -193,17 +313,41 @@ export class Tablero implements OnDestroy {
         this.temporizadoresConteo.push(t);
       } else if (paso.tipo === 'zona') {
         this.burbujaActiva.set(null);
-        this.sonido.reproducir(SONIDOS_PARTIDA.sumarPuntosAnimacion);
+        // Sin sonido intermedio acá (pedido explícito del usuario)
         const t = setTimeout(() => {
           ejecutarSiguientePaso();
         }, PAUSA_ENTRE_ZONAS_MS);
         this.temporizadoresConteo.push(t);
+      } else if (paso.tipo === 'cambio-zonas') {
+        this.burbujaActiva.set(null);
+        // El cambio de zonas ocurre después del sumado de puntos de todas las cartas
+        // y antes de que se sumen los puntos totales para cada jugador.
+        const lugaresActuales = this.servicio.lugares();
+        this.zonasVisuales.set({
+          izquierda: lugaresActuales.izquierda.zona,
+          derecha: lugaresActuales.derecha.zona,
+        });
+        const t = setTimeout(() => {
+          ejecutarSiguientePaso();
+        }, PAUSA_ENTRE_ZONAS_MS + 500);
+        this.temporizadoresConteo.push(t);
       } else if (paso.tipo === 'barra') {
         this.burbujaActiva.set(null);
-        this.sonido.reproducir(SONIDOS_PARTIDA.sumarPuntos);
+        // Llenar la barra al final de la animación de los puntos con el nuevo sonido y aura llamativa
+        this.barraCargando.set(true);
+        this.puntosBarraPropiaVisual.set(paso.puntosPropio);
+        this.puntosBarraRivalVisual.set(paso.puntosRival);
+        this.deltaBarraPropiaVisual.set(this.deltaPropioActual);
+        this.deltaBarraRivalVisual.set(this.deltaRivalActual);
+        this.sonido.reproducir(SONIDOS_PARTIDA.cargarBarraPuntos);
         const t = setTimeout(() => {
-          this.finalizarConteo();
-        }, PAUSA_ENTRE_ZONAS_MS);
+          this.barraCargando.set(false);
+          // Retorno sutil y más despacito de la barra antes de cerrar el conteo
+          const tFin = setTimeout(() => {
+            this.finalizarConteo();
+          }, 850);
+          this.temporizadoresConteo.push(tFin);
+        }, PAUSA_ENTRE_ZONAS_MS + 800);
         this.temporizadoresConteo.push(t);
       }
     };
@@ -219,6 +363,16 @@ export class Tablero implements OnDestroy {
     if (!this.enConteo()) {
       return;
     }
+    this.barraCargando.set(false);
+    const lugaresActuales = this.servicio.lugares();
+    this.zonasVisuales.set({
+      izquierda: lugaresActuales.izquierda.zona,
+      derecha: lugaresActuales.derecha.zona,
+    });
+    this.puntosBarraPropiaVisual.set(this.servicio.barraPropia());
+    this.puntosBarraRivalVisual.set(this.servicio.barraRival());
+    this.deltaBarraPropiaVisual.set(this.servicio.deltaPuntosPropio());
+    this.deltaBarraRivalVisual.set(this.servicio.deltaPuntosRival());
     this.finalizarConteo();
   }
 
@@ -226,6 +380,11 @@ export class Tablero implements OnDestroy {
   cancelarConteo(): void {
     this.limpiarTemporizadores();
     this.burbujaActiva.set(null);
+    this.modificadoresPorLugar.set({
+      izquierda: { propio: {}, rival: {} },
+      derecha: { propio: {}, rival: {} },
+    });
+    this.barraCargando.set(false);
     this.enConteo.set(false);
     this.conteoCambio.emit(false);
   }
@@ -233,8 +392,16 @@ export class Tablero implements OnDestroy {
   private finalizarConteo(): void {
     this.limpiarTemporizadores();
     this.burbujaActiva.set(null);
+    this.modificadoresPorLugar.set({
+      izquierda: { propio: {}, rival: {} },
+      derecha: { propio: {}, rival: {} },
+    });
+    this.barraCargando.set(false);
     this.enConteo.set(false);
     this.conteoCambio.emit(false);
+    if (this.ultimoResultadoAnimado > 0) {
+      this.conteoRondaTerminada.emit(this.ultimoResultadoAnimado);
+    }
   }
 
   private limpiarTemporizadores(): void {
@@ -278,6 +445,7 @@ export class Tablero implements OnDestroy {
       return;
     }
     this.cartaEnArrastre.set(carta);
+    this.sonido.reproducir(SONIDOS_PARTIDA.agarrarCarta);
   }
 
   protected alSeleccionar(carta: Carta | null): void {
@@ -285,6 +453,9 @@ export class Tablero implements OnDestroy {
       return;
     }
     this.cartaSeleccionada.set(carta);
+    if (carta) {
+      this.sonido.reproducir(SONIDOS_PARTIDA.agarrarCarta);
+    }
   }
 
   protected alTerminarArrastre(posicion: PosicionArrastre): void {

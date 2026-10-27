@@ -5,6 +5,7 @@ import {
   OnDestroy,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -23,6 +24,7 @@ import { Titulo } from '@compartidos/componentes/textual/titulo/titulo';
 import type { MazoApi } from '@modelos/mazo.model';
 import { BarajaService } from '@servicios/baraja.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
+import { SonidoService } from '@servicios/sonido.service';
 import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja';
 
 /**
@@ -55,6 +57,22 @@ export class Partida implements OnInit, OnDestroy {
   private readonly baraja = inject(BarajaService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
+  private readonly sonido = inject(SonidoService);
+
+  constructor() {
+    effect(() => {
+      const enJuego = this.enPartida();
+      const conResultado = this.mostrarPantallaResultado();
+
+      if (enJuego && !conResultado) {
+        this.sonido.iniciarMusicaFondo(0.18);
+      } else if (conResultado) {
+        this.sonido.ajustarVolumenMusicaFondo(0.04);
+      } else {
+        this.sonido.detenerMusicaFondo();
+      }
+    });
+  }
 
   /** Hay una partida real en curso (no la maqueta). */
   protected readonly enPartida = computed(() => this.servicio.partidaId() !== null);
@@ -68,10 +86,25 @@ export class Partida implements OnInit, OnDestroy {
   protected readonly gane = this.servicio.gane;
   /** Estado del conteo secuencial de puntos de ronda. */
   protected readonly enConteoRonda = signal<boolean>(false);
-  /** La pantalla de resultado solo aparece una vez concluido el conteo de la ronda. */
-  protected readonly mostrarPantallaResultado = computed(
-    () => !this.enConteoRonda() && (this.terminada() || this.resultadoFinal() !== null),
-  );
+  /** Última ronda cuyo conteo de puntos finalizó por completo. */
+  protected readonly rondaConteoCompletada = signal<number>(0);
+  /** La pantalla de resultado solo aparece una vez concluido el conteo de la ronda y con resultado final. */
+  protected readonly mostrarPantallaResultado = computed(() => {
+    if (!this.terminada() && this.resultadoFinal() === null) {
+      return false;
+    }
+
+    if (this.enConteoRonda()) {
+      return false;
+    }
+
+    const ultimaRonda = this.servicio.resultadoRonda();
+    if (ultimaRonda && ultimaRonda.numero > this.rondaConteoCompletada()) {
+      return false;
+    }
+
+    return true;
+  });
 
   protected readonly mazos = signal<readonly MazoApi[]>([]);
   protected readonly mazoSeleccionado = signal<number | null>(null);
@@ -165,6 +198,7 @@ export class Partida implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.servicio.detenerSincronizacion();
+    this.sonido.detenerMusicaFondo();
   }
 
   /** Crea una partida nueva contra el bot con el mazo elegido. */

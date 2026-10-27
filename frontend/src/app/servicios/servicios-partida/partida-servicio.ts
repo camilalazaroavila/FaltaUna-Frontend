@@ -2584,30 +2584,59 @@ export class PartidaServicio {
       return habilidad.descripcion;
     }
     const valor = habilidad.valor ?? 0;
-    const tipo = habilidad.tipo?.toUpperCase() || '';
+    const tipo = (habilidad.tipo ?? '')
+      .trim()
+      .replace(/-/g, '_')
+      .replace(/\s+/g, '_')
+      .toUpperCase();
     const cat = habilidad.categoriaObjetivo || '';
 
     switch (tipo) {
       case 'AUMENTAR_PODER_ALIADOS_CERCANOS':
+      case 'BUFF_ALIADOS_CERCANOS':
         return `+${valor} de poder a las cartas aliadas a su lado.`;
+      case 'AUMENTAR_PODER_ALIADO_ALEATORIO':
+      case 'BUFF_ALIADO_ALEATORIO':
+      case 'PODER_ALIADO_ALEATORIO':
+        return `+${valor} de poder a una carta aliada aleatoria en esta zona.`;
+      case 'REDUCIR_PODER_RIVAL_ALEATORIO':
+      case 'DEBUFF_RIVAL_ALEATORIO':
+      case 'REDUCIR_RIVAL_ALEATORIO':
+        return `-${Math.abs(valor)} de poder a una carta rival aleatoria en esta zona.`;
       case 'REDUCIR_PODER_RIVAL_ENFRENTE':
+      case 'DEBUFF_RIVAL_ENFRENTE':
+      case 'REDUCIR_RIVAL_ENFRENTE':
         return `-${Math.abs(valor)} de poder a la carta rival que esté enfrente.`;
       case 'AUMENTAR_PODER_CATEGORIA':
+      case 'BUFF_CATEGORIA':
         return `+${valor} de poder a las cartas aliadas de ${cat || 'su categoría'}.`;
       case 'REDUCIR_PODER_RIVAL_CATEGORIA':
+      case 'DEBUFF_CATEGORIA':
+      case 'REDUCIR_RIVAL_CATEGORIA':
         return `-${Math.abs(valor)} de poder a las cartas rivales de ${cat || 'su categoría'}.`;
       case 'AUMENTAR_PODER_PROPIO':
-        return `+${valor} de poder propio al jugarse.`;
+      case 'BONUS_PROPIO':
+      case 'PODER_PROPIO':
+        return `+${valor} de poder propio al revelarse.`;
       case 'AUMENTAR_PODER_ALIADOS_ZONA':
+      case 'BUFF_ALIADOS_ZONA':
+      case 'PODER_ALIADOS_ZONA':
         return `+${valor} de poder a todas sus cartas en esta zona.`;
       case 'AUMENTAR_PODER_MISMA_FILA':
+      case 'BUFF_MISMA_FILA':
         return `+${valor} de poder a todas sus cartas en la misma fila de la ronda.`;
       case 'REDUCIR_PODER_RIVAL_ZONA':
+      case 'DEBUFF_RIVAL':
+      case 'REDUCIR_RIVAL_ZONA':
         return `-${Math.abs(valor)} de poder a todas las cartas rivales en esta zona.`;
       case 'REEMPLAZAR_ZONA':
         return 'Al revelarse, cambia esta zona por una nueva zona sorpresa del catálogo.';
       case 'ROBAR_CARTA':
+      case 'ROBO_CARTA':
+      case 'DRAW':
         return `Roba ${valor || 1} carta(s) adicional(es) al jugarse.`;
+      case 'TRANSFORMAR_CARTA':
+        return 'Transforma esta carta al revelarse.';
       default:
         return valor !== 0 ? `Efecto: ${valor > 0 ? '+' : ''}${valor} de poder.` : null;
     }

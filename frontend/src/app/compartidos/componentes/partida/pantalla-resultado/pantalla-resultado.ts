@@ -183,15 +183,22 @@ export class PantallaResultado implements AfterViewInit, OnDestroy {
     return `Ronda ${ronda.numero}`;
   }
 
+  private sonidoReproducido = false;
+
   ngAfterViewInit(): void {
     if (this.modoIncrustado()) {
       return;
     }
 
-    if (this.tipo() === 'victoria') {
-      this.sonido.reproducir(SONIDOS_PARTIDA.bonusVictoria);
-    } else {
-      this.sonido.reproducir(SONIDOS_PARTIDA.finPartida);
+    if (!this.sonidoReproducido) {
+      const t = this.tipo();
+      if (t === 'victoria') {
+        this.sonidoReproducido = true;
+        this.sonido.reproducir(SONIDOS_PARTIDA.victoria);
+      } else if (t === 'derrota' || t === 'empate') {
+        this.sonidoReproducido = true;
+        this.sonido.reproducir(SONIDOS_PARTIDA.derrota);
+      }
     }
 
     // Celebración heroica inicial durante 5 segundos para destacar el resultado

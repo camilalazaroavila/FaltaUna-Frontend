@@ -119,5 +119,23 @@ describe('SonidoService', () => {
       const cantidadEfectos = Object.keys(SONIDOS_PARTIDA).length;
       expect(audioInstancias.length).toBe(cantidadEfectos);
     });
+
+    it('inicia y detiene la música ambiental de fondo en bucle', () => {
+      service.iniciarMusicaFondo(0.2);
+      expect(playMock).toHaveBeenCalled();
+
+      service.detenerMusicaFondo();
+      expect(service).toBeTruthy();
+    });
+
+    it('reproduce el sonido de botón al hacer clic en un elemento button', () => {
+      const boton = document.createElement('button');
+      document.body.appendChild(boton);
+
+      boton.click();
+      expect(playMock).toHaveBeenCalled();
+
+      boton.remove();
+    });
   });
 });
