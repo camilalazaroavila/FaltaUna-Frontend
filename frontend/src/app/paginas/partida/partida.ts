@@ -16,7 +16,6 @@ import Swal from 'sweetalert2';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { CampoSelect, type OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
 import { Caja } from '@compartidos/componentes/contenedor/caja/caja';
-import { Header } from '@compartidos/componentes/layout/header/header';
 import { PantallaResultado } from '@compartidos/componentes/partida/pantalla-resultado/pantalla-resultado';
 import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
 import { Texto } from '@compartidos/componentes/textual/texto/texto';
@@ -41,7 +40,6 @@ import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja
     Caja,
     CampoSelect,
     FormsModule,
-    Header,
     PantallaResultado,
     RouterLink,
     Tablero,

@@ -119,13 +119,14 @@ export class Tablero {
 
   protected alTerminarArrastre(posicion: PosicionArrastre): void {
     const carta = this.cartaEnArrastre();
+    this.cartaEnArrastre.set(null);
 
     if (!carta) {
+      this.mano()?.cancelarArrastre();
       return;
     }
 
     const slot = this.slotEnPosicion(posicion);
-    this.cartaEnArrastre.set(null);
 
     if (slot && this.servicio.jugarCarta(carta, slot.lugar, slot.indice)) {
       this.mano()?.volarHacia(slot.elemento.getBoundingClientRect());

@@ -1,34 +1,33 @@
-/* ── Medidas: único lugar para retocar proporciones ── */
 :host {
   --carta-aspect: 5 / 7;
   --carta-sombra: 0 0.1em 0.3em rgba(0, 0, 0, 0.35);
   --carta-transicion: 0.25s ease;
-
   display: block;
   container-type: inline-size;
   width: 100%;
 }
 
-/*hacer la carta mas grande*/
 .carta__marco {
   position: relative;
   width: 100%;
   aspect-ratio: var(--carta-aspect);
   filter: drop-shadow(var(--carta-sombra));
-  transition:
-    transform var(--carta-transicion),
-    filter var(--carta-transicion);
+  transition: transform var(--carta-transicion), filter var(--carta-transicion);
 }
 
 :host(:hover) .carta__marco {
   transform: translateY(-2%) scale(1.03);
 }
 
+.carta__svg,
+.carta__fondo {
+  pointer-events: none;
+  user-select: none;
+}
+
 .carta__svg {
   display: block;
   flex-shrink: 0;
-  pointer-events: none;
-  user-select: none;
 }
 
 .carta__fondo {
@@ -38,8 +37,6 @@
   height: 100%;
   object-fit: fill;
   z-index: 0;
-  pointer-events: none;
-  user-select: none;
 }
 
 .carta__atributo {
@@ -53,13 +50,8 @@
   aspect-ratio: 1;
 }
 
-.carta__atributo--izq {
-  left: 2%;
-}
-
-.carta__atributo--der {
-  right: 2%;
-}
+.carta__atributo--izq { left: 2%; }
+.carta__atributo--der { right: 2%; }
 
 .carta__cuadrado {
   position: absolute;
@@ -71,14 +63,8 @@
   z-index: 0;
 }
 
-.carta__cuadrado--der {
-  transform: rotate(-45deg);
-}
-
-/* Cuadrado izquierdo: fondo claro, número oscuro. */
-.carta__cuadrado--izq {
-  filter: var(--carta-filtro-cuadrado-izq);
-}
+.carta__cuadrado--der { transform: rotate(-45deg); }
+.carta__cuadrado--izq { filter: var(--carta-filtro-cuadrado-izq); }
 
 .carta__numero {
   position: relative;
@@ -92,14 +78,8 @@
   user-select: none;
 }
 
-.carta__numero--izq {
-  color: var(--color-teal-profundo);
-}
-
-.carta__numero--der {
-  color: var(--carta-color-numero);
-  transform: none;
-}
+.carta__numero--izq { color: var(--color-teal-profundo); }
+.carta__numero--der { color: var(--carta-color-numero); transform: none; }
 
 .carta__categoria {
   position: absolute;
@@ -123,7 +103,6 @@
 
 .carta__icono-categoria {
   position: absolute;
-  inset: 0;
   width: 58%;
   height: 58%;
   object-fit: contain;
@@ -219,9 +198,7 @@
 
 :host(.carta--legendaria) .carta__nombre {
   color: var(--carta-legendaria-acento);
-  text-shadow:
-    0 0.08em 0.16em rgba(0, 0, 0, 0.55),
-    0 0 0.4em var(--carta-legendaria-halo);
+  text-shadow: 0 0.08em 0.16em rgba(0, 0, 0, 0.55), 0 0 0.4em var(--carta-legendaria-halo);
 }
 
 :host(.carta--legendaria) .carta__imagen-wrapper {
@@ -229,39 +206,59 @@
 }
 
 @container (max-width: 8.75rem) {
-  .carta__numero {
-    font-size: 8cqi;
-  }
-
-  .carta__nombre {
-    font-size: 10cqi;
-  }
+  .carta__numero { font-size: 8cqi; }
+  .carta__nombre { font-size: 10cqi; }
 }
 
-.carta__poder-diferencia {
-  background: var(--superficie-elevado);
-  border: 1px solid var(--borde-default);
-  color: var(--texto-primario);
+.carta__imagen-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.35rem;
+  text-align: center;
+  background: var(--superficie-elevado, #173238);
 }
 
-.carta__poder-diferencia--positivo {
-  background: var(--exito-sobre);
-  border-color: var(--exito-borde);
-  color: var(--exito-texto);
+.carta__nombre-fallback {
+  font-family: var(--fuente-titulo);
+  font-size: 8cqi;
+  line-height: 1.1;
+  opacity: 0.8;
+  color: var(--carta-color-nombre);
+  margin-top: 0.25rem;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.carta__poder-diferencia--negativo {
-  background: var(--error-sobre);
-  border-color: var(--error-borde);
-  color: var(--error-texto);
+.carta__reverso {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 5 / 7;
+  border-radius: var(--radio-sm, 0.25rem);
+  border: 2px solid var(--color-gris-teal, #386068);
+  background-color: var(--carta-reverso, #0b2e36);
+  box-shadow: var(--sombra-cartoon, 0 3px 0 rgba(0, 0, 0, 0.4));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.carta__reverso-diseno {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: radial-gradient(ellipse at center, var(--color-menta, #2dd4bf) 0%, transparent 70%);
+  opacity: 0.35;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .carta__marco {
-    transition: none;
-  }
-
-  :host(:hover) .carta__marco {
-    transform: none;
-  }
+  .carta__marco { transition: none; }
+  :host(:hover) .carta__marco { transform: none; }
 }

@@ -1341,5 +1341,543 @@ describe('PartidaServicio', () => {
       expect(servicio.gane()).toBe(true);
     });
   });
+
+  describe('Sincronización front-back: rotación de zonas, acumulación, reloj y retiro', () => {
+    it('las cartas en mesa conservan su lugar físico (izquierda/derecha) y slot cuando las zonas rotan', () => {
+      // Ronda 1: Carta en izquierda, slot 0 (zona 10)
+      const cartaMesa = {
+        cartaPartidaId: 50,
+        zonaPartidaId: 10,
+        indice: 0,
+        lado: 'propio' as const,
+        oculta: false,
+        carta: {
+          cartaId: 500,
+          nombre: 'Dibu Martinez',
+          descripcion: null,
+          poder: 8,
+          costoCupon: 2,
+          rareza: 'oro',
+          categoria: 'Deportes',
+          imagenUrl: null,
+          habilidad: null,
+        },
+        poderActual: 8,
+      };
+
+      const estadoRonda1 = estadoApi({
+        ronda: 1,
+        zonas: [
+          zonaApi(10, 'izquierda', 'Grido', 8, 0, 'propio'),
+          zonaApi(11, 'derecha', 'Sony', 0, 0, 'empate'),
+        ],
+        cartasEnMesa: [cartaMesa],
+      });
+
+      iniciar(estadoRonda1);
+
+      // Verificamos que esté en izquierda slot 0
+      expect(servicio.lugares().izquierda.propio[0]?.nombre).toBe('Dibu Martinez');
+      expect(servicio.lugares().derecha.propio[0]).toBeNull();
+
+      // Ronda 2: Las zonas rotan (zona 10 pasa a la derecha o entra zona 20 en la izquierda)
+      const estadoRonda2 = estadoApi({
+        ronda: 2,
+        zonas: [
+          zonaApi(20, 'izquierda', 'Havanna', 8, 0, 'propio'),
+          zonaApi(10, 'derecha', 'Grido', 0, 0, 'empate'),
+        ],
+        // El servidor envía las cartas existentes en mesa
+        cartasEnMesa: [cartaMesa],
+      });
+
+      partidaApi.obtenerEstado.mockReturnValue(of(estadoRonda2));
+      servicio['aplicarEstado'](estadoRonda2);
+
+      // La carta DEBE PERMANECER en izquierda slot 0 (lugar físico), aunque la zona que ahora está en la izquierda sea Havanna
+      expect(servicio.lugares().izquierda.propio[0]?.nombre).toBe('Dibu Martinez');
+      expect(servicio.lugares().derecha.propio[0]).toBeNull();
+      // Y la zona en la izquierda debe ser Havanna
+      expect(servicio.lugares().izquierda.zona.nombre).toBe('Havanna');
+    });
+
+    it('las cartas en mesa no desaparecen aunque el backend omita cartasEnMesa al rotar la zona (Hipótesis A)', () => {
+      const cartaMesa: CartaEnMesaApi = {
+        cartaPartidaId: 10,
+        zonaPartidaId: 10,
+        indice: 0,
+        lado: 'propio',
+        oculta: false,
+        carta: {
+          cartaId: 1,
+          nombre: 'Dibu Martinez',
+          descripcion: null,
+          poder: 8,
+          costoCupon: 2,
+          rareza: 'oro',
+          categoria: 'Deportes',
+          imagenUrl: null,
+          habilidad: null,
+        },
+        poderActual: 8,
+      };
+
+      const estadoRonda1 = estadoApi({
+        ronda: 1,
+        zonas: [
+          zonaApi(10, 'izquierda', 'Grido', 8, 0, 'propio'),
+          zonaApi(11, 'derecha', 'Sony', 0, 0, 'empate'),
+        ],
+        cartasEnMesa: [cartaMesa],
+      });
+
+      iniciar(estadoRonda1);
+      expect(servicio.lugares().izquierda.propio[0]?.nombre).toBe('Dibu Martinez');
+
+      // Ronda 2: la zona 10 sale y entra la zona 20. El backend OMITIÓ la carta en cartasEnMesa (lista vacía)
+      const estadoRonda2ConOmisionBackend = estadoApi({
+        ronda: 2,
+        zonas: [
+          zonaApi(20, 'izquierda', 'Havanna', 8, 0, 'propio'),
+          zonaApi(11, 'derecha', 'Sony', 0, 0, 'empate'),
+        ],
+        cartasEnMesa: [], // El backend no envió la carta porque su zona salió
+      });
+
+      servicio['aplicarEstado'](estadoRonda2ConOmisionBackend);
+
+      // La carta DEBE SEGUIR en la mesa en su lugar y slot físico
+      expect(servicio.lugares().izquierda.propio[0]?.nombre).toBe('Dibu Martinez');
+    });
+
+    it('el reloj arranca con el total de ronda del servidor cuando viene y no da saltos al aplicar estados de la misma ronda', () => {
+      const ahora = Date.now();
+      const finRonda = new Date(ahora + 45000).toISOString();
+
+      const estadoInicial = estadoApi({
+        ronda: 1,
+        segundosRestantes: 45,
+        segundosTotales: 60,
+        finDeRonda: finRonda,
+      });
+
+      iniciar(estadoInicial);
+
+      expect(servicio.segundosTotales()).toBe(60);
+      expect(servicio.segundosRestantes()).toBe(45);
+
+      // Estado intermedio en la misma ronda
+      const estadoIntermedio = estadoApi({
+        ronda: 1,
+        segundosRestantes: 43,
+        segundosTotales: 60,
+        finDeRonda: finRonda,
+      });
+
+      servicio['aplicarEstado'](estadoIntermedio);
+
+      // El total de ronda se mantiene constante (60s, informado por el servidor)
+      expect(servicio.segundosTotales()).toBe(60);
+      // El valor restante se mantiene continuo sin saltos abruptos
+      expect(servicio.segundosRestantes()).toBeGreaterThanOrEqual(42);
+      expect(servicio.segundosRestantes()).toBeLessThanOrEqual(45);
+    });
+
+    it('cuando el servidor no informa segundosTotales, no inventa un número fijo y queda undefined registrando advertencia', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      const estadoSinTotal = estadoApi({
+        ronda: 1,
+        segundosRestantes: 40,
+        finDeRonda: null,
+      });
+
+      iniciar(estadoSinTotal);
+
+      expect(servicio.segundosTotales()).toBeUndefined();
+      expect(servicio.segundosRestantes()).toBe(40);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[PartidaServicio] El servidor no informó el total de la ronda.'),
+      );
+
+      warnSpy.mockRestore();
+    });
+
+    it('permite retirar una carta provisional y luego jugarla en otro slot sin error de idempotencia', () => {
+      iniciar();
+      const carta = cartaDeMano();
+
+      // 1. Jugar carta en izquierda slot 1
+      partidaApi.jugarCarta.mockReturnValue(
+        of(
+          estadoApi({
+            manoPropia: [],
+            cartasEnMesa: [
+              {
+                cartaPartidaId: 11,
+                zonaPartidaId: 10,
+                indice: 1,
+                lado: 'propio',
+                oculta: false,
+                carta: {
+                  cartaId: 100,
+                  nombre: 'Messi',
+                  descripcion: null,
+                  poder: 10,
+                  costoCupon: 1,
+                  rareza: 'oro',
+                  categoria: 'Deportes',
+                  imagenUrl: null,
+                  habilidad: null,
+                },
+                poderActual: 10,
+              },
+            ],
+          }),
+        ),
+      );
+
+      const jugo = servicio.jugarCarta(carta, 'izquierda', 1);
+      expect(jugo).toBe(true);
+
+      const cartaEnMesa = servicio.lugares().izquierda.propio[1]!;
+      expect(cartaEnMesa).toBeTruthy();
+
+      // 2. Retirar carta de la mesa
+      const estadoTrasRetiro = estadoApi({
+        manoPropia: [
+          {
+            cartaPartidaId: 11,
+            jugable: true,
+            carta: {
+              cartaId: 100,
+              nombre: 'Messi',
+              descripcion: null,
+              poder: 10,
+              costoCupon: 1,
+              rareza: 'oro',
+              categoria: 'Deportes',
+              imagenUrl: null,
+              habilidad: null,
+            },
+          },
+        ],
+        cartasEnMesa: [],
+      });
+      partidaApi.retirarCarta.mockReturnValue(of(estadoTrasRetiro));
+
+      const retiro = servicio.retirarCarta(cartaEnMesa);
+      expect(retiro).toBe(true);
+      expect(servicio.lugares().izquierda.propio[1]).toBeNull();
+      expect(servicio.manoPropia().length).toBeGreaterThan(0);
+
+      // 3. Volver a jugar en OTRO slot (derecha slot 3)
+      const cartaEnManoNueva = servicio.manoPropia().find((c) => c.cartaPartidaId === 11)!;
+      expect(cartaEnManoNueva).toBeTruthy();
+
+      partidaApi.jugarCarta.mockReturnValue(
+        of(
+          estadoApi({
+            manoPropia: [],
+            cartasEnMesa: [
+              {
+                cartaPartidaId: 11,
+                zonaPartidaId: 11,
+                indice: 3,
+                lado: 'propio',
+                oculta: false,
+                carta: {
+                  cartaId: 100,
+                  nombre: 'Messi',
+                  descripcion: null,
+                  poder: 10,
+                  costoCupon: 1,
+                  rareza: 'oro',
+                  categoria: 'Deportes',
+                  imagenUrl: null,
+                  habilidad: null,
+                },
+                poderActual: 10,
+              },
+            ],
+          }),
+        ),
+      );
+
+      const jugoEnOtroSlot = servicio.jugarCarta(cartaEnManoNueva, 'derecha', 3);
+      expect(jugoEnOtroSlot).toBe(true);
+      expect(servicio.lugares().derecha.propio[3]?.nombre).toBe('Messi');
+    });
+
+    it('descarta respuestas de polling que lleguen con menos cartas durante una jugada o acción mutante', () => {
+      iniciar();
+      const carta = cartaDeMano();
+
+      // Simular jugada con respuesta pendiente
+      const respuestaJugar$ = new Subject<EstadoPartidaApi>();
+      partidaApi.jugarCarta.mockReturnValue(respuestaJugar$);
+
+      servicio.jugarCarta(carta, 'izquierda', 0);
+      expect(servicio.enviandoCarta()).toBe(true);
+
+      // Polling que sale con foto vieja del servidor (sin la carta bajada)
+      const estadoPollingViejo = estadoApi({
+        ronda: 1,
+        cartasEnMesa: [],
+      });
+
+      // Se procesa la respuesta de polling mientras enviandoCarta es true
+      partidaApi.obtenerEstado.mockReturnValue(of(estadoPollingViejo));
+      servicio['consultarEstado']();
+
+      // La carta optimista DEBE PERMANECER en la mesa y NO ser sobreescrita por el polling viejo
+      expect(servicio.lugares().izquierda.propio[0]?.nombre).toBe('Super Grido');
+
+      // Completar la jugada real
+      respuestaJugar$.next(
+        estadoApi({
+          ronda: 1,
+          cartasEnMesa: [
+            {
+              cartaPartidaId: 11,
+              zonaPartidaId: 10,
+              indice: 0,
+              lado: 'propio',
+              oculta: false,
+              carta: {
+                cartaId: 100,
+                nombre: 'Super Grido',
+                descripcion: null,
+                poder: 10,
+                costoCupon: 1,
+                rareza: 'oro',
+                categoria: 'Deportes',
+                imagenUrl: null,
+                habilidad: null,
+              },
+              poderActual: 10,
+            },
+          ],
+        }),
+      );
+      respuestaJugar$.complete();
+
+      expect(servicio.lugares().izquierda.propio[0]?.nombre).toBe('Super Grido');
+    });
+  });
+
+  describe('Zonas y cartas del rival (imágenes, lugares y rotación)', () => {
+    it('resuelve zonas distintas para izquierda y derecha aunque el backend omita el campo lugar', () => {
+      iniciar(
+        estadoApi({
+          zonas: [
+            {
+              zonaPartidaId: 163,
+              nombre: 'Ritmo Urbano',
+              lugar: '' as any,
+              imagenUrl: null,
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+            {
+              zonaPartidaId: 164,
+              nombre: 'Barrio',
+              lugar: '' as any,
+              imagenUrl: null,
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+          ],
+        }),
+      );
+
+      const zonas = {
+        izquierda: servicio.lugares().izquierda.zona,
+        derecha: servicio.lugares().derecha.zona,
+      };
+
+      expect(zonas.izquierda.zonaPartidaId).toBe(163);
+      expect(zonas.derecha.zonaPartidaId).toBe(164);
+      expect(zonas.izquierda.nombre).toBe('Ritmo Urbano');
+      expect(zonas.derecha.nombre).toBe('Barrio');
+
+      // Imágenes de respaldo absolutas y diferenciadas por lugar
+      expect(zonas.izquierda.imagenUrl).toBe('/imagenes/zona-generica.svg');
+      expect(zonas.derecha.imagenUrl).toBe('/imagenes/zona-generica-derecha.svg');
+    });
+
+    it('conserva el arte y estado revelado de una carta rival en rondas posteriores si el backend manda imagenUrl nulo', () => {
+      // Ronda 1: Carta revelada del rival en el resultado
+      iniciar(
+        estadoApi({
+          ronda: 1,
+          zonas: [
+            {
+              zonaPartidaId: 163,
+              nombre: 'Ritmo Urbano',
+              lugar: 'izquierda',
+              imagenUrl: 'https://img.com/ritmo.jpg',
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 4,
+              diferencia: -4,
+              ganador: 'rival',
+              modificadores: [],
+              cartas: [],
+            },
+            {
+              zonaPartidaId: 164,
+              nombre: 'Barrio',
+              lugar: 'derecha',
+              imagenUrl: null,
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+          ],
+          ultimoResultado: {
+            ronda: 1,
+            cartasReveladas: [
+              {
+                cartaPartidaId: 880,
+                zonaPartidaId: 163,
+                indice: 0,
+                lado: 'rival',
+                oculta: false,
+                carta: {
+                  cartaId: 26,
+                  nombre: 'Super Cono',
+                  descripcion: 'Cono de helado',
+                  poder: 4,
+                  costoCupon: 1,
+                  rareza: 'Común',
+                  categoria: 'Gastronomía',
+                  imagenUrl: 'https://cloudinary.com/supercono.png',
+                  habilidad: null,
+                },
+              },
+            ],
+            efectos: [],
+            zonas: [
+              {
+                zonaPartidaId: 163,
+                puntajePropio: 0,
+                puntajeRival: 4,
+                diferencia: -4,
+                puntosGanadosPropio: 0,
+                puntosGanadosRival: 4,
+                ganador: 'rival',
+              },
+            ],
+            puntosTotalesPropio: 0,
+            puntosTotalesRival: 4,
+            zonasNuevas: [],
+            cartaRobada: null,
+          },
+        }),
+      );
+
+      const rivalRonda1 = servicio.lugares().izquierda.rival[0];
+      expect(rivalRonda1).toBeTruthy();
+      expect(rivalRonda1?.oculta).toBeFalsy();
+      expect(rivalRonda1?.imagenUrl).toBe('https://cloudinary.com/supercono.png');
+
+
+      // Ronda 2: El polling del backend llega con la carta en mesa pero con imagenUrl: null
+      const estadoPolling = estadoApi({
+        ronda: 2,
+        cartasEnMesa: [
+          {
+            cartaPartidaId: 880,
+            zonaPartidaId: 163,
+            indice: 0,
+            lado: 'rival',
+            oculta: false,
+            carta: {
+              cartaId: 26,
+              nombre: 'Super Cono',
+              descripcion: 'Cono de helado',
+              poder: 4,
+              costoCupon: 1,
+              rareza: 'Común',
+              categoria: 'Gastronomía',
+              imagenUrl: null,
+              habilidad: null,
+            },
+            poderActual: 4,
+          },
+        ],
+      });
+
+      (servicio as any).aplicarEstado(estadoPolling);
+
+      const rivalRonda2 = servicio.lugares().izquierda.rival[0];
+      expect(rivalRonda2).toBeTruthy();
+      expect(rivalRonda2?.oculta).toBeFalsy();
+
+      // Debe conservar la imagen de la ronda previa
+      expect(rivalRonda2?.imagenUrl).toBe('https://cloudinary.com/supercono.png');
+    });
+
+    it('normaliza URLs relativas de imágenes agregando barra inicial', () => {
+      iniciar(
+        estadoApi({
+          zonas: [
+            {
+              zonaPartidaId: 10,
+              nombre: 'Grido',
+              lugar: 'izquierda',
+              imagenUrl: 'imagenes/grido.jpg',
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+            {
+              zonaPartidaId: 20,
+              nombre: 'Sprite',
+              lugar: 'derecha',
+              imagenUrl: 'imagenes/Sprite.png',
+              efecto: null,
+              tipoEfecto: 'bonus-categoria',
+              puntajePropio: 0,
+              puntajeRival: 0,
+              diferencia: 0,
+              ganador: 'empate',
+              modificadores: [],
+              cartas: [],
+            },
+          ],
+        }),
+      );
+
+      expect(servicio.lugares().izquierda.zona.imagenUrl).toBe('/imagenes/grido.jpg');
+      expect(servicio.lugares().derecha.zona.imagenUrl).toBe('/imagenes/Sprite.png');
+
+    });
+  });
 });
+
 

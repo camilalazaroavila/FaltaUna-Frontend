@@ -34,6 +34,28 @@
 
   @if (carta().obtenida) {
     <p class="mt-3 font-interfaz text-base font-bold">{{ oracion() }}</p>
+
+    @if (descripcionHabilidad(); as habilidad) {
+      <div class="mt-3 rounded-xl border border-marca-acento/40 bg-marca-primaria/20 p-3.5 text-left shadow-sm">
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-titulo text-xs uppercase tracking-wider text-marca-acento">
+            Habilidad
+          </span>
+          @if (momentoHabilidad(); as momento) {
+            <span class="rounded-pildora bg-white/10 px-2 py-0.5 font-interfaz text-[0.6875rem] font-bold text-texto-secundario uppercase">
+              {{ momento }}
+            </span>
+          }
+        </div>
+        <p class="mt-1.5 font-interfaz text-sm leading-snug text-texto-primario font-medium">
+          {{ habilidad }}
+        </p>
+      </div>
+    }
+
+    @if (descripcionCarta(); as desc) {
+      <p class="mt-3 font-cuerpo text-xs italic text-texto-secundario">{{ desc }}</p>
+    }
   } @else {
     <p class="mt-3 font-interfaz text-sm text-texto-secundario">Todavía no tenés esta carta.</p>
   }

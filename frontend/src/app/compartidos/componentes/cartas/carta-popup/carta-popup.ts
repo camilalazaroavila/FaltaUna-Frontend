@@ -52,8 +52,33 @@ export class CartaPopupComponent implements AfterViewInit {
   );
   protected readonly oracion = computed(() => {
     const { atributoIzquierdo, atributoDerecho } = this.carta();
-    return `Cuesta ${atributoDerecho} y suma ${atributoIzquierdo}.`;
+    return `Cuesta ${atributoIzquierdo} y suma ${atributoDerecho}.`;
   });
+
+  protected readonly descripcionHabilidad = computed(() => {
+    const c = this.carta();
+    return c.descripcionHabilidad ?? c.habilidad?.descripcion ?? null;
+  });
+
+  protected readonly momentoHabilidad = computed(() => {
+    const momento = this.carta().habilidad?.momento;
+    if (!momento) {
+      return null;
+    }
+    const norm = momento.toLowerCase();
+    if (norm.includes('revelar')) {
+      return 'Al revelar';
+    }
+    if (norm.includes('jugar')) {
+      return 'Al jugar';
+    }
+    if (norm.includes('ronda')) {
+      return 'Fin de ronda';
+    }
+    return momento;
+  });
+
+  protected readonly descripcionCarta = computed(() => this.carta().descripcion ?? null);
 
   private readonly dialogo = viewChild<ElementRef<HTMLElement>>('dialogo');
   private readonly focoPrevio = document.activeElement as HTMLElement | null;

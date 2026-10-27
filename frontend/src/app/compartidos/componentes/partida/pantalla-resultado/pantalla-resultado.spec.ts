@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { PantallaResultado } from './pantalla-resultado';
-import type { ResultadoPartidaApi } from '@modelos/partida.model';
+import type { ResultadoPartidaApi, ResultadoRonda } from '@modelos/partida.model';
 
 @Component({
   standalone: true,
@@ -12,6 +12,10 @@ import type { ResultadoPartidaApi } from '@modelos/partida.model';
       [resultado]="resultado()"
       [nombreJugador]="nombreJugador()"
       [nombreRival]="nombreRival()"
+      [historialRondas]="historialRondas()"
+      [ultimoResultado]="ultimoResultado()"
+      [modoIncrustado]="modoIncrustado()"
+      [expandidoInicial]="expandidoInicial()"
       (jugarOtraVez)="onJugarOtraVez()"
       (volverAlMenu)="onVolverAlMenu()"
     />
@@ -21,6 +25,10 @@ class TestHostComponent {
   resultado = signal<ResultadoPartidaApi | null>(null);
   nombreJugador = signal('Vos');
   nombreRival = signal('Bot');
+  historialRondas = signal<readonly ResultadoRonda[]>([]);
+  ultimoResultado = signal<ResultadoRonda | null>(null);
+  modoIncrustado = signal(false);
+  expandidoInicial = signal(false);
   reintentado = false;
   salido = false;
 
@@ -49,6 +57,17 @@ describe('PantallaResultado', () => {
   it('debe crearse correctamente', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement).toBeTruthy();
+  });
+
+  it('no es modal: no tiene aria-modal, usa role="region" y aria-live="polite"', () => {
+    fixture.detectChanges();
+
+    const contenedor = fixture.debugElement.query(By.css('.pantalla-resultado-contenedor'));
+    expect(contenedor).toBeTruthy();
+    expect(contenedor.attributes['role']).toBe('region');
+    expect(contenedor.attributes['aria-live']).toBe('polite');
+    expect(contenedor.attributes['aria-modal']).toBeUndefined();
+    expect(contenedor.classes['pantalla-resultado-contenedor--flotante']).toBe(true);
   });
 
   it('muestra estado neutral cuando el resultado es null o sin ganador reconocible', () => {
@@ -150,5 +169,88 @@ describe('PantallaResultado', () => {
 
     botonMenu!.nativeElement.click();
     expect(host.salido).toBe(true);
+  });
+
+  describe('Estado compacto y expandido ("Ver por qué")', () => {
+    const rondasMock: readonly ResultadoRonda[] = [
+      {
+        numero: 1,
+        puntosPropio: 15,
+        puntosRival: 10,
+        ganador: 'propio',
+        motivo: null,
+        gane: true,
+        terminada: false,
+        zonas: [
+          {
+            zonaPartidaId: 1,
+            nombreZona: 'Obelisco',
+            propio: 14,
+            rival: 8,
+            puntosGanadosPropio: 15,
+            puntosGanadosRival: 0,
+            ganador: 'propio',
+          },
+        ],
+        cartasReveladasRival: [
+          { nombre: 'Dibu Martínez', poder: 8, nombreZona: 'Obelisco' },
+        ],
+      },
+    ];
+
+    it('arranca en modo compacto con el botón "Ver por qué" y sin desglose', () => {
+      host.historialRondas.set(rondasMock);
+      fixture.detectChanges();
+
+      const botonAlternar = fixture.debugElement.query(By.css('.boton-alternar-detalle')).nativeElement;
+      expect(botonAlternar.textContent).toContain('Ver por qué');
+      expect(botonAlternar.getAttribute('aria-expanded')).toBe('false');
+
+      const panelDetalle = fixture.debugElement.query(By.css('#panel-detalle-resultado'));
+      expect(panelDetalle).toBeNull();
+    });
+
+    it('al pulsar "Ver por qué" se expande y muestra el desglose por ronda y zona', () => {
+      host.historialRondas.set(rondasMock);
+      fixture.detectChanges();
+
+      const botonAlternar = fixture.debugElement.query(By.css('.boton-alternar-detalle')).nativeElement;
+      botonAlternar.click();
+      fixture.detectChanges();
+
+      expect(botonAlternar.textContent).toContain('Ocultar por qué');
+      expect(botonAlternar.getAttribute('aria-expanded')).toBe('true');
+
+      const panelDetalle = fixture.debugElement.query(By.css('#panel-detalle-resultado'));
+      expect(panelDetalle).toBeTruthy();
+      expect(panelDetalle.nativeElement.textContent).toContain('Ronda 1');
+      expect(panelDetalle.nativeElement.textContent).toContain('Obelisco');
+      expect(panelDetalle.nativeElement.textContent).toContain('Dibu Martínez');
+    });
+
+    it('muestra mensaje informativo cuando no hay historial local tras recarga', () => {
+      host.historialRondas.set([]);
+      host.ultimoResultado.set(null);
+      host.expandidoInicial.set(true);
+      fixture.detectChanges();
+
+      const panelDetalle = fixture.debugElement.query(By.css('#panel-detalle-resultado'));
+      expect(panelDetalle).toBeTruthy();
+      expect(panelDetalle.nativeElement.textContent).toContain(
+        'Detalle ronda a ronda no disponible tras recargar la partida.',
+      );
+    });
+
+    it('muestra el último resultado disponible si el historial está vacío', () => {
+      host.historialRondas.set([]);
+      host.ultimoResultado.set(rondasMock[0]);
+      host.expandidoInicial.set(true);
+      fixture.detectChanges();
+
+      const panelDetalle = fixture.debugElement.query(By.css('#panel-detalle-resultado'));
+      expect(panelDetalle).toBeTruthy();
+      expect(panelDetalle.nativeElement.textContent).toContain('Ronda 1');
+      expect(panelDetalle.nativeElement.textContent).toContain('Obelisco');
+    });
   });
 });
