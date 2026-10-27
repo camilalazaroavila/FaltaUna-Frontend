@@ -19,7 +19,7 @@ import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-cart
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { IndicadorCategoriasHabilidad } from '@compartidos/componentes/cartas/indicador-categorias-habilidad/indicador-categorias-habilidad';
 import type { Carta, EfectoCategoriaCarta } from '@modelos/carta.model';
-import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre, normalizarUrlImagen } from '@modelos/carta.model';
 import type {
   EstadoPuntajeZona,
   EstadoSlot,
@@ -30,10 +30,12 @@ import type {
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
-const IMAGEN_RESPALDO = 'imagenes/grido.jpg';
+const IMAGEN_RESPALDO_IZQ = '/imagenes/zona-generica.svg';
+const IMAGEN_RESPALDO_DER = '/imagenes/zona-generica-derecha.svg';
 
 /** Visibilidad en segundos del delta cuando no se anima (movimiento reducido). */
 const MS_DELTA_ESTATICO = 2000;
+
 
 interface SlotVista {
   readonly indice: number;
@@ -127,78 +129,7 @@ export class Zona implements AfterViewInit {
     this.retirarCarta.emit(carta);
   }
 
-  private arrastrandoProvisional?: {
-    carta: Carta;
-    origenY: number;
-    origenX: number;
-    punteroId: number;
-    huboArrastre: boolean;
-  };
-
-  protected alPulsarCartaProvisional(carta: Carta, evento: PointerEvent): void {
-    if (evento.button !== 0 && evento.pointerType === 'mouse') return;
-    this.arrastrandoProvisional = {
-      carta,
-      origenY: evento.clientY,
-      origenX: evento.clientX,
-      punteroId: evento.pointerId,
-      huboArrastre: false,
-    };
-    try {
-      (evento.currentTarget as HTMLElement).setPointerCapture(evento.pointerId);
-    } catch {
-      // Ignorar si no se puede capturar
-    }
-  }
-
-  protected alMoverCartaProvisional(evento: PointerEvent): void {
-    if (!this.arrastrandoProvisional || evento.pointerId !== this.arrastrandoProvisional.punteroId) {
-      return;
-    }
-    const distancia = Math.hypot(
-      evento.clientX - this.arrastrandoProvisional.origenX,
-      evento.clientY - this.arrastrandoProvisional.origenY,
-    );
-    if (distancia > 15) {
-      this.arrastrandoProvisional.huboArrastre = true;
-    }
-  }
-
-  protected alSoltarCartaProvisional(evento: PointerEvent): void {
-    if (!this.arrastrandoProvisional || evento.pointerId !== this.arrastrandoProvisional.punteroId) {
-      return;
-    }
-    try {
-      (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
-    } catch {
-      // Ignorar
-    }
-
-    const { carta, huboArrastre, origenY } = this.arrastrandoProvisional;
-    this.arrastrandoProvisional = undefined;
-
-    // Si se arrastró hacia abajo (hacia la mano) al menos 15px, retirar la carta
-    if (huboArrastre && evento.clientY > origenY + 15) {
-      evento.stopPropagation();
-      this.retirarCarta.emit(carta);
-    }
-  }
-
-  protected alCancelarCartaProvisional(evento: PointerEvent): void {
-    if (this.arrastrandoProvisional && evento.pointerId === this.arrastrandoProvisional.punteroId) {
-      try {
-        (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
-      } catch {
-        // Ignorar
-      }
-      this.arrastrandoProvisional = undefined;
-    }
-  }
-
   protected alClickCarta(carta: Carta): void {
-    if (this.arrastrandoProvisional?.huboArrastre) {
-      return;
-    }
     this.verCarta.emit(carta);
   }
 
@@ -215,9 +146,20 @@ export class Zona implements AfterViewInit {
     source: () => this.zona().imagenUrl,
     computation: () => false,
   });
-  protected readonly imagen = computed(() =>
-    this.falloImagen() ? IMAGEN_RESPALDO : this.zona().imagenUrl,
-  );
+
+  protected alFallarImagen(): void {
+    if (this.falloImagen()) {
+      return;
+    }
+    this.falloImagen.set(true);
+  }
+
+  protected readonly imagen = computed(() => {
+    const url = normalizarUrlImagen(this.zona().imagenUrl);
+    const respaldo = this.lugar() === 'derecha' ? IMAGEN_RESPALDO_DER : IMAGEN_RESPALDO_IZQ;
+    return this.falloImagen() || !url ? respaldo : url;
+  });
+
 
   /** Decisión visual (mock): el marco se destaca cuando el lado propio va ganando. */
   protected readonly marcoDestacado = computed(() => this.estadoPropio() === 'ganando');
@@ -458,11 +400,11 @@ export class Zona implements AfterViewInit {
     }
 
     if (efectos.length === 0 && zona.bonusPorCategoria) {
-      for (const [, bonus] of Object.entries(zona.bonusPorCategoria)) {
+      for (const [nombreCat, bonus] of Object.entries(zona.bonusPorCategoria)) {
         if (bonus !== 0) {
           efectos.push({
             tipo: bonus > 0 ? 'sube' : 'baja',
-            categoria: zona.efecto?.categoria ?? CATEGORIA_POR_DEFECTO,
+            categoria: categoriaCartaDesdeNombre(nombreCat),
             valor: bonus,
           });
         }

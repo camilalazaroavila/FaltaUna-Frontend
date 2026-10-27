@@ -88,7 +88,7 @@ describe('CartaComponent', () => {
     expect(fondo?.getAttribute('src')).toBeTruthy();
 
     const imagen = cartaEl.querySelector<HTMLImageElement>('.carta__imagen');
-    expect(imagen?.getAttribute('src')).toBe('imagenes/grido.jpg');
+    expect(imagen?.getAttribute('src')).toBe('/imagenes/grido.jpg');
     expect(imagen?.getAttribute('alt')).toBe('Danonino');
 
     const numeros = cartaEl.querySelectorAll('.carta__numero');
@@ -231,4 +231,36 @@ describe('CartaComponent · mapeo de assets por rareza y categoría', () => {
     const host = fixture.nativeElement as HTMLElement;
     expect(host.querySelector('.carta__indicador-efectos')).toBeNull();
   });
+
+  it('no muestra ningún badge o indicador de diferencia de poder en la carta', () => {
+    conCarta({
+      ...cartaComun,
+      poderBase: 4,
+      atributoDerecho: 8,
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.carta__poder-diferencia')).toBeNull();
+    expect(host.textContent).not.toContain('+4');
+  });
+
+  it('muestra el reverso cuando la carta está oculta', () => {
+    conCarta({
+      ...cartaComun,
+      oculta: true,
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.carta__reverso')).not.toBeNull();
+    expect(host.querySelector('.carta__marco')).toBeNull();
+  });
+
+  it('muestra el fallback con categoría cuando la carta no tiene imagen', () => {
+    conCarta({
+      ...cartaComun,
+      imagenUrl: '',
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.carta__imagen-fallback')).not.toBeNull();
+    expect(host.querySelector('.carta__imagen')).toBeNull();
+  });
 });
+

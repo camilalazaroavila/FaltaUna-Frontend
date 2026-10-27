@@ -2,31 +2,91 @@
   display: block;
 }
 
-.pantalla-resultado-tarjeta {
+.pantalla-resultado-contenedor--flotante {
+  position: fixed;
+  inset-block-start: 0.5rem;
+  inset-inline: 0;
+  z-index: 45;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  padding-inline: 0.5rem;
+}
+
+.pantalla-resultado-contenedor--incrustado {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.pantalla-resultado-panel {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 58rem;
   background-color: var(--color-superficie-elevada);
-  border-color: var(--color-borde-default);
-  color: var(--color-texto-primario);
-  animation: aparicion-tarjeta-resultado 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.pantalla-resultado-tarjeta--victoria {
-  border-color: var(--color-exito);
-  box-shadow: 0 0 24px rgba(34, 197, 94, 0.25), 4px 6px 0 var(--color-sombra-cartoon);
-}
-
-.pantalla-resultado-tarjeta--derrota {
-  border-color: var(--color-error);
-  box-shadow: 0 0 24px rgba(239, 68, 68, 0.2), 4px 6px 0 var(--color-sombra-cartoon);
-}
-
-.pantalla-resultado-tarjeta--empate {
-  border-color: var(--color-advertencia);
-  box-shadow: 0 0 24px rgba(245, 158, 11, 0.2), 4px 6px 0 var(--color-sombra-cartoon);
-}
-
-.pantalla-resultado-tarjeta--finalizada {
-  border-color: var(--color-borde-default);
+  border: 2px solid var(--color-borde-default);
+  border-radius: 1rem;
   box-shadow: 4px 6px 0 var(--color-sombra-cartoon);
+  color: var(--color-texto-primario);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pantalla-resultado-panel--victoria {
+  border-color: var(--color-exito);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.2), 4px 6px 0 var(--color-sombra-cartoon);
+}
+
+.pantalla-resultado-panel--derrota {
+  border-color: var(--color-error);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.18), 4px 6px 0 var(--color-sombra-cartoon);
+}
+
+.pantalla-resultado-panel--empate {
+  border-color: var(--color-advertencia);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.18), 4px 6px 0 var(--color-sombra-cartoon);
+}
+
+.pantalla-resultado-panel--finalizada {
+  border-color: var(--color-borde-default);
+}
+
+.pantalla-resultado-barra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .pantalla-resultado-barra {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.875rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+.pantalla-resultado-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border-radius: 0.625rem;
+  border: 1.5px solid var(--color-borde-default);
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .pantalla-resultado-icono {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    border-radius: 0.75rem;
+  }
 }
 
 .pantalla-resultado-icono--victoria {
@@ -50,22 +110,44 @@
 .pantalla-resultado-icono--finalizada {
   background-color: var(--color-fondo-hundido);
   color: var(--color-texto-primario);
-  border-color: var(--color-borde-default);
 }
 
-@keyframes aparicion-tarjeta-resultado {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+.pantalla-resultado-badge--victoria {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: var(--color-exito);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.pantalla-resultado-badge--derrota {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--color-error);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.pantalla-resultado-badge--empate {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: var(--color-advertencia-texto);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.pantalla-resultado-desglose {
+  border-top: 1px solid var(--color-borde-default);
+  padding: 0.75rem;
+  max-height: 48vh;
+  overflow-y: auto;
+}
+
+@media (min-width: 640px) {
+  .pantalla-resultado-desglose {
+    padding: 1rem;
+    max-height: 380px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pantalla-resultado-tarjeta {
-    animation: none;
+  .pantalla-resultado-panel,
+  .boton-alternar-detalle svg {
+    transition: none !important;
+    animation: none !important;
   }
 }
