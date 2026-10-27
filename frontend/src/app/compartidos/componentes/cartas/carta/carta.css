@@ -72,7 +72,7 @@
   color: var(--carta-color-numero);
   font-family: var(--fuente-titulo);
   font-weight: 700;
-  font-size: 15cqi;
+  font-size: clamp(0.75rem, 15cqi, 1.35rem);
   line-height: 1;
   text-align: center;
   user-select: none;
@@ -155,7 +155,7 @@
   overflow: hidden;
   color: var(--carta-color-nombre);
   font-family: var(--fuente-titulo);
-  font-size: 12cqi;
+  font-size: clamp(0.625rem, 12cqi, 0.95rem);
   font-style: italic;
   font-weight: 700;
   line-height: 1.08;
@@ -180,7 +180,6 @@
 
 .carta__estrella-slot {
   width: 14%;
-  height: auto;
   aspect-ratio: 112.62 / 109.03;
 }
 
@@ -203,11 +202,6 @@
 
 :host(.carta--legendaria) .carta__imagen-wrapper {
   border-color: var(--carta-legendaria-acento);
-}
-
-@container (max-width: 8.75rem) {
-  .carta__numero { font-size: 8cqi; }
-  .carta__nombre { font-size: 10cqi; }
 }
 
 .carta__imagen-fallback {
