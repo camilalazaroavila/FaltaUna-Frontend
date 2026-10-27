@@ -3,18 +3,24 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  OnDestroy,
   computed,
   inject,
   input,
   linkedSignal,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import { Confeti } from '@compartidos/componentes/confeti/confeti';
 import type { ResultadoPartidaApi, ResultadoRonda } from '@modelos/partida.model';
 import { GsapService } from '@servicios/gsap.service';
 
 export type TipoResultadoVisual = 'victoria' | 'derrota' | 'empate' | 'finalizada';
+
+/** Duración en ms de la celebración heroica destacada. Decisión tomada, a revisar: 5000ms. */
+const DURACION_HEROICA_MS = 5000;
 
 /**
  * Panel superior no bloqueante de fin de partida (Victoria, Derrota, Empate o Neutro).
@@ -26,12 +32,12 @@ export type TipoResultadoVisual = 'victoria' | 'derrota' | 'empate' | 'finalizad
 @Component({
   selector: 'app-pantalla-resultado',
   standalone: true,
-  imports: [Boton],
+  imports: [Boton, Confeti],
   templateUrl: './pantalla-resultado.html',
   styleUrl: './pantalla-resultado.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PantallaResultado implements AfterViewInit {
+export class PantallaResultado implements AfterViewInit, OnDestroy {
   private readonly gsapServicio = inject(GsapService);
 
   readonly resultado = input<ResultadoPartidaApi | null>(null);
@@ -46,11 +52,24 @@ export class PantallaResultado implements AfterViewInit {
   readonly volverAlMenu = output<void>();
 
   private readonly panelRef = viewChild<ElementRef<HTMLElement>>('panelRef');
+  private readonly confeti = viewChild(Confeti);
+
+  /** Fase heroica destacada inicial de 5s para que la victoria/derrota sea evidente. */
+  readonly faseHeroica = signal<boolean>(false);
+  private temporizadorHeroico?: ReturnType<typeof setTimeout>;
 
   readonly expandido = linkedSignal({
     source: () => this.expandidoInicial(),
     computation: (inicial) => inicial,
   });
+
+  protected terminarFaseHeroica(): void {
+    if (this.temporizadorHeroico) {
+      clearTimeout(this.temporizadorHeroico);
+      this.temporizadorHeroico = undefined;
+    }
+    this.faseHeroica.set(false);
+  }
 
   protected alternarDetalle(): void {
     this.expandido.update((v) => !v);
@@ -167,6 +186,23 @@ export class PantallaResultado implements AfterViewInit {
       return;
     }
 
+    // Celebración heroica inicial durante 5 segundos para destacar el resultado
+    if (!this.gsapServicio.movimientoReducido()) {
+      this.faseHeroica.set(true);
+      this.temporizadorHeroico = setTimeout(() => {
+        this.terminarFaseHeroica();
+      }, DURACION_HEROICA_MS);
+
+      if (this.tipo() === 'victoria' && typeof window !== 'undefined') {
+        setTimeout(() => {
+          this.confeti()?.lanzar(window.innerWidth / 2, window.innerHeight * 0.4, {
+            cantidad: 90,
+            alcance: 360,
+          });
+        }, 120);
+      }
+    }
+
     const panel = this.panelRef()?.nativeElement;
     if (!panel) {
       return;
@@ -184,6 +220,13 @@ export class PantallaResultado implements AfterViewInit {
         delay: demora,
         ease: 'power2.out',
       });
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.temporizadorHeroico) {
+      clearTimeout(this.temporizadorHeroico);
+      this.temporizadorHeroico = undefined;
     }
   }
 }

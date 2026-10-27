@@ -98,8 +98,72 @@
     }
 }
 
-@container (max-width: 12rem) {
-    .zona-etiqueta {
-        display: none;
+.burbuja-puntaje {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 40;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-family: var(--fuente-titulo);
+    font-size: clamp(0.75rem, 12cqi, 0.95rem);
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    animation: flotarBurbuja 1.1s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+.burbuja-puntaje--propio {
+    background-color: var(--color-teal-hundido);
+    color: var(--color-exito);
+    border: 2px solid var(--color-exito);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6), 0 4px 12px rgba(34, 197, 94, 0.45);
+}
+
+.burbuja-puntaje--rival {
+    background-color: var(--color-teal-hundido);
+    color: var(--color-error);
+    border: 2px dashed var(--color-error);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6), 0 4px 12px rgba(239, 68, 68, 0.45);
+}
+
+.burbuja-puntaje__icono {
+    font-size: 0.7rem;
+}
+
+.burbuja-puntaje__numero {
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+}
+
+@keyframes flotarBurbuja {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0.4rem) scale(0.7);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1.15);
+    }
+    75% {
+        opacity: 1;
+        transform: translate(-50%, -1.8rem) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -2.6rem) scale(0.9);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .burbuja-puntaje {
+        animation: none !important;
+        transform: translate(-50%, -0.25rem) scale(1) !important;
+        opacity: 1 !important;
     }
 }

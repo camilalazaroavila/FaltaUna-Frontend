@@ -1,3 +1,99 @@
+<app-confeti />
+
+@if (faseHeroica()) {
+  <div
+    class="pantalla-resultado-heroica fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm cursor-pointer"
+    (click)="terminarFaseHeroica()"
+    (keydown.enter)="terminarFaseHeroica()"
+    (keydown.space)="terminarFaseHeroica()"
+    (keydown.escape)="terminarFaseHeroica()"
+    tabindex="0"
+    role="button"
+    aria-label="Cerrar presentación heroica y ver tablero"
+  >
+    <div
+      class="pantalla-resultado-heroica-tarjeta relative max-w-md w-full rounded-2xl border-4 p-6 sm:p-8 text-center shadow-2xl transition-transform"
+      [class.pantalla-resultado-heroica-tarjeta--victoria]="tipo() === 'victoria'"
+      [class.pantalla-resultado-heroica-tarjeta--derrota]="tipo() === 'derrota'"
+      [class.pantalla-resultado-heroica-tarjeta--empate]="tipo() === 'empate'"
+      [class.pantalla-resultado-heroica-tarjeta--finalizada]="tipo() === 'finalizada'"
+    >
+      <div
+        class="inline-flex items-center justify-center size-20 rounded-2xl mb-4 border-2 shadow-inner"
+        [class.bg-exito]="tipo() === 'victoria'"
+        [class.text-exito-sobre]="tipo() === 'victoria'"
+        [class.border-exito-borde]="tipo() === 'victoria'"
+        [class.bg-error]="tipo() === 'derrota'"
+        [class.text-error-sobre]="tipo() === 'derrota'"
+        [class.border-error-borde]="tipo() === 'derrota'"
+        [class.bg-advertencia]="tipo() === 'empate'"
+        [class.text-advertencia-sobre]="tipo() === 'empate'"
+        [class.border-advertencia-borde]="tipo() === 'empate'"
+        [class.bg-fondo-hundido]="tipo() === 'finalizada'"
+        [class.text-texto-primario]="tipo() === 'finalizada'"
+        [class.border-borde-default]="tipo() === 'finalizada'"
+      >
+        @if (tipo() === 'victoria') {
+          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        } @else if (tipo() === 'derrota') {
+          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="m15 9-6 6" />
+            <path d="m9 9 6 6" />
+          </svg>
+        } @else if (tipo() === 'empate') {
+          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M8 12h8" />
+          </svg>
+        } @else {
+          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        }
+      </div>
+
+      <h1
+        class="font-titulo text-3xl sm:text-4xl uppercase tracking-wider mb-2"
+        [class.text-exito]="tipo() === 'victoria'"
+        [class.text-error]="tipo() === 'derrota'"
+        [class.text-advertencia-texto]="tipo() === 'empate'"
+        [class.text-texto-primario]="tipo() === 'finalizada'"
+      >
+        {{ titulo() }}
+      </h1>
+
+      <p class="text-sm sm:text-base text-texto-secundario mb-4 leading-snug">
+        {{ subtitulo() }}
+      </p>
+
+      <div class="inline-flex items-center justify-center gap-3 bg-fondo-hundido border border-borde-default rounded-xl px-4 py-2 mb-4">
+        <span class="text-xs uppercase font-bold text-texto-secundario">{{ nombreJugador() }}</span>
+        <span class="font-titulo text-2xl tabular-nums text-texto-primario">{{ puntosPropio() }}</span>
+        <span class="text-texto-secundario font-bold">:</span>
+        <span class="font-titulo text-2xl tabular-nums text-texto-primario">{{ puntosRival() }}</span>
+        <span class="text-xs uppercase font-bold text-texto-secundario">{{ nombreRival() }}</span>
+      </div>
+
+      <p class="text-xs sm:text-sm text-texto-primario mb-4 font-medium">
+        {{ motivoTexto() }}
+      </p>
+
+      <span class="block text-[11px] uppercase tracking-widest text-texto-secundario opacity-75">
+        Hacé clic o tocá una tecla para continuar al tablero
+      </span>
+    </div>
+  </div>
+}
+
 <div
   class="pantalla-resultado-contenedor w-full"
   [class.pantalla-resultado-contenedor--flotante]="!modoIncrustado()"

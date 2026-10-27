@@ -147,4 +147,75 @@ describe('Tablero', () => {
       document.body.removeChild(contenedor);
     }
   });
+
+  describe('Conteo secuencial de ronda con burbujas y botón saltar', () => {
+    it('bloquea acciones y muestra botón saltar al iniciar el conteo', () => {
+      const emitSpy = jest.spyOn(component.conteoCambio, 'emit');
+
+      component.iniciarConteoSecuencial({
+        numero: 1,
+        puntosPropio: 20,
+        puntosRival: 15,
+        ganador: 'propio',
+        motivo: null,
+        gane: true,
+        terminada: false,
+        zonas: [
+          {
+            zonaPartidaId: 1,
+            nombreZona: 'Obelisco',
+            propio: 15,
+            rival: 10,
+            puntosGanadosPropio: 20,
+            puntosGanadosRival: 0,
+            ganador: 'propio',
+          },
+        ],
+        cartasReveladasRival: [],
+      });
+      fixture.detectChanges();
+
+      expect(component.enConteo()).toBe(true);
+      expect(emitSpy).toHaveBeenCalledWith(true);
+
+      const botonSaltar = fixture.nativeElement.querySelector('.boton-saltar');
+      expect(botonSaltar).toBeTruthy();
+
+      // Durante el conteo las cartas no deben poder jugarse ni arrastrarse
+      const totalMano = servicio.manoPropia().length;
+      component['alJugarEnSlot']('izquierda', 0);
+      expect(servicio.manoPropia()).toHaveLength(totalMano);
+    });
+
+    it('libera el bloqueo y apaga burbujas al pulsar Saltar o presionar Escape', () => {
+      const emitSpy = jest.spyOn(component.conteoCambio, 'emit');
+
+      component.iniciarConteoSecuencial({
+        numero: 2,
+        puntosPropio: 40,
+        puntosRival: 30,
+        ganador: 'propio',
+        motivo: null,
+        gane: true,
+        terminada: false,
+        zonas: [],
+        cartasReveladasRival: [],
+      });
+      fixture.detectChanges();
+
+      expect(component.enConteo()).toBe(true);
+
+      // Simular tecla Escape
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      component.saltarConteo();
+      fixture.detectChanges();
+
+      expect(component.enConteo()).toBe(false);
+      expect(component.burbujaActiva()).toBeNull();
+      expect(emitSpy).toHaveBeenCalledWith(false);
+
+      const botonSaltar = fixture.nativeElement.querySelector('.boton-saltar');
+      expect(botonSaltar).toBeNull();
+    });
+  });
 });
