@@ -168,40 +168,20 @@ describe('Zona', () => {
       expect(spyRetirar).toHaveBeenCalledWith(carta);
     });
 
-    it('al arrastrar una carta provisoria hacia abajo, emite retirarCarta', () => {
+    it('al hacer clic en una carta de la zona, emite verCarta', () => {
       const carta = cartaMock({ id: 'prov-1', nombre: 'Carta Prov' });
       fixture.componentRef.setInput('cartasPropias', [carta, null, null, null, null, null]);
-      fixture.componentRef.setInput('esProvisionalFn', (c: Carta) => c.id === 'prov-1');
       fixture.detectChanges();
 
-      const spyRetirar = jest.fn();
-      component.retirarCarta.subscribe(spyRetirar);
+      const spyVer = jest.fn();
+      component.verCarta.subscribe(spyVer);
 
-      // Simular pointerdown, pointermove hacia abajo (+40px), y pointerup
-      component['alPulsarCartaProvisional'](carta, {
-        button: 0,
-        pointerType: 'mouse',
-        pointerId: 1,
-        clientX: 100,
-        clientY: 100,
-        currentTarget: { setPointerCapture: jest.fn() },
-      } as any);
+      const botonCarta = fixture.nativeElement.querySelector(
+        'button[aria-label="Ver carta Carta Prov"]',
+      ) as HTMLButtonElement;
+      botonCarta.click();
 
-      component['alMoverCartaProvisional']({
-        pointerId: 1,
-        clientX: 100,
-        clientY: 140,
-      } as any);
-
-      component['alSoltarCartaProvisional']({
-        pointerId: 1,
-        clientX: 100,
-        clientY: 140,
-        stopPropagation: jest.fn(),
-        currentTarget: { releasePointerCapture: jest.fn() },
-      } as any);
-
-      expect(spyRetirar).toHaveBeenCalledWith(carta);
+      expect(spyVer).toHaveBeenCalledWith(carta);
     });
 
     it('no muestra el botón de quitar en cartas ya confirmadas', () => {
@@ -241,4 +221,29 @@ describe('Zona', () => {
       expect(dobleGsap.gsap.fromTo).not.toHaveBeenCalled();
     });
   });
+
+  it('usa la imagen genérica de respaldo izquierda cuando la zona no tiene foto o falla', () => {
+    fixture.componentRef.setInput('lugar', 'izquierda');
+    fixture.componentRef.setInput('zona', {
+      ...ZONAS_MOCK[0],
+      imagenUrl: '',
+    });
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('.zona-foto img') as HTMLImageElement;
+    expect(img.getAttribute('src')).toBe('/imagenes/zona-generica.svg');
+  });
+
+  it('usa la imagen genérica de respaldo derecha cuando la zona derecha no tiene foto', () => {
+    fixture.componentRef.setInput('lugar', 'derecha');
+    fixture.componentRef.setInput('zona', {
+      ...ZONAS_MOCK[1],
+      imagenUrl: '',
+    });
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('.zona-foto img') as HTMLImageElement;
+    expect(img.getAttribute('src')).toBe('/imagenes/zona-generica-derecha.svg');
+  });
 });
+
