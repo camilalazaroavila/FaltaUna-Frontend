@@ -41,12 +41,12 @@ export class Landing {
   protected readonly urlLogo = urlLogo;
 
   protected readonly marcas: MarcaCarrusel[] = [
-    { nombre: 'Levi\'s', logoUrl: '/imagenes/logos-landing/levis.png' },
-    { nombre: 'Adidas', logoUrl: '/imagenes/logos-landing/adidas.png' },
-    { nombre: 'Converse', logoUrl: '/imagenes/logos-landing/converse.png' },
-    { nombre: 'Tommy', logoUrl: '/imagenes/logos-landing/tommy.png' },
-    { nombre: 'McDonald\'s', logoUrl: '/imagenes/logos-landing/mcdonalds.png' },
-    { nombre: 'Grido', logoUrl: '/imagenes/logos-landing/grido.png' },
+    { nombre: 'Ambrosia', logoUrl: '/imagenes/logos-landing/logo1.png' },
+    { nombre: 'Axis', logoUrl: '/imagenes/logos-landing/logo2.png' },
+    { nombre: 'Harmony', logoUrl: '/imagenes/logos-landing/logo3.png' },
+    { nombre: 'Valiant', logoUrl: '/imagenes/logos-landing/logo4.png' },
+    { nombre: 'Vortex', logoUrl: '/imagenes/logos-landing/logo5.png' },
+    { nombre: 'Flora', logoUrl: '/imagenes/logos-landing/logo6.png' },
   ];
 
   protected readonly pasosFunciona: PasoLanding[] = [

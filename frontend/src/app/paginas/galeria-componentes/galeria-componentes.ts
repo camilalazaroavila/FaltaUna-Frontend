@@ -70,6 +70,10 @@ export class GaleriaComponentes implements OnDestroy {
     });
   }
 
+  protected onSeleccionarCupon(evento: unknown): void {
+  console.log('Cupón seleccionado', evento);
+}
+
   ngOnDestroy(): void {
     if (this.modoPrevio === null) {
       document.documentElement.removeAttribute('data-modo');
