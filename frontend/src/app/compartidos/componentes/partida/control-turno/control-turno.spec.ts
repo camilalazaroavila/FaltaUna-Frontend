@@ -72,6 +72,18 @@ describe('ControlTurno', () => {
     expect(boton.disabled).toBe(true);
   });
 
+  it('muestra "Fin de la partida", sin spinner y deshabilitado cuando terminada es true', () => {
+    fixture.componentRef.setInput('estado', 'resolviendo');
+    fixture.componentRef.setInput('terminada', true);
+    fixture.detectChanges();
+    const boton = fixture.nativeElement.querySelector('button[app-boton]') as HTMLButtonElement;
+    const textoLargo = fixture.nativeElement.querySelector('.control-texto--largo')?.textContent?.trim();
+    expect(textoLargo).toBe('Fin de la partida');
+    expect(boton.disabled).toBe(true);
+    expect(component.accionBoton()).toBe('Fin de la partida');
+    expect(component.resolviendo()).toBe(false);
+  });
+
   it('muestra solo el botón de Rendirse debajo del botón principal', () => {
     const botones = fixture.nativeElement.querySelectorAll('button');
     const textos = Array.from(botones).map((b) => (b as HTMLButtonElement).textContent?.trim());

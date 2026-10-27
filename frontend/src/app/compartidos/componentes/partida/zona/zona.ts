@@ -30,6 +30,7 @@ import type {
 import type { PasoBurbuja } from '@compartidos/componentes/partida/conteo-ronda/secuencia-conteo-ronda';
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
+import { SONIDOS_PARTIDA, SonidoService } from '@servicios/sonido.service';
 
 const IMAGEN_RESPALDO_IZQ = '/imagenes/zona-generica.svg';
 const IMAGEN_RESPALDO_DER = '/imagenes/zona-generica-derecha.svg';
@@ -61,6 +62,13 @@ const claseDelta = (delta: number): string =>
     delta > 0 ? 'bg-exito text-exito-sobre' : delta < 0 ? 'bg-error text-error-sobre' : 'hidden',
   ].join(' ');
 
+/** Información de una animación de impacto visual cuando una carta aumenta o reduce poder en mesa. */
+export interface InfoModificadorPoder {
+  readonly tipo: 'aumento' | 'reduccion';
+  readonly delta: number;
+  readonly id: number;
+}
+
 /**
  * Un lugar del tablero: foto de la zona con marco, puntaje de cada lado y
  * 6 slots por lado (2 filas x 3). El lado propio SIEMPRE va abajo.
@@ -82,6 +90,7 @@ const claseDelta = (delta: number): string =>
 })
 export class Zona implements AfterViewInit {
   private readonly gsapServicio = inject(GsapService);
+  private readonly sonido = inject(SonidoService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementoRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -189,6 +198,10 @@ export class Zona implements AfterViewInit {
   private temporizador?: ReturnType<typeof setTimeout>;
   private cartasRivalPrevias?: SlotsLado;
 
+  /** Modificadores de poder activos por slot (controlados por la secuencia de resolución). */
+  readonly modificadoresRival = input<Record<number, InfoModificadorPoder>>({});
+  readonly modificadoresPropio = input<Record<number, InfoModificadorPoder>>({});
+
   constructor() {
     this.destroyRef.onDestroy(() => clearTimeout(this.temporizador));
 
@@ -251,6 +264,38 @@ export class Zona implements AfterViewInit {
     });
   }
 
+  protected esSlotAumentadoRival(indice: number): boolean {
+    return this.modificadoresRival()[indice]?.tipo === 'aumento';
+  }
+
+  protected esSlotDebuffeadoRival(indice: number): boolean {
+    return this.modificadoresRival()[indice]?.tipo === 'reduccion';
+  }
+
+  protected esSlotAumentadoPropio(indice: number): boolean {
+    return this.modificadoresPropio()[indice]?.tipo === 'aumento';
+  }
+
+  protected esSlotDebuffeadoPropio(indice: number): boolean {
+    return this.modificadoresPropio()[indice]?.tipo === 'reduccion';
+  }
+
+  protected esAumentoPoder(carta: Carta): boolean {
+    return typeof carta.poderBase === 'number' && carta.atributoDerecho > carta.poderBase;
+  }
+
+  protected esReduccionPoder(carta: Carta): boolean {
+    return typeof carta.poderBase === 'number' && carta.atributoDerecho < carta.poderBase;
+  }
+
+  protected textoModificadorPoder(carta: Carta): string {
+    if (typeof carta.poderBase !== 'number') {
+      return '';
+    }
+    const delta = carta.atributoDerecho - carta.poderBase;
+    return delta > 0 ? `▲ +${delta}` : `▼ ${delta}`;
+  }
+
   ngAfterViewInit(): void {
     this.contexto = this.gsapServicio.crearContexto(
       this.elementoRef.nativeElement,
@@ -295,6 +340,7 @@ export class Zona implements AfterViewInit {
       ? 'var(--zona-marco-destacado)'
       : 'var(--zona-marco)';
     this.deltaEstatico.set(false);
+    this.sonido.reproducir(SONIDOS_PARTIDA.rotarZona);
 
     this.contexto?.add(() => {
       const { gsap } = this.gsapServicio;
