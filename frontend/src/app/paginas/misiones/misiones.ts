@@ -27,6 +27,7 @@ import type { SobreRespuesta } from '@modelos/sobre.model';
 import { AuthService } from '@servicios/auth.service';
 import { MisionesService } from '@servicios/mision.services';
 import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
+import { SONIDOS_PARTIDA, SonidoService } from '@servicios/sonido.service';
 
 
 type CriterioOrdenPity = 'cercania' | 'nombre';
@@ -47,6 +48,7 @@ export class Misiones implements OnInit {
   private readonly servicio = inject(MisionesService);
   private readonly sobresService = inject(SobresService);
   private readonly authService = inject(AuthService);
+  private readonly sonido = inject(SonidoService);
 
   private readonly router = inject(Router);
 
@@ -248,6 +250,7 @@ export class Misiones implements OnInit {
     this.servicio.reclamar(id).subscribe({
       next: (recompensa) => {
         this.reclamando.set(null);
+        this.sonido.reproducir(SONIDOS_PARTIDA.misionCompletada);
         toast.success('¡Recompensa reclamada! Ya está en tu colección.');
         this.cargarMisiones();
         this.cargarInventario();

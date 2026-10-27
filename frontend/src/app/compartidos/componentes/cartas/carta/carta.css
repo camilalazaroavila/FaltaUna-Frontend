@@ -141,28 +141,32 @@
 .carta__nombre-wrapper {
   position: absolute;
   right: 4%;
-  bottom: 16%;
+  bottom: 15%;
   left: 4%;
   z-index: 2;
   display: flex;
   justify-content: center;
+  align-items: center;
+  max-height: 17%;
   transform: rotate(-3deg);
 }
 
 .carta__nombre {
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   max-width: 100%;
   overflow: hidden;
   color: var(--carta-color-nombre);
   font-family: var(--fuente-titulo);
-  font-size: 12cqi;
+  font-size: 11cqi;
   font-style: italic;
   font-weight: 700;
-  line-height: 1.08;
+  line-height: 1.05;
   text-align: center;
   text-transform: uppercase;
-  white-space: normal;
   overflow-wrap: break-word;
+  word-break: break-word;
   text-shadow: 0 0.08em 0.16em rgba(0, 0, 0, 0.65);
   user-select: none;
 }

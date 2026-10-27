@@ -8,6 +8,7 @@ import {
   effect,
   inject,
   input,
+  signal,
   viewChild,
 } from '@angular/core';
 import { porcentaje } from '@modelos/misiones.model';
@@ -53,6 +54,10 @@ export class BarraPuntos implements AfterViewInit {
   readonly maximo = input(100);
   readonly lado = input<LadoPartida>('propio');
   readonly delta = input<number | null>(null);
+  readonly cargando = input(false);
+
+  private readonly cargandoInterno = signal(false);
+  protected readonly enCarga = computed(() => this.cargando() || this.cargandoInterno());
 
   protected readonly movimientoReducido = this.gsapServicio.movimientoReducido;
   protected readonly porcentaje = computed(() => porcentaje(this.puntos(), this.maximo()));
@@ -61,7 +66,7 @@ export class BarraPuntos implements AfterViewInit {
   /** La barra propia se llena desde abajo; la del rival, desde arriba. */
   protected readonly clasesRelleno = computed(() =>
     [
-      'absolute inset-x-0.5 rounded-pildora transition-[height] duration-500 ease-out motion-reduce:transition-none',
+      'absolute inset-x-0.5 rounded-pildora transition-[height] duration-700 ease-out motion-reduce:transition-none',
       CLASES_RELLENO[this.lado()],
       this.esRival() ? 'top-0.5' : 'bottom-0.5',
     ].join(' '),
@@ -94,8 +99,23 @@ export class BarraPuntos implements AfterViewInit {
 
   private contexto?: ContextoGsap;
   private deltaAnterior?: number | null;
+  private puntosAnteriores?: number;
 
   constructor() {
+    effect(() => {
+      const p = this.puntos();
+      const ant = this.puntosAnteriores;
+      this.puntosAnteriores = p;
+
+      if (ant !== undefined && p > ant && !this.movimientoReducido()) {
+        this.cargandoInterno.set(true);
+        const t = setTimeout(() => {
+          this.cargandoInterno.set(false);
+        }, 1300);
+        this.destroyRef.onDestroy(() => clearTimeout(t));
+      }
+    });
+
     effect(() => {
       const delta = this.delta();
       const anterior = this.deltaAnterior;
@@ -123,18 +143,28 @@ export class BarraPuntos implements AfterViewInit {
     );
   }
 
-  /** El "+5" flota hacia arriba y se apaga: el elemento queda visible pero en opacidad 0. */
+  /** El "+5" se agranda con rebote, flota hacia arriba y se apaga de forma llamativa. */
   private animarDelta(objetivo: HTMLElement): void {
     const { gsap } = this.gsapServicio;
 
     gsap.fromTo(
       objetivo,
-      { y: 0, opacity: 1 },
+      { y: 6, scale: 0.7, opacity: 0 },
       {
-        y: -26,
-        opacity: 0,
-        duration: this.gsapServicio.duracionPartida('vuelo-carta'),
-        ease: 'power2.out',
+        y: -30,
+        scale: 1.3,
+        opacity: 1,
+        duration: 0.45,
+        ease: 'back.out(2)',
+        onComplete: () => {
+          gsap.to(objetivo, {
+            opacity: 0,
+            y: -44,
+            duration: 0.35,
+            delay: 0.45,
+            ease: 'power2.in',
+          });
+        },
         overwrite: true,
       },
     );

@@ -1875,9 +1875,38 @@ describe('PartidaServicio', () => {
 
       expect(servicio.lugares().izquierda.zona.imagenUrl).toBe('/imagenes/grido.jpg');
       expect(servicio.lugares().derecha.zona.imagenUrl).toBe('/imagenes/Sprite.png');
+    });
 
+    it('genera descripciones apropiadas para cartas con habilidades de posición y azar', () => {
+      const generar = (habilidad: any) =>
+        (servicio as any).generarDescripcionHabilidad(habilidad);
+
+      expect(
+        generar({ tipo: 'AUMENTAR_PODER_ALIADOS_CERCANOS', valor: 2 }),
+      ).toBe('+2 de poder a las cartas aliadas a su lado.');
+
+      expect(
+        generar({ tipo: 'BUFF_ALIADOS_CERCANOS', valor: 1 }),
+      ).toBe('+1 de poder a las cartas aliadas a su lado.');
+
+      expect(
+        generar({ tipo: 'AUMENTAR_PODER_ALIADO_ALEATORIO', valor: 2 }),
+      ).toBe('+2 de poder a una carta aliada aleatoria en esta zona.');
+
+      expect(
+        generar({ tipo: 'REDUCIR_PODER_RIVAL_ALEATORIO', valor: 1 }),
+      ).toBe('-1 de poder a una carta rival aleatoria en esta zona.');
+
+      expect(
+        generar({ tipo: 'AUMENTAR_PODER_MISMA_FILA', valor: 2 }),
+      ).toBe('+2 de poder a todas sus cartas en la misma fila de la ronda.');
+
+      expect(
+        generar({ tipo: 'REDUCIR_PODER_RIVAL_ENFRENTE', valor: 3 }),
+      ).toBe('-3 de poder a la carta rival que esté enfrente.');
     });
   });
 });
+
 
 

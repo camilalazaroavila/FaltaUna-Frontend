@@ -33,6 +33,7 @@ export class ControlTurno {
   readonly segundosRestantes = input.required<number>();
   readonly segundosTotales = input<number | undefined>(undefined);
   readonly estado = input<EstadoBotonListo>('jugando');
+  readonly terminada = input(false);
 
   readonly finalizar = output<void>();
   readonly abandonar = output<void>();
@@ -40,10 +41,10 @@ export class ControlTurno {
 
   private procesandoAccion = false;
 
-  protected readonly activo = computed(() => this.estado() === 'jugando');
-  protected readonly resolviendo = computed(() => this.estado() === 'resolviendo');
+  protected readonly activo = computed(() => !this.terminada() && this.estado() === 'jugando');
+  protected readonly resolviendo = computed(() => !this.terminada() && this.estado() === 'resolviendo');
   protected readonly enAdvertencia = computed(
-    () => this.segundosRestantes() <= SEGUNDOS_ADVERTENCIA,
+    () => !this.terminada() && this.segundosRestantes() <= SEGUNDOS_ADVERTENCIA,
   );
   protected readonly proporcion = computed(() => {
     const total = this.segundosTotales();
@@ -55,6 +56,9 @@ export class ControlTurno {
   );
 
   protected readonly accionBoton = computed(() => {
+    if (this.terminada()) {
+      return 'Fin de la partida';
+    }
     if (this.estado() === 'jugando') {
       return this.turno() >= this.totalTurnos() ? 'Ronda final' : 'Realizar';
     }
@@ -65,6 +69,9 @@ export class ControlTurno {
   });
 
   protected readonly accionBotonCorto = computed(() => {
+    if (this.terminada()) {
+      return 'Fin de partida';
+    }
     if (this.estado() === 'jugando') {
       return this.turno() >= this.totalTurnos() ? 'Final' : 'Realizar';
     }
@@ -75,6 +82,9 @@ export class ControlTurno {
   });
 
   protected readonly nombreAccesible = computed(() => {
+    if (this.terminada()) {
+      return 'Fin de la partida';
+    }
     const turno = this.turno();
     const total = this.totalTurnos();
 
@@ -91,6 +101,9 @@ export class ControlTurno {
   });
 
   protected readonly textoBoton = computed(() => {
+    if (this.terminada()) {
+      return 'Fin de la partida';
+    }
     return `${this.accionBoton()} ${this.contadorTurno()}`;
   });
 
@@ -99,6 +112,9 @@ export class ControlTurno {
    * el contador de turno n/6 nunca desaparece.
    */
   protected readonly textoBotonCorto = computed(() => {
+    if (this.terminada()) {
+      return 'Fin de partida';
+    }
     return `${this.accionBotonCorto()} ${this.contadorTurno()}`;
   });
   protected readonly clasesTiempo = computed(() =>

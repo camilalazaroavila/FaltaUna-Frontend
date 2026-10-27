@@ -11,13 +11,41 @@
           @if (b.lugar === lugar() && b.lado === 'rival' && b.indice === slot.indice) {
             <div
               class="burbuja-puntaje burbuja-puntaje--rival"
+              [class.burbuja-puntaje--aumento]="b.modificador === 'aumento'"
+              [class.burbuja-puntaje--reduccion]="b.modificador === 'reduccion'"
               role="status"
               [attr.aria-label]="'Aporte de rival: ' + b.poder"
             >
-              <span class="burbuja-puntaje__icono" aria-hidden="true">◆</span>
+              <span class="burbuja-puntaje__icono" aria-hidden="true">
+                @if (b.modificador === 'aumento') { ▲ }
+                @else if (b.modificador === 'reduccion') { ▼ }
+                @else { ◆ }
+              </span>
               <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
+              @if (b.modificador === 'aumento' && b.deltaPoder) {
+                <span class="burbuja-puntaje__delta text-exito font-bold text-[0.625rem] ml-0.5">(+{{ b.deltaPoder }})</span>
+              } @else if (b.modificador === 'reduccion' && b.deltaPoder) {
+                <span class="burbuja-puntaje__delta text-error font-bold text-[0.625rem] ml-0.5">({{ b.deltaPoder }})</span>
+              }
             </div>
           }
+        }
+        @if (modificadoresRival()[slot.indice]; as mod) {
+          <div
+            class="burbuja-impacto-poder"
+            [class.burbuja-impacto--aumento]="mod.tipo === 'aumento'"
+            [class.burbuja-impacto--reduccion]="mod.tipo === 'reduccion'"
+            role="status"
+            [attr.aria-label]="mod.tipo === 'aumento' ? 'Poder aumentado +' + mod.delta : 'Poder reducido ' + mod.delta"
+          >
+            <span class="burbuja-impacto__icono" aria-hidden="true">
+              @if (mod.tipo === 'aumento') { ▲ } @else { ▼ }
+            </span>
+            <span class="burbuja-impacto__texto">
+              <span class="burbuja-impacto__delta">{{ mod.delta > 0 ? '+' + mod.delta : mod.delta }}</span>
+              <span class="burbuja-impacto__etiqueta">PODER</span>
+            </span>
+          </div>
         }
         <app-slot-carta lado="rival" [estado]="slot.estado">
           @if (slot.carta; as carta) {
@@ -28,14 +56,30 @@
                 aria-label="Carta oculta del rival"
               ></span>
             } @else {
-              <button
-                type="button"
-                class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
-                [attr.aria-label]="'Ver carta ' + carta.nombre"
-                (click)="verCarta.emit(carta)"
+              <div
+                class="relative h-full w-full"
+                [class.slot-carta--debuffeada]="esSlotDebuffeadoRival(slot.indice)"
+                [class.slot-carta--aumentada]="esSlotAumentadoRival(slot.indice)"
               >
-                <app-carta [carta]="carta" />
-              </button>
+                <button
+                  type="button"
+                  class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
+                  [attr.aria-label]="'Ver carta ' + carta.nombre"
+                  (click)="verCarta.emit(carta)"
+                >
+                  <app-carta [carta]="carta" />
+                </button>
+                @if (carta.poderBase != null && carta.atributoDerecho !== carta.poderBase) {
+                  <span
+                    class="burbuja-modificador-sutil"
+                    [class.burbuja-modificador--aumento]="esAumentoPoder(carta)"
+                    [class.burbuja-modificador--reduccion]="esReduccionPoder(carta)"
+                    aria-hidden="true"
+                  >
+                    {{ textoModificadorPoder(carta) }}
+                  </span>
+                }
+              </div>
             }
           }
         </app-slot-carta>
@@ -154,17 +198,49 @@
           @if (b.lugar === lugar() && b.lado === 'propio' && b.indice === slot.indice) {
             <div
               class="burbuja-puntaje burbuja-puntaje--propio"
+              [class.burbuja-puntaje--aumento]="b.modificador === 'aumento'"
+              [class.burbuja-puntaje--reduccion]="b.modificador === 'reduccion'"
               role="status"
               [attr.aria-label]="'Tu aporte: ' + b.poder"
             >
-              <span class="burbuja-puntaje__icono" aria-hidden="true">★</span>
+              <span class="burbuja-puntaje__icono" aria-hidden="true">
+                @if (b.modificador === 'aumento') { ▲ }
+                @else if (b.modificador === 'reduccion') { ▼ }
+                @else { ★ }
+              </span>
               <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
+              @if (b.modificador === 'aumento' && b.deltaPoder) {
+                <span class="burbuja-puntaje__delta text-exito font-bold text-[0.625rem] ml-0.5">(+{{ b.deltaPoder }})</span>
+              } @else if (b.modificador === 'reduccion' && b.deltaPoder) {
+                <span class="burbuja-puntaje__delta text-error font-bold text-[0.625rem] ml-0.5">({{ b.deltaPoder }})</span>
+              }
             </div>
           }
         }
+        @if (modificadoresPropio()[slot.indice]; as mod) {
+          <div
+            class="burbuja-impacto-poder"
+            [class.burbuja-impacto--aumento]="mod.tipo === 'aumento'"
+            [class.burbuja-impacto--reduccion]="mod.tipo === 'reduccion'"
+            role="status"
+            [attr.aria-label]="mod.tipo === 'aumento' ? 'Poder aumentado +' + mod.delta : 'Poder reducido ' + mod.delta"
+          >
+            <span class="burbuja-impacto__icono" aria-hidden="true">
+              @if (mod.tipo === 'aumento') { ▲ } @else { ▼ }
+            </span>
+            <span class="burbuja-impacto__texto">
+              <span class="burbuja-impacto__delta">{{ mod.delta > 0 ? '+' + mod.delta : mod.delta }}</span>
+              <span class="burbuja-impacto__etiqueta">PODER</span>
+            </span>
+          </div>
+        }
         <app-slot-carta lado="propio" [estado]="slot.estado" (jugar)="jugarSlot.emit(slot.indice)">
           @if (slot.carta; as carta) {
-            <div class="relative h-full w-full">
+            <div
+              class="relative h-full w-full"
+              [class.slot-carta--debuffeada]="esSlotDebuffeadoPropio(slot.indice)"
+              [class.slot-carta--aumentada]="esSlotAumentadoPropio(slot.indice)"
+            >
               <button
                 type="button"
                 class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
@@ -173,6 +249,17 @@
               >
                 <app-carta [carta]="carta" />
               </button>
+
+              @if (carta.poderBase != null && carta.atributoDerecho !== carta.poderBase) {
+                <span
+                  class="burbuja-modificador-sutil"
+                  [class.burbuja-modificador--aumento]="esAumentoPoder(carta)"
+                  [class.burbuja-modificador--reduccion]="esReduccionPoder(carta)"
+                  aria-hidden="true"
+                >
+                  {{ textoModificadorPoder(carta) }}
+                </span>
+              }
 
               @if (esProvisionalFn()(carta)) {
                 <button
