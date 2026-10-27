@@ -57,4 +57,5 @@ export interface SobreItemUI {
   readonly categoria?: string | null;
   readonly marca?: string | null;
   readonly logoUrl?: string | null;
+  abierto?: boolean;
 }
