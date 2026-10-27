@@ -9,11 +9,24 @@
   <div class="zona-slots">
     @for (slot of slotsRival(); track slot.indice) {
       <div
-        class="zona-celda"
+        class="zona-celda relative"
         [attr.data-lugar]="lugar()"
         data-lado="rival"
         [attr.data-indice]="slot.indice"
       >
+        @if (burbujaActiva(); as b) {
+          @if (b.lugar === lugar() && b.lado === 'rival' && b.indice === slot.indice) {
+            <div
+              class="burbuja-puntaje burbuja-puntaje--rival"
+              role="status"
+              [attr.aria-label]="'Aporte de rival: ' + b.poder"
+            >
+              <span class="burbuja-puntaje__bando" aria-hidden="true">Rival</span>
+              <span class="burbuja-puntaje__icono" aria-hidden="true">◆</span>
+              <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
+            </div>
+          }
+        }
         <app-slot-carta lado="rival" [estado]="slot.estado">
           @if (slot.carta; as carta) {
             @if (carta.oculta) {
@@ -140,11 +153,24 @@
   <div class="zona-slots">
     @for (slot of slotsPropios(); track slot.indice) {
       <div
-        class="zona-celda"
+        class="zona-celda relative"
         [attr.data-lugar]="lugar()"
         data-lado="propio"
         [attr.data-indice]="slot.indice"
       >
+        @if (burbujaActiva(); as b) {
+          @if (b.lugar === lugar() && b.lado === 'propio' && b.indice === slot.indice) {
+            <div
+              class="burbuja-puntaje burbuja-puntaje--propio"
+              role="status"
+              [attr.aria-label]="'Tu aporte: ' + b.poder"
+            >
+              <span class="burbuja-puntaje__bando" aria-hidden="true">Vos</span>
+              <span class="burbuja-puntaje__icono" aria-hidden="true">★</span>
+              <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
+            </div>
+          }
+        }
         <app-slot-carta lado="propio" [estado]="slot.estado" (jugar)="jugarSlot.emit(slot.indice)">
           @if (slot.carta; as carta) {
             <div class="relative h-full w-full">

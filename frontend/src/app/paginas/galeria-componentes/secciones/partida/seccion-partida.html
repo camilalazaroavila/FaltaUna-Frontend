@@ -249,4 +249,57 @@
     </p>
   </div>
 </app-tarjeta-muestra>
+
+<app-tarjeta-muestra
+  titulo="Conteo lento con burbujas de puntaje (estilo Balatro)"
+  descripcion="Al finalizar el turno, cada carta en la mesa libera una burbuja flotante con su poder actual que asciende despacio y se desvanece. Ambos bandos cuentan con identificación visual independiente del color."
+>
+  <div class="space-y-4 w-full">
+    <div class="flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        class="cursor-pointer rounded-pildora border-2 border-exito bg-exito px-3 py-1 font-titulo text-xs uppercase text-exito-sobre shadow-cartoon transition hover:scale-105 active:scale-95"
+        (click)="probarBurbujaPropia()"
+      >
+        Probar burbuja propia (★ Vos)
+      </button>
+
+      <button
+        type="button"
+        class="cursor-pointer rounded-pildora border-2 border-error bg-error px-3 py-1 font-titulo text-xs uppercase text-error-sobre shadow-cartoon transition hover:scale-105 active:scale-95"
+        (click)="probarBurbujaRival()"
+      >
+        Probar burbuja rival (◆ Rival)
+      </button>
+
+      <button
+        type="button"
+        class="cursor-pointer rounded-pildora border border-borde-default bg-fondo-hundido px-3 py-1 font-interfaz text-xs text-texto-secundario hover:text-texto-primario"
+        (click)="limpiarBurbujaDemo()"
+      >
+        Limpiar
+      </button>
+    </div>
+
+    <div class="rounded-lg bg-tablero-fondo p-4">
+      <app-zona
+        lugar="izquierda"
+        [zona]="zonaMock"
+        [cartasPropias]="cartasZonaPropia"
+        [cartasRival]="cartasZonaRival"
+        [puntajePropio]="18"
+        [puntajeRival]="12"
+        [burbujaActiva]="burbujaDemo()"
+      />
+    </div>
+  </div>
+
+  <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+    <p class="font-interfaz text-xs text-info-texto">
+      Las burbujas se desprenden suavemente hacia arriba. Con <code>prefers-reduced-motion</code> los números
+      aparecen quietos sin desplazamiento. El orden de resolución recorre la zona de izquierda a derecha,
+      primero las cartas del jugador y luego las del rival.
+    </p>
+  </div>
+</app-tarjeta-muestra>
 </div>
