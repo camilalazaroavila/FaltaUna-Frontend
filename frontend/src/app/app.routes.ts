@@ -239,5 +239,11 @@ export const routes: Routes = [
       ),
   },
 
+  {
+    path: 'expo-admin',
+    loadComponent: () => import('./paginas/expo/expo-admin').then((m) => m.ExpoAdmin),
+  },
+  
   { path: '**', redirectTo: 'login' },
+
 ];

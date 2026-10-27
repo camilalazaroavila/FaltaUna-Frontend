@@ -4,21 +4,24 @@ import {
   Component,
   ElementRef,
   computed,
+  inject,
   input,
+  linkedSignal,
   output,
   viewChild,
 } from '@angular/core';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
-import type { ResultadoPartidaApi } from '@modelos/partida.model';
+import type { ResultadoPartidaApi, ResultadoRonda } from '@modelos/partida.model';
+import { GsapService } from '@servicios/gsap.service';
 
 export type TipoResultadoVisual = 'victoria' | 'derrota' | 'empate' | 'finalizada';
 
 /**
- * Pantalla modal de fin de partida (Victoria, Derrota, Empate o Neutro).
+ * Panel superior no bloqueante de fin de partida (Victoria, Derrota, Empate o Neutro).
  *
- * Muestra el resultado final único devuelto por el servidor, los puntos
- * finales de cada jugador, el motivo y las opciones para jugar otra vez o
- * volver al menú.
+ * Muestra el resultado final del servidor dejando el tablero visible e interactuable.
+ * Cuenta con estado compacto (título, puntos, motivo y acciones) y expandible ("Ver por qué")
+ * con el desglose por ronda y por zona.
  */
 @Component({
   selector: 'app-pantalla-resultado',
@@ -29,14 +32,29 @@ export type TipoResultadoVisual = 'victoria' | 'derrota' | 'empate' | 'finalizad
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PantallaResultado implements AfterViewInit {
+  private readonly gsapServicio = inject(GsapService);
+
   readonly resultado = input<ResultadoPartidaApi | null>(null);
   readonly nombreJugador = input<string>('Vos');
   readonly nombreRival = input<string>('Bot');
+  readonly historialRondas = input<readonly ResultadoRonda[]>([]);
+  readonly ultimoResultado = input<ResultadoRonda | null>(null);
+  readonly modoIncrustado = input<boolean>(false);
+  readonly expandidoInicial = input<boolean>(false);
 
   readonly jugarOtraVez = output<void>();
   readonly volverAlMenu = output<void>();
 
-  private readonly botonReintentarRef = viewChild<ElementRef<HTMLButtonElement>>('botonReintentar');
+  private readonly panelRef = viewChild<ElementRef<HTMLElement>>('panelRef');
+
+  readonly expandido = linkedSignal({
+    source: () => this.expandidoInicial(),
+    computation: (inicial) => inicial,
+  });
+
+  protected alternarDetalle(): void {
+    this.expandido.update((v) => !v);
+  }
 
   protected readonly tipo = computed<TipoResultadoVisual>(() => {
     const res = this.resultado();
@@ -53,6 +71,20 @@ export class PantallaResultado implements AfterViewInit {
       return 'empate';
     }
     return 'finalizada';
+  });
+
+  protected readonly badgeTexto = computed(() => {
+    switch (this.tipo()) {
+      case 'victoria':
+        return 'Victoria';
+      case 'derrota':
+        return 'Derrota';
+      case 'empate':
+        return 'Empate';
+      case 'finalizada':
+      default:
+        return 'Finalizada';
+    }
   });
 
   protected readonly titulo = computed(() => {
@@ -72,11 +104,11 @@ export class PantallaResultado implements AfterViewInit {
   protected readonly subtitulo = computed(() => {
     switch (this.tipo()) {
       case 'victoria':
-        return '¡Ganaste la partida!';
+        return '¡Ganaste la partida! Podés explorar el tablero o revisar el detalle.';
       case 'derrota':
-        return 'La partida la ganó el rival.';
+        return 'La partida la ganó el rival. Podés revisar el tablero o el detalle.';
       case 'empate':
-        return 'La partida terminó igualada.';
+        return 'La partida terminó igualada. Podés revisar el tablero o el detalle.';
       case 'finalizada':
       default:
         return 'La partida concluyó según el servidor.';
@@ -105,8 +137,53 @@ export class PantallaResultado implements AfterViewInit {
   protected readonly puntosPropio = computed(() => this.resultado()?.puntosPropio ?? 0);
   protected readonly puntosRival = computed(() => this.resultado()?.puntosRival ?? 0);
 
+  protected readonly rondasParaMostrar = computed<readonly ResultadoRonda[]>(() => {
+    const historial = this.historialRondas();
+    if (historial.length > 0) {
+      return historial;
+    }
+    const ultimo = this.ultimoResultado();
+    if (ultimo) {
+      return [ultimo];
+    }
+    return [];
+  });
+
+  protected textoResultadoRonda(ronda: ResultadoRonda): string {
+    if (ronda.ganador === 'propio') {
+      return 'Ganaste esta ronda';
+    }
+    if (ronda.ganador === 'rival') {
+      return 'Rival ganó esta ronda';
+    }
+    if (ronda.ganador === 'empate') {
+      return 'Ronda empatada';
+    }
+    return `Ronda ${ronda.numero}`;
+  }
+
   ngAfterViewInit(): void {
-    // Foco inicial en la acción principal
-    this.botonReintentarRef()?.nativeElement?.focus();
+    if (this.modoIncrustado()) {
+      return;
+    }
+
+    const panel = this.panelRef()?.nativeElement;
+    if (!panel) {
+      return;
+    }
+
+    const motivo = this.resultado()?.motivo;
+    const esInmediato = motivo === 'rendicion' || motivo === 'desconexion';
+    const demora = esInmediato || this.gsapServicio.movimientoReducido() ? 0 : 0.65;
+
+    if (!this.gsapServicio.movimientoReducido()) {
+      this.gsapServicio.gsap.from(panel, {
+        y: -24,
+        opacity: 0,
+        duration: 0.35,
+        delay: demora,
+        ease: 'power2.out',
+      });
+    }
   }
 }

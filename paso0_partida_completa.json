@@ -1,0 +1,1382 @@
+[
+  {
+    "evento": "inicio",
+    "estado": {
+      "partidaId": 37,
+      "estado": "en-curso",
+      "modo": "bot",
+      "ronda": 1,
+      "rondasTotales": 6,
+      "fase": "jugando",
+      "finDeRonda": "2026-10-26T01:06:56.8923641Z",
+      "puntosMaximos": 100,
+      "jugadorPropio": {
+        "jugadorPartidaId": 73,
+        "usuarioId": 4,
+        "nombre": "julito",
+        "avatarUrl": null,
+        "esBot": false,
+        "puntosTotales": 0,
+        "cuponActual": 1,
+        "cuponMaximo": 1,
+        "listo": false,
+        "cartasEnMano": 4,
+        "cartasEnMazo": 8
+      },
+      "rival": {
+        "jugadorPartidaId": 74,
+        "usuarioId": null,
+        "nombre": "Bot",
+        "avatarUrl": null,
+        "esBot": true,
+        "puntosTotales": 0,
+        "cuponActual": 1,
+        "cuponMaximo": 1,
+        "listo": false,
+        "cartasEnMano": 4,
+        "cartasEnMazo": 8
+      },
+      "zonas": [
+        {
+          "zonaPartidaId": 163,
+          "nombre": "Ritmo Urbano",
+          "lugar": "izquierda",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/Ritmo_Urbano.jpg",
+          "efecto": "Música +3 · Gastronomía -2",
+          "descripcion": "La música y la cultura urbana toman el escenario: Música +3 y Gastronomía -2.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "ganador": "empate",
+          "cartas": []
+        },
+        {
+          "zonaPartidaId": 164,
+          "nombre": "Barrio",
+          "lugar": "derecha",
+          "imagenUrl": null,
+          "efecto": "Comida +2 · Tecnología +1",
+          "descripcion": "El almacén de la esquina y las marcas que nos acompañan.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "ganador": "empate",
+          "cartas": []
+        }
+      ],
+      "cartasEnMesa": [],
+      "manoPropia": [
+        {
+          "cartaPartidaId": 865,
+          "carta": {
+            "cartaId": 77,
+            "nombre": "Hamburguesa con Queso",
+            "descripcion": "La hamburguesa con queso de toda la vida",
+            "poder": 3,
+            "costoCupon": 2,
+            "rareza": "Común",
+            "categoria": "Comida",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381195/Hamburguesa_con_Queso.png",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_ALIADOS_ZONA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Hamburguesa con Queso: +1 de poder a todas sus cartas en esta zona."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 866,
+          "carta": {
+            "cartaId": 79,
+            "nombre": "Ensalada Caesar con Pollo Crispy",
+            "descripcion": "Ensalada fresca con pollo crispy y aderezo Caesar",
+            "poder": 4,
+            "costoCupon": 3,
+            "rareza": "Rara",
+            "categoria": "Gastronomía",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381192/Ensalada_Caesar_con_Pollo_Crispy.png",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": "Gastronomía",
+              "descripcion": "Ensalada Caesar con Pollo Crispy: -1 de poder a las cartas rivales de Gastronomía."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 867,
+          "carta": {
+            "cartaId": 82,
+            "nombre": "Big Mac",
+            "descripcion": "La hamburguesa más famosa del mundo",
+            "poder": 6,
+            "costoCupon": 5,
+            "rareza": "Epicarta",
+            "categoria": "Comida",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381183/big_mac.png",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": "Comida",
+              "descripcion": "Big Mac: +2 de poder a las cartas aliadas de Comida."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 868,
+          "carta": {
+            "cartaId": 56,
+            "nombre": "Chromebook",
+            "descripcion": "La notebook liviana con Chrome OS",
+            "poder": 5,
+            "costoCupon": 4,
+            "rareza": "Rara",
+            "categoria": "Tecnología",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436751/Chromebook.jpg",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_ZONA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Chromebook: -1 de poder a todas las cartas rivales en esta zona."
+            }
+          },
+          "jugable": false
+        }
+      ],
+      "ultimoResultado": null,
+      "segundosRestantes": 40
+    }
+  },
+  {
+    "evento": "finalizar_r1",
+    "resFin": {
+      "ronda": 1,
+      "cartasReveladas": [
+        {
+          "cartaPartidaId": 879,
+          "zonaPartidaId": 164,
+          "indice": 0,
+          "lado": "rival",
+          "oculta": false,
+          "carta": {
+            "cartaId": 40,
+            "nombre": "Chromecast 4",
+            "descripcion": "Convierte cualquier TV en una Smart TV",
+            "poder": 2,
+            "costoCupon": 1,
+            "rareza": "Común",
+            "categoria": "Tecnología",
+            "imagenUrl": null,
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_ALIADOS_CERCANOS",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Chromecast 4: +1 de poder a las cartas aliadas a su lado."
+            }
+          },
+          "poderActual": 3
+        }
+      ],
+      "efectos": [],
+      "zonas": [
+        {
+          "zonaPartidaId": 163,
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "puntosGanadosPropio": 0,
+          "puntosGanadosRival": 0,
+          "ganador": "empate"
+        },
+        {
+          "zonaPartidaId": 164,
+          "puntajePropio": 0,
+          "puntajeRival": 3,
+          "diferencia": -3,
+          "puntosGanadosPropio": 0,
+          "puntosGanadosRival": 3,
+          "ganador": "rival"
+        }
+      ],
+      "puntosTotalesPropio": 0,
+      "puntosTotalesRival": 3,
+      "zonasNuevas": [
+        {
+          "zonaPartidaId": 165,
+          "nombre": "Acuarela Essence",
+          "lugar": "derecha",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861799/Acuarela_Essence.jpg",
+          "efecto": "Cosméticos +3 · Entretenimiento -2",
+          "descripcion": "Aromas delicados y detalles sutiles: Cosméticos +3 y Entretenimiento -2.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "ganador": "empate",
+          "cartas": []
+        }
+      ],
+      "cartaRobada": {
+        "cartaPartidaId": 869,
+        "carta": {
+          "cartaId": 66,
+          "nombre": "Dark",
+          "descripcion": "Thriller alemán de viajes en el tiempo y secretos familiares",
+          "poder": 4,
+          "costoCupon": 3,
+          "rareza": "Rara",
+          "categoria": "Entretenimiento",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792434369/dark.jpg",
+          "habilidad": {
+            "tipo": "AUMENTAR_PODER_ALIADOS_CERCANOS",
+            "momento": "al-revelar",
+            "valor": 2,
+            "categoriaObjetivo": null,
+            "descripcion": "Dark: +2 de poder a las cartas aliadas a su lado."
+          }
+        },
+        "jugable": false
+      },
+      "cuponNuevoPropio": 2,
+      "cuponNuevoRival": 2,
+      "fin": null
+    }
+  },
+  {
+    "evento": "estado_post_r1",
+    "estado": {
+      "partidaId": 37,
+      "estado": "en-curso",
+      "modo": "bot",
+      "ronda": 2,
+      "rondasTotales": 6,
+      "fase": "jugando",
+      "finDeRonda": "2026-10-26T01:06:57.314943Z",
+      "puntosMaximos": 100,
+      "jugadorPropio": {
+        "jugadorPartidaId": 73,
+        "usuarioId": 4,
+        "nombre": "julito",
+        "avatarUrl": null,
+        "esBot": false,
+        "puntosTotales": 0,
+        "cuponActual": 2,
+        "cuponMaximo": 2,
+        "listo": false,
+        "cartasEnMano": 5,
+        "cartasEnMazo": 7
+      },
+      "rival": {
+        "jugadorPartidaId": 74,
+        "usuarioId": null,
+        "nombre": "Bot",
+        "avatarUrl": null,
+        "esBot": true,
+        "puntosTotales": 3,
+        "cuponActual": 2,
+        "cuponMaximo": 2,
+        "listo": false,
+        "cartasEnMano": 4,
+        "cartasEnMazo": 7
+      },
+      "zonas": [
+        {
+          "zonaPartidaId": 163,
+          "nombre": "Ritmo Urbano",
+          "lugar": "izquierda",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/Ritmo_Urbano.jpg",
+          "efecto": "Música +3 · Gastronomía -2",
+          "descripcion": "La música y la cultura urbana toman el escenario: Música +3 y Gastronomía -2.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "ganador": "empate",
+          "cartas": []
+        },
+        {
+          "zonaPartidaId": 165,
+          "nombre": "Acuarela Essence",
+          "lugar": "derecha",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861799/Acuarela_Essence.jpg",
+          "efecto": "Cosméticos +3 · Entretenimiento -2",
+          "descripcion": "Aromas delicados y detalles sutiles: Cosméticos +3 y Entretenimiento -2.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "ganador": "empate",
+          "cartas": []
+        }
+      ],
+      "cartasEnMesa": [],
+      "manoPropia": [
+        {
+          "cartaPartidaId": 865,
+          "carta": {
+            "cartaId": 77,
+            "nombre": "Hamburguesa con Queso",
+            "descripcion": "La hamburguesa con queso de toda la vida",
+            "poder": 3,
+            "costoCupon": 2,
+            "rareza": "Común",
+            "categoria": "Comida",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381195/Hamburguesa_con_Queso.png",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_ALIADOS_ZONA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Hamburguesa con Queso: +1 de poder a todas sus cartas en esta zona."
+            }
+          },
+          "jugable": true
+        },
+        {
+          "cartaPartidaId": 866,
+          "carta": {
+            "cartaId": 79,
+            "nombre": "Ensalada Caesar con Pollo Crispy",
+            "descripcion": "Ensalada fresca con pollo crispy y aderezo Caesar",
+            "poder": 4,
+            "costoCupon": 3,
+            "rareza": "Rara",
+            "categoria": "Gastronomía",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381192/Ensalada_Caesar_con_Pollo_Crispy.png",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": "Gastronomía",
+              "descripcion": "Ensalada Caesar con Pollo Crispy: -1 de poder a las cartas rivales de Gastronomía."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 867,
+          "carta": {
+            "cartaId": 82,
+            "nombre": "Big Mac",
+            "descripcion": "La hamburguesa más famosa del mundo",
+            "poder": 6,
+            "costoCupon": 5,
+            "rareza": "Epicarta",
+            "categoria": "Comida",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381183/big_mac.png",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": "Comida",
+              "descripcion": "Big Mac: +2 de poder a las cartas aliadas de Comida."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 868,
+          "carta": {
+            "cartaId": 56,
+            "nombre": "Chromebook",
+            "descripcion": "La notebook liviana con Chrome OS",
+            "poder": 5,
+            "costoCupon": 4,
+            "rareza": "Rara",
+            "categoria": "Tecnología",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436751/Chromebook.jpg",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_ZONA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Chromebook: -1 de poder a todas las cartas rivales en esta zona."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 869,
+          "carta": {
+            "cartaId": 66,
+            "nombre": "Dark",
+            "descripcion": "Thriller alemán de viajes en el tiempo y secretos familiares",
+            "poder": 4,
+            "costoCupon": 3,
+            "rareza": "Rara",
+            "categoria": "Entretenimiento",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792434369/dark.jpg",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_ALIADOS_CERCANOS",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": null,
+              "descripcion": "Dark: +2 de poder a las cartas aliadas a su lado."
+            }
+          },
+          "jugable": false
+        }
+      ],
+      "ultimoResultado": {
+        "ronda": 1,
+        "cartasReveladas": [
+          {
+            "cartaPartidaId": 879,
+            "zonaPartidaId": 164,
+            "indice": 0,
+            "lado": "rival",
+            "oculta": false,
+            "carta": {
+              "cartaId": 40,
+              "nombre": "Chromecast 4",
+              "descripcion": "Convierte cualquier TV en una Smart TV",
+              "poder": 2,
+              "costoCupon": 1,
+              "rareza": "Común",
+              "categoria": "Tecnología",
+              "imagenUrl": null,
+              "habilidad": {
+                "tipo": "AUMENTAR_PODER_ALIADOS_CERCANOS",
+                "momento": "al-revelar",
+                "valor": 1,
+                "categoriaObjetivo": null,
+                "descripcion": "Chromecast 4: +1 de poder a las cartas aliadas a su lado."
+              }
+            },
+            "poderActual": 3
+          }
+        ],
+        "efectos": [],
+        "zonas": [
+          {
+            "zonaPartidaId": 163,
+            "puntajePropio": 0,
+            "puntajeRival": 0,
+            "diferencia": 0,
+            "puntosGanadosPropio": 0,
+            "puntosGanadosRival": 0,
+            "ganador": "empate"
+          },
+          {
+            "zonaPartidaId": 164,
+            "puntajePropio": 0,
+            "puntajeRival": 3,
+            "diferencia": -3,
+            "puntosGanadosPropio": 0,
+            "puntosGanadosRival": 3,
+            "ganador": "rival"
+          }
+        ],
+        "puntosTotalesPropio": 0,
+        "puntosTotalesRival": 3,
+        "zonasNuevas": [
+          {
+            "zonaPartidaId": 165,
+            "nombre": "Acuarela Essence",
+            "lugar": "derecha",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861799/Acuarela_Essence.jpg",
+            "efecto": "Cosméticos +3 · Entretenimiento -2",
+            "descripcion": "Aromas delicados y detalles sutiles: Cosméticos +3 y Entretenimiento -2.",
+            "tipoEfecto": "bonus-categoria",
+            "puntajePropio": 0,
+            "puntajeRival": 0,
+            "diferencia": 0,
+            "ganador": "empate",
+            "cartas": []
+          }
+        ],
+        "cartaRobada": {
+          "cartaPartidaId": 869,
+          "carta": {
+            "cartaId": 66,
+            "nombre": "Dark",
+            "descripcion": "Thriller alemán de viajes en el tiempo y secretos familiares",
+            "poder": 4,
+            "costoCupon": 3,
+            "rareza": "Rara",
+            "categoria": "Entretenimiento",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792434369/dark.jpg",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_ALIADOS_CERCANOS",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": null,
+              "descripcion": "Dark: +2 de poder a las cartas aliadas a su lado."
+            }
+          },
+          "jugable": false
+        },
+        "cuponNuevoPropio": 2,
+        "cuponNuevoRival": 2,
+        "fin": null
+      },
+      "segundosRestantes": 40
+    }
+  },
+  {
+    "evento": "finalizar_r2",
+    "resFin": {
+      "ronda": 2,
+      "cartasReveladas": [
+        {
+          "cartaPartidaId": 880,
+          "zonaPartidaId": 165,
+          "indice": 0,
+          "lado": "rival",
+          "oculta": false,
+          "carta": {
+            "cartaId": 26,
+            "nombre": "Super Cono",
+            "descripcion": "El clásico cono de helado de McDonald's",
+            "poder": 2,
+            "costoCupon": 1,
+            "rareza": "Común",
+            "categoria": "Gastronomía",
+            "imagenUrl": null,
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": "Gastronomía",
+              "descripcion": "Super Cono: +1 de poder a las cartas aliadas de Gastronomía."
+            }
+          },
+          "poderActual": 3
+        }
+      ],
+      "efectos": [
+        {
+          "cartaPartidaId": 880,
+          "zonaPartidaId": 165,
+          "momento": "al-revelar",
+          "delta": 1,
+          "descripcion": "Super Cono: +1 de poder a las cartas aliadas de Gastronomía.",
+          "orden": 1
+        }
+      ],
+      "zonas": [
+        {
+          "zonaPartidaId": 163,
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "puntosGanadosPropio": 0,
+          "puntosGanadosRival": 0,
+          "ganador": "empate"
+        },
+        {
+          "zonaPartidaId": 165,
+          "puntajePropio": 0,
+          "puntajeRival": 3,
+          "diferencia": -3,
+          "puntosGanadosPropio": 0,
+          "puntosGanadosRival": 3,
+          "ganador": "rival"
+        }
+      ],
+      "puntosTotalesPropio": 0,
+      "puntosTotalesRival": 6,
+      "zonasNuevas": [],
+      "cartaRobada": {
+        "cartaPartidaId": 870,
+        "carta": {
+          "cartaId": 70,
+          "nombre": "El Eternauta",
+          "descripcion": "La nevada mortal sobre Buenos Aires, clásico argentino de ciencia ficción",
+          "poder": 6,
+          "costoCupon": 5,
+          "rareza": "Epicarta",
+          "categoria": "Entretenimiento",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433789/el_eternauta.jpg",
+          "habilidad": {
+            "tipo": "REDUCIR_PODER_RIVAL_ZONA",
+            "momento": "al-revelar",
+            "valor": 2,
+            "categoriaObjetivo": null,
+            "descripcion": "El Eternauta: -2 de poder a todas las cartas rivales en esta zona."
+          }
+        },
+        "jugable": false
+      },
+      "cuponNuevoPropio": 3,
+      "cuponNuevoRival": 3,
+      "fin": null
+    }
+  },
+  {
+    "evento": "estado_post_r2",
+    "estado": {
+      "partidaId": 37,
+      "estado": "en-curso",
+      "modo": "bot",
+      "ronda": 3,
+      "rondasTotales": 6,
+      "fase": "jugando",
+      "finDeRonda": "2026-10-26T01:06:58.424432Z",
+      "puntosMaximos": 100,
+      "jugadorPropio": {
+        "jugadorPartidaId": 73,
+        "usuarioId": 4,
+        "nombre": "julito",
+        "avatarUrl": null,
+        "esBot": false,
+        "puntosTotales": 0,
+        "cuponActual": 3,
+        "cuponMaximo": 3,
+        "listo": false,
+        "cartasEnMano": 6,
+        "cartasEnMazo": 6
+      },
+      "rival": {
+        "jugadorPartidaId": 74,
+        "usuarioId": null,
+        "nombre": "Bot",
+        "avatarUrl": null,
+        "esBot": true,
+        "puntosTotales": 6,
+        "cuponActual": 3,
+        "cuponMaximo": 3,
+        "listo": false,
+        "cartasEnMano": 4,
+        "cartasEnMazo": 6
+      },
+      "zonas": [
+        {
+          "zonaPartidaId": 165,
+          "nombre": "Acuarela Essence",
+          "lugar": "izquierda",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792861799/Acuarela_Essence.jpg",
+          "efecto": "Cosméticos +3 · Entretenimiento -2",
+          "descripcion": "Aromas delicados y detalles sutiles: Cosméticos +3 y Entretenimiento -2.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 3,
+          "diferencia": -3,
+          "ganador": "rival",
+          "cartas": [
+            {
+              "cartaPartidaId": 880,
+              "zonaPartidaId": 165,
+              "indice": 0,
+              "lado": "rival",
+              "oculta": false,
+              "carta": {
+                "cartaId": 26,
+                "nombre": "Super Cono",
+                "descripcion": "El clásico cono de helado de McDonald's",
+                "poder": 2,
+                "costoCupon": 1,
+                "rareza": "Común",
+                "categoria": "Gastronomía",
+                "imagenUrl": null,
+                "habilidad": {
+                  "tipo": "AUMENTAR_PODER_CATEGORIA",
+                  "momento": "al-revelar",
+                  "valor": 1,
+                  "categoriaObjetivo": "Gastronomía",
+                  "descripcion": "Super Cono: +1 de poder a las cartas aliadas de Gastronomía."
+                }
+              },
+              "poderActual": 3
+            }
+          ]
+        },
+        {
+          "zonaPartidaId": 163,
+          "nombre": "Ritmo Urbano",
+          "lugar": "derecha",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/Ritmo_Urbano.jpg",
+          "efecto": "Música +3 · Gastronomía -2",
+          "descripcion": "La música y la cultura urbana toman el escenario: Música +3 y Gastronomía -2.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "ganador": "empate",
+          "cartas": []
+        }
+      ],
+      "cartasEnMesa": [
+        {
+          "cartaPartidaId": 880,
+          "zonaPartidaId": 165,
+          "indice": 0,
+          "lado": "rival",
+          "oculta": false,
+          "carta": {
+            "cartaId": 26,
+            "nombre": "Super Cono",
+            "descripcion": "El clásico cono de helado de McDonald's",
+            "poder": 2,
+            "costoCupon": 1,
+            "rareza": "Común",
+            "categoria": "Gastronomía",
+            "imagenUrl": null,
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": "Gastronomía",
+              "descripcion": "Super Cono: +1 de poder a las cartas aliadas de Gastronomía."
+            }
+          },
+          "poderActual": 3
+        }
+      ],
+      "manoPropia": [
+        {
+          "cartaPartidaId": 865,
+          "carta": {
+            "cartaId": 77,
+            "nombre": "Hamburguesa con Queso",
+            "descripcion": "La hamburguesa con queso de toda la vida",
+            "poder": 3,
+            "costoCupon": 2,
+            "rareza": "Común",
+            "categoria": "Comida",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381195/Hamburguesa_con_Queso.png",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_ALIADOS_ZONA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Hamburguesa con Queso: +1 de poder a todas sus cartas en esta zona."
+            }
+          },
+          "jugable": true
+        },
+        {
+          "cartaPartidaId": 866,
+          "carta": {
+            "cartaId": 79,
+            "nombre": "Ensalada Caesar con Pollo Crispy",
+            "descripcion": "Ensalada fresca con pollo crispy y aderezo Caesar",
+            "poder": 4,
+            "costoCupon": 3,
+            "rareza": "Rara",
+            "categoria": "Gastronomía",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381192/Ensalada_Caesar_con_Pollo_Crispy.png",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": "Gastronomía",
+              "descripcion": "Ensalada Caesar con Pollo Crispy: -1 de poder a las cartas rivales de Gastronomía."
+            }
+          },
+          "jugable": true
+        },
+        {
+          "cartaPartidaId": 867,
+          "carta": {
+            "cartaId": 82,
+            "nombre": "Big Mac",
+            "descripcion": "La hamburguesa más famosa del mundo",
+            "poder": 6,
+            "costoCupon": 5,
+            "rareza": "Epicarta",
+            "categoria": "Comida",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381183/big_mac.png",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": "Comida",
+              "descripcion": "Big Mac: +2 de poder a las cartas aliadas de Comida."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 868,
+          "carta": {
+            "cartaId": 56,
+            "nombre": "Chromebook",
+            "descripcion": "La notebook liviana con Chrome OS",
+            "poder": 5,
+            "costoCupon": 4,
+            "rareza": "Rara",
+            "categoria": "Tecnología",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436751/Chromebook.jpg",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_ZONA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Chromebook: -1 de poder a todas las cartas rivales en esta zona."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 869,
+          "carta": {
+            "cartaId": 66,
+            "nombre": "Dark",
+            "descripcion": "Thriller alemán de viajes en el tiempo y secretos familiares",
+            "poder": 4,
+            "costoCupon": 3,
+            "rareza": "Rara",
+            "categoria": "Entretenimiento",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792434369/dark.jpg",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_ALIADOS_CERCANOS",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": null,
+              "descripcion": "Dark: +2 de poder a las cartas aliadas a su lado."
+            }
+          },
+          "jugable": true
+        },
+        {
+          "cartaPartidaId": 870,
+          "carta": {
+            "cartaId": 70,
+            "nombre": "El Eternauta",
+            "descripcion": "La nevada mortal sobre Buenos Aires, clásico argentino de ciencia ficción",
+            "poder": 6,
+            "costoCupon": 5,
+            "rareza": "Epicarta",
+            "categoria": "Entretenimiento",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433789/el_eternauta.jpg",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_ZONA",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": null,
+              "descripcion": "El Eternauta: -2 de poder a todas las cartas rivales en esta zona."
+            }
+          },
+          "jugable": false
+        }
+      ],
+      "ultimoResultado": {
+        "ronda": 2,
+        "cartasReveladas": [
+          {
+            "cartaPartidaId": 880,
+            "zonaPartidaId": 165,
+            "indice": 0,
+            "lado": "rival",
+            "oculta": false,
+            "carta": {
+              "cartaId": 26,
+              "nombre": "Super Cono",
+              "descripcion": "El clásico cono de helado de McDonald's",
+              "poder": 2,
+              "costoCupon": 1,
+              "rareza": "Común",
+              "categoria": "Gastronomía",
+              "imagenUrl": null,
+              "habilidad": {
+                "tipo": "AUMENTAR_PODER_CATEGORIA",
+                "momento": "al-revelar",
+                "valor": 1,
+                "categoriaObjetivo": "Gastronomía",
+                "descripcion": "Super Cono: +1 de poder a las cartas aliadas de Gastronomía."
+              }
+            },
+            "poderActual": 3
+          }
+        ],
+        "efectos": [
+          {
+            "cartaPartidaId": 880,
+            "zonaPartidaId": 165,
+            "momento": "al-revelar",
+            "delta": 1,
+            "descripcion": "Super Cono: +1 de poder a las cartas aliadas de Gastronomía.",
+            "orden": 1
+          }
+        ],
+        "zonas": [
+          {
+            "zonaPartidaId": 163,
+            "puntajePropio": 0,
+            "puntajeRival": 0,
+            "diferencia": 0,
+            "puntosGanadosPropio": 0,
+            "puntosGanadosRival": 0,
+            "ganador": "empate"
+          },
+          {
+            "zonaPartidaId": 165,
+            "puntajePropio": 0,
+            "puntajeRival": 3,
+            "diferencia": -3,
+            "puntosGanadosPropio": 0,
+            "puntosGanadosRival": 3,
+            "ganador": "rival"
+          }
+        ],
+        "puntosTotalesPropio": 0,
+        "puntosTotalesRival": 6,
+        "zonasNuevas": [],
+        "cartaRobada": {
+          "cartaPartidaId": 870,
+          "carta": {
+            "cartaId": 70,
+            "nombre": "El Eternauta",
+            "descripcion": "La nevada mortal sobre Buenos Aires, clásico argentino de ciencia ficción",
+            "poder": 6,
+            "costoCupon": 5,
+            "rareza": "Epicarta",
+            "categoria": "Entretenimiento",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433789/el_eternauta.jpg",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_ZONA",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": null,
+              "descripcion": "El Eternauta: -2 de poder a todas las cartas rivales en esta zona."
+            }
+          },
+          "jugable": false
+        },
+        "cuponNuevoPropio": 3,
+        "cuponNuevoRival": 3,
+        "fin": null
+      },
+      "segundosRestantes": 40
+    }
+  },
+  {
+    "evento": "finalizar_r3",
+    "resFin": {
+      "ronda": 3,
+      "cartasReveladas": [
+        {
+          "cartaPartidaId": 877,
+          "zonaPartidaId": 165,
+          "indice": 1,
+          "lado": "rival",
+          "oculta": false,
+          "carta": {
+            "cartaId": 2,
+            "nombre": "Alfajor Secreto",
+            "descripcion": "El alfajor helado más misterioso",
+            "poder": 4,
+            "costoCupon": 3,
+            "rareza": "Rara",
+            "categoria": "Gastronomía",
+            "imagenUrl": null,
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_MISMA_FILA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Alfajor Secreto: +1 de poder a todas sus cartas en la misma fila de la ronda."
+            }
+          },
+          "poderActual": 5
+        }
+      ],
+      "efectos": [
+        {
+          "cartaPartidaId": 877,
+          "zonaPartidaId": 165,
+          "momento": "al-revelar",
+          "delta": 1,
+          "descripcion": "Alfajor Secreto: +1 de poder a todas sus cartas en la misma fila de la ronda.",
+          "orden": 1
+        }
+      ],
+      "zonas": [
+        {
+          "zonaPartidaId": 163,
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "puntosGanadosPropio": 0,
+          "puntosGanadosRival": 0,
+          "ganador": "empate"
+        },
+        {
+          "zonaPartidaId": 165,
+          "puntajePropio": 0,
+          "puntajeRival": 8,
+          "diferencia": -8,
+          "puntosGanadosPropio": 0,
+          "puntosGanadosRival": 8,
+          "ganador": "rival"
+        }
+      ],
+      "puntosTotalesPropio": 0,
+      "puntosTotalesRival": 14,
+      "zonasNuevas": [
+        {
+          "zonaPartidaId": 166,
+          "nombre": "Tierra Warm",
+          "lugar": "izquierda",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792944693/zona_tierra_warm.jpg",
+          "efecto": "Decoración +3 · Tecnología -3",
+          "descripcion": "Refugio artesanal de calidez y diseño natural para el hogar: Decoración +3 y Tecnología -3.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "ganador": "empate",
+          "cartas": []
+        }
+      ],
+      "cartaRobada": {
+        "cartaPartidaId": 871,
+        "carta": {
+          "cartaId": 52,
+          "nombre": "Google Nest Cam",
+          "descripcion": "Cámara de seguridad inteligente para el hogar",
+          "poder": 3,
+          "costoCupon": 2,
+          "rareza": "Común",
+          "categoria": "Tecnología",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436795/Google_Nest_Cam_Exterior_O_Interior.jpg",
+          "habilidad": {
+            "tipo": "REDUCIR_PODER_RIVAL_ENFRENTE",
+            "momento": "al-revelar",
+            "valor": 1,
+            "categoriaObjetivo": null,
+            "descripcion": "Google Nest Cam: -1 de poder a la carta rival que esté enfrente."
+          }
+        },
+        "jugable": false
+      },
+      "cuponNuevoPropio": 4,
+      "cuponNuevoRival": 4,
+      "fin": null
+    }
+  },
+  {
+    "evento": "estado_post_r3",
+    "estado": {
+      "partidaId": 37,
+      "estado": "en-curso",
+      "modo": "bot",
+      "ronda": 4,
+      "rondasTotales": 6,
+      "fase": "jugando",
+      "finDeRonda": "2026-10-26T01:06:59.978146Z",
+      "puntosMaximos": 100,
+      "jugadorPropio": {
+        "jugadorPartidaId": 73,
+        "usuarioId": 4,
+        "nombre": "julito",
+        "avatarUrl": null,
+        "esBot": false,
+        "puntosTotales": 0,
+        "cuponActual": 4,
+        "cuponMaximo": 4,
+        "listo": false,
+        "cartasEnMano": 7,
+        "cartasEnMazo": 5
+      },
+      "rival": {
+        "jugadorPartidaId": 74,
+        "usuarioId": null,
+        "nombre": "Bot",
+        "avatarUrl": null,
+        "esBot": true,
+        "puntosTotales": 14,
+        "cuponActual": 4,
+        "cuponMaximo": 4,
+        "listo": false,
+        "cartasEnMano": 4,
+        "cartasEnMazo": 5
+      },
+      "zonas": [
+        {
+          "zonaPartidaId": 166,
+          "nombre": "Tierra Warm",
+          "lugar": "izquierda",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792944693/zona_tierra_warm.jpg",
+          "efecto": "Decoración +3 · Tecnología -3",
+          "descripcion": "Refugio artesanal de calidez y diseño natural para el hogar: Decoración +3 y Tecnología -3.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "ganador": "empate",
+          "cartas": []
+        },
+        {
+          "zonaPartidaId": 163,
+          "nombre": "Ritmo Urbano",
+          "lugar": "derecha",
+          "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/Ritmo_Urbano.jpg",
+          "efecto": "Música +3 · Gastronomía -2",
+          "descripcion": "La música y la cultura urbana toman el escenario: Música +3 y Gastronomía -2.",
+          "tipoEfecto": "bonus-categoria",
+          "puntajePropio": 0,
+          "puntajeRival": 0,
+          "diferencia": 0,
+          "ganador": "empate",
+          "cartas": []
+        }
+      ],
+      "cartasEnMesa": [],
+      "manoPropia": [
+        {
+          "cartaPartidaId": 865,
+          "carta": {
+            "cartaId": 77,
+            "nombre": "Hamburguesa con Queso",
+            "descripcion": "La hamburguesa con queso de toda la vida",
+            "poder": 3,
+            "costoCupon": 2,
+            "rareza": "Común",
+            "categoria": "Comida",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381195/Hamburguesa_con_Queso.png",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_ALIADOS_ZONA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Hamburguesa con Queso: +1 de poder a todas sus cartas en esta zona."
+            }
+          },
+          "jugable": true
+        },
+        {
+          "cartaPartidaId": 866,
+          "carta": {
+            "cartaId": 79,
+            "nombre": "Ensalada Caesar con Pollo Crispy",
+            "descripcion": "Ensalada fresca con pollo crispy y aderezo Caesar",
+            "poder": 4,
+            "costoCupon": 3,
+            "rareza": "Rara",
+            "categoria": "Gastronomía",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381192/Ensalada_Caesar_con_Pollo_Crispy.png",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": "Gastronomía",
+              "descripcion": "Ensalada Caesar con Pollo Crispy: -1 de poder a las cartas rivales de Gastronomía."
+            }
+          },
+          "jugable": true
+        },
+        {
+          "cartaPartidaId": 867,
+          "carta": {
+            "cartaId": 82,
+            "nombre": "Big Mac",
+            "descripcion": "La hamburguesa más famosa del mundo",
+            "poder": 6,
+            "costoCupon": 5,
+            "rareza": "Epicarta",
+            "categoria": "Comida",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381183/big_mac.png",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_CATEGORIA",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": "Comida",
+              "descripcion": "Big Mac: +2 de poder a las cartas aliadas de Comida."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 868,
+          "carta": {
+            "cartaId": 56,
+            "nombre": "Chromebook",
+            "descripcion": "La notebook liviana con Chrome OS",
+            "poder": 5,
+            "costoCupon": 4,
+            "rareza": "Rara",
+            "categoria": "Tecnología",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436751/Chromebook.jpg",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_ZONA",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Chromebook: -1 de poder a todas las cartas rivales en esta zona."
+            }
+          },
+          "jugable": true
+        },
+        {
+          "cartaPartidaId": 869,
+          "carta": {
+            "cartaId": 66,
+            "nombre": "Dark",
+            "descripcion": "Thriller alemán de viajes en el tiempo y secretos familiares",
+            "poder": 4,
+            "costoCupon": 3,
+            "rareza": "Rara",
+            "categoria": "Entretenimiento",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792434369/dark.jpg",
+            "habilidad": {
+              "tipo": "AUMENTAR_PODER_ALIADOS_CERCANOS",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": null,
+              "descripcion": "Dark: +2 de poder a las cartas aliadas a su lado."
+            }
+          },
+          "jugable": true
+        },
+        {
+          "cartaPartidaId": 870,
+          "carta": {
+            "cartaId": 70,
+            "nombre": "El Eternauta",
+            "descripcion": "La nevada mortal sobre Buenos Aires, clásico argentino de ciencia ficción",
+            "poder": 6,
+            "costoCupon": 5,
+            "rareza": "Epicarta",
+            "categoria": "Entretenimiento",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433789/el_eternauta.jpg",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_ZONA",
+              "momento": "al-revelar",
+              "valor": 2,
+              "categoriaObjetivo": null,
+              "descripcion": "El Eternauta: -2 de poder a todas las cartas rivales en esta zona."
+            }
+          },
+          "jugable": false
+        },
+        {
+          "cartaPartidaId": 871,
+          "carta": {
+            "cartaId": 52,
+            "nombre": "Google Nest Cam",
+            "descripcion": "Cámara de seguridad inteligente para el hogar",
+            "poder": 3,
+            "costoCupon": 2,
+            "rareza": "Común",
+            "categoria": "Tecnología",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436795/Google_Nest_Cam_Exterior_O_Interior.jpg",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_ENFRENTE",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Google Nest Cam: -1 de poder a la carta rival que esté enfrente."
+            }
+          },
+          "jugable": true
+        }
+      ],
+      "ultimoResultado": {
+        "ronda": 3,
+        "cartasReveladas": [
+          {
+            "cartaPartidaId": 877,
+            "zonaPartidaId": 165,
+            "indice": 1,
+            "lado": "rival",
+            "oculta": false,
+            "carta": {
+              "cartaId": 2,
+              "nombre": "Alfajor Secreto",
+              "descripcion": "El alfajor helado más misterioso",
+              "poder": 4,
+              "costoCupon": 3,
+              "rareza": "Rara",
+              "categoria": "Gastronomía",
+              "imagenUrl": null,
+              "habilidad": {
+                "tipo": "AUMENTAR_PODER_MISMA_FILA",
+                "momento": "al-revelar",
+                "valor": 1,
+                "categoriaObjetivo": null,
+                "descripcion": "Alfajor Secreto: +1 de poder a todas sus cartas en la misma fila de la ronda."
+              }
+            },
+            "poderActual": 5
+          }
+        ],
+        "efectos": [
+          {
+            "cartaPartidaId": 877,
+            "zonaPartidaId": 165,
+            "momento": "al-revelar",
+            "delta": 1,
+            "descripcion": "Alfajor Secreto: +1 de poder a todas sus cartas en la misma fila de la ronda.",
+            "orden": 1
+          }
+        ],
+        "zonas": [
+          {
+            "zonaPartidaId": 163,
+            "puntajePropio": 0,
+            "puntajeRival": 0,
+            "diferencia": 0,
+            "puntosGanadosPropio": 0,
+            "puntosGanadosRival": 0,
+            "ganador": "empate"
+          },
+          {
+            "zonaPartidaId": 165,
+            "puntajePropio": 0,
+            "puntajeRival": 8,
+            "diferencia": -8,
+            "puntosGanadosPropio": 0,
+            "puntosGanadosRival": 8,
+            "ganador": "rival"
+          }
+        ],
+        "puntosTotalesPropio": 0,
+        "puntosTotalesRival": 14,
+        "zonasNuevas": [
+          {
+            "zonaPartidaId": 166,
+            "nombre": "Tierra Warm",
+            "lugar": "izquierda",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792944693/zona_tierra_warm.jpg",
+            "efecto": "Decoración +3 · Tecnología -3",
+            "descripcion": "Refugio artesanal de calidez y diseño natural para el hogar: Decoración +3 y Tecnología -3.",
+            "tipoEfecto": "bonus-categoria",
+            "puntajePropio": 0,
+            "puntajeRival": 0,
+            "diferencia": 0,
+            "ganador": "empate",
+            "cartas": []
+          }
+        ],
+        "cartaRobada": {
+          "cartaPartidaId": 871,
+          "carta": {
+            "cartaId": 52,
+            "nombre": "Google Nest Cam",
+            "descripcion": "Cámara de seguridad inteligente para el hogar",
+            "poder": 3,
+            "costoCupon": 2,
+            "rareza": "Común",
+            "categoria": "Tecnología",
+            "imagenUrl": "https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436795/Google_Nest_Cam_Exterior_O_Interior.jpg",
+            "habilidad": {
+              "tipo": "REDUCIR_PODER_RIVAL_ENFRENTE",
+              "momento": "al-revelar",
+              "valor": 1,
+              "categoriaObjetivo": null,
+              "descripcion": "Google Nest Cam: -1 de poder a la carta rival que esté enfrente."
+            }
+          },
+          "jugable": false
+        },
+        "cuponNuevoPropio": 4,
+        "cuponNuevoRival": 4,
+        "fin": null
+      },
+      "segundosRestantes": 40
+    }
+  }
+]

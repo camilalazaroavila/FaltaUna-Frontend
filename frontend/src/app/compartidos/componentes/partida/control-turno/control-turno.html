@@ -15,13 +15,15 @@
         {{ segundosRestantes() }}s
       </span>
 
-      <span class="block h-2 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
-        <span
-          class="block h-full rounded-pildora transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
-          [class]="clasesBarra()"
-          [style.width.%]="proporcion() * 100"
-        ></span>
-      </span>
+      @if (segundosTotales() && segundosTotales()! > 0) {
+        <span class="block h-2 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
+          <span
+            class="block h-full rounded-pildora transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
+            [class]="clasesBarra()"
+            [style.width.%]="proporcion() * 100"
+          ></span>
+        </span>
+      }
     </div>
   }
 
@@ -46,13 +48,23 @@
   </button>
 
   @if (!resolviendo()) {
-    <div class="flex items-center justify-center pt-1">
+    <div class="flex items-center justify-between gap-1.5 pt-1">
+      <button
+        type="button"
+        app-boton
+        variante="fantasma"
+        tamanio="sm"
+        class="flex-1"
+        (click)="pedirConfirmacionAbandonar()"
+      >
+        Salir
+      </button>
       <button
         type="button"
         app-boton
         variante="peligro"
         tamanio="sm"
-        class="w-full"
+        class="flex-1"
         (click)="pedirConfirmacionRendirse()"
       >
         Rendirse

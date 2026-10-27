@@ -52,7 +52,7 @@
           class="absolute inset-[8%] h-[84%] w-[84%] rounded-md object-cover"
           [src]="imagen()"
           alt=""
-          (error)="falloImagen.set(true)"
+          (error)="alFallarImagen()"
         />
         <!-- Marco anterior: invisible hasta que cambia la zona y se desarma. -->
         <span
@@ -153,11 +153,6 @@
                 class="block aspect-[5/7] h-full max-w-full cursor-pointer rounded-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.12] focus-visible:scale-[1.12] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none motion-reduce:hover:transform-none"
                 [attr.aria-label]="'Ver carta ' + carta.nombre"
                 (click)="alClickCarta(carta)"
-                (pointerdown)="esProvisionalFn()(carta) && alPulsarCartaProvisional(carta, $event)"
-                (pointermove)="alMoverCartaProvisional($event)"
-                (pointerup)="alSoltarCartaProvisional($event)"
-                (pointercancel)="alCancelarCartaProvisional($event)"
-                (lostpointercapture)="alCancelarCartaProvisional($event)"
               >
                 <app-carta [carta]="carta" />
               </button>

@@ -6,60 +6,10 @@
   [class.pantalla-seleccion-fondo]="!enPartida()"
 >
   @if (enPartida()) {
-    <!-- Partida activa: pantalla completa sin header global -->
-    <main class="partida-activa flex flex-1 min-h-0 flex-col gap-2 px-3 pt-2 pb-3 sm:px-4 overflow-hidden">
-    <!-- Cabecera compacta: volver, título y ronda -->
-    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-      <div class="flex flex-wrap items-center gap-2">
-        <a
-          routerLink="/usuario/jugar"
-          class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion"
-        >
-          <svg
-            class="size-3.5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M15 6l-6 6 6 6" />
-          </svg>
-          Volver
-        </a>
-        <h1 app-titulo tamano="sm">Partida contra el bot</h1>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2">
-        <span
-          class="rounded-pildora border border-borde-default bg-hundido px-3 py-1 font-interfaz text-etiqueta text-texto-secundario"
-          [class.text-advertencia-texto]="servicio.turno() >= servicio.rondasTotales()"
-        >
-          @if (servicio.terminada()) {
-            Partida finalizada
-          } @else if (servicio.turno() >= servicio.rondasTotales()) {
-            Ronda final ({{ servicio.turno() }} de {{ servicio.rondasTotales() }})
-          } @else {
-            Ronda {{ servicio.turno() }} de {{ servicio.rondasTotales() }}
-          }
-        </span>
-        <button
-          type="button"
-          app-boton
-          [variante]="servicio.terminada() ? 'primario' : 'peligro'"
-          tamanio="sm"
-          (click)="abandonar()"
-        >
-          {{ servicio.terminada() ? 'Salir' : 'Abandonar' }}
-        </button>
-      </div>
-    </div>
-
-      
-      <div class="area-tablero min-h-0 flex-1">
-        <app-tablero (rendirse)="servicio.rendirse()" />
+    <!-- Partida activa: pantalla completa sin cabecera superior -->
+    <main class="partida-activa flex flex-1 min-h-0 flex-col p-1 sm:p-2 overflow-hidden">
+      <div class="area-tablero min-h-0 flex-1 h-full w-full">
+        <app-tablero (rendirse)="servicio.rendirse()" (abandonar)="abandonar()" />
       </div>
 
       @if (mostrarPantallaResultado()) {
@@ -67,6 +17,8 @@
           [resultado]="resultadoFinal()"
           [nombreJugador]="servicio.jugadores().propio.nombre"
           [nombreRival]="servicio.jugadores().rival.nombre"
+          [historialRondas]="servicio.historialRondas()"
+          [ultimoResultado]="servicio.resultadoRonda()"
           (jugarOtraVez)="reintentarPartida()"
           (volverAlMenu)="volverAlMenu()"
         />
@@ -74,9 +26,6 @@
     </main>
   } @else {
     <!-- Sin partida activa: mostrar header global y pantalla de selección de mazo -->
-    @if (mostrarHeader()) {
-      <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario/jugar" />
-    }
     <main class="relative flex flex-1 flex-col justify-center px-4 pt-2 pb-8 sm:px-8 lg:px-12 overflow-y-auto">
       <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 py-4">
         <!-- Componente de volver existente -->

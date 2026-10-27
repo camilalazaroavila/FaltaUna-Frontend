@@ -107,11 +107,13 @@
   <div class="area-control">
     <app-control-turno
       [turno]="servicio.turno()"
+      [totalTurnos]="servicio.rondasTotales()"
       [segundosRestantes]="servicio.segundosRestantes()"
+      [segundosTotales]="servicio.segundosTotales()"
       [estado]="servicio.estadoRonda()"
       (finalizar)="servicio.marcarListo()"
-      (abandonar)="servicio.abandonar()"
-      (rendirse)="servicio.rendirse()"
+      (abandonar)="abandonar.emit()"
+      (rendirse)="rendirse.emit()"
     />
   </div>
 </div>

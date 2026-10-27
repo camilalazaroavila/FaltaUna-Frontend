@@ -68,6 +68,18 @@ export interface Carta {
   readonly oculta?: boolean;
   /** Efectos sobre categorías que produce la habilidad de la carta. */
   readonly efectosCategoria?: readonly EfectoCategoriaCarta[];
+  /** Habilidad estructurada enviada por el servidor. */
+  readonly habilidad?: {
+    readonly tipo: string;
+    readonly momento: string;
+    readonly valor: number | null;
+    readonly categoriaObjetivo: string | null;
+    readonly descripcion: string | null;
+  } | null;
+  /** Texto descriptivo del efecto o habilidad de la carta. */
+  readonly descripcionHabilidad?: string | null;
+  /** Texto narrativo o descripción de catálogo de la carta. */
+  readonly descripcion?: string | null;
 }
 
 /** Efecto sobre una categoría que mejora o empeora el poder. */
@@ -128,6 +140,16 @@ const EQUIVALENCIAS_CATEGORIA: Readonly<Record<string, CategoriaCarta>> = {
   tecnologias: 'tecnologia',
   electronica: 'tecnologia',
   tecno: 'tecnologia',
+  cocina: 'gastronomia',
+  deco: 'decoracion',
+  hogar: 'decoracion',
+  casa: 'decoracion',
+  interiores: 'decoracion',
+  juegos: 'entretenimiento',
+  arcade: 'entretenimiento',
+  gaming: 'entretenimiento',
+  sonido: 'musica',
+  gadgets: 'tecnologia',
 };
 
 /**
@@ -167,3 +189,27 @@ export const ETIQUETA_CATEGORIA: Record<CategoriaCarta, string> = {
   musica: 'Música',
   tecnologia: 'Tecnología',
 };
+
+/**
+ * Normaliza una URL de imagen para garantizar que sea absoluta y resuelva contra
+ * la raíz de la aplicación si es relativa, o que devuelva null si es nula o vacía.
+ */
+export function normalizarUrlImagen(url: string | null | undefined): string | null {
+  if (!url || typeof url !== 'string') {
+    return null;
+  }
+  const limpia = url.trim();
+  if (!limpia) {
+    return null;
+  }
+  if (
+    limpia.startsWith('http://') ||
+    limpia.startsWith('https://') ||
+    limpia.startsWith('data:') ||
+    limpia.startsWith('blob:')
+  ) {
+    return limpia;
+  }
+  return limpia.startsWith('/') ? limpia : `/${limpia}`;
+}
+
