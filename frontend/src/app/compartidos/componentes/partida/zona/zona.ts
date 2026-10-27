@@ -30,6 +30,7 @@ import type {
 import type { PasoBurbuja } from '@compartidos/componentes/partida/conteo-ronda/secuencia-conteo-ronda';
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
+import { SONIDOS_PARTIDA, SonidoService } from '@servicios/sonido.service';
 
 const IMAGEN_RESPALDO_IZQ = '/imagenes/zona-generica.svg';
 const IMAGEN_RESPALDO_DER = '/imagenes/zona-generica-derecha.svg';
@@ -82,6 +83,7 @@ const claseDelta = (delta: number): string =>
 })
 export class Zona implements AfterViewInit {
   private readonly gsapServicio = inject(GsapService);
+  private readonly sonido = inject(SonidoService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementoRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -295,6 +297,7 @@ export class Zona implements AfterViewInit {
       ? 'var(--zona-marco-destacado)'
       : 'var(--zona-marco)';
     this.deltaEstatico.set(false);
+    this.sonido.reproducir(SONIDOS_PARTIDA.rotarZona);
 
     this.contexto?.add(() => {
       const { gsap } = this.gsapServicio;

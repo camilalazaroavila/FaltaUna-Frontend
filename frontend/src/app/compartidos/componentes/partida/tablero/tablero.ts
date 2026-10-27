@@ -26,6 +26,7 @@ import type { Carta } from '@modelos/carta.model';
 import type { NombreLugar, ResultadoRonda } from '@modelos/partida.model';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
 import { GsapService } from '@servicios/gsap.service';
+import { SONIDOS_PARTIDA, SonidoService } from '@servicios/sonido.service';
 import type {
   ContextoCartasLugar,
   PasoBurbuja,
@@ -78,6 +79,7 @@ interface SlotSobrevolado {
 export class Tablero implements OnDestroy {
   protected readonly servicio = inject(PartidaServicio);
   private readonly gsapServicio = inject(GsapService);
+  private readonly sonido = inject(SonidoService);
   private readonly mano = viewChild(Mano);
   /**
    * Host del tablero: referencia de coordenadas de la mano. El containing block
@@ -113,6 +115,8 @@ export class Tablero implements OnDestroy {
   private readonly cartaSeleccionada = signal<Carta | null>(null);
 
   constructor() {
+    this.sonido.precargarSonidosPartida();
+
     effect(() => {
       const resultado = this.servicio.resultadoRonda();
       if (resultado && resultado.numero !== this.ultimoResultadoAnimado) {
@@ -140,6 +144,7 @@ export class Tablero implements OnDestroy {
     this.limpiarTemporizadores();
     this.enConteo.set(true);
     this.conteoCambio.emit(true);
+    this.sonido.reproducir(SONIDOS_PARTIDA.darVueltaCartas);
 
     const lugaresMap: Record<NombreLugar, ContextoCartasLugar> = {
       izquierda: {
@@ -181,18 +186,21 @@ export class Tablero implements OnDestroy {
       const paso = this.colaPasos[this.indicePaso++];
       if (paso.tipo === 'burbuja') {
         this.burbujaActiva.set(paso);
+        this.sonido.reproducir(SONIDOS_PARTIDA.cartaSumaPoder);
         const t = setTimeout(() => {
           ejecutarSiguientePaso();
         }, ESCALONADO_BURBUJAS_MS);
         this.temporizadoresConteo.push(t);
       } else if (paso.tipo === 'zona') {
         this.burbujaActiva.set(null);
+        this.sonido.reproducir(SONIDOS_PARTIDA.sumarPuntosAnimacion);
         const t = setTimeout(() => {
           ejecutarSiguientePaso();
         }, PAUSA_ENTRE_ZONAS_MS);
         this.temporizadoresConteo.push(t);
       } else if (paso.tipo === 'barra') {
         this.burbujaActiva.set(null);
+        this.sonido.reproducir(SONIDOS_PARTIDA.sumarPuntos);
         const t = setTimeout(() => {
           this.finalizarConteo();
         }, PAUSA_ENTRE_ZONAS_MS);
@@ -297,6 +305,7 @@ export class Tablero implements OnDestroy {
 
     if (slot && this.servicio.jugarCarta(carta, slot.lugar, slot.indice)) {
       this.mano()?.volarHacia(slot.elemento.getBoundingClientRect());
+      this.sonido.reproducir(SONIDOS_PARTIDA.apoyarCarta);
       return;
     }
 
@@ -326,6 +335,7 @@ export class Tablero implements OnDestroy {
 
     if (carta && this.servicio.jugarCarta(carta, lugar, indice)) {
       this.cartaSeleccionada.set(null);
+      this.sonido.reproducir(SONIDOS_PARTIDA.apoyarCarta);
     }
   }
 
