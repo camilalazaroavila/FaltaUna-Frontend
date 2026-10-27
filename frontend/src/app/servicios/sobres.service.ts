@@ -15,6 +15,13 @@ export interface SobreInventarioUsuario {
   readonly cantidad: number;
 }
 
+export interface SobreAbiertoUsuario {
+  readonly sobreId: number;
+  readonly nombre: string;
+  readonly tipo: 'GENERAL' | 'CATEGORIA' | 'MARCA';
+  readonly cantidadAbiertos: number;
+}
+
 export interface SobresDisponiblesEstado {
   readonly actuales: number;
   readonly maximo: number;
