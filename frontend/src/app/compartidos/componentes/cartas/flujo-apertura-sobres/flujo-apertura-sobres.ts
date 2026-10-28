@@ -470,7 +470,6 @@ export class FlujoAperturaSobres {
     if (!sobre.disponible) return;
     this.sobreSeleccionado.set(sobre);
     this.fase.set('preview');
-    this.sonidoService?.reproducir(SONIDOS_PARTIDA.agarrarCarta, 0.75);
   }
 
   volverASeleccion(): void {
@@ -483,7 +482,6 @@ export class FlujoAperturaSobres {
     this.enArrastre = false;
     this.punteroPresionado = false;
     this.fase.set('carrusel');
-    this.sonidoService?.reproducir(SONIDOS_PARTIDA.rotarZona, 0.75);
   }
 
   // Carrusel circular infinito: avanza o retrocede sin fin
@@ -511,7 +509,6 @@ export class FlujoAperturaSobres {
     this.sobreCortado.set(false);
     this.cortando.set(false);
     this.errorApertura.set(null);
-    this.sonidoService?.reproducir(SONIDOS_PARTIDA.apoyarCarta, 0.8);
   }
 
   private punteroPresionado = false;
@@ -615,13 +612,11 @@ export class FlujoAperturaSobres {
 
     this.cortando.set(true);
     this.errorApertura.set(null);
-    this.sonidoService?.reproducir(SONIDOS_PARTIDA.cargarBarraPuntos, 0.85);
 
     // Animación visual de rasgado: la mitad de arriba se desprende
     setTimeout(() => {
       this.sobreCortado.set(true);
       this.cortando.set(false);
-      this.sonidoService?.reproducir(SONIDOS_PARTIDA.rotarZona, 0.85);
       this.llamarApiApertura();
     }, 500);
   }
@@ -661,7 +656,6 @@ export class FlujoAperturaSobres {
       },
       error: (err) => {
         this.cargandoApertura.set(false);
-        this.sonidoService?.reproducir(SONIDOS_PARTIDA.powerDown, 0.75);
         const mensaje =
           err?.error?.mensaje ||
           err?.error?.message ||
@@ -687,26 +681,16 @@ export class FlujoAperturaSobres {
   }
 
   /**
-   * Dispara los efectos de sonido al revelar una carta según su rareza,
-   * combinando el giro de carta con un acento épico polifónico sin bloquear animaciones.
+   * Reproduce un único sonido al aparecer cada carta:
+   * - Si es legendaria: `carta legendaria encontrada.mp3`.
+   * - Todas las demás rarezas: el efecto de revelar carta (`darVueltaCartas`).
    */
   private reproducirSonidoCartaRevelada(carta: Carta | null): void {
-    this.sonidoService?.reproducir(SONIDOS_PARTIDA.darVueltaCartas, 0.85);
-    switch (carta?.rareza) {
-      case 'legendaria':
-        this.sonidoService?.reproducir(SONIDOS_PARTIDA.victoria, 0.9);
-        this.sonidoService?.reproducir(SONIDOS_PARTIDA.powerUp, 0.8);
-        break;
-      case 'epicarta':
-        this.sonidoService?.reproducir(SONIDOS_PARTIDA.misionCompletada, 0.85);
-        break;
-      case 'rara':
-        this.sonidoService?.reproducir(SONIDOS_PARTIDA.powerUp, 0.75);
-        break;
-      default:
-        this.sonidoService?.reproducir(SONIDOS_PARTIDA.cartaSumaPoder, 0.7);
-        break;
+    if (carta?.rareza === 'legendaria') {
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.cartaLegendariaEncontrada, 0.9);
+      return;
     }
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.darVueltaCartas, 0.85);
   }
 
   // Siguiente carta o finalizar
@@ -724,7 +708,6 @@ export class FlujoAperturaSobres {
         this.animarCarta.set(true);
       }, 30);
     } else {
-      this.sonidoService?.reproducir(SONIDOS_PARTIDA.apoyarCarta, 0.7);
       this.cerrarFlujo();
     }
   }

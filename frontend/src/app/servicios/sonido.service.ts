@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 
 /**
- * Rutas a los efectos de sonido de partida en `public/sonidos/partida-sonidos/`.
+ * Rutas a los efectos de sonido de partida en `public/sonidos/partida-sonidos/`
+ * y efectos especiales en `public/sonidos/`.
  * No se incluye `cartoon_music-video-game-collect-item-550420.mp3` por pedido explícito.
  */
 export const SONIDOS_PARTIDA = {
@@ -16,6 +17,9 @@ export const SONIDOS_PARTIDA = {
 
   /** Se dispara cuando las cartas se revelan y se dan vuelta al comenzar el conteo. */
   darVueltaCartas: '/sonidos/partida-sonidos/efecto para cuando las cartas se dan vuelta.mp3',
+
+  /** Se dispara al revelar una carta legendaria en la apertura de sobres. */
+  cartaLegendariaEncontrada: '/sonidos/carta legendaria encontrada.mp3',
 
   /** Se dispara cuando una carta suma su propio poder con la burbuja flotante. */
   cartaSumaPoder: '/sonidos/partida-sonidos/Efecto para cuando una carta se suma su propio poder.mp3',
