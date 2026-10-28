@@ -6,6 +6,7 @@ import { FlujoAperturaSobres } from './flujo-apertura-sobres';
 import { signal } from '@angular/core';
 import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
+import { SonidoService, SONIDOS_PARTIDA } from '@servicios/sonido.service';
 import { AperturaSobreRespuesta, SobreRespuesta } from '@modelos/sobre.model';
 import { Usuario } from '@modelos/usuario.model';
 
@@ -14,6 +15,7 @@ describe('FlujoAperturaSobres Component', () => {
   let fixture: ComponentFixture<FlujoAperturaSobres>;
   let sobresServiceSpy: jest.Mocked<SobresService>;
   let authServiceMock: Partial<AuthService>;
+  let sonidoServiceMock: jest.Mocked<Pick<SonidoService, 'reproducir' | 'precargarSonidosPartida'>>;
 
   const mockSobres: SobreRespuesta[] = [
     {
@@ -48,6 +50,14 @@ describe('FlujoAperturaSobres Component', () => {
         nombre: 'Super Grido',
         cantidad: 1,
         imagenUrl: null,
+        rareza: 'Legendaria',
+      },
+      {
+        cartaId: 102,
+        nombre: 'Carta Común',
+        cantidad: 1,
+        imagenUrl: null,
+        rareza: 'Común',
       },
     ],
   };
@@ -71,6 +81,11 @@ describe('FlujoAperturaSobres Component', () => {
       }),
     };
 
+    sonidoServiceMock = {
+      reproducir: jest.fn(),
+      precargarSonidosPartida: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [FlujoAperturaSobres],
       providers: [
@@ -78,6 +93,7 @@ describe('FlujoAperturaSobres Component', () => {
         provideHttpClientTesting(),
         { provide: SobresService, useValue: sobresServiceSpy },
         { provide: AuthService, useValue: authServiceMock },
+        { provide: SonidoService, useValue: sonidoServiceMock },
       ],
     }).compileComponents();
 
@@ -133,38 +149,75 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component['fase']()).toBe('preview');
   });
 
-  it('debe transicionar a preview al seleccionar un sobre', () => {
+  it('debe transicionar a preview al seleccionar un sobre reproduciendo solo agarrarCarta', () => {
     const primerSobre = component['listaSobresUI']()[1];
     component.seleccionarSobre(primerSobre);
 
     expect(component['fase']()).toBe('preview');
     expect(component['sobreSeleccionado']()).toEqual(primerSobre);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.agarrarCarta, 0.6);
   });
 
-  it('debe transicionar a carrusel y permitir navegar infinitamente', () => {
+  it('debe transicionar a carrusel sin duplicar sonido del botón y reproducir el sonido del carrusel al girar', () => {
     component.irACarrusel();
     expect(component['fase']()).toBe('carrusel');
     expect(component['indiceCarrusel']()).toBe(0);
+    expect(sonidoServiceMock.reproducir).not.toHaveBeenCalled();
 
     component.cambiarSobreCarrusel(1);
     expect(component['indiceCarrusel']()).toBe(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.agarrarCarta, 0.65);
 
     component.cambiarSobreCarrusel(-2);
     expect(component['indiceCarrusel']()).toBe(-1);
   });
 
-  it('debe ejecutar el corte y llamar a la API correspondiente', fakeAsync(() => {
+  it('debe ejecutar el corte con sus sonidos y reproducir un único sonido por carta revelada a volumen moderado', fakeAsync(() => {
     const sobreDiario = component['listaSobresUI']()[0];
     component.seleccionarSobre(sobreDiario);
+    sonidoServiceMock.reproducir.mockClear();
+
     component.elegirSobreDelCarrusel(0);
-
     expect(component['fase']()).toBe('corte');
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.apoyarCarta, 0.65);
 
+    sonidoServiceMock.reproducir.mockClear();
     component.ejecutarCorte();
-    tick(1000);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(
+      SONIDOS_PARTIDA.cargarBarraPuntos,
+      0.65,
+    );
+
+    tick(500);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.rotarZona, 0.7);
+
+    sonidoServiceMock.reproducir.mockClear();
+    tick(400);
 
     expect(sobresServiceSpy.reclamarSobreDiario).toHaveBeenCalledWith(7);
     expect(component['fase']()).toBe('revelacion');
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(
+      SONIDOS_PARTIDA.cartaLegendariaEncontrada,
+      0.45,
+    );
+
+    // Un instante después (140ms) se solapa el efecto de estrellitas
+    tick(150);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.estrellitas, 0.32);
+
+    // Avanzar a la segunda carta (Común) reproduce darVueltaCartas y luego estrellitas
+    sonidoServiceMock.reproducir.mockClear();
+    component.avanzarOFinalizar();
+    tick(50);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.darVueltaCartas, 0.35);
+
+    tick(150);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.estrellitas, 0.32);
   }));
 
   it('muestra el error del backend y no inventa cartas si falla la apertura', fakeAsync(() => {
@@ -182,6 +235,7 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component['errorApertura']()).toContain('Conexión fallida');
     expect(component['cartasObtenidas']()).toEqual([]);
     expect(component['fase']()).toBe('corte');
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.powerDown, 0.55);
   }));
 
   it('debe navegar el carrusel mediante arrastre/swipe con pointer', () => {
@@ -224,7 +278,7 @@ describe('FlujoAperturaSobres Component', () => {
     component.onPointerMoveCorte({ clientX: 90 } as PointerEvent); // deltaX = 40 (> 20)
     component.onPointerUpCorte();
 
-    tick(1000);
+    tick(1200);
     expect(sobresServiceSpy.reclamarSobreDiario).toHaveBeenCalledWith(7);
     expect(component['fase']()).toBe('revelacion');
   }));
