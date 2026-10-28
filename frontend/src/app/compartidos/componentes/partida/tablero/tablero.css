@@ -99,6 +99,7 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: clamp(0.75rem, 3cqw, 3rem);
+    row-gap: clamp(1.25rem, 3.5vh, 2.75rem);
     min-width: 0;
 }
 
@@ -106,13 +107,22 @@
     min-width: 0;
 }
 
+.area-zonas app-cupon-recurso {
+    margin-top: clamp(1.25rem, 3.5vh, 2.75rem);
+    justify-self: start;
+    align-self: start;
+}
+
 /* ---- Fila de abajo ---- */
 .area-mano {
     grid-column: 2;
     grid-row: 3;
+    justify-self: center;
     align-self: end;
     position: relative;
     z-index: 20;
+    width: 100%;
+    max-width: min(100%, 54rem);
     min-width: 0;
     margin-top: calc(-1 * clamp(1rem, 3vh, 2rem));
     pointer-events: none;

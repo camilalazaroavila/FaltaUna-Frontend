@@ -36,6 +36,7 @@ describe('Partida', () => {
       rondasTotales: signal(6),
       resultadoRonda: resultadoSignal,
       resultadoFinal: signal(null),
+      historialRondas: signal<readonly ResultadoRonda[]>([]),
       jugadores: signal({
         propio: { nombre: 'Vos', avatarUrl: null },
         rival: { nombre: 'Bot', avatarUrl: null },
@@ -75,13 +76,13 @@ describe('Partida', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('muestra la cabecera de ronda y el tablero cuando la partida está activa', () => {
+  it('muestra el tablero cuando la partida está activa sin cabecera superior redundante', () => {
     fixture.detectChanges();
 
+    const tablero = fixture.nativeElement.querySelector('app-tablero');
+    expect(tablero).toBeTruthy();
     const texto = fixture.nativeElement.textContent;
-    expect(texto).toContain('Partida contra el bot');
-    expect(texto).toContain('Ronda 1 de 6');
-    expect(texto).toContain('Abandonar');
+    expect(texto).not.toContain('Partida contra el bot');
   });
 
   it('expone el anuncio en la partida', () => {
@@ -154,7 +155,9 @@ describe('Partida', () => {
       const texto = fixture.nativeElement.textContent;
       expect(texto).toContain('No tenés un mazo completo');
 
-      const enlaceBaraja = fixture.nativeElement.querySelector('a[routerLink="/usuario/baraja"]');
+      const enlaceBaraja = fixture.nativeElement.querySelector(
+        'a[routerLink="/usuario/mi-baraja"]',
+      );
       expect(enlaceBaraja).toBeTruthy();
       expect(enlaceBaraja.textContent).toContain('Ir a Mi baraja');
 

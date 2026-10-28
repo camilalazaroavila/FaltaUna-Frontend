@@ -1,0 +1,44 @@
+@if (abierto()) {
+  <div
+    class="expo-popout__fondo fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
+    (click)="cerrar.emit()"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    #dialogo
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="titulo() ? idTitulo : null"
+    tabindex="-1"
+    class="expo-popout__dialogo fixed left-1/2 top-1/2 z-50 max-h-[94dvh] w-[min(94vw,34rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl bg-landing-oscuro-fondo text-center text-landing-oscuro-texto shadow-alta focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+  >
+    <button
+      type="button"
+      class="absolute top-3 right-3 z-10 flex size-9 cursor-pointer items-center justify-center rounded-md bg-marca-primaria font-bold text-marca-sobre-primaria focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      aria-label="Cerrar aviso"
+      (click)="cerrar.emit()"
+    >
+      ✕
+    </button>
+
+    <div class="p-4 pb-0">
+      <img
+        [src]="urlImagen()"
+        [alt]="altImagen()"
+        class="expo-popout__imagen mx-auto block aspect-square max-h-[58dvh] w-full rounded-2xl object-contain select-none"
+      />
+    </div>
+
+    <div class="px-6 pt-4 pb-6 sm:px-8">
+      @if (titulo()) {
+        <h2 [id]="idTitulo" class="font-titulo text-3xl uppercase text-marca-acento sm:text-4xl">
+          {{ titulo() }}
+        </h2>
+      }
+      <p class="mt-2 font-interfaz text-base font-medium text-texto-primario sm:text-lg">
+        {{ texto() }}
+      </p>
+    </div>
+  </div>
+}

@@ -19,7 +19,7 @@ import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-cart
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { IndicadorCategoriasHabilidad } from '@compartidos/componentes/cartas/indicador-categorias-habilidad/indicador-categorias-habilidad';
 import type { Carta, EfectoCategoriaCarta } from '@modelos/carta.model';
-import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre, normalizarUrlImagen } from '@modelos/carta.model';
 import type {
   EstadoPuntajeZona,
   EstadoSlot,
@@ -27,13 +27,17 @@ import type {
   SlotsLado,
   ZonaTablero,
 } from '@modelos/partida.model';
+import type { PasoBurbuja } from '@compartidos/componentes/partida/conteo-ronda/secuencia-conteo-ronda';
 import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
+import { SONIDOS_PARTIDA, SonidoService } from '@servicios/sonido.service';
 
-const IMAGEN_RESPALDO = 'imagenes/grido.jpg';
+const IMAGEN_RESPALDO_IZQ = '/imagenes/zona-generica.svg';
+const IMAGEN_RESPALDO_DER = '/imagenes/zona-generica-derecha.svg';
 
 /** Visibilidad en segundos del delta cuando no se anima (movimiento reducido). */
 const MS_DELTA_ESTATICO = 2000;
+
 
 interface SlotVista {
   readonly indice: number;
@@ -58,6 +62,13 @@ const claseDelta = (delta: number): string =>
     delta > 0 ? 'bg-exito text-exito-sobre' : delta < 0 ? 'bg-error text-error-sobre' : 'hidden',
   ].join(' ');
 
+/** Información de una animación de impacto visual cuando una carta aumenta o reduce poder en mesa. */
+export interface InfoModificadorPoder {
+  readonly tipo: 'aumento' | 'reduccion';
+  readonly delta: number;
+  readonly id: number;
+}
+
 /**
  * Un lugar del tablero: foto de la zona con marco, puntaje de cada lado y
  * 6 slots por lado (2 filas x 3). El lado propio SIEMPRE va abajo.
@@ -79,6 +90,7 @@ const claseDelta = (delta: number): string =>
 })
 export class Zona implements AfterViewInit {
   private readonly gsapServicio = inject(GsapService);
+  private readonly sonido = inject(SonidoService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementoRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -96,6 +108,8 @@ export class Zona implements AfterViewInit {
   readonly puntajePropio = input.required<number>();
   readonly estadoRival = input<EstadoPuntajeZona>('empate');
   readonly estadoPropio = input<EstadoPuntajeZona>('empate');
+  /** Burbuja de puntaje flotante activa para un slot de esta zona durante el conteo. */
+  readonly burbujaActiva = input<PasoBurbuja | null>(null);
 
   protected readonly efectosCategoria = computed(() => {
     const zona = this.zona();
@@ -127,78 +141,7 @@ export class Zona implements AfterViewInit {
     this.retirarCarta.emit(carta);
   }
 
-  private arrastrandoProvisional?: {
-    carta: Carta;
-    origenY: number;
-    origenX: number;
-    punteroId: number;
-    huboArrastre: boolean;
-  };
-
-  protected alPulsarCartaProvisional(carta: Carta, evento: PointerEvent): void {
-    if (evento.button !== 0 && evento.pointerType === 'mouse') return;
-    this.arrastrandoProvisional = {
-      carta,
-      origenY: evento.clientY,
-      origenX: evento.clientX,
-      punteroId: evento.pointerId,
-      huboArrastre: false,
-    };
-    try {
-      (evento.currentTarget as HTMLElement).setPointerCapture(evento.pointerId);
-    } catch {
-      // Ignorar si no se puede capturar
-    }
-  }
-
-  protected alMoverCartaProvisional(evento: PointerEvent): void {
-    if (!this.arrastrandoProvisional || evento.pointerId !== this.arrastrandoProvisional.punteroId) {
-      return;
-    }
-    const distancia = Math.hypot(
-      evento.clientX - this.arrastrandoProvisional.origenX,
-      evento.clientY - this.arrastrandoProvisional.origenY,
-    );
-    if (distancia > 15) {
-      this.arrastrandoProvisional.huboArrastre = true;
-    }
-  }
-
-  protected alSoltarCartaProvisional(evento: PointerEvent): void {
-    if (!this.arrastrandoProvisional || evento.pointerId !== this.arrastrandoProvisional.punteroId) {
-      return;
-    }
-    try {
-      (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
-    } catch {
-      // Ignorar
-    }
-
-    const { carta, huboArrastre, origenY } = this.arrastrandoProvisional;
-    this.arrastrandoProvisional = undefined;
-
-    // Si se arrastró hacia abajo (hacia la mano) al menos 15px, retirar la carta
-    if (huboArrastre && evento.clientY > origenY + 15) {
-      evento.stopPropagation();
-      this.retirarCarta.emit(carta);
-    }
-  }
-
-  protected alCancelarCartaProvisional(evento: PointerEvent): void {
-    if (this.arrastrandoProvisional && evento.pointerId === this.arrastrandoProvisional.punteroId) {
-      try {
-        (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
-      } catch {
-        // Ignorar
-      }
-      this.arrastrandoProvisional = undefined;
-    }
-  }
-
   protected alClickCarta(carta: Carta): void {
-    if (this.arrastrandoProvisional?.huboArrastre) {
-      return;
-    }
     this.verCarta.emit(carta);
   }
 
@@ -215,9 +158,23 @@ export class Zona implements AfterViewInit {
     source: () => this.zona().imagenUrl,
     computation: () => false,
   });
-  protected readonly imagen = computed(() =>
-    this.falloImagen() ? IMAGEN_RESPALDO : this.zona().imagenUrl,
-  );
+
+  protected alFallarImagen(): void {
+    if (this.falloImagen()) {
+      return;
+    }
+    console.warn(
+      `[Zona] La imagen de la zona "${this.zona().nombre}" no pudo cargarse desde "${this.zona().imagenUrl}". Usando imagen de respaldo.`
+    );
+    this.falloImagen.set(true);
+  }
+
+  protected readonly imagen = computed(() => {
+    const url = normalizarUrlImagen(this.zona().imagenUrl);
+    const respaldo = this.lugar() === 'derecha' ? IMAGEN_RESPALDO_DER : IMAGEN_RESPALDO_IZQ;
+    return this.falloImagen() || !url ? respaldo : url;
+  });
+
 
   /** Decisión visual (mock): el marco se destaca cuando el lado propio va ganando. */
   protected readonly marcoDestacado = computed(() => this.estadoPropio() === 'ganando');
@@ -240,6 +197,10 @@ export class Zona implements AfterViewInit {
   private destacadoAnterior = false;
   private temporizador?: ReturnType<typeof setTimeout>;
   private cartasRivalPrevias?: SlotsLado;
+
+  /** Modificadores de poder activos por slot (controlados por la secuencia de resolución). */
+  readonly modificadoresRival = input<Record<number, InfoModificadorPoder>>({});
+  readonly modificadoresPropio = input<Record<number, InfoModificadorPoder>>({});
 
   constructor() {
     this.destroyRef.onDestroy(() => clearTimeout(this.temporizador));
@@ -303,6 +264,38 @@ export class Zona implements AfterViewInit {
     });
   }
 
+  protected esSlotAumentadoRival(indice: number): boolean {
+    return this.modificadoresRival()[indice]?.tipo === 'aumento';
+  }
+
+  protected esSlotDebuffeadoRival(indice: number): boolean {
+    return this.modificadoresRival()[indice]?.tipo === 'reduccion';
+  }
+
+  protected esSlotAumentadoPropio(indice: number): boolean {
+    return this.modificadoresPropio()[indice]?.tipo === 'aumento';
+  }
+
+  protected esSlotDebuffeadoPropio(indice: number): boolean {
+    return this.modificadoresPropio()[indice]?.tipo === 'reduccion';
+  }
+
+  protected esAumentoPoder(carta: Carta): boolean {
+    return typeof carta.poderBase === 'number' && carta.atributoDerecho > carta.poderBase;
+  }
+
+  protected esReduccionPoder(carta: Carta): boolean {
+    return typeof carta.poderBase === 'number' && carta.atributoDerecho < carta.poderBase;
+  }
+
+  protected textoModificadorPoder(carta: Carta): string {
+    if (typeof carta.poderBase !== 'number') {
+      return '';
+    }
+    const delta = carta.atributoDerecho - carta.poderBase;
+    return delta > 0 ? `▲ +${delta}` : `▼ ${delta}`;
+  }
+
   ngAfterViewInit(): void {
     this.contexto = this.gsapServicio.crearContexto(
       this.elementoRef.nativeElement,
@@ -347,6 +340,7 @@ export class Zona implements AfterViewInit {
       ? 'var(--zona-marco-destacado)'
       : 'var(--zona-marco)';
     this.deltaEstatico.set(false);
+    this.sonido.reproducir(SONIDOS_PARTIDA.rotarZona);
 
     this.contexto?.add(() => {
       const { gsap } = this.gsapServicio;
@@ -458,11 +452,11 @@ export class Zona implements AfterViewInit {
     }
 
     if (efectos.length === 0 && zona.bonusPorCategoria) {
-      for (const [, bonus] of Object.entries(zona.bonusPorCategoria)) {
+      for (const [nombreCat, bonus] of Object.entries(zona.bonusPorCategoria)) {
         if (bonus !== 0) {
           efectos.push({
             tipo: bonus > 0 ? 'sube' : 'baja',
-            categoria: zona.efecto?.categoria ?? CATEGORIA_POR_DEFECTO,
+            categoria: categoriaCartaDesdeNombre(nombreCat),
             valor: bonus,
           });
         }

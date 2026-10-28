@@ -15,13 +15,15 @@
         {{ segundosRestantes() }}s
       </span>
 
-      <span class="block h-2 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
-        <span
-          class="block h-full rounded-pildora transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
-          [class]="clasesBarra()"
-          [style.width.%]="proporcion() * 100"
-        ></span>
-      </span>
+      @if (segundosTotales() && segundosTotales()! > 0) {
+        <span class="block h-2 w-full overflow-hidden rounded-pildora bg-hundido" aria-hidden="true">
+          <span
+            class="block h-full rounded-pildora transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
+            [class]="clasesBarra()"
+            [style.width.%]="proporcion() * 100"
+          ></span>
+        </span>
+      }
     </div>
   }
 
@@ -32,31 +34,153 @@
     tamanio="lg"
     class="control-boton"
     [attr.aria-label]="nombreAccesible()"
-    [disabled]="!activo()"
-    [cargando]="!activo()"
+    [disabled]="!activo() || terminada()"
+    [cargando]="!activo() && !terminada()"
     (click)="pulsarFinalizar()"
   >
     <span class="control-accion">
       <span class="control-texto control-texto--largo">{{ accionBoton() }}</span>
       <span class="control-texto control-texto--corto">{{ accionBotonCorto() }}</span>
     </span>
-    <span class="control-insignia-turno" aria-hidden="true">
-      {{ contadorTurno() }}
-    </span>
+    @if (!terminada()) {
+      <span class="control-insignia-turno" aria-hidden="true">
+        {{ contadorTurno() }}
+      </span>
+    }
   </button>
 
-  @if (!resolviendo()) {
-    <div class="flex items-center justify-center pt-1">
+  @if (!resolviendo() && !terminada()) {
+    <div class="flex items-center justify-between gap-1.5 pt-1">
+      <button
+        type="button"
+        app-boton
+        variante="fantasma"
+        tamanio="sm"
+        class="flex-1"
+        (click)="pedirConfirmacionAbandonar()"
+      >
+        Salir
+      </button>
       <button
         type="button"
         app-boton
         variante="peligro"
         tamanio="sm"
-        class="w-full"
+        class="flex-1"
         (click)="pedirConfirmacionRendirse()"
       >
         Rendirse
       </button>
+    </div>
+  }
+
+  @if (modalRendirseVisible()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-landing-oscuro-fondo/80 backdrop-blur-xs"
+      (click)="cancelarRendirse()"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-modal-rendirse"
+        class="relative w-full max-w-sm rounded-3xl bg-landing-oscuro-fondo p-6 sm:p-8 text-center text-landing-oscuro-texto shadow-[14px_14px_0_0_var(--color-amarillo-logo,#d5ff5f)] border-2 border-white/10"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          type="button"
+          class="absolute -right-2 -top-2 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-acento text-marca-primaria transition hover:bg-marca-acento-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          aria-label="Cerrar modal"
+          (click)="cancelarRendirse()"
+        >
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" aria-hidden="true">
+            <path d="M5 5l14 14M19 5L5 19" />
+          </svg>
+        </button>
+        <div class="mx-auto mb-4 flex size-14 items-center justify-center rounded-circulo bg-error/20 text-error">
+          <ng-icon name="phosphorWarningFill" size="32" aria-hidden="true" />
+        </div>
+        <h3 id="titulo-modal-rendirse" class="font-titulo text-3xl uppercase leading-none tracking-wide text-marca-acento">
+          ¿Rendirte?
+        </h3>
+        <p class="mt-3 font-interfaz text-sm text-texto-secundario leading-relaxed">
+          Si te rendís, se le otorgará la victoria a tu rival y la partida finalizará como derrota.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-2.5">
+          <button
+            type="button"
+            app-boton
+            variante="fantasma"
+            class="flex-1"
+            (click)="cancelarRendirse()"
+          >
+            No, volver
+          </button>
+          <button
+            type="button"
+            app-boton
+            variante="peligro"
+            class="flex-1"
+            (click)="confirmarRendirse()"
+          >
+            Sí, rendirme
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (modalAbandonarVisible()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-landing-oscuro-fondo/80 backdrop-blur-xs"
+      (click)="cancelarAbandonar()"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-modal-abandonar"
+        class="relative w-full max-w-sm rounded-3xl bg-landing-oscuro-fondo p-6 sm:p-8 text-center text-landing-oscuro-texto shadow-[14px_14px_0_0_var(--color-amarillo-logo,#d5ff5f)] border-2 border-white/10"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          type="button"
+          class="absolute -right-2 -top-2 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-acento text-marca-primaria transition hover:bg-marca-acento-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          aria-label="Cerrar modal"
+          (click)="cancelarAbandonar()"
+        >
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" aria-hidden="true">
+            <path d="M5 5l14 14M19 5L5 19" />
+          </svg>
+        </button>
+        <div class="mx-auto mb-4 flex size-14 items-center justify-center rounded-circulo bg-error/20 text-error">
+          <ng-icon name="phosphorWarningFill" size="32" aria-hidden="true" />
+        </div>
+        <h3 id="titulo-modal-abandonar" class="font-titulo text-3xl uppercase leading-none tracking-wide text-marca-acento">
+          ¿Abandonar la partida?
+        </h3>
+        <p class="mt-3 font-interfaz text-sm text-texto-secundario leading-relaxed">
+          Si abandonás, la partida se dará por terminada por desconexión y se registrará tu salida.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-2.5">
+          <button
+            type="button"
+            app-boton
+            variante="fantasma"
+            class="flex-1"
+            (click)="cancelarAbandonar()"
+          >
+            No, volver
+          </button>
+          <button
+            type="button"
+            app-boton
+            variante="peligro"
+            class="flex-1"
+            (click)="confirmarAbandonar()"
+          >
+            Sí, abandonar
+          </button>
+        </div>
+      </div>
     </div>
   }
 </div>

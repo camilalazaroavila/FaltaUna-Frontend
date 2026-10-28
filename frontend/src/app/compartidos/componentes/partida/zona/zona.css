@@ -98,8 +98,266 @@
     }
 }
 
-@container (max-width: 12rem) {
-    .zona-etiqueta {
-        display: none;
+.burbuja-puntaje {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 40;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-family: var(--fuente-titulo);
+    font-size: clamp(0.75rem, 12cqi, 0.95rem);
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    animation: flotarBurbuja 1.1s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+.burbuja-puntaje--propio {
+    background-color: var(--color-teal-hundido);
+    color: var(--color-exito);
+    border: 2px solid var(--color-exito);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6), 0 4px 12px rgba(34, 197, 94, 0.45);
+}
+
+.burbuja-puntaje--rival {
+    background-color: var(--color-teal-hundido);
+    color: var(--color-error);
+    border: 2px dashed var(--color-error);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6), 0 4px 12px rgba(239, 68, 68, 0.45);
+}
+
+.burbuja-puntaje__icono {
+    font-size: 0.7rem;
+}
+
+.burbuja-puntaje__numero {
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Variantes de burbuja cuando la carta tiene aumento o reducción de poder */
+.burbuja-puntaje--aumento {
+    border-color: var(--color-oro);
+    color: var(--color-oro);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6), 0 0 14px 3px rgba(250, 204, 21, 0.65);
+}
+
+.burbuja-puntaje--reduccion {
+    border-color: var(--color-error);
+    color: var(--color-error);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6), 0 0 14px 3px rgba(239, 68, 68, 0.65);
+}
+
+/* Burbuja sutil permanente sobre la carta cuando su poder está alterado */
+.burbuja-modificador-sutil {
+    position: absolute;
+    top: -0.35rem;
+    right: -0.25rem;
+    z-index: 25;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1rem 0.35rem;
+    border-radius: 9999px;
+    font-family: var(--fuente-titulo);
+    font-size: 0.625rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+    animation: pulsoModificadorSutil 2.5s infinite ease-in-out;
+}
+
+.burbuja-modificador--aumento {
+    background-color: rgba(16, 185, 129, 0.25);
+    color: var(--color-exito);
+    border: 1.5px solid var(--color-exito);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.burbuja-modificador--reduccion {
+    background-color: rgba(239, 68, 68, 0.25);
+    color: var(--color-error);
+    border: 1.5px solid var(--color-error);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+@keyframes pulsoModificadorSutil {
+    0%, 100% {
+        transform: scale(1) translateY(0);
+    }
+    50% {
+        transform: scale(1.06) translateY(-1px);
+    }
+}
+
+@keyframes flotarBurbuja {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0.4rem) scale(0.7);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1.15);
+    }
+    75% {
+        opacity: 1;
+        transform: translate(-50%, -1.8rem) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -2.6rem) scale(0.9);
+    }
+}
+
+/* Banner de impacto flotante al modificar poder (debuff rival o buff aliado) */
+.burbuja-impacto-poder {
+    position: absolute;
+    top: 32%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 45;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 9999px;
+    font-family: var(--fuente-titulo);
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+    animation: surgirImpactoPoder 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.burbuja-impacto--aumento {
+    background-color: var(--color-teal-hundido);
+    color: var(--color-exito);
+    border: 2px solid var(--color-exito);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.7), 0 0 18px 4px rgba(34, 197, 94, 0.65), 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.burbuja-impacto--reduccion {
+    background-color: var(--color-teal-hundido);
+    color: var(--color-error);
+    border: 2px solid var(--color-error);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.7), 0 0 18px 4px rgba(239, 68, 68, 0.75), 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.burbuja-impacto__icono {
+    font-size: 0.75rem;
+}
+
+.burbuja-impacto__texto {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.2rem;
+}
+
+.burbuja-impacto__delta {
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.burbuja-impacto__etiqueta {
+    font-size: 0.625rem;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+}
+
+@keyframes surgirImpactoPoder {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0.4rem) scale(0.5);
+    }
+    18% {
+        opacity: 1;
+        transform: translate(-50%, -0.2rem) scale(1.15);
+    }
+    30% {
+        transform: translate(-50%, -0.2rem) scale(1);
+    }
+    75% {
+        opacity: 1;
+        transform: translate(-50%, -1.2rem) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -1.8rem) scale(0.85);
+    }
+}
+
+/* Reacción visual de la carta en mesa ante debuff o buff */
+.slot-carta--debuffeada {
+    animation: sacudidaImpactoDebuff 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.9)) drop-shadow(0 0 20px rgba(239, 68, 68, 0.6));
+    border-radius: 0.25rem;
+}
+
+.slot-carta--aumentada {
+    animation: resplandorImpactoAumento 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.9)) drop-shadow(0 0 20px rgba(250, 204, 21, 0.7));
+    border-radius: 0.25rem;
+}
+
+@keyframes sacudidaImpactoDebuff {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    15% {
+        transform: translateX(-4px) rotate(-2.5deg);
+    }
+    30% {
+        transform: translateX(4px) rotate(2.5deg);
+    }
+    45% {
+        transform: translateX(-3px) rotate(-1.5deg);
+    }
+    60% {
+        transform: translateX(3px) rotate(1.5deg);
+    }
+    75% {
+        transform: translateX(-1px) rotate(-0.5deg);
+    }
+    90% {
+        transform: translateX(1px) rotate(0.5deg);
+    }
+}
+
+@keyframes resplandorImpactoAumento {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    30% {
+        transform: translateY(-4px) scale(1.08);
+    }
+    70% {
+        transform: translateY(-2px) scale(1.04);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .burbuja-puntaje,
+    .burbuja-impacto-poder {
+        animation: none !important;
+        transform: translate(-50%, -0.25rem) scale(1) !important;
+        opacity: 1 !important;
+    }
+
+    .slot-carta--debuffeada,
+    .slot-carta--aumentada {
+        animation: none !important;
+        transform: none !important;
     }
 }

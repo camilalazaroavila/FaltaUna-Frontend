@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject } from '@angular/core';
-import { GsapService } from '../../../servicios/gsap.service';
+import { GsapService } from '@servicios/gsap.service';
 
 /** Colores de los papelitos: verdes de marca, amarillo de las estrellas de "Conseguiste", teal y un toque cálido. */
 const COLORES = ['#2ee07a', '#1fa463', '#f9f9b2', '#f2c230', '#0d3b40', '#ff7a59'] as const;

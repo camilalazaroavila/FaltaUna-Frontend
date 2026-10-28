@@ -32,18 +32,20 @@
 
   <div class="area-barra-propia">
     <app-barra-puntos
-      [puntos]="servicio.barraPropia()"
+      [puntos]="puntosBarraPropiaVisual()"
       [maximo]="servicio.puntosMaximos()"
-      [delta]="servicio.deltaPuntosPropio()"
+      [delta]="deltaBarraPropiaVisual()"
+      [cargando]="barraCargando()"
       lado="propio"
     />
   </div>
 
   <div class="area-barra-rival">
     <app-barra-puntos
-      [puntos]="servicio.barraRival()"
+      [puntos]="puntosBarraRivalVisual()"
       [maximo]="servicio.puntosMaximos()"
-      [delta]="servicio.deltaPuntosRival()"
+      [delta]="deltaBarraRivalVisual()"
+      [cargando]="barraCargando()"
       lado="rival"
     />
   </div>
@@ -56,9 +58,11 @@
 
       <app-zona
         [lugar]="lugar"
-        [zona]="datos.zona"
+        [zona]="zonasVisuales()[lugar]"
         [cartasRival]="datos.rival"
         [cartasPropias]="datos.propio"
+        [modificadoresPropio]="modificadoresPorLugar()[lugar].propio"
+        [modificadoresRival]="modificadoresPorLugar()[lugar].rival"
         [puntajeRival]="puntaje.rival"
         [puntajePropio]="puntaje.propio"
         [estadoRival]="puntaje.estadoRival"
@@ -66,6 +70,7 @@
         [deltaRival]="delta.rival"
         [deltaPropio]="delta.propio"
         [slotsResaltados]="resaltarSlots()"
+        [burbujaActiva]="burbujaActiva()"
         [esProvisionalFn]="esProvisionalFn"
         (abrirPopup)="lugarAbierto.set(lugar)"
         (jugarSlot)="alJugarEnSlot(lugar, $event)"
@@ -92,29 +97,42 @@
   </div>
 
   <div class="area-propio">
-
-
-    
     <app-jugador-chip
       [nombre]="servicio.jugadores().propio.nombre"
       [avatarUrl]="servicio.jugadores().propio.avatarUrl"
       lado="propio"
       tamanio="lg"
     />
-
   </div>
 
   <div class="area-control">
     <app-control-turno
       [turno]="servicio.turno()"
+      [totalTurnos]="servicio.rondasTotales()"
       [segundosRestantes]="servicio.segundosRestantes()"
-      [estado]="servicio.estadoRonda()"
+      [segundosTotales]="servicio.segundosTotales()"
+      [estado]="enConteo() ? 'resolviendo' : servicio.estadoRonda()"
+      [terminada]="servicio.terminada()"
       (finalizar)="servicio.marcarListo()"
-      (abandonar)="servicio.abandonar()"
-      (rendirse)="servicio.rendirse()"
+      (abandonar)="abandonar.emit()"
+      (rendirse)="rendirse.emit()"
     />
   </div>
 </div>
+
+@if (enConteo()) {
+  <div class="fixed top-4 right-4 z-50 pointer-events-auto">
+    <button
+      type="button"
+      class="boton-saltar cursor-pointer inline-flex items-center gap-2 rounded-pildora border-2 border-borde-foco bg-superficie-elevada px-4 py-2 font-titulo text-xs uppercase tracking-wider text-texto-primario shadow-cartoon transition hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      (click)="saltarConteo()"
+      aria-label="Saltar conteo de puntos (o presiona Escape)"
+    >
+      <span>Saltar</span>
+      <kbd class="rounded bg-fondo-hundido px-1.5 py-0.5 text-[10px] text-texto-secundario border border-borde-default">Esc</kbd>
+    </button>
+  </div>
+}
 
 @if (zonaAbierta(); as zona) {
   <app-zona-popup

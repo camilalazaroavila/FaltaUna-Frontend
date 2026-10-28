@@ -1,7 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, shareReplay, tap } from 'rxjs';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
-import { categoriaCartaDesdeNombre, efectosDesdeHabilidad } from '@modelos/carta.model';
+import {
+  categoriaCartaDesdeNombre,
+  efectosDesdeHabilidad,
+  normalizarUrlImagen,
+} from '@modelos/carta.model';
+import { FOTOS_CARTAS_CATALOGO } from '@modelos/catalogo-cartas-imagenes';
 import { ApiService } from './api.service';
 import type { CartaInventarioApi, GuardarMazoRequest, MazoApi } from '@modelos/mazo.model';
 /**
@@ -42,14 +47,19 @@ export class BarajaService {
       map((mazo) => (mazo ? mazo.cartas.map(mapearCartaMazo) : [])),
     );
   }
-  /** Crea o reemplaza el mazo actual y devuelve sus cartas guardadas. */
-  guardarBaraja(cartas: readonly Carta[], nombre: string): Observable<Carta[]> {
+  /** Crea o reemplaza un mazo (específico o actual) y devuelve sus cartas guardadas. */
+  guardarBaraja(
+    cartas: readonly Carta[],
+    nombre: string,
+    mazoId?: number | null,
+  ): Observable<Carta[]> {
     const solicitud: GuardarMazoRequest = {
       nombre: nombre.trim(),
       cartasIds: cartas.map((carta) => Number(carta.id)),
     };
-    const operacion = this.mazoActual
-      ? this.api.put<MazoApi>(`Mazos/${this.mazoActual.id}`, solicitud)
+    const id = mazoId !== undefined ? mazoId : this.mazoActual?.id;
+    const operacion = id
+      ? this.api.put<MazoApi>(`Mazos/${id}`, solicitud)
       : this.api.post<MazoApi>('Mazos', solicitud);
     return operacion.pipe(
       tap((mazo) => (this.mazoActual = mazo)),
@@ -57,11 +67,20 @@ export class BarajaService {
     );
   }
 }
+function resolverImagenCarta(imagenUrl: string | null | undefined, nombre: string): string {
+  const norm = normalizarUrlImagen(imagenUrl);
+  if (norm) {
+    return norm;
+  }
+  const clave = normalizar(nombre);
+  return FOTOS_CARTAS_CATALOGO[clave] ?? '';
+}
+
 function mapearCartaInventario(carta: CartaInventarioApi): Carta {
   return {
     id: String(carta.cartaId),
     nombre: carta.nombre,
-    imagenUrl: carta.imagenUrl ?? '',
+    imagenUrl: resolverImagenCarta(carta.imagenUrl, carta.nombre),
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
     categoria: categoriaCartaDesdeNombre(carta.categoria),
     atributoDerecho: carta.poder,
@@ -74,11 +93,11 @@ export function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {
   return {
     id: String(carta.cartaId),
     nombre: carta.nombre,
-    imagenUrl: carta.imagenUrl ?? '',
+    imagenUrl: resolverImagenCarta(carta.imagenUrl, carta.nombre),
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
     categoria: categoriaCartaDesdeNombre(''),
-    atributoIzquierdo: carta.poder,
-    atributoDerecho: carta.costoCupon,
+    atributoDerecho: carta.poder,
+    atributoIzquierdo: carta.costoCupon,
     obtenida: true,
   };
 }

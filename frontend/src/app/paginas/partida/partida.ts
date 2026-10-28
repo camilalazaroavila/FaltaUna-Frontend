@@ -5,18 +5,17 @@ import {
   OnDestroy,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import Swal from 'sweetalert2';
 
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { CampoSelect, type OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
 import { Caja } from '@compartidos/componentes/contenedor/caja/caja';
-import { Header } from '@compartidos/componentes/layout/header/header';
 import { PantallaResultado } from '@compartidos/componentes/partida/pantalla-resultado/pantalla-resultado';
 import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
 import { Texto } from '@compartidos/componentes/textual/texto/texto';
@@ -24,6 +23,7 @@ import { Titulo } from '@compartidos/componentes/textual/titulo/titulo';
 import type { MazoApi } from '@modelos/mazo.model';
 import { BarajaService } from '@servicios/baraja.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
+import { SonidoService } from '@servicios/sonido.service';
 import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja';
 
 /**
@@ -39,9 +39,7 @@ import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja
   imports: [
     Boton,
     Caja,
-    CampoSelect,
     FormsModule,
-    Header,
     PantallaResultado,
     RouterLink,
     Tablero,
@@ -57,6 +55,22 @@ export class Partida implements OnInit, OnDestroy {
   private readonly baraja = inject(BarajaService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
+  private readonly sonido = inject(SonidoService);
+
+  constructor() {
+    effect(() => {
+      const enJuego = this.enPartida();
+      const conResultado = this.mostrarPantallaResultado();
+
+      if (enJuego && !conResultado) {
+        this.sonido.iniciarMusicaFondo(0.18);
+      } else if (conResultado) {
+        this.sonido.ajustarVolumenMusicaFondo(0.04);
+      } else {
+        this.sonido.detenerMusicaFondo();
+      }
+    });
+  }
 
   /** Hay una partida real en curso (no la maqueta). */
   protected readonly enPartida = computed(() => this.servicio.partidaId() !== null);
@@ -68,9 +82,27 @@ export class Partida implements OnInit, OnDestroy {
   protected readonly resultadoFinal = this.servicio.resultadoFinal;
   protected readonly terminada = this.servicio.terminada;
   protected readonly gane = this.servicio.gane;
-  protected readonly mostrarPantallaResultado = computed(
-    () => this.terminada() || this.resultadoFinal() !== null,
-  );
+  /** Estado del conteo secuencial de puntos de ronda. */
+  protected readonly enConteoRonda = signal<boolean>(false);
+  /** Última ronda cuyo conteo de puntos finalizó por completo. */
+  protected readonly rondaConteoCompletada = signal<number>(0);
+  /** La pantalla de resultado solo aparece una vez concluido el conteo de la ronda y con resultado final. */
+  protected readonly mostrarPantallaResultado = computed(() => {
+    if (!this.terminada() && this.resultadoFinal() === null) {
+      return false;
+    }
+
+    if (this.enConteoRonda()) {
+      return false;
+    }
+
+    const ultimaRonda = this.servicio.resultadoRonda();
+    if (ultimaRonda && ultimaRonda.numero > this.rondaConteoCompletada()) {
+      return false;
+    }
+
+    return true;
+  });
 
   protected readonly mazos = signal<readonly MazoApi[]>([]);
   protected readonly mazoSeleccionado = signal<number | null>(null);
@@ -164,6 +196,7 @@ export class Partida implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.servicio.detenerSincronizacion();
+    this.sonido.detenerMusicaFondo();
   }
 
   /** Crea una partida nueva contra el bot con el mazo elegido. */
@@ -177,34 +210,9 @@ export class Partida implements OnInit, OnDestroy {
     this.servicio.iniciarContraBot(mazoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
-  /** Solicita confirmación antes de abandonar la partida (o sale directamente si ya finalizó). */
-  protected async abandonar(): Promise<void> {
-    if (this.servicio.terminada()) {
-      this.servicio.abandonar();
-      return;
-    }
-
-    const resultado = await Swal.fire({
-      title: '¿Abandonar la partida?',
-      text: 'Si abandonás, la partida se dará por terminada por desconexión y se registrará tu salida.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, abandonar',
-      cancelButtonText: 'No, volver',
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#4b5563',
-      background: '#1a1f2c',
-      color: '#f3f4f6',
-      customClass: {
-        popup: 'rounded-2xl border border-borde-default shadow-cartoon',
-        confirmButton: 'font-titulo font-bold tracking-wide uppercase',
-        cancelButton: 'font-interfaz font-bold',
-      },
-    });
-
-    if (resultado.isConfirmed) {
-      this.servicio.abandonar();
-    }
+  /** Abandona la partida (la confirmación visual previa ya se resolvió en el control de turno). */
+  protected abandonar(): void {
+    this.servicio.abandonar();
   }
 
   /** Reinicia una partida nueva con el mismo mazo contra el bot. */

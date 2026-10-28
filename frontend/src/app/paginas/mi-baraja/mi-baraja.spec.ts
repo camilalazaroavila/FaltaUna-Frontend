@@ -42,6 +42,7 @@ describe('MiBaraja', () => {
           useValue: {
             obtenerCartasDisponibles: () => of(disponibles()),
             obtenerMazoActual: () => of(null),
+            obtenerMazos: () => of([]),
             guardarBaraja: (cartas: readonly Carta[]) => of([...cartas]),
           },
         },

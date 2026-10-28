@@ -21,7 +21,7 @@
     overflow: hidden;
 }
 
-@media (max-height: 48rem) {
+@media (max-height: 32rem) {
     .partida-activa {
         height: auto;
         overflow: visible;
@@ -29,7 +29,7 @@
 
     .area-tablero {
         overflow: visible;
-        min-height: 26rem;
+        min-height: 24rem;
     }
 }
 

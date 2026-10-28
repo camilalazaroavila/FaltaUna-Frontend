@@ -11,7 +11,7 @@
       @for (destino of destinos; track destino.id) {
       <app-boton-navegacion-circular [urlIcono]="destino.urlIcono ?? null" [icono]="destino.icono ?? null"
         [etiquetaAria]="destino.nombre" [activo]="seccionActiva() === destino.id" [expandible]="true"
-        [fondoBlanco]="true" tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
+        [fondoBlanco]="true" [deshabilitado]="destino.deshabilitado ?? false" tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
       }
     </nav>
   </aside>
@@ -81,4 +81,112 @@
   <app-flujo-apertura-sobres [abierto]="selectorSobresAbierto()" [sobresCatalogo]="sobresCatalogo()"
     [sobresInventario]="sobresInventario()" [sobresDiariosDisponibles]="sobresDisponibles().actuales"
     (cerrar)="cerrarSelectorSobres()" (aperturaRealizada)="alCompletarApertura()" />
+
+  <app-confeti />
+
+  @if (modalBienvenidaMazosVisible()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-landing-oscuro-fondo/80 backdrop-blur-xs"
+      (click)="cerrarBienvenidaMazos()"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-modal-bienvenida"
+        class="relative w-full max-w-2xl rounded-3xl bg-landing-oscuro-fondo p-6 sm:p-9 text-center text-landing-oscuro-texto shadow-[14px_14px_0_0_var(--color-amarillo-logo,#d5ff5f)] border-2 border-white/10"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          type="button"
+          class="absolute -right-2 -top-2 flex size-8 cursor-pointer items-center justify-center rounded-md bg-marca-acento text-marca-primaria transition hover:bg-marca-acento-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+          aria-label="Cerrar modal"
+          (click)="cerrarBienvenidaMazos()"
+        >
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" aria-hidden="true">
+            <path d="M5 5l14 14M19 5L5 19" />
+          </svg>
+        </button>
+
+        <span class="inline-block rounded-pildora bg-marca-primaria/20 px-3 py-1 font-titulo text-xs uppercase tracking-widest text-marca-primaria">
+          ¡Paquete inicial desbloqueado!
+        </span>
+
+        <h2 id="titulo-modal-bienvenida" class="mt-3 font-titulo text-3xl sm:text-4xl uppercase leading-none tracking-wide text-marca-acento">
+          ¡Tus 3 Barajas Listas!
+        </h2>
+
+        <p class="mt-2.5 font-interfaz text-sm sm:text-base text-texto-secundario max-w-lg mx-auto">
+          Te otorgamos 3 barajas completas para que comiences a jugar de inmediato contra la IA o las personalices en Gestión de barajas.
+        </p>
+
+        <!-- Grilla de las 3 barajas -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-left">
+          @for (mazo of mazosBienvenida(); track mazo.id) {
+            <div class="flex flex-col gap-2 rounded-2xl border border-white/15 bg-white/5 p-3.5 transition-transform hover:-translate-y-1">
+              <div class="flex items-center justify-between">
+                <span class="font-titulo text-sm uppercase text-white truncate">
+                  {{ mazo.nombre }}
+                </span>
+                <span class="rounded-full bg-marca-primaria/20 px-2 py-0.5 text-[10px] font-bold text-marca-primaria shrink-0">
+                  12 cartas
+                </span>
+              </div>
+
+              <!-- Miniaturas o visual de cartas -->
+              <div class="flex items-center -space-x-2.5 pt-1">
+                @if (mazo.cartas && mazo.cartas.length > 0) {
+                  @for (c of mazo.cartas.slice(0, 3); track c.cartaId) {
+                    <div class="size-9 rounded-lg border border-white/20 overflow-hidden bg-fondo-superficie shadow-sm shrink-0">
+                      @if (c.imagenUrl) {
+                        <img [src]="c.imagenUrl" [alt]="c.nombre" class="size-full object-cover" />
+                      } @else {
+                        <div class="size-full bg-marca-primaria/30 flex items-center justify-center font-bold text-[10px] text-white">
+                          {{ c.poder }}
+                        </div>
+                      }
+                    </div>
+                  }
+                } @else {
+                  <div class="h-9 w-full rounded-lg bg-white/10 flex items-center justify-center font-interfaz text-xs text-white/60">
+                    Baraja lista
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            type="button"
+            app-boton
+            variante="primario"
+            tamanio="md"
+            class="w-full sm:w-auto px-7"
+            (click)="cerrarBienvenidaMazos()"
+          >
+            ¡Entendido, a jugar!
+          </button>
+          <button
+            type="button"
+            app-boton
+            variante="fantasma"
+            tamanio="md"
+            class="w-full sm:w-auto"
+            (click)="irABarajasDesdeBienvenida()"
+          >
+            Ver mis barajas
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <app-expo-popout
+    [abierto]="expoPopoutAbierto()"
+    [urlImagen]="urlImagenExpo"
+    altImagen="Stand de FALTA UNA en la expo"
+    titulo="¡Estamos en el stand!"
+    texto="¡Girá la ruleta y ganá premios en la web! Te estamos esperando."
+    (cerrar)="cerrarExpoPopout()"/>
 </div>

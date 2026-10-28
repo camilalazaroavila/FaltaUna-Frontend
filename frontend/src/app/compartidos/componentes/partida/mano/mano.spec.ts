@@ -46,10 +46,10 @@ describe('Mano', () => {
       fixture.nativeElement.querySelectorAll('button'),
     ) as HTMLElement[];
 
-    expect(botones[0].style.getPropertyValue('--angulo')).toBe('-14deg');
+    expect(botones[0].style.getPropertyValue('--angulo')).toBe('-18deg');
     expect(botones[1].style.getPropertyValue('--angulo')).toBe('0deg');
-    expect(botones[2].style.getPropertyValue('--angulo')).toBe('14deg');
-    expect(botones[0].style.getPropertyValue('--caida')).toBe('1rem');
+    expect(botones[2].style.getPropertyValue('--angulo')).toBe('18deg');
+    expect(botones[0].style.getPropertyValue('--caida')).toBe('1.25rem');
     expect(botones[1].style.getPropertyValue('--caida')).toBe('0rem');
   });
 

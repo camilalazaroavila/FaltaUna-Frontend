@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import Swal from 'sweetalert2';
 
 import { ControlTurno } from './control-turno';
 
@@ -72,6 +71,18 @@ describe('ControlTurno', () => {
     expect(boton.disabled).toBe(true);
   });
 
+  it('muestra "Fin de la partida", sin spinner y deshabilitado cuando terminada es true', () => {
+    fixture.componentRef.setInput('estado', 'resolviendo');
+    fixture.componentRef.setInput('terminada', true);
+    fixture.detectChanges();
+    const boton = fixture.nativeElement.querySelector('button[app-boton]') as HTMLButtonElement;
+    const textoLargo = fixture.nativeElement.querySelector('.control-texto--largo')?.textContent?.trim();
+    expect(textoLargo).toBe('Fin de la partida');
+    expect(boton.disabled).toBe(true);
+    expect(component.accionBoton()).toBe('Fin de la partida');
+    expect(component.resolviendo()).toBe(false);
+  });
+
   it('muestra solo el botón de Rendirse debajo del botón principal', () => {
     const botones = fixture.nativeElement.querySelectorAll('button');
     const textos = Array.from(botones).map((b) => (b as HTMLButtonElement).textContent?.trim());
@@ -79,76 +90,62 @@ describe('ControlTurno', () => {
     expect(textos).toContain('Rendirse');
   });
 
-  it('al confirmar abandonar en SweetAlert, emite el evento abandonar', async () => {
-    const swalSpy = jest.spyOn(Swal, 'fire').mockResolvedValue({
-      isConfirmed: true,
-      isDenied: false,
-      isDismissed: false,
-    } as any);
+  it('al pedir confirmación de abandonar, abre modal y emite al confirmar', () => {
     const abandonarSpy = jest.fn();
     component.abandonar.subscribe(abandonarSpy);
 
-    await component.pedirConfirmacionAbandonar();
+    component.pedirConfirmacionAbandonar();
+    fixture.detectChanges();
 
-    expect(swalSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: '¿Abandonar la partida?',
-        showCancelButton: true,
-      }),
-    );
+    const modal = fixture.nativeElement.querySelector('[aria-labelledby="titulo-modal-abandonar"]');
+    expect(modal).toBeTruthy();
+
+    component.confirmarAbandonar();
     expect(abandonarSpy).toHaveBeenCalled();
-    swalSpy.mockRestore();
   });
 
-  it('al cancelar abandonar en SweetAlert, no emite abandonar', async () => {
-    const swalSpy = jest.spyOn(Swal, 'fire').mockResolvedValue({
-      isConfirmed: false,
-      isDenied: false,
-      isDismissed: true,
-    } as any);
+  it('al cancelar abandonar, no emite abandonar y cierra el modal', () => {
     const abandonarSpy = jest.fn();
     component.abandonar.subscribe(abandonarSpy);
 
-    await component.pedirConfirmacionAbandonar();
+    component.pedirConfirmacionAbandonar();
+    fixture.detectChanges();
 
+    component.cancelarAbandonar();
+    fixture.detectChanges();
+
+    const modal = fixture.nativeElement.querySelector('[aria-labelledby="titulo-modal-abandonar"]');
+    expect(modal).toBeNull();
     expect(abandonarSpy).not.toHaveBeenCalled();
-    swalSpy.mockRestore();
   });
 
-  it('al confirmar rendirse en SweetAlert, emite el evento rendirse', async () => {
-    const swalSpy = jest.spyOn(Swal, 'fire').mockResolvedValue({
-      isConfirmed: true,
-      isDenied: false,
-      isDismissed: false,
-    } as any);
+  it('al pedir confirmación de rendirse, abre modal y emite al confirmar', () => {
     const rendirseSpy = jest.fn();
     component.rendirse.subscribe(rendirseSpy);
 
-    await component.pedirConfirmacionRendirse();
+    component.pedirConfirmacionRendirse();
+    fixture.detectChanges();
 
-    expect(swalSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: '¿Rendirte?',
-        showCancelButton: true,
-      }),
-    );
+    const modal = fixture.nativeElement.querySelector('[aria-labelledby="titulo-modal-rendirse"]');
+    expect(modal).toBeTruthy();
+
+    component.confirmarRendirse();
     expect(rendirseSpy).toHaveBeenCalled();
-    swalSpy.mockRestore();
   });
 
-  it('al cancelar rendirse en SweetAlert, no emite rendirse', async () => {
-    const swalSpy = jest.spyOn(Swal, 'fire').mockResolvedValue({
-      isConfirmed: false,
-      isDenied: false,
-      isDismissed: true,
-    } as any);
+  it('al cancelar rendirse, no emite rendirse y cierra el modal', () => {
     const rendirseSpy = jest.fn();
     component.rendirse.subscribe(rendirseSpy);
 
-    await component.pedirConfirmacionRendirse();
+    component.pedirConfirmacionRendirse();
+    fixture.detectChanges();
 
+    component.cancelarRendirse();
+    fixture.detectChanges();
+
+    const modal = fixture.nativeElement.querySelector('[aria-labelledby="titulo-modal-rendirse"]');
+    expect(modal).toBeNull();
     expect(rendirseSpy).not.toHaveBeenCalled();
-    swalSpy.mockRestore();
   });
 });
 

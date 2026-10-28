@@ -13,9 +13,9 @@ import type { Carta } from '@modelos/carta.model';
 import { GsapService } from '@servicios/gsap.service';
 
 /** Grados de inclinación entre la primera y la última carta. */
-const ABANICO_TOTAL_GRADOS = 28;
+const ABANICO_TOTAL_GRADOS = 36;
 /** Cuánto baja (rem) la carta más alejada del centro. */
-const CAIDA_MAXIMA_REM = 1;
+const CAIDA_MAXIMA_REM = 1.25;
 /** Píxeles que hay que mover antes de considerar que empezó un arrastre. */
 const UMBRAL_ARRASTRE_PX = 6;
 
@@ -173,12 +173,16 @@ export class Mano {
   }
 
   protected alSoltar(evento: PointerEvent): void {
-    if (evento.pointerId !== this.punteroActivo) {
+    if (this.punteroActivo === undefined || evento.pointerId !== this.punteroActivo) {
       return;
     }
 
     const carta = this.arrastrando();
     const posicion = { x: evento.clientX, y: evento.clientY };
+    const huboArrastre = this.umbralActivo();
+
+    this.punteroActivo = undefined;
+    this.umbralActivo.set(false);
 
     try {
       const objetivo = evento.currentTarget as HTMLElement;
@@ -188,8 +192,8 @@ export class Mano {
       // Ignorar
     }
 
-    if (this.umbralActivo()) {
-      // El fantasma sigue vivo: el tablero decide si vuela al slot o se anula.
+    if (huboArrastre) {
+      // El fantasma sigue vivo hasta que el tablero resuelva volarHacia o cancelarArrastre.
       this.arrastreFin.emit(posicion);
       return;
     }
@@ -224,19 +228,17 @@ export class Mano {
   }
 
   protected alCancelar(evento: PointerEvent): void {
-    if (evento.pointerId !== this.punteroActivo) {
+    if (this.punteroActivo === undefined || evento.pointerId !== this.punteroActivo) {
       return;
     }
+
+    this.punteroActivo = undefined;
+    this.umbralActivo.set(false);
 
     try {
       (evento.currentTarget as HTMLElement).releasePointerCapture?.(evento.pointerId);
     } catch {
       // Ignorar
-    }
-
-    if (this.umbralActivo()) {
-      this.arrastreFin.emit({ x: evento.clientX, y: evento.clientY });
-      return;
     }
 
     this.reiniciar();
@@ -262,10 +264,13 @@ export class Mano {
     const actual = this.puntero();
     const idActual = ++this.animacionId;
 
+    const deltaX = centro.x - (actual?.x ?? centro.x);
+    const deltaY = centro.y - (actual?.y ?? centro.y);
+
     this.animacionActiva = this.gsapServicio.gsap.to(fantasma, {
-      x: centro.x - (actual?.x ?? centro.x),
-      y: centro.y - (actual?.y ?? centro.y),
-      scale: 0.9,
+      x: deltaX,
+      y: deltaY,
+      scale: 0.85,
       opacity: 0,
       duration: this.gsapServicio.duracionPartida('vuelo-carta'),
       ease: 'power2.in',
@@ -280,6 +285,10 @@ export class Mano {
 
   /** Anula el arrastre en curso (destino inválido) sin jugar la carta. */
   cancelarArrastre(): void {
+    if (this.animacionActiva) {
+      this.animacionActiva.kill();
+      this.animacionActiva = undefined;
+    }
     if (this.arrastrando()) {
       this.reiniciar();
     }

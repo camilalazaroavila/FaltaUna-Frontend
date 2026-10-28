@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, linkedSignal } from '@angular/core';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import {
   ESTRELLAS_POR_RAREZA,
   ETIQUETA_RAREZA,
   ETIQUETA_CATEGORIA,
+  normalizarUrlImagen,
 } from '@modelos/carta.model';
 
 import urlFondoComun from '@svgs/FondoCartaComun.svg';
@@ -37,6 +38,7 @@ const FONDO_POR_RAREZA: Record<RarezaCarta, string> = {
   host: {
     '[class.carta--no-obtenida]': '!carta().obtenida',
     '[class.carta--blanco-y-negro]': 'carta().blancoYNegro',
+    '[class.carta--oculta]': 'carta().oculta',
     '[class.carta--legendaria]': 'carta().rareza === "legendaria"',
     '[attr.aria-label]': 'ariaLabel()',
     role: 'article',
@@ -52,12 +54,23 @@ export class CartaComponent {
     () => !this.carta().oculta && this.efectosCategoria().length > 0,
   );
 
-  /** `true` cuando la imagen no carga: se oculta y queda el marco de la carta. */
-  protected readonly imagenRota = signal(false);
+  /** `true` cuando la imagen no carga: se muestra el fallback con la categoría y nombre. */
+  protected readonly imagenRota = linkedSignal(() => {
+    this.carta();
+    return false;
+  });
 
   protected alFallarImagen(): void {
+    if (this.imagenRota()) {
+      return;
+    }
     this.imagenRota.set(true);
   }
+
+  protected readonly urlImagen = computed(() =>
+    normalizarUrlImagen(this.carta().imagenUrl),
+  );
+
 
   protected readonly urlFondo = computed(
     () => FONDO_POR_RAREZA[this.carta().rareza],
@@ -79,30 +92,6 @@ export class CartaComponent {
     this.carta().obtenida || this.carta().blancoYNegro ? this.carta().nombre : 'Carta no obtenida',
   );
 
-  protected readonly poderActual = computed(() => this.carta().atributoDerecho);
-  protected readonly poderBase = computed(() => this.carta().poderBase);
-  protected readonly diferenciaPoder = computed(() => {
-    const actual = this.poderActual();
-    const base = this.poderBase();
-    if (base === undefined || base === null) {
-      return null;
-    }
-    if (actual === base) {
-      return null;
-    }
-    return actual - base;
-  });
-  protected readonly muestraDiferencia = computed(() => this.diferenciaPoder() !== null);
-  protected readonly esPositivo = computed(() => (this.diferenciaPoder() ?? 0) > 0);
-  protected readonly esNegativo = computed(() => (this.diferenciaPoder() ?? 0) < 0);
-  protected readonly etiquetaDiferencia = computed(() => {
-    const diff = this.diferenciaPoder();
-    if (diff === null) {
-      return '';
-    }
-    return diff > 0 ? `+${diff}` : String(diff);
-  });
-
   protected readonly ariaLabel = computed(() => {
     const c = this.carta();
     const rareza = ETIQUETA_RAREZA[c.rareza];
@@ -116,10 +105,6 @@ export class CartaComponent {
       return `Carta no obtenida, ${rareza}, ${categoria}`;
     }
 
-    const diff = this.diferenciaPoder();
-    const extra =
-      diff !== null ? `, poder actual ${c.atributoDerecho}, ${diff > 0 ? 'aumento' : 'reducción'} ${Math.abs(diff)}` : '';
-
-    return `Carta ${c.nombre}, ${rareza}, ${categoria}, costo ${c.atributoIzquierdo}, poder ${c.atributoDerecho}${extra}, obtenida`;
+    return `Carta ${c.nombre}, ${rareza}, ${categoria}, costo ${c.atributoIzquierdo}, poder ${c.atributoDerecho}, obtenida`;
   });
 }

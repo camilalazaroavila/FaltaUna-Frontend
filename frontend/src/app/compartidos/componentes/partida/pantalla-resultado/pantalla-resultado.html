@@ -1,120 +1,332 @@
-<div
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="titulo-resultado"
-  aria-describedby="motivo-resultado"
->
-  <div
-    class="pantalla-resultado-tarjeta relative flex w-full max-w-md flex-col items-center gap-5 rounded-3xl border-2 p-6 sm:p-8 text-center shadow-cartoon"
-    [class.pantalla-resultado-tarjeta--victoria]="tipo() === 'victoria'"
-    [class.pantalla-resultado-tarjeta--derrota]="tipo() === 'derrota'"
-    [class.pantalla-resultado-tarjeta--empate]="tipo() === 'empate'"
-    [class.pantalla-resultado-tarjeta--finalizada]="tipo() === 'finalizada'"
-  >
-    <!-- Ícono / Emblema decorativo -->
-    <div
-      class="pantalla-resultado-icono flex size-16 items-center justify-center rounded-2xl border-2 shadow-cartoon"
-      [class.pantalla-resultado-icono--victoria]="tipo() === 'victoria'"
-      [class.pantalla-resultado-icono--derrota]="tipo() === 'derrota'"
-      [class.pantalla-resultado-icono--empate]="tipo() === 'empate'"
-      [class.pantalla-resultado-icono--finalizada]="tipo() === 'finalizada'"
-      aria-hidden="true"
-    >
-      @if (tipo() === 'victoria') {
-        <svg class="size-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-          <path d="M4 22h16" />
-          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-        </svg>
-      } @else if (tipo() === 'derrota') {
-        <svg class="size-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <path d="m15 9-6 6" />
-          <path d="m9 9 6 6" />
-        </svg>
-      } @else if (tipo() === 'empate') {
-        <svg class="size-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M8 12h8" />
-        </svg>
-      } @else {
-        <svg class="size-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 6v6l4 2" />
-        </svg>
-      }
-    </div>
+<app-confeti />
 
-    <!-- Título y subtítulo -->
-    <div class="flex flex-col gap-1">
-      <h2
-        id="titulo-resultado"
-        class="font-titulo text-3xl sm:text-4xl tracking-wide uppercase"
+@if (faseHeroica()) {
+  <div
+    class="pantalla-resultado-heroica fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm cursor-pointer"
+    (click)="terminarFaseHeroica()"
+    (keydown.enter)="terminarFaseHeroica()"
+    (keydown.space)="terminarFaseHeroica()"
+    (keydown.escape)="terminarFaseHeroica()"
+    tabindex="0"
+    role="button"
+    aria-label="Cerrar presentación heroica y ver tablero"
+  >
+    <div
+      class="pantalla-resultado-heroica-tarjeta relative max-w-md w-full rounded-2xl border-4 p-6 sm:p-8 text-center shadow-2xl transition-transform"
+      [class.pantalla-resultado-heroica-tarjeta--victoria]="tipo() === 'victoria'"
+      [class.pantalla-resultado-heroica-tarjeta--derrota]="tipo() === 'derrota'"
+      [class.pantalla-resultado-heroica-tarjeta--empate]="tipo() === 'empate'"
+      [class.pantalla-resultado-heroica-tarjeta--finalizada]="tipo() === 'finalizada'"
+    >
+      <div
+        class="inline-flex items-center justify-center size-20 rounded-2xl mb-4 border-2 shadow-inner"
+        [class.bg-exito]="tipo() === 'victoria'"
+        [class.text-exito-sobre]="tipo() === 'victoria'"
+        [class.border-exito-borde]="tipo() === 'victoria'"
+        [class.bg-error]="tipo() === 'derrota'"
+        [class.text-error-sobre]="tipo() === 'derrota'"
+        [class.border-error-borde]="tipo() === 'derrota'"
+        [class.bg-advertencia]="tipo() === 'empate'"
+        [class.text-advertencia-sobre]="tipo() === 'empate'"
+        [class.border-advertencia-borde]="tipo() === 'empate'"
+        [class.bg-fondo-hundido]="tipo() === 'finalizada'"
+        [class.text-texto-primario]="tipo() === 'finalizada'"
+        [class.border-borde-default]="tipo() === 'finalizada'"
+      >
+        @if (tipo() === 'victoria') {
+          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        } @else if (tipo() === 'derrota') {
+          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="m15 9-6 6" />
+            <path d="m9 9 6 6" />
+          </svg>
+        } @else if (tipo() === 'empate') {
+          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M8 12h8" />
+          </svg>
+        } @else {
+          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        }
+      </div>
+
+      <h1
+        class="font-titulo text-3xl sm:text-4xl uppercase tracking-wider mb-2"
         [class.text-exito]="tipo() === 'victoria'"
         [class.text-error]="tipo() === 'derrota'"
         [class.text-advertencia-texto]="tipo() === 'empate'"
         [class.text-texto-primario]="tipo() === 'finalizada'"
       >
         {{ titulo() }}
-      </h2>
-      <p class="font-interfaz text-sm text-texto-secundario">
+      </h1>
+
+      <p class="text-sm sm:text-base text-texto-secundario mb-4 leading-snug">
         {{ subtitulo() }}
       </p>
-    </div>
 
-    <!-- Marcador de puntos finales -->
-    <div class="grid w-full grid-cols-2 gap-3 rounded-2xl border border-borde-default bg-hundido/80 p-3 sm:p-4">
-      <div class="flex flex-col items-center gap-1">
-        <span class="font-interfaz text-xs font-semibold uppercase tracking-wider text-texto-secundario">
-          {{ nombreJugador() }}
-        </span>
-        <span class="font-titulo text-3xl sm:text-4xl tabular-nums text-texto-primario">
-          {{ puntosPropio() }}
-        </span>
+      <div class="inline-flex items-center justify-center gap-3 bg-fondo-hundido border border-borde-default rounded-xl px-4 py-2 mb-4">
+        <span class="text-xs uppercase font-bold text-texto-secundario">{{ nombreJugador() }}</span>
+        <span class="font-titulo text-2xl tabular-nums text-texto-primario">{{ puntosPropio() }}</span>
+        <span class="text-texto-secundario font-bold">:</span>
+        <span class="font-titulo text-2xl tabular-nums text-texto-primario">{{ puntosRival() }}</span>
+        <span class="text-xs uppercase font-bold text-texto-secundario">{{ nombreRival() }}</span>
       </div>
-      <div class="flex flex-col items-center gap-1 border-l border-borde-default">
-        <span class="font-interfaz text-xs font-semibold uppercase tracking-wider text-texto-secundario">
-          {{ nombreRival() }}
-        </span>
-        <span class="font-titulo text-3xl sm:text-4xl tabular-nums text-texto-primario">
-          {{ puntosRival() }}
-        </span>
+
+      <p class="text-xs sm:text-sm text-texto-primario mb-4 font-medium">
+        {{ motivoTexto() }}
+      </p>
+
+      <span class="block text-[11px] uppercase tracking-widest text-texto-secundario opacity-75">
+        Hacé clic o tocá una tecla para continuar al tablero
+      </span>
+    </div>
+  </div>
+}
+
+<div
+  class="pantalla-resultado-contenedor w-full"
+  [class.pantalla-resultado-contenedor--flotante]="!modoIncrustado()"
+  [class.pantalla-resultado-contenedor--incrustado]="modoIncrustado()"
+  role="region"
+  aria-label="Resultado de la partida"
+  aria-live="polite"
+>
+  <div
+    #panelRef
+    class="pantalla-resultado-panel"
+    [class.pantalla-resultado-panel--victoria]="tipo() === 'victoria'"
+    [class.pantalla-resultado-panel--derrota]="tipo() === 'derrota'"
+    [class.pantalla-resultado-panel--empate]="tipo() === 'empate'"
+    [class.pantalla-resultado-panel--finalizada]="tipo() === 'finalizada'"
+  >
+    <!-- Cabecera compacta: Estado, Título, Puntos, Motivo y Acciones -->
+    <div class="pantalla-resultado-barra">
+      <!-- Lado Izquierdo: Icono + Título + Subtítulo/Motivo -->
+      <div class="pantalla-resultado-info flex items-center gap-2.5 min-w-0 flex-1">
+        <div
+          class="pantalla-resultado-icono"
+          [class.pantalla-resultado-icono--victoria]="tipo() === 'victoria'"
+          [class.pantalla-resultado-icono--derrota]="tipo() === 'derrota'"
+          [class.pantalla-resultado-icono--empate]="tipo() === 'empate'"
+          [class.pantalla-resultado-icono--finalizada]="tipo() === 'finalizada'"
+          aria-hidden="true"
+        >
+          @if (tipo() === 'victoria') {
+            <!-- Trofeo -->
+            <svg class="size-5 sm:size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+              <path d="M4 22h16" />
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+            </svg>
+          } @else if (tipo() === 'derrota') {
+            <!-- Cruz / Escudo -->
+            <svg class="size-5 sm:size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="m15 9-6 6" />
+              <path d="m9 9 6 6" />
+            </svg>
+          } @else if (tipo() === 'empate') {
+            <!-- Balanza / Igualdad -->
+            <svg class="size-5 sm:size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 12h8" />
+            </svg>
+          } @else {
+            <svg class="size-5 sm:size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+          }
+        </div>
+
+        <div class="pantalla-resultado-textos flex flex-col min-w-0 gap-0.5">
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <h2
+              id="titulo-resultado"
+              class="pantalla-resultado-titulo font-titulo text-lg sm:text-xl uppercase tracking-wide leading-tight"
+              [class.text-exito]="tipo() === 'victoria'"
+              [class.text-error]="tipo() === 'derrota'"
+              [class.text-advertencia-texto]="tipo() === 'empate'"
+              [class.text-texto-primario]="tipo() === 'finalizada'"
+            >
+              {{ titulo() }}
+            </h2>
+            <span
+              class="pantalla-resultado-badge text-[11px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border border-borde-default"
+              [class.pantalla-resultado-badge--victoria]="tipo() === 'victoria'"
+              [class.pantalla-resultado-badge--derrota]="tipo() === 'derrota'"
+              [class.pantalla-resultado-badge--empate]="tipo() === 'empate'"
+            >
+              {{ badgeTexto() }}
+            </span>
+          </div>
+
+          <p id="motivo-resultado" class="pantalla-resultado-motivo text-xs text-texto-secundario truncate max-w-xs sm:max-w-md">
+            {{ motivoTexto() }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Centro: Marcador de puntos finales -->
+      <div class="pantalla-resultado-marcador flex items-center justify-center gap-2 bg-fondo-hundido border border-borde-default rounded-xl px-2.5 py-1 self-start sm:self-center" aria-label="Puntos finales">
+        <div class="marcador-jugador flex items-baseline gap-1.5">
+          <span class="marcador-etiqueta text-[11px] font-bold uppercase text-texto-secundario">{{ nombreJugador() }}</span>
+          <span class="marcador-puntos font-titulo text-lg leading-none tabular-nums text-texto-primario">{{ puntosPropio() }}</span>
+        </div>
+        <span class="marcador-separador text-texto-secundario font-bold text-sm" aria-hidden="true">:</span>
+        <div class="marcador-jugador flex items-baseline gap-1.5">
+          <span class="marcador-puntos font-titulo text-lg leading-none tabular-nums text-texto-primario">{{ puntosRival() }}</span>
+          <span class="marcador-etiqueta text-[11px] font-bold uppercase text-texto-secundario">{{ nombreRival() }}</span>
+        </div>
+      </div>
+
+      <!-- Lado Derecho: Acciones y Botón de alternar detalle -->
+      <div class="pantalla-resultado-acciones flex items-center justify-between sm:justify-end gap-2 flex-wrap">
+        <button
+          type="button"
+          class="boton-alternar-detalle inline-flex items-center gap-1.5 text-xs font-bold text-texto-secundario bg-fondo-hundido border border-borde-default rounded-lg px-2.5 py-1.5 transition-colors hover:text-texto-primario hover:border-texto-secundario focus-visible:outline-2 focus-visible:outline-borde-foco cursor-pointer"
+          (click)="alternarDetalle()"
+          [attr.aria-expanded]="expandido()"
+          aria-controls="panel-detalle-resultado"
+        >
+          <span>{{ expandido() ? 'Ocultar por qué' : 'Ver por qué' }}</span>
+          <svg
+            class="size-3.5 sm:size-4 transition-transform duration-200"
+            [class.rotate-180]="expandido()"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <button
+            #botonReintentar
+            type="button"
+            app-boton
+            variante="primario"
+            tamanio="sm"
+            (click)="jugarOtraVez.emit()"
+          >
+            Jugar otra vez
+          </button>
+          <button
+            type="button"
+            app-boton
+            variante="fantasma"
+            tamanio="sm"
+            (click)="volverAlMenu.emit()"
+          >
+            Volver al menú
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Motivo de fin de partida -->
-    <div
-      id="motivo-resultado"
-      class="w-full rounded-xl border border-borde-default/60 bg-fondo-elevado/50 px-3.5 py-2.5 font-interfaz text-xs text-texto-secundario"
-    >
-      {{ motivoTexto() }}
-    </div>
+    <!-- Panel expandido: Desglose por qué (Ronda a Ronda y Zona a Zona) -->
+    @if (expandido()) {
+      <div
+        id="panel-detalle-resultado"
+        class="pantalla-resultado-desglose"
+      >
+        <div class="desglose-cabecera flex flex-col gap-0.5 mb-3">
+          <h3 class="desglose-titulo font-titulo text-sm uppercase tracking-wide text-texto-primario">Detalle de la partida</h3>
+          <p class="desglose-subtitulo text-xs text-texto-secundario">{{ subtitulo() }}</p>
+        </div>
 
-    <!-- Botones de acción -->
-    <div class="mt-2 flex w-full flex-col gap-2.5 sm:flex-row">
-      <button
-        #botonReintentar
-        type="button"
-        app-boton
-        variante="primario"
-        class="flex-1"
-        (click)="jugarOtraVez.emit()"
-      >
-        Jugar otra vez
-      </button>
-      <button
-        type="button"
-        app-boton
-        variante="fantasma"
-        class="flex-1"
-        (click)="volverAlMenu.emit()"
-      >
-        Volver al menú
-      </button>
-    </div>
+        @if (rondasParaMostrar().length > 0) {
+          <div class="desglose-lista-rondas flex flex-col gap-2.5">
+            @for (ronda of rondasParaMostrar(); track ronda.numero) {
+              <div class="desglose-ronda-tarjeta bg-fondo-hundido border border-borde-default rounded-xl p-2.5 sm:p-3">
+                <div class="desglose-ronda-cabecera flex items-center justify-between gap-2 flex-wrap">
+                  <div class="flex items-center gap-2">
+                    <span class="ronda-numero-badge text-[11px] font-bold uppercase bg-superficie-elevada border border-borde-default px-1.5 py-0.5 rounded text-texto-primario">Ronda {{ ronda.numero }}</span>
+                    <span
+                      class="ronda-resultado-texto text-xs font-bold"
+                      [class.text-exito]="ronda.ganador === 'propio'"
+                      [class.text-error]="ronda.ganador === 'rival'"
+                      [class.text-advertencia-texto]="ronda.ganador === 'empate'"
+                    >
+                      {{ textoResultadoRonda(ronda) }}
+                    </span>
+                  </div>
+
+                  <div class="ronda-puntos-acumulados text-xs text-texto-secundario">
+                    Marcador: <span class="font-bold text-texto-primario">{{ ronda.puntosPropio }}</span> a <span class="font-bold text-texto-primario">{{ ronda.puntosRival }}</span>
+                  </div>
+                </div>
+
+                <!-- Detalle por zona de la ronda -->
+                @if (ronda.zonas && ronda.zonas.length > 0) {
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                    @for (zona of ronda.zonas; track zona.nombreZona) {
+                      <div class="desglose-zona-item bg-superficie-elevada border border-borde-default rounded-lg p-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-texto-primario mb-1">
+                          <span class="truncate">{{ zona.nombreZona }}</span>
+                          <span
+                            class="text-[11px] font-semibold uppercase px-1.5 py-0.5 rounded"
+                            [class.bg-exito/20]="zona.ganador === 'propio'"
+                            [class.text-exito]="zona.ganador === 'propio'"
+                            [class.bg-error/20]="zona.ganador === 'rival'"
+                            [class.text-error]="zona.ganador === 'rival'"
+                            [class.bg-advertencia/20]="zona.ganador === 'empate'"
+                            [class.text-advertencia-texto]="zona.ganador === 'empate'"
+                          >
+                            {{ zona.ganador === 'propio' ? 'Ganada' : (zona.ganador === 'rival' ? 'Perdida' : 'Empate') }}
+                          </span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-texto-secundario">
+                          <span>Poder: <strong class="text-texto-primario">{{ zona.propio }}</strong> vs <strong class="text-texto-primario">{{ zona.rival }}</strong></span>
+                          <span>+{{ zona.puntosGanadosPropio }} pts</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- Jugadas del bot en esta ronda si están disponibles -->
+                @if (ronda.cartasReveladasRival && ronda.cartasReveladasRival.length > 0) {
+                  <div class="mt-2 pt-1.5 border-t border-borde-default/40 text-xs text-texto-secundario">
+                    <span class="font-semibold text-texto-primario">Cartas reveladas del rival:</span>
+                    <div class="flex flex-wrap gap-1.5 mt-1">
+                      @for (jugada of ronda.cartasReveladasRival; track jugada.nombre) {
+                        <span class="inline-flex items-center gap-1 rounded bg-fondo-hundido px-2 py-0.5 text-[11px] text-texto-secundario border border-borde-default/60">
+                          <span class="text-texto-primario font-semibold">{{ jugada.nombre }}</span>
+                          (Poder {{ jugada.poder }}) en {{ jugada.nombreZona }}
+                        </span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="desglose-vacio p-4 rounded-xl border border-dashed border-borde-default bg-fondo-hundido text-center text-xs text-texto-secundario">
+            Detalle ronda a ronda no disponible tras recargar la partida.
+          </div>
+        }
+      </div>
+    }
   </div>
 </div>

@@ -134,8 +134,8 @@ describe('BarraPuntos Component', () => {
     expect(el.textContent?.trim()).toBe('+5');
     expect(doble.gsap.fromTo).toHaveBeenCalledWith(
       el,
-      { y: 0, opacity: 1 },
-      expect.objectContaining({ y: -26, opacity: 0 }),
+      { y: 6, opacity: 0, scale: 0.7 },
+      expect.objectContaining({ y: -30, opacity: 1, scale: 1.3 }),
     );
   });
 
