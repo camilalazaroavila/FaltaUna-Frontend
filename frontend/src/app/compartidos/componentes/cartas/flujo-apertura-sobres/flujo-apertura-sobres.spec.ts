@@ -195,7 +195,7 @@ describe('FlujoAperturaSobres Component', () => {
     expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.rotarZona, 0.7);
 
     sonidoServiceMock.reproducir.mockClear();
-    tick(500);
+    tick(400);
 
     expect(sobresServiceSpy.reclamarSobreDiario).toHaveBeenCalledWith(7);
     expect(component['fase']()).toBe('revelacion');
@@ -205,12 +205,19 @@ describe('FlujoAperturaSobres Component', () => {
       0.45,
     );
 
-    // Avanzar a la segunda carta (Común) reproduce únicamente el sonido de revelar carta a volumen 0.35
+    // Un instante después (140ms) se solapa el efecto de estrellitas
+    tick(150);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.estrellitas, 0.32);
+
+    // Avanzar a la segunda carta (Común) reproduce darVueltaCartas y luego estrellitas
     sonidoServiceMock.reproducir.mockClear();
     component.avanzarOFinalizar();
     tick(50);
     expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
     expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.darVueltaCartas, 0.35);
+
+    tick(150);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.estrellitas, 0.32);
   }));
 
   it('muestra el error del backend y no inventa cartas si falla la apertura', fakeAsync(() => {
@@ -271,7 +278,7 @@ describe('FlujoAperturaSobres Component', () => {
     component.onPointerMoveCorte({ clientX: 90 } as PointerEvent); // deltaX = 40 (> 20)
     component.onPointerUpCorte();
 
-    tick(1000);
+    tick(1200);
     expect(sobresServiceSpy.reclamarSobreDiario).toHaveBeenCalledWith(7);
     expect(component['fase']()).toBe('revelacion');
   }));

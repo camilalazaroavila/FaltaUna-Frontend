@@ -449,6 +449,7 @@ export class FlujoAperturaSobres {
 
   // Manejo de navegación entre fases
   iniciar(): void {
+    this.limpiarTimeoutEstrellitas();
     this.sonidoService?.precargarSonidosPartida();
     this.abiertosLocal.set(this.leerAbiertosLocal());
     this.fase.set('seleccion');
@@ -685,17 +686,33 @@ export class FlujoAperturaSobres {
     return sobre && sobre.cantidadCartas > 0 ? sobre.cantidadCartas : CARTAS_SOBRE_DIARIO;
   }
 
+  private timeoutEstrellitas: ReturnType<typeof setTimeout> | null = null;
+
+  private limpiarTimeoutEstrellitas(): void {
+    if (this.timeoutEstrellitas) {
+      clearTimeout(this.timeoutEstrellitas);
+      this.timeoutEstrellitas = null;
+    }
+  }
+
   /**
-   * Reproduce un único sonido a volumen moderado al aparecer cada carta:
-   * - Si es legendaria: `carta legendaria encontrada.mp3`.
-   * - Todas las demás rarezas: el efecto de revelar carta (`darVueltaCartas`).
+   * Reproduce el sonido al aparecer cada carta a volumen moderado y, un instante
+   * después (140ms), solapa suavemente el efecto de estrellitas:
+   * - Si es legendaria: `carta legendaria encontrada.mp3` + `estrellitas.mp3`.
+   * - Todas las demás rarezas: `darVueltaCartas` + `estrellitas.mp3`.
    */
   private reproducirSonidoCartaRevelada(carta: Carta | null): void {
+    this.limpiarTimeoutEstrellitas();
     if (carta?.rareza === 'legendaria') {
       this.sonidoService?.reproducir(SONIDOS_PARTIDA.cartaLegendariaEncontrada, 0.45);
-      return;
+    } else {
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.darVueltaCartas, 0.35);
     }
-    this.sonidoService?.reproducir(SONIDOS_PARTIDA.darVueltaCartas, 0.35);
+
+    this.timeoutEstrellitas = setTimeout(() => {
+      this.timeoutEstrellitas = null;
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.estrellitas, 0.32);
+    }, 140);
   }
 
   // Siguiente carta o finalizar
@@ -713,12 +730,14 @@ export class FlujoAperturaSobres {
         this.animarCarta.set(true);
       }, 30);
     } else {
+      this.limpiarTimeoutEstrellitas();
       this.sonidoService?.reproducir(SONIDOS_PARTIDA.apoyarCarta, 0.45);
       this.cerrarFlujo();
     }
   }
 
   cerrarFlujo(): void {
+    this.limpiarTimeoutEstrellitas();
     this.fase.set('cerrado');
     this.cerrar.emit();
   }

@@ -21,6 +21,9 @@ export const SONIDOS_PARTIDA = {
   /** Se dispara al revelar una carta legendaria en la apertura de sobres. */
   cartaLegendariaEncontrada: '/sonidos/carta legendaria encontrada.mp3',
 
+  /** Se dispara un instante después de revelar cada carta en la apertura de sobres. */
+  estrellitas: '/sonidos/estrellitas para las cartas.mp3',
+
   /** Se dispara cuando una carta suma su propio poder con la burbuja flotante. */
   cartaSumaPoder: '/sonidos/partida-sonidos/Efecto para cuando una carta se suma su propio poder.mp3',
 
