@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
@@ -21,6 +21,16 @@ import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 
 import { ExpoPopout } from '@compartidos/componentes/layout/expo-popout/expo-popout';
 import { PopoutSesionService } from '@servicios/popout-sesion.service';
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import { Confeti } from '@compartidos/componentes/confeti/confeti';
+import {
+  BarajaService,
+  NOMBRES_MAZOS_BIENVENIDA,
+  resolverImagenCarta,
+  resolverNombreMazoInicial,
+} from '@servicios/baraja.service';
+import { SonidoService, SONIDOS_PARTIDA } from '@servicios/sonido.service';
+import type { MazoApi } from '@modelos/mazo.model';
 
 export interface DestinoNavegacion {
   readonly id: string;
@@ -41,12 +51,134 @@ export interface SobreOpcion {
   readonly tipo: 'gratis' | 'tematico' | 'misterio';
 }
 
-import { Boton } from '@compartidos/componentes/controles/boton/boton';
-import { Confeti } from '@compartidos/componentes/confeti/confeti';
-import { BarajaService } from '@servicios/baraja.service';
-import { SonidoService, SONIDOS_PARTIDA } from '@servicios/sonido.service';
-import type { MazoApi } from '@modelos/mazo.model';
-import { viewChild } from '@angular/core';
+const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
+  {
+    id: 1,
+    nombre: NOMBRES_MAZOS_BIENVENIDA[0],
+    completo: true,
+    cartas: [
+      {
+        cartaId: 12,
+        nombre: 'Golden Run',
+        poder: 9,
+        costoCupon: 6,
+        rarezaId: 4,
+        rareza: 'Legendaria',
+        rarezaOrden: 4,
+        imagenUrl: resolverImagenCarta('/cartas/aura_golden_run.png', 'Golden Run'),
+      },
+      {
+        cartaId: 10,
+        nombre: 'Aura Urban Pack',
+        poder: 6,
+        costoCupon: 4,
+        rarezaId: 3,
+        rareza: 'Épica',
+        rarezaOrden: 3,
+        imagenUrl: resolverImagenCarta('/cartas/aura_urban_pack.png', 'Aura Urban Pack'),
+      },
+      {
+        cartaId: 34,
+        nombre: 'Royal de Chocolate y Rosa',
+        poder: 8,
+        costoCupon: 5,
+        rarezaId: 3,
+        rareza: 'Épica',
+        rarezaOrden: 3,
+        imagenUrl: resolverImagenCarta(
+          '/cartas/dulce_atelier_royal_chocolate.png',
+          'Royal de Chocolate y Rosa',
+        ),
+      },
+    ],
+  },
+  {
+    id: 2,
+    nombre: NOMBRES_MAZOS_BIENVENIDA[1],
+    completo: true,
+    cartas: [
+      {
+        cartaId: 24,
+        nombre: 'Harmony Sound DJ Controller',
+        poder: 10,
+        costoCupon: 6,
+        rarezaId: 4,
+        rareza: 'Legendaria',
+        rarezaOrden: 4,
+        imagenUrl: resolverImagenCarta(
+          '/cartas/harmony_sound_dj_controller.png',
+          'Harmony Sound DJ Controller',
+        ),
+      },
+      {
+        cartaId: 11,
+        nombre: 'Aura Weekender',
+        poder: 8,
+        costoCupon: 5,
+        rarezaId: 3,
+        rareza: 'Épica',
+        rarezaOrden: 3,
+        imagenUrl: resolverImagenCarta('/cartas/aura_weekender.png', 'Aura Weekender'),
+      },
+      {
+        cartaId: 35,
+        nombre: 'Tarta Mousse Frutos del Bosque',
+        poder: 6,
+        costoCupon: 4,
+        rarezaId: 3,
+        rareza: 'Épica',
+        rarezaOrden: 3,
+        imagenUrl: resolverImagenCarta(
+          '/cartas/dulce_atelier_tarta_mousse.png',
+          'Tarta Mousse Frutos del Bosque',
+        ),
+      },
+    ],
+  },
+  {
+    id: 3,
+    nombre: NOMBRES_MAZOS_BIENVENIDA[2],
+    completo: true,
+    cartas: [
+      {
+        cartaId: 36,
+        nombre: 'Croquembouche Imperial de Caramelo',
+        poder: 10,
+        costoCupon: 6,
+        rarezaId: 4,
+        rareza: 'Legendaria',
+        rarezaOrden: 4,
+        imagenUrl: resolverImagenCarta(
+          '/cartas/dulce_atelier_croquembouche.png',
+          'Croquembouche Imperial de Caramelo',
+        ),
+      },
+      {
+        cartaId: 22,
+        nombre: 'Harmony Sound Official Tee',
+        poder: 6,
+        costoCupon: 4,
+        rarezaId: 3,
+        rareza: 'Épica',
+        rarezaOrden: 3,
+        imagenUrl: resolverImagenCarta(
+          '/cartas/harmony_sound_official_tee.png',
+          'Harmony Sound Official Tee',
+        ),
+      },
+      {
+        cartaId: 46,
+        nombre: 'Estatueta Coleccionable con Peso',
+        poder: 7,
+        costoCupon: 4,
+        rarezaId: 3,
+        rareza: 'Épica',
+        rarezaOrden: 3,
+        imagenUrl: resolverImagenCarta('/cartas/cineverse_estatueta.png', 'Estatueta Coleccionable con Peso'),
+      },
+    ],
+  },
+];
 
 @Component({
   selector: 'app-usuario-dashboard',
@@ -142,35 +274,59 @@ export class UsuarioDashboard implements OnInit {
     }
   }
 
+  /**
+   * Clave en localStorage por cuenta de usuario para que todas las cuentas
+   * (nuevas o existentes) reciban el aviso de sus 3 barajas de regalo al entrar a la web.
+   */
+  private claveBienvenidaMazos(): string {
+    const usuario = this.authService.usuarioActual();
+    const identificador = usuario?.id ?? usuario?.email ?? usuario?.nombreUsuario ?? 'invitado';
+    return `faltauna_bienvenida_mazos_v2_usuario_${identificador}`;
+  }
+
+  private adaptarMazoParaBienvenida(mazo: MazoApi, indice: number): MazoApi {
+    const cartasOrdenadas = [...(mazo.cartas ?? [])]
+      .map((c) => ({
+        ...c,
+        imagenUrl: resolverImagenCarta(c.imagenUrl, c.nombre),
+      }))
+      .sort((a, b) => (b.rarezaOrden ?? 0) - (a.rarezaOrden ?? 0));
+
+    return {
+      ...mazo,
+      nombre: resolverNombreMazoInicial(mazo.nombre, cartasOrdenadas, indice),
+      cartas:
+        cartasOrdenadas.length > 0
+          ? cartasOrdenadas
+          : (MAZOS_BIENVENIDA_RESPALDO[indice]?.cartas ?? []),
+    };
+  }
+
   private verificarBienvenidaMazos(): void {
     if (typeof window === 'undefined') return;
-    const yaVisto = localStorage.getItem('faltauna_bienvenida_mazos_v1');
+    const yaVisto = localStorage.getItem(this.claveBienvenidaMazos());
     if (yaVisto === 'true') return;
 
     if (this.barajaService) {
       this.barajaService.obtenerMazos().subscribe({
         next: (mazos) => {
           if (mazos && mazos.length > 0) {
-            this.mazosBienvenida.set(mazos.slice(0, 3));
-            this.mostrarBienvenida();
+            this.mazosBienvenida.set(
+              mazos.slice(0, 3).map((mazo, idx) => this.adaptarMazoParaBienvenida(mazo, idx)),
+            );
           } else {
-            this.mazosBienvenida.set([
-              { id: 1, nombre: 'Mazo de Bienvenida 1', completo: true, cartas: [] },
-              { id: 2, nombre: 'Mazo de Bienvenida 2', completo: true, cartas: [] },
-              { id: 3, nombre: 'Mazo de Bienvenida 3', completo: true, cartas: [] },
-            ]);
-            this.mostrarBienvenida();
+            this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
           }
+          this.mostrarBienvenida();
         },
         error: () => {
-          this.mazosBienvenida.set([
-            { id: 1, nombre: 'Mazo de Bienvenida 1', completo: true, cartas: [] },
-            { id: 2, nombre: 'Mazo de Bienvenida 2', completo: true, cartas: [] },
-            { id: 3, nombre: 'Mazo de Bienvenida 3', completo: true, cartas: [] },
-          ]);
+          this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
           this.mostrarBienvenida();
         },
       });
+    } else {
+      this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
+      this.mostrarBienvenida();
     }
   }
 
@@ -189,7 +345,7 @@ export class UsuarioDashboard implements OnInit {
 
   cerrarBienvenidaMazos(): void {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('faltauna_bienvenida_mazos_v1', 'true');
+      localStorage.setItem(this.claveBienvenidaMazos(), 'true');
     }
     this.modalBienvenidaMazosVisible.set(false);
   }

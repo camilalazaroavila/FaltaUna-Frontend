@@ -13,6 +13,7 @@ export const CATEGORIAS_SOBRE = [
   'gastronomia',
   'indumentaria',
   'musica',
+  'decoracion',
 ] as const;
 
 /** Categoría de sobre. Sin acentos ni mayúsculas: es un valor de máquina. */
@@ -29,6 +30,7 @@ export const ETIQUETAS_CATEGORIA: Record<CategoriaSobre, string> = {
   gastronomia: 'Gastronomía',
   indumentaria: 'Indumentaria',
   musica: 'Música',
+  decoracion: 'Decoración',
 };
 
 /**
@@ -57,7 +59,7 @@ export const NOMBRES_CATEGORIA_BACKEND: Readonly<Record<string, CategoriaSobre>>
   vestimenta: 'indumentaria',
   ropa_deportes: 'indumentaria',
   indumentaria: 'indumentaria',
-  // Categorías sin fila en el backend todavía.
+  // Categorías adicionales del catálogo de sobres.
   tecno: 'tecnologia',
   tecnologia: 'tecnologia',
   tecnologias: 'tecnologia',
@@ -70,6 +72,8 @@ export const NOMBRES_CATEGORIA_BACKEND: Readonly<Record<string, CategoriaSobre>>
   entretenimiento: 'entretenimiento',
   entretenimientos: 'entretenimiento',
   musica: 'musica',
+  decoracion: 'decoracion',
+  decoraciones: 'decoracion',
 };
 
 /**

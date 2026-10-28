@@ -7,7 +7,7 @@ import { UsuarioDashboard } from './usuario-dashboard';
 import { AuthService } from '@servicios/auth.service';
 import { SobresService } from '@servicios/sobres.service';
 import { Usuario } from '@modelos/usuario.model';
-import { BarajaService } from '@servicios/baraja.service';
+import { BarajaService, NOMBRES_MAZOS_BIENVENIDA } from '@servicios/baraja.service';
 import { SonidoService } from '@servicios/sonido.service';
 
 describe('UsuarioDashboard Component', () => {
@@ -29,7 +29,8 @@ describe('UsuarioDashboard Component', () => {
   };
 
   beforeEach(async () => {
-    localStorage.setItem('faltauna_bienvenida_mazos_v1', 'true');
+    localStorage.clear();
+    localStorage.setItem('faltauna_bienvenida_mazos_v2_usuario_1', 'true');
     mockAuthService = {
       usuarioActual: signal<Usuario | null>(usuarioPrueba),
       logout: jest.fn(),
@@ -243,7 +244,8 @@ describe('UsuarioDashboard Component', () => {
     expect(navigateSpy).not.toHaveBeenCalled();
   });
 
-  it('permite cerrar la bienvenida de mazos y guarda el flag en localStorage', () => {
+  it('permite cerrar la bienvenida de mazos y guarda el flag por usuario en localStorage', () => {
+    localStorage.removeItem('faltauna_bienvenida_mazos_v2_usuario_1');
     component['modalBienvenidaMazosVisible'].set(true);
     fixture.detectChanges();
 
@@ -251,6 +253,33 @@ describe('UsuarioDashboard Component', () => {
     fixture.detectChanges();
 
     expect(component['modalBienvenidaMazosVisible']()).toBe(false);
-    expect(localStorage.getItem('faltauna_bienvenida_mazos_v1')).toBe('true');
+    expect(localStorage.getItem('faltauna_bienvenida_mazos_v2_usuario_1')).toBe('true');
+  });
+
+  it('muestra el modal de bienvenida a una cuenta nueva aunque otra cuenta ya lo haya cerrado en el mismo navegador y permite ir a mis mazos', () => {
+    const router = TestBed.inject(Router);
+    const navigateSpy = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+    // Usuario 1 ya lo vio, pero entra Usuario 2
+    localStorage.setItem('faltauna_bienvenida_mazos_v2_usuario_1', 'true');
+    (mockAuthService.usuarioActual as ReturnType<typeof signal<Usuario | null>>).set({
+      ...usuarioPrueba,
+      id: 2,
+      nombreUsuario: 'nuevousuario',
+    });
+
+    const nuevoFixture = TestBed.createComponent(UsuarioDashboard);
+    const nuevoComp = nuevoFixture.componentInstance;
+    nuevoFixture.detectChanges();
+
+    expect(nuevoComp['modalBienvenidaMazosVisible']()).toBe(true);
+    expect(nuevoComp['mazosBienvenida']().map((m) => m.nombre)).toEqual([
+      ...NOMBRES_MAZOS_BIENVENIDA,
+    ]);
+
+    nuevoComp.irABarajasDesdeBienvenida();
+    expect(nuevoComp['modalBienvenidaMazosVisible']()).toBe(false);
+    expect(localStorage.getItem('faltauna_bienvenida_mazos_v2_usuario_2')).toBe('true');
+    expect(navigateSpy).toHaveBeenCalledWith('/usuario/mi-baraja');
   });
 });
