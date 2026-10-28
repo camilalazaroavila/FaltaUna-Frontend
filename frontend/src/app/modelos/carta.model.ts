@@ -198,9 +198,13 @@ export function normalizarUrlImagen(url: string | null | undefined): string | nu
   if (!url || typeof url !== 'string') {
     return null;
   }
-  const limpia = url.trim();
+  let limpia = url.trim();
   if (!limpia) {
     return null;
+  }
+  // Corrige posibles typos de extensiones (como .jpgg) en URLs remotas o relativas
+  if (limpia.endsWith('.jpgg')) {
+    limpia = limpia.slice(0, -1);
   }
   if (
     limpia.startsWith('http://') ||

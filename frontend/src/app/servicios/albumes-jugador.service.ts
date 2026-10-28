@@ -11,6 +11,7 @@ import {
 } from '@modelos/album-jugador.model';
 import {
   CATEGORIA_POR_DEFECTO,
+  normalizarUrlImagen,
   rarezaDesdeNombre,
 } from '@modelos/carta.model';
 
@@ -62,7 +63,7 @@ const mapearResumen = (album: AlbumResumenApi): ResumenAlbum => ({
 const mapearCarta = (carta: AlbumCartaApi): CartaAlbum => ({
   id: String(carta.cartaId),
   nombre: carta.nombre,
-  imagenUrl: carta.imagenUrl ?? '',
+  imagenUrl: normalizarUrlImagen(carta.imagenUrl) ?? '',
   rareza: rarezaDesdeNombre(carta.rareza),
   categoria: categoriaCartaDesdeNombre(carta.categoria) ?? CATEGORIA_POR_DEFECTO,
   poder: carta.poder,

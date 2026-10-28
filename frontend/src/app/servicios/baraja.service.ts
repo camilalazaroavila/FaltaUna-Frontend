@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, shareReplay, tap } from 'rxjs';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
-import { categoriaCartaDesdeNombre } from '@modelos/carta.model';
+import { categoriaCartaDesdeNombre, normalizarUrlImagen } from '@modelos/carta.model';
+import { FOTOS_CARTAS_CATALOGO } from '@modelos/catalogo-cartas-imagenes';
 import { ApiService } from './api.service';
 import type { CartaInventarioApi, GuardarMazoRequest, MazoApi } from '@modelos/mazo.model';
 /**
@@ -62,11 +63,20 @@ export class BarajaService {
     );
   }
 }
+function resolverImagenCarta(imagenUrl: string | null | undefined, nombre: string): string {
+  const norm = normalizarUrlImagen(imagenUrl);
+  if (norm) {
+    return norm;
+  }
+  const clave = normalizar(nombre);
+  return FOTOS_CARTAS_CATALOGO[clave] ?? '';
+}
+
 function mapearCartaInventario(carta: CartaInventarioApi): Carta {
   return {
     id: String(carta.cartaId),
     nombre: carta.nombre,
-    imagenUrl: carta.imagenUrl ?? '',
+    imagenUrl: resolverImagenCarta(carta.imagenUrl, carta.nombre),
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
     categoria: categoriaCartaDesdeNombre(carta.categoria),
     atributoDerecho: carta.poder,
@@ -78,7 +88,7 @@ export function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {
   return {
     id: String(carta.cartaId),
     nombre: carta.nombre,
-    imagenUrl: carta.imagenUrl ?? '',
+    imagenUrl: resolverImagenCarta(carta.imagenUrl, carta.nombre),
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
     categoria: categoriaCartaDesdeNombre(''),
     atributoDerecho: carta.poder,
