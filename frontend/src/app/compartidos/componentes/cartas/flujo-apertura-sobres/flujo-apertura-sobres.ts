@@ -14,7 +14,8 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { SobresService } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
-import type { SobreInventarioUsuario, SobreAbiertoUsuario} from '@servicios/sobres.service';
+import { SonidoService, SONIDOS_PARTIDA } from '@servicios/sonido.service';
+import type { SobreInventarioUsuario, SobreAbiertoUsuario } from '@servicios/sobres.service';
 
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
@@ -123,6 +124,7 @@ const CLIP_INFERIOR = `inset(${LINEA_CORTE}% 0 0 0)`;
 export class FlujoAperturaSobres {
   private readonly sobresService = inject(SobresService);
   private readonly authService = inject(AuthService);
+  private readonly sonidoService = inject(SonidoService, { optional: true });
 
   // Inputs
   readonly abierto = input<boolean>(false);
@@ -447,6 +449,7 @@ export class FlujoAperturaSobres {
 
   // Manejo de navegación entre fases
   iniciar(): void {
+    this.sonidoService?.precargarSonidosPartida();
     this.abiertosLocal.set(this.leerAbiertosLocal());
     this.fase.set('seleccion');
     this.sobreSeleccionado.set(null);
@@ -464,9 +467,10 @@ export class FlujoAperturaSobres {
   }
 
   seleccionarSobre(sobre: SobreItemUI): void {
-    if(!sobre.disponible) return; 
+    if (!sobre.disponible) return;
     this.sobreSeleccionado.set(sobre);
     this.fase.set('preview');
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.agarrarCarta, 0.75);
   }
 
   volverASeleccion(): void {
@@ -479,11 +483,13 @@ export class FlujoAperturaSobres {
     this.enArrastre = false;
     this.punteroPresionado = false;
     this.fase.set('carrusel');
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.rotarZona, 0.75);
   }
 
   // Carrusel circular infinito: avanza o retrocede sin fin
   cambiarSobreCarrusel(direccion: number): void {
     this.indiceCarrusel.update((val) => val + direccion);
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.agarrarCarta, 0.65);
   }
 
   // Manejador explícito de clic sobre un sobre (robusto en desktop y mobile)
@@ -505,6 +511,7 @@ export class FlujoAperturaSobres {
     this.sobreCortado.set(false);
     this.cortando.set(false);
     this.errorApertura.set(null);
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.apoyarCarta, 0.8);
   }
 
   private punteroPresionado = false;
@@ -565,6 +572,9 @@ export class FlujoAperturaSobres {
     // suavemente desde donde lo soltaste hasta el sobre elegido.
     this.enArrastre = false;
     this.dragOffset.set(0);
+    if (destino !== indice) {
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.agarrarCarta, 0.65);
+    }
     this.indiceCarrusel.set(destino);
 
     // Descarta el click que algunos navegadores disparan tras soltar
@@ -605,11 +615,13 @@ export class FlujoAperturaSobres {
 
     this.cortando.set(true);
     this.errorApertura.set(null);
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.cargarBarraPuntos, 0.85);
 
     // Animación visual de rasgado: la mitad de arriba se desprende
     setTimeout(() => {
       this.sobreCortado.set(true);
       this.cortando.set(false);
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.rotarZona, 0.85);
       this.llamarApiApertura();
     }, 500);
   }
@@ -644,10 +656,12 @@ export class FlujoAperturaSobres {
 
         setTimeout(() => {
           this.fase.set('revelacion');
+          this.reproducirSonidoCartaRevelada(this.cartaActual());
         }, 400);
       },
       error: (err) => {
         this.cargandoApertura.set(false);
+        this.sonidoService?.reproducir(SONIDOS_PARTIDA.powerDown, 0.75);
         const mensaje =
           err?.error?.mensaje ||
           err?.error?.message ||
@@ -672,6 +686,29 @@ export class FlujoAperturaSobres {
     return sobre && sobre.cantidadCartas > 0 ? sobre.cantidadCartas : CARTAS_SOBRE_DIARIO;
   }
 
+  /**
+   * Dispara los efectos de sonido al revelar una carta según su rareza,
+   * combinando el giro de carta con un acento épico polifónico sin bloquear animaciones.
+   */
+  private reproducirSonidoCartaRevelada(carta: Carta | null): void {
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.darVueltaCartas, 0.85);
+    switch (carta?.rareza) {
+      case 'legendaria':
+        this.sonidoService?.reproducir(SONIDOS_PARTIDA.victoria, 0.9);
+        this.sonidoService?.reproducir(SONIDOS_PARTIDA.powerUp, 0.8);
+        break;
+      case 'epicarta':
+        this.sonidoService?.reproducir(SONIDOS_PARTIDA.misionCompletada, 0.85);
+        break;
+      case 'rara':
+        this.sonidoService?.reproducir(SONIDOS_PARTIDA.powerUp, 0.75);
+        break;
+      default:
+        this.sonidoService?.reproducir(SONIDOS_PARTIDA.cartaSumaPoder, 0.7);
+        break;
+    }
+  }
+
   // Siguiente carta o finalizar
   avanzarOFinalizar(): void {
     const actual = this.indiceCartaActual();
@@ -681,11 +718,13 @@ export class FlujoAperturaSobres {
       // Reiniciamos la animación para la siguiente carta.
       this.animarCarta.set(false);
       this.indiceCartaActual.update((indice) => indice + 1);
+      this.reproducirSonidoCartaRevelada(this.cartaActual());
 
       setTimeout(() => {
         this.animarCarta.set(true);
       }, 30);
     } else {
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.apoyarCarta, 0.7);
       this.cerrarFlujo();
     }
   }

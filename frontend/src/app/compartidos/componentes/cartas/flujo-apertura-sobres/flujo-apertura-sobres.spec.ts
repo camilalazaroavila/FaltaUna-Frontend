@@ -6,6 +6,7 @@ import { FlujoAperturaSobres } from './flujo-apertura-sobres';
 import { signal } from '@angular/core';
 import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
+import { SonidoService, SONIDOS_PARTIDA } from '@servicios/sonido.service';
 import { AperturaSobreRespuesta, SobreRespuesta } from '@modelos/sobre.model';
 import { Usuario } from '@modelos/usuario.model';
 
@@ -14,6 +15,7 @@ describe('FlujoAperturaSobres Component', () => {
   let fixture: ComponentFixture<FlujoAperturaSobres>;
   let sobresServiceSpy: jest.Mocked<SobresService>;
   let authServiceMock: Partial<AuthService>;
+  let sonidoServiceMock: jest.Mocked<Pick<SonidoService, 'reproducir' | 'precargarSonidosPartida'>>;
 
   const mockSobres: SobreRespuesta[] = [
     {
@@ -48,6 +50,14 @@ describe('FlujoAperturaSobres Component', () => {
         nombre: 'Super Grido',
         cantidad: 1,
         imagenUrl: null,
+        rareza: 'Legendaria',
+      },
+      {
+        cartaId: 102,
+        nombre: 'Carta Común',
+        cantidad: 1,
+        imagenUrl: null,
+        rareza: 'Común',
       },
     ],
   };
@@ -71,6 +81,11 @@ describe('FlujoAperturaSobres Component', () => {
       }),
     };
 
+    sonidoServiceMock = {
+      reproducir: jest.fn(),
+      precargarSonidosPartida: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [FlujoAperturaSobres],
       providers: [
@@ -78,6 +93,7 @@ describe('FlujoAperturaSobres Component', () => {
         provideHttpClientTesting(),
         { provide: SobresService, useValue: sobresServiceSpy },
         { provide: AuthService, useValue: authServiceMock },
+        { provide: SonidoService, useValue: sonidoServiceMock },
       ],
     }).compileComponents();
 
@@ -133,38 +149,52 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component['fase']()).toBe('preview');
   });
 
-  it('debe transicionar a preview al seleccionar un sobre', () => {
+  it('debe transicionar a preview al seleccionar un sobre y reproducir efecto de sonido', () => {
     const primerSobre = component['listaSobresUI']()[1];
     component.seleccionarSobre(primerSobre);
 
     expect(component['fase']()).toBe('preview');
     expect(component['sobreSeleccionado']()).toEqual(primerSobre);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.agarrarCarta, 0.75);
   });
 
-  it('debe transicionar a carrusel y permitir navegar infinitamente', () => {
+  it('debe transicionar a carrusel y permitir navegar infinitamente con efectos de sonido', () => {
     component.irACarrusel();
     expect(component['fase']()).toBe('carrusel');
     expect(component['indiceCarrusel']()).toBe(0);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.rotarZona, 0.75);
 
     component.cambiarSobreCarrusel(1);
     expect(component['indiceCarrusel']()).toBe(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.agarrarCarta, 0.65);
 
     component.cambiarSobreCarrusel(-2);
     expect(component['indiceCarrusel']()).toBe(-1);
   });
 
-  it('debe ejecutar el corte y llamar a la API correspondiente', fakeAsync(() => {
+  it('debe ejecutar el corte, reproducir sonidos de apertura/revelación y llamar a la API correspondiente', fakeAsync(() => {
     const sobreDiario = component['listaSobresUI']()[0];
     component.seleccionarSobre(sobreDiario);
     component.elegirSobreDelCarrusel(0);
 
     expect(component['fase']()).toBe('corte');
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.apoyarCarta, 0.8);
 
     component.ejecutarCorte();
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.cargarBarraPuntos, 0.85);
     tick(1000);
 
     expect(sobresServiceSpy.reclamarSobreDiario).toHaveBeenCalledWith(7);
     expect(component['fase']()).toBe('revelacion');
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.darVueltaCartas, 0.85);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.victoria, 0.9);
+
+    // Avanzar a la segunda carta reproduce el sonido de la siguiente carta
+    sonidoServiceMock.reproducir.mockClear();
+    component.avanzarOFinalizar();
+    tick(50);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.darVueltaCartas, 0.85);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.cartaSumaPoder, 0.7);
   }));
 
   it('muestra el error del backend y no inventa cartas si falla la apertura', fakeAsync(() => {
@@ -182,6 +212,7 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component['errorApertura']()).toContain('Conexión fallida');
     expect(component['cartasObtenidas']()).toEqual([]);
     expect(component['fase']()).toBe('corte');
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.powerDown, 0.75);
   }));
 
   it('debe navegar el carrusel mediante arrastre/swipe con pointer', () => {
