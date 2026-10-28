@@ -6,6 +6,7 @@ import { PartidaApiService } from '@servicios/servicios-partida/partida-api.serv
 import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
 import { JUGADORES_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
+import { FOTOS_CARTAS_CATALOGO } from '@modelos/catalogo-cartas-imagenes';
 import type { Carta, EfectoCategoriaCarta, RarezaCarta } from '@modelos/carta.model';
 import {
   CATEGORIA_POR_DEFECTO,
@@ -60,9 +61,28 @@ const URLS_404_CLOUDINARY = new Set([
 ]);
 
 /**
- * Fotos reales y activas (HTTP 200 en Cloudinary) del catálogo para zonas cuya URL remota quedó inaccesible.
+ * Fotos reales y activas (HTTP 200 en Cloudinary) del catálogo para zonas cuya URL remota quedó inaccesible o vino nula.
  */
 const FOTOS_ZONAS_ACTIVAS: Readonly<Record<string, string>> = {
+  // Catálogo oficial de zonas activas
+  'villa pasta': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/CASA_DELLA_PASTA_COMIDA.jpg',
+  'distrito sonoro': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792797102/Distrito_Sonoro.jpg',
+  'vortex central': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882710/Vortex_Zona.jpg',
+  'harmony hub': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882711/harmony_zona.jpg',
+  'atelier zona': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882714/atelier_zona.jpg',
+  'aura plaza': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882716/Aura_Zona.jpg',
+  'axis center': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882718/Axis_zona.jpg',
+  'tierra warm': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792944693/zona_tierra_warm.jpg',
+  'sonorum': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793039833/sonorum_zona.jpg',
+  'aura & brio': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792887041/abd30047-37c9-41c2-9fcc-6f086ec7584f.jpg',
+  'aura y brio': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792887041/abd30047-37c9-41c2-9fcc-6f086ec7584f.jpg',
+  'valiant studio': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793069105/valiant_zona.jpg',
+  'ambrosia almacen & cafe': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793070580/ambrosia_zona.jpg',
+  'ambrosia almacen y cafe': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793070580/ambrosia_zona.jpg',
+  'atelier baronet': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793071417/Baronet_zona.jpg',
+  'mundo lumex': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793112703/lumex_zona.jpg',
+  'galeria vitrea': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793124339/V%C3%ADtrea_Cobalto_zona.jpg',
+  // Zonas legacy de partidas anteriores
   'pixel glam': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882714/atelier_zona.jpg',
   'boutique de belleza': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792887041/abd30047-37c9-41c2-9fcc-6f086ec7584f.jpg',
   'arcade central': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792882710/Vortex_Zona.jpg',
@@ -2462,8 +2482,8 @@ export class PartidaServicio {
         poderBase: item.carta.poder,
       });
 
-      // Si la carta del servidor vino sin imagen pero la previa sí la tenía, conservarla
-      if (!carta.imagenUrl && cartaPrevia?.imagenUrl) {
+      // Si la carta del servidor vino sin imagen o la carta previa ya tenía imagen establecida, conservarla
+      if (cartaPrevia?.imagenUrl && (!item.carta.imagenUrl || !carta.imagenUrl)) {
         carta = {
           ...carta,
           imagenUrl: cartaPrevia.imagenUrl,
@@ -2478,18 +2498,26 @@ export class PartidaServicio {
         imagenUrl: normalizarUrlImagen(carta.imagenUrl) ?? carta.imagenUrl,
       };
     } else if (!carta.oculta) {
-      // Si la carta está revelada pero vino sin imagenUrl, buscar en CARTAS_MOCK
-      const nombreNorm = carta.nombre?.toLowerCase().trim();
-      const mock = CARTAS_MOCK.find(
-        (m) =>
-          (carta.cartaId != null && (m.id === String(carta.cartaId) || m.id === `c-${carta.cartaId}`)) ||
-          (m.nombre && nombreNorm && m.nombre.toLowerCase().trim() === nombreNorm),
-      );
-      if (mock?.imagenUrl) {
+      // Si la carta está revelada pero vino sin imagenUrl, buscar en FOTOS_CARTAS_CATALOGO o CARTAS_MOCK
+      const nombreNorm = normalizar(carta.nombre);
+      const urlCatalogo = FOTOS_CARTAS_CATALOGO[nombreNorm];
+      if (urlCatalogo) {
         carta = {
           ...carta,
-          imagenUrl: normalizarUrlImagen(mock.imagenUrl) ?? mock.imagenUrl,
+          imagenUrl: urlCatalogo,
         };
+      } else {
+        const mock = CARTAS_MOCK.find(
+          (m) =>
+            (carta.cartaId != null && (m.id === String(carta.cartaId) || m.id === `c-${carta.cartaId}`)) ||
+            (m.nombre && normalizar(m.nombre) === nombreNorm),
+        );
+        if (mock?.imagenUrl) {
+          carta = {
+            ...carta,
+            imagenUrl: normalizarUrlImagen(mock.imagenUrl) ?? mock.imagenUrl,
+          };
+        }
       }
     }
 
@@ -2517,14 +2545,19 @@ export class PartidaServicio {
     const urlNormal = normalizarUrlImagen(carta.imagenUrl);
     let urlFinal = urlNormal ?? '';
     if (!urlFinal && carta.nombre) {
-      const nombreNorm = carta.nombre.toLowerCase().trim();
-      const mock = CARTAS_MOCK.find(
-        (m) =>
-          (carta.cartaId != null && (m.id === String(carta.cartaId) || m.id === `c-${carta.cartaId}`)) ||
-          (m.nombre && m.nombre.toLowerCase().trim() === nombreNorm),
-      );
-      if (mock?.imagenUrl) {
-        urlFinal = normalizarUrlImagen(mock.imagenUrl) ?? mock.imagenUrl;
+      const nombreNorm = normalizar(carta.nombre);
+      const urlCatalogo = FOTOS_CARTAS_CATALOGO[nombreNorm];
+      if (urlCatalogo) {
+        urlFinal = urlCatalogo;
+      } else {
+        const mock = CARTAS_MOCK.find(
+          (m) =>
+            (carta.cartaId != null && (m.id === String(carta.cartaId) || m.id === `c-${carta.cartaId}`)) ||
+            (m.nombre && normalizar(m.nombre) === nombreNorm),
+        );
+        if (mock?.imagenUrl) {
+          urlFinal = normalizarUrlImagen(mock.imagenUrl) ?? mock.imagenUrl;
+        }
       }
     }
 

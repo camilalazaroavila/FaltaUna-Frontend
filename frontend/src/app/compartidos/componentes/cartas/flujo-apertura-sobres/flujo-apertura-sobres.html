@@ -39,7 +39,7 @@
 
     <!-- Panel con scrollbar personalizado -->
     <div class="flex-1 min-h-0 overflow-hidden">
-      <app-panel-desplazable clasesExtra="h-full">
+      <div clasesExtra="h-full"> <!-- este div cambiarlo por app-panel-desplazable si se quiere agregar despues el scroll -->
         <div
           class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 2xl:gap-6 p-2 pb-4 2xl:p-4">
           @for (sobre of listaSobresUI(); track $index) {
@@ -63,7 +63,7 @@
           </div>
           }
         </div>
-      </app-panel-desplazable>
+      </div>
     </div>
   </div>
   }
