@@ -23,9 +23,9 @@
               </span>
               <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
               @if (b.modificador === 'aumento' && b.deltaPoder) {
-                <span class="burbuja-puntaje__delta text-exito font-bold text-[0.625rem] ml-0.5">(+{{ b.deltaPoder }})</span>
+                <span class="burbuja-puntaje__delta text-exito font-bold text-etiqueta ml-0.5">(+{{ b.deltaPoder }})</span>
               } @else if (b.modificador === 'reduccion' && b.deltaPoder) {
-                <span class="burbuja-puntaje__delta text-error font-bold text-[0.625rem] ml-0.5">({{ b.deltaPoder }})</span>
+                <span class="burbuja-puntaje__delta text-error font-bold text-etiqueta ml-0.5">({{ b.deltaPoder }})</span>
               }
             </div>
           }
@@ -178,7 +178,7 @@
             [efectos]="efectosCategoria()"
             [maxVisibles]="3"
             orientacion="vertical"
-            tamanio="md"
+            tamanio="sm"
           />
         </div>
       }
@@ -210,9 +210,9 @@
               </span>
               <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
               @if (b.modificador === 'aumento' && b.deltaPoder) {
-                <span class="burbuja-puntaje__delta text-exito font-bold text-[0.625rem] ml-0.5">(+{{ b.deltaPoder }})</span>
+                <span class="burbuja-puntaje__delta text-exito font-bold text-etiqueta ml-0.5">(+{{ b.deltaPoder }})</span>
               } @else if (b.modificador === 'reduccion' && b.deltaPoder) {
-                <span class="burbuja-puntaje__delta text-error font-bold text-[0.625rem] ml-0.5">({{ b.deltaPoder }})</span>
+                <span class="burbuja-puntaje__delta text-error font-bold text-etiqueta ml-0.5">({{ b.deltaPoder }})</span>
               }
             </div>
           }
@@ -264,7 +264,7 @@
               @if (esProvisionalFn()(carta)) {
                 <button
                   type="button"
-                  class="absolute -top-2 left-1/2 -translate-x-1/2 z-30 flex size-5.5 items-center justify-center rounded-full border border-white/90 bg-error text-[0.625rem] font-bold text-white shadow-cartoon transition hover:scale-120 hover:bg-error-borde active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-borde-foco cursor-pointer"
+                  class="absolute -top-2 left-1/2 -translate-x-1/2 z-30 flex size-5.5 items-center justify-center rounded-full border border-white/90 bg-error text-etiqueta font-bold text-white shadow-cartoon transition hover:scale-120 hover:bg-error-borde active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-borde-foco cursor-pointer"
                   [attr.aria-label]="'Retirar ' + carta.nombre + ' y devolver a la mano'"
                   title="Devolver a mi mano"
                   (click)="alRetirarCarta(carta, $event)"

@@ -2,3 +2,20 @@
     display: block;
     max-width: 100%;
 }
+
+@media (max-width: 1366px), (max-height: 820px) {
+    .chip {
+        gap: 0.375rem;
+    }
+
+    .chip-avatar {
+        width: clamp(2rem, 3.4cqw, 2.75rem);
+        height: clamp(2rem, 3.4cqw, 2.75rem);
+    }
+
+    .chip-inicial {
+        inset: 16%;
+        border-radius: var(--radio-sm);
+        font-size: var(--tipografia-menor);
+    }
+}

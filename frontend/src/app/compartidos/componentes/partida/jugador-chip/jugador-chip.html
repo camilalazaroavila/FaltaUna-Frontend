@@ -5,9 +5,9 @@
   [attr.aria-label]="etiqueta()"
   role="group"
 >
-  <span class="relative shrink-0 -rotate-12" [class]="clasesAvatar()">
+  <span class="chip-avatar relative shrink-0 -rotate-12" [class]="clasesAvatar()">
     <span
-      class="absolute inset-[0.4rem] flex items-center justify-center overflow-hidden rounded-md bg-marca-acento font-titulo text-marca-sobre-acento"
+      class="chip-inicial absolute inset-[0.4rem] flex items-center justify-center overflow-hidden rounded-md bg-marca-acento font-titulo text-marca-sobre-acento"
       [class]="clasesInicial()"
       aria-hidden="true"
     >
@@ -25,7 +25,7 @@
     <span class="marco-imagen absolute inset-0 bg-avatar-marco" aria-hidden="true"></span>
   </span>
 
-<span class="whitespace-nowrap font-titulo text-etiqueta tracking-etiqueta uppercase">
-  {{ nombre() }}
-</span>
+  <span class="whitespace-nowrap font-titulo text-etiqueta tracking-etiqueta uppercase">
+    {{ nombre() }}
+  </span>
 </div>

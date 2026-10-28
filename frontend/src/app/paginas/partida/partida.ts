@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
-import { CampoSelect, type OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
+import type { OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
 import { Caja } from '@compartidos/componentes/contenedor/caja/caja';
 import { PantallaResultado } from '@compartidos/componentes/partida/pantalla-resultado/pantalla-resultado';
 import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
