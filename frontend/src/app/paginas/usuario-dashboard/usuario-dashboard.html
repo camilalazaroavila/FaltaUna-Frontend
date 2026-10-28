@@ -32,18 +32,12 @@
     <div
       class="abanico-sobres relative flex items-center justify-center shrink-0 md:my-auto h-[var(--alto-abanico)] aspect-[16/10] w-auto">
 
-      <!-- Halo de luz detrás del abanico 
-      <div
-        class="pointer-events-none absolute -inset-[18%] -z-0 rounded-full bg-radial from-white/30 via-white/10 to-transparent blur-2xl"
-        aria-hidden="true"
-      ></div> -->
-
       <!-- Sombra de apoyo -->
       <div
         class="pointer-events-none absolute bottom-[-2%] left-1/2 h-[7%] w-[62%] -translate-x-1/2 rounded-full bg-black/25 blur-xl"
         aria-hidden="true"></div>
 
-      <!-- Sobre de Indumentara -->
+      <!-- Sobre de Indumentaria -->
       <div class="sobre-carrusel sobre-carrusel--gastronomia">
         <app-sobre-marca class="w-full [&>*]:w-full!" categoria="indumentaria" tamanio="lg" clickeable
           (accion)="abrirSelectorSobres()" />
@@ -86,7 +80,7 @@
 
   @if (modalBienvenidaMazosVisible()) {
     <div
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-landing-oscuro-fondo/80 backdrop-blur-xs"
+      class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-landing-oscuro-fondo/80 backdrop-blur-xs"
       (click)="cerrarBienvenidaMazos()"
     >
       <div
@@ -108,29 +102,35 @@
         </button>
 
         <span class="inline-block rounded-pildora bg-marca-primaria/20 px-3 py-1 font-titulo text-xs uppercase tracking-widest text-marca-primaria">
-          ¡Paquete inicial desbloqueado!
+          ¡Regalo de bienvenida!
         </span>
 
         <h2 id="titulo-modal-bienvenida" class="mt-3 font-titulo text-3xl sm:text-4xl uppercase leading-none tracking-wide text-marca-acento">
-          ¡Tus 3 Barajas Listas!
+          ¡Te regalamos 3 mazos listos!
         </h2>
 
         <p class="mt-2.5 font-interfaz text-sm sm:text-base text-texto-secundario max-w-lg mx-auto">
-          Te otorgamos 3 barajas completas para que comiences a jugar de inmediato contra la IA o las personalices en Gestión de barajas.
+          Ya tenés 3 mazos completos en tu cuenta para empezar a jugar de inmediato o personalizarlos en Mis mazos.
         </p>
 
         <!-- Grilla de las 3 barajas -->
         <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-left">
           @for (mazo of mazosBienvenida(); track mazo.id) {
             <div class="flex flex-col gap-2 rounded-2xl border border-white/15 bg-white/5 p-3.5 transition-transform hover:-translate-y-1">
-              <div class="flex items-center justify-between">
-                <span class="font-titulo text-sm uppercase text-white truncate">
+              <div class="flex items-start justify-between gap-2">
+                <span class="font-titulo text-sm uppercase leading-tight text-white">
                   {{ mazo.nombre }}
                 </span>
                 <span class="rounded-full bg-marca-primaria/20 px-2 py-0.5 text-[10px] font-bold text-marca-primaria shrink-0">
                   12 cartas
                 </span>
               </div>
+
+              @if (mazo.cartas && mazo.cartas.length > 0) {
+                <p class="font-interfaz text-[11px] text-white/70 truncate" [title]="mazo.cartas[0].nombre">
+                  Destacada: {{ mazo.cartas[0].nombre }}
+                </p>
+              }
 
               <!-- Miniaturas o visual de cartas -->
               <div class="flex items-center -space-x-2.5 pt-1">
@@ -163,9 +163,9 @@
             variante="primario"
             tamanio="md"
             class="w-full sm:w-auto px-7"
-            (click)="cerrarBienvenidaMazos()"
+            (click)="irABarajasDesdeBienvenida()"
           >
-            ¡Entendido, a jugar!
+            Ir a mis mazos
           </button>
           <button
             type="button"
@@ -173,9 +173,9 @@
             variante="fantasma"
             tamanio="md"
             class="w-full sm:w-auto"
-            (click)="irABarajasDesdeBienvenida()"
+            (click)="cerrarBienvenidaMazos()"
           >
-            Ver mis barajas
+            ¡Entendido, a jugar!
           </button>
         </div>
       </div>

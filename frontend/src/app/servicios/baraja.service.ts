@@ -5,6 +5,51 @@ import { categoriaCartaDesdeNombre, normalizarUrlImagen } from '@modelos/carta.m
 import { FOTOS_CARTAS_CATALOGO } from '@modelos/catalogo-cartas-imagenes';
 import { ApiService } from './api.service';
 import type { CartaInventarioApi, GuardarMazoRequest, MazoApi } from '@modelos/mazo.model';
+
+/**
+ * Nombres temáticos para los 3 mazos de bienvenida según las cartas que contienen:
+ * 1. Golden Run + Aura Urban Pack + Royal de Chocolate y Rosa -> Estilo Urbano & Gourmet
+ * 2. Harmony Sound DJ Controller + Aura Weekender + Tarta Mousse -> Pulso & Ritmo DJ
+ * 3. Croquembouche Imperial + Estatueta Coleccionable + Claqueta -> Festín Imperial & Cine
+ */
+export const NOMBRES_MAZOS_BIENVENIDA: readonly [string, string, string] = [
+  'Estilo Urbano & Gourmet',
+  'Pulso & Ritmo DJ',
+  'Festín Imperial & Cine',
+];
+
+/**
+ * Reemplaza los nombres genéricos ("Mazo de Bienvenida 1/2/3") por nombres
+ * acordes a las cartas que componen cada baraja inicial. Si el usuario ya le
+ * puso un nombre propio, lo respeta.
+ */
+export function resolverNombreMazoInicial(
+  nombre: string | null | undefined,
+  cartas: readonly MazoApi['cartas'][number][] = [],
+  indice = 0,
+): string {
+  const limpio = (nombre ?? '').trim();
+  const matchBienvenida = limpio.match(/^mazo\s+de\s+bienvenida\s*(\d+)?$/i);
+  if (limpio && !matchBienvenida) {
+    return limpio;
+  }
+
+  const nombresCartas = cartas.map((c) => normalizar(c.nombre));
+  if (nombresCartas.some((n) => n.includes('golden run') || n.includes('urban pack'))) {
+    return NOMBRES_MAZOS_BIENVENIDA[0];
+  }
+  if (nombresCartas.some((n) => n.includes('dj controller') || n.includes('retro mic'))) {
+    return NOMBRES_MAZOS_BIENVENIDA[1];
+  }
+  if (nombresCartas.some((n) => n.includes('croquembouche') || n.includes('estatueta'))) {
+    return NOMBRES_MAZOS_BIENVENIDA[2];
+  }
+
+  const numeroExplicito = matchBienvenida?.[1] ? Number(matchBienvenida[1]) - 1 : indice;
+  const idx = ((numeroExplicito % 3) + 3) % 3;
+  return NOMBRES_MAZOS_BIENVENIDA[idx] ?? NOMBRES_MAZOS_BIENVENIDA[0];
+}
+
 /**
  * Servicio de mazos del jugador.
  *
@@ -23,11 +68,21 @@ export class BarajaService {
         map((cartas) => cartas.filter((carta) => carta.cantidad > 0).map(mapearCartaInventario)),
       );
   }
-  /** Lista todos los mazos guardados del jugador. */
+  /** Lista todos los mazos guardados del jugador con nombres e imágenes normalizados. */
   obtenerMazos(): Observable<MazoApi[]> {
-    return this.api
-      .get<MazoApi[]>('Mazos')
-      .pipe(tap((mazos) => (this.mazoActual = mazos[0] ?? null)));
+    return this.api.get<MazoApi[]>('Mazos').pipe(
+      map((mazos) =>
+        mazos.map((mazo, indice) => ({
+          ...mazo,
+          nombre: resolverNombreMazoInicial(mazo.nombre, mazo.cartas, indice),
+          cartas: (mazo.cartas ?? []).map((carta) => ({
+            ...carta,
+            imagenUrl: resolverImagenCarta(carta.imagenUrl, carta.nombre),
+          })),
+        })),
+      ),
+      tap((mazos) => (this.mazoActual = mazos[0] ?? null)),
+    );
   }
   /** Devuelve el primer mazo del usuario, o `null` si todavía no creó ninguno. */
   obtenerMazoActual(): Observable<MazoApi | null> {
@@ -63,7 +118,7 @@ export class BarajaService {
     );
   }
 }
-function resolverImagenCarta(imagenUrl: string | null | undefined, nombre: string): string {
+export function resolverImagenCarta(imagenUrl: string | null | undefined, nombre: string): string {
   const norm = normalizarUrlImagen(imagenUrl);
   if (norm) {
     return norm;
