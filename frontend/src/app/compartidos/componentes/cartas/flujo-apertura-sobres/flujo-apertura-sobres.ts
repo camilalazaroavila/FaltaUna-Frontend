@@ -470,6 +470,7 @@ export class FlujoAperturaSobres {
     if (!sobre.disponible) return;
     this.sobreSeleccionado.set(sobre);
     this.fase.set('preview');
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.agarrarCarta, 0.6);
   }
 
   volverASeleccion(): void {
@@ -509,6 +510,7 @@ export class FlujoAperturaSobres {
     this.sobreCortado.set(false);
     this.cortando.set(false);
     this.errorApertura.set(null);
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.apoyarCarta, 0.65);
   }
 
   private punteroPresionado = false;
@@ -612,11 +614,13 @@ export class FlujoAperturaSobres {
 
     this.cortando.set(true);
     this.errorApertura.set(null);
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.cargarBarraPuntos, 0.65);
 
     // Animación visual de rasgado: la mitad de arriba se desprende
     setTimeout(() => {
       this.sobreCortado.set(true);
       this.cortando.set(false);
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.rotarZona, 0.7);
       this.llamarApiApertura();
     }, 500);
   }
@@ -656,6 +660,7 @@ export class FlujoAperturaSobres {
       },
       error: (err) => {
         this.cargandoApertura.set(false);
+        this.sonidoService?.reproducir(SONIDOS_PARTIDA.powerDown, 0.55);
         const mensaje =
           err?.error?.mensaje ||
           err?.error?.message ||
@@ -681,16 +686,16 @@ export class FlujoAperturaSobres {
   }
 
   /**
-   * Reproduce un único sonido al aparecer cada carta:
+   * Reproduce un único sonido a volumen moderado al aparecer cada carta:
    * - Si es legendaria: `carta legendaria encontrada.mp3`.
    * - Todas las demás rarezas: el efecto de revelar carta (`darVueltaCartas`).
    */
   private reproducirSonidoCartaRevelada(carta: Carta | null): void {
     if (carta?.rareza === 'legendaria') {
-      this.sonidoService?.reproducir(SONIDOS_PARTIDA.cartaLegendariaEncontrada, 0.9);
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.cartaLegendariaEncontrada, 0.45);
       return;
     }
-    this.sonidoService?.reproducir(SONIDOS_PARTIDA.darVueltaCartas, 0.85);
+    this.sonidoService?.reproducir(SONIDOS_PARTIDA.darVueltaCartas, 0.35);
   }
 
   // Siguiente carta o finalizar
@@ -708,6 +713,7 @@ export class FlujoAperturaSobres {
         this.animarCarta.set(true);
       }, 30);
     } else {
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.apoyarCarta, 0.45);
       this.cerrarFlujo();
     }
   }

@@ -41,6 +41,7 @@
     <div class="flex-1 min-h-0 overflow-hidden">
       <div clasesExtra="h-full"> <!-- este div cambiarlo por app-panel-desplazable si se quiere agregar despues el scroll -->
         <div
+          data-sin-sonido-boton
           class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 2xl:gap-6 p-2 pb-4 2xl:p-4">
           @for (sobre of listaSobresUI(); track $index) {
           @let p = propsDeSobre(sobre);
@@ -111,6 +112,7 @@
   <!-- FASE 3: CARRUSEL CIRCULAR INFINITO -->
   @if (fase() === 'carrusel') {
   <div
+    data-sin-sonido-boton
     class="pointer-events-auto relative w-full h-full flex flex-col items-center justify-center px-2 sm:px-4 overflow-hidden select-none animate-fade-in touch-none cursor-grab active:cursor-grabbing"
     (pointerdown)="onPointerDownCarrusel($event)" (pointermove)="onPointerMoveCarrusel($event)"
     (pointerup)="onPointerUpCarrusel($event)" (pointercancel)="onPointerCancelCarrusel()">

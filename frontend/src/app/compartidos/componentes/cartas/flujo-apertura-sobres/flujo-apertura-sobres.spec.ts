@@ -149,13 +149,14 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component['fase']()).toBe('preview');
   });
 
-  it('debe transicionar a preview al seleccionar un sobre sin duplicar el sonido del botón', () => {
+  it('debe transicionar a preview al seleccionar un sobre reproduciendo solo agarrarCarta', () => {
     const primerSobre = component['listaSobresUI']()[1];
     component.seleccionarSobre(primerSobre);
 
     expect(component['fase']()).toBe('preview');
     expect(component['sobreSeleccionado']()).toEqual(primerSobre);
-    expect(sonidoServiceMock.reproducir).not.toHaveBeenCalled();
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.agarrarCarta, 0.6);
   });
 
   it('debe transicionar a carrusel sin duplicar sonido del botón y reproducir el sonido del carrusel al girar', () => {
@@ -172,30 +173,44 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component['indiceCarrusel']()).toBe(-1);
   });
 
-  it('debe ejecutar el corte y reproducir un único sonido por carta revelada (legendaria vs resto)', fakeAsync(() => {
+  it('debe ejecutar el corte con sus sonidos y reproducir un único sonido por carta revelada a volumen moderado', fakeAsync(() => {
     const sobreDiario = component['listaSobresUI']()[0];
     component.seleccionarSobre(sobreDiario);
+    sonidoServiceMock.reproducir.mockClear();
+
     component.elegirSobreDelCarrusel(0);
-
     expect(component['fase']()).toBe('corte');
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.apoyarCarta, 0.65);
 
+    sonidoServiceMock.reproducir.mockClear();
     component.ejecutarCorte();
-    tick(1000);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(
+      SONIDOS_PARTIDA.cargarBarraPuntos,
+      0.65,
+    );
+
+    tick(500);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.rotarZona, 0.7);
+
+    sonidoServiceMock.reproducir.mockClear();
+    tick(500);
 
     expect(sobresServiceSpy.reclamarSobreDiario).toHaveBeenCalledWith(7);
     expect(component['fase']()).toBe('revelacion');
     expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
     expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(
       SONIDOS_PARTIDA.cartaLegendariaEncontrada,
-      0.9,
+      0.45,
     );
 
-    // Avanzar a la segunda carta (Común) reproduce únicamente el sonido de revelar carta
+    // Avanzar a la segunda carta (Común) reproduce únicamente el sonido de revelar carta a volumen 0.35
     sonidoServiceMock.reproducir.mockClear();
     component.avanzarOFinalizar();
     tick(50);
     expect(sonidoServiceMock.reproducir).toHaveBeenCalledTimes(1);
-    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.darVueltaCartas, 0.85);
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.darVueltaCartas, 0.35);
   }));
 
   it('muestra el error del backend y no inventa cartas si falla la apertura', fakeAsync(() => {
@@ -213,6 +228,7 @@ describe('FlujoAperturaSobres Component', () => {
     expect(component['errorApertura']()).toContain('Conexión fallida');
     expect(component['cartasObtenidas']()).toEqual([]);
     expect(component['fase']()).toBe('corte');
+    expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.powerDown, 0.55);
   }));
 
   it('debe navegar el carrusel mediante arrastre/swipe con pointer', () => {

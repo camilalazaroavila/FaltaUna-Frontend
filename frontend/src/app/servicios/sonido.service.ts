@@ -89,7 +89,7 @@ export class SonidoService {
           'button, [role="button"], a.btn, a[role="button"], input[type="button"], input[type="submit"]',
         );
 
-        if (!boton) {
+        if (!boton || boton.closest('[data-sin-sonido-boton]')) {
           return;
         }
 
