@@ -84,7 +84,7 @@ export class BotonNavegacionCircular {
       if (this.activo()) {
         base.push('border-transparent bg-marca-primaria text-marca-sobre-primaria shadow-baja');
       } else {
-        base.push('border-transparent bg-white text-teal-950 shadow-sm hover:shadow-md');
+        base.push('border-transparent bg-white text-black shadow-sm hover:shadow-md');
       }
 
       // Dimensiones cuadradas para mantener forma circular perfecta

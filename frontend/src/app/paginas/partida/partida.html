@@ -109,19 +109,57 @@
                       app-boton
                       variante="secundario"
                       tamanio="sm"
-                      routerLink="/usuario/baraja"
+                      routerLink="/usuario/mi-baraja"
                       class="self-start"
                     >
                       Ir a Mi baraja
                     </a>
                   </app-caja>
                 } @else {
-                  <app-campo-select
-                    etiqueta="Mazo"
-                    [opciones]="opcionesMazos()"
-                    [ngModel]="mazoSeleccionadoStr()"
-                    (ngModelChange)="seleccionarMazoStr($event)"
-                  />
+                  <div class="flex flex-col gap-2">
+                    <span class="font-titulo text-xs tracking-wider text-texto-secundario uppercase">
+                      Elegí tu baraja
+                    </span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      @for (mazo of mazosCompletos(); track mazo.id) {
+                        <button
+                          type="button"
+                          class="group relative flex flex-col items-start gap-1.5 rounded-2xl border-2 p-3 text-left transition-all cursor-pointer"
+                          [class.border-marca-primaria]="mazoSeleccionado() === mazo.id"
+                          [class.bg-marca-primaria/15]="mazoSeleccionado() === mazo.id"
+                          [class.shadow-[4px_4px_0_0_var(--color-amarillo-logo,#d5ff5f)]]="mazoSeleccionado() === mazo.id"
+                          [class.border-white/10]="mazoSeleccionado() !== mazo.id"
+                          [class.bg-superficie]="mazoSeleccionado() !== mazo.id"
+                          [class.hover:border-white/30]="mazoSeleccionado() !== mazo.id"
+                          (click)="mazoSeleccionado.set(mazo.id)"
+                        >
+                          <div class="flex w-full items-center justify-between">
+                            <span class="font-titulo text-sm uppercase tracking-wide text-texto-primario group-hover:text-marca-acento">
+                              {{ mazo.nombre }}
+                            </span>
+                            <span class="rounded-full bg-marca-primaria/20 px-2 py-0.5 text-[10px] font-bold text-marca-primaria">
+                              12 cartas
+                            </span>
+                          </div>
+                          @if (mazo.cartas && mazo.cartas.length > 0) {
+                            <div class="flex items-center -space-x-2 pt-0.5">
+                              @for (c of mazo.cartas.slice(0, 4); track c.cartaId) {
+                                <div class="size-7 rounded-md border border-white/20 overflow-hidden bg-fondo-superficie shadow-xs shrink-0">
+                                  @if (c.imagenUrl) {
+                                    <img [src]="c.imagenUrl" [alt]="c.nombre" class="size-full object-cover" />
+                                  } @else {
+                                    <div class="size-full bg-marca-primaria/30 flex items-center justify-center font-bold text-[9px] text-white">
+                                      {{ c.poder }}
+                                    </div>
+                                  }
+                                </div>
+                              }
+                            </div>
+                          }
+                        </button>
+                      }
+                    </div>
+                  </div>
                 }
 
                 <div class="flex flex-wrap items-center gap-3 pt-2">

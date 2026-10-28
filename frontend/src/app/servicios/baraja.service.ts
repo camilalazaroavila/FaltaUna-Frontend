@@ -42,14 +42,19 @@ export class BarajaService {
       map((mazo) => (mazo ? mazo.cartas.map(mapearCartaMazo) : [])),
     );
   }
-  /** Crea o reemplaza el mazo actual y devuelve sus cartas guardadas. */
-  guardarBaraja(cartas: readonly Carta[], nombre: string): Observable<Carta[]> {
+  /** Crea o reemplaza un mazo (específico o actual) y devuelve sus cartas guardadas. */
+  guardarBaraja(
+    cartas: readonly Carta[],
+    nombre: string,
+    mazoId?: number | null,
+  ): Observable<Carta[]> {
     const solicitud: GuardarMazoRequest = {
       nombre: nombre.trim(),
       cartasIds: cartas.map((carta) => Number(carta.id)),
     };
-    const operacion = this.mazoActual
-      ? this.api.put<MazoApi>(`Mazos/${this.mazoActual.id}`, solicitud)
+    const id = mazoId !== undefined ? mazoId : this.mazoActual?.id;
+    const operacion = id
+      ? this.api.put<MazoApi>(`Mazos/${id}`, solicitud)
       : this.api.post<MazoApi>('Mazos', solicitud);
     return operacion.pipe(
       tap((mazo) => (this.mazoActual = mazo)),
@@ -76,8 +81,8 @@ export function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {
     imagenUrl: carta.imagenUrl ?? '',
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
     categoria: categoriaCartaDesdeNombre(''),
-    atributoIzquierdo: carta.poder,
-    atributoDerecho: carta.costoCupon,
+    atributoDerecho: carta.poder,
+    atributoIzquierdo: carta.costoCupon,
     obtenida: true,
   };
 }
