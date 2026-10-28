@@ -6,7 +6,11 @@ import {
 } from '@angular/common/http/testing';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '@environments/environment';
-import { BarajaService } from './baraja.service';
+import {
+  BarajaService,
+  NOMBRES_MAZOS_BIENVENIDA,
+  resolverNombreMazoInicial,
+} from './baraja.service';
 describe('BarajaService', () => {
   let servicio: BarajaService;
   let http: HttpTestingController;
@@ -53,6 +57,68 @@ describe('BarajaService', () => {
     const respuesta = firstValueFrom(servicio.obtenerMazoActual());
     http.expectOne(`${environment.apiUrl}/Mazos`).flush([]);
     await expect(respuesta).resolves.toBeNull();
+  });
+  it('reemplaza los nombres genéricos de bienvenida por nombres acordes a las cartas del mazo', async () => {
+    const respuesta = firstValueFrom(servicio.obtenerMazos());
+    http.expectOne(`${environment.apiUrl}/Mazos`).flush([
+      {
+        id: 1,
+        nombre: 'Mazo de Bienvenida 1',
+        completo: true,
+        cartas: [
+          {
+            cartaId: 12,
+            nombre: 'Golden Run',
+            poder: 9,
+            costoCupon: 6,
+            rarezaId: 4,
+            rareza: 'Legendaria',
+            rarezaOrden: 4,
+            imagenUrl: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        nombre: 'Mazo de Bienvenida 2',
+        completo: true,
+        cartas: [
+          {
+            cartaId: 24,
+            nombre: 'Harmony Sound DJ Controller',
+            poder: 10,
+            costoCupon: 6,
+            rarezaId: 4,
+            rareza: 'Legendaria',
+            rarezaOrden: 4,
+            imagenUrl: null,
+          },
+        ],
+      },
+      {
+        id: 3,
+        nombre: 'Mazo de Bienvenida 3',
+        completo: true,
+        cartas: [
+          {
+            cartaId: 36,
+            nombre: 'Croquembouche Imperial de Caramelo',
+            poder: 10,
+            costoCupon: 6,
+            rarezaId: 4,
+            rareza: 'Legendaria',
+            rarezaOrden: 4,
+            imagenUrl: null,
+          },
+        ],
+      },
+    ]);
+
+    const mazos = await respuesta;
+    expect(mazos.map((m) => m.nombre)).toEqual([...NOMBRES_MAZOS_BIENVENIDA]);
+    expect(resolverNombreMazoInicial('Mi Baraja Personalizada', [], 0)).toBe(
+      'Mi Baraja Personalizada',
+    );
   });
   it('crea la baraja enviando nombre e ids de cartas', async () => {
     const cartas = [

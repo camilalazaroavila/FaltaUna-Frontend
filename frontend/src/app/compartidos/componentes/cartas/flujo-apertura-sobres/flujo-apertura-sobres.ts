@@ -72,6 +72,7 @@ const CATEGORIA_SOBRE_A_CARTA: Record<CategoriaSobre, CategoriaCarta> = {
   gastronomia: 'gastronomia',
   indumentaria: 'indumentaria',
   musica: 'musica',
+  decoracion: 'decoracion',
 };
 
 /** Qué tan seguido sale cada rareza al sortear (mientras más alto, más frecuente). */
@@ -210,7 +211,6 @@ export class FlujoAperturaSobres {
   private ignorarClic = false;
 
   constructor() {
-    // Al abrir el modal, reiniciar automáticamente a la fase de selección
     // Al abrir el modal, reiniciar automáticamente a la fase de selección.
     // Si llega un `sobreInicial` (reclamo de misión), saltamos la grilla y
     // entramos directo a la vista previa de ese sobre.
@@ -277,7 +277,7 @@ export class FlujoAperturaSobres {
 
   /**
    * Cómo se dibuja cada sobre (en el grid, la preview, el carrusel y el corte):
-   * - General / diario: el envoltorio de Falta Una (sin categoría, nombre ni logo).
+   * - General / diario: el envoltorio de Falta Una (oscuro para diario/general común, claro para sobres especiales/legendarios).
    * - Categoría: el icono de la categoría. Si el nombre no se reconoce, cae al genérico.
    * - Marca: variante clara con el logo (el del backend o el provisorio).
    */
@@ -299,8 +299,18 @@ export class FlujoAperturaSobres {
           logoUrl: sobre.logoUrl ?? LOGOS_MARCA_PROVISORIOS[claveMarca(nombre)] ?? null,
         };
       }
-      default:
-        return { categoria: null, variante: 'oscuro', nombre: null, logoUrl: null };
+      default: {
+        const esEspecial =
+          !sobre?.esDiario &&
+          !!sobre?.nombre &&
+          /legendari|especial|mejor|cool|elite/i.test(sobre.nombre);
+        return {
+          categoria: null,
+          variante: esEspecial ? 'claro' : 'oscuro',
+          nombre: null,
+          logoUrl: null,
+        };
+      }
     }
   }
 

@@ -57,6 +57,8 @@ describe('categoriaDesdeNombre', () => {
       entretenimiento: 'entretenimiento',
       entretenimientos: 'entretenimiento',
       musica: 'musica',
+      decoracion: 'decoracion',
+      decoraciones: 'decoracion',
     };
 
     // When / Then
@@ -83,6 +85,7 @@ describe('categoriaDesdeNombre', () => {
     expect(categoriaDesdeNombre('Música')).toBe('musica');
     expect(categoriaDesdeNombre('Tecnología')).toBe('tecnologia');
     expect(categoriaDesdeNombre('Indumentaria')).toBe('indumentaria');
+    expect(categoriaDesdeNombre('Decoración')).toBe('decoracion');
   });
 
   describe('nombres que no existen en el catálogo', () => {
