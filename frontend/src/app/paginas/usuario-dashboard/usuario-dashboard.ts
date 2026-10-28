@@ -19,6 +19,9 @@ import urlIconoIntercambios from '@svgs/Icon_Intercambio.svg';
 import urlIconoQr from '@svgs/Icon_Qr.svg';
 import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 
+import { ExpoPopout } from '@compartidos/componentes/layout/expo-popout/expo-popout';
+import { PopoutSesionService } from '@servicios/popout-sesion.service';
+
 export interface DestinoNavegacion {
   readonly id: string;
   readonly nombre: string;
@@ -48,7 +51,15 @@ import { viewChild } from '@angular/core';
 @Component({
   selector: 'app-usuario-dashboard',
   standalone: true,
-  imports: [Header, BotonNavegacionCircular, FlujoAperturaSobres, SobreMarca, Boton, Confeti],
+  imports: [
+    Header,
+    BotonNavegacionCircular,
+    FlujoAperturaSobres,
+    SobreMarca,
+    Boton,
+    Confeti,
+    ExpoPopout,
+  ],
   templateUrl: './usuario-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -70,6 +81,9 @@ export class UsuarioDashboard implements OnInit {
   protected readonly urlSobreDerecha = urlSobreDerecha;
   protected readonly urlIconPelea = urlIconPelea;
 
+  private readonly popoutSesion = inject(PopoutSesionService);
+  protected readonly urlImagenExpo = 'imagenes/ExpoPopout.png';
+  protected readonly expoPopoutAbierto = signal<boolean>(false);
 
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
@@ -123,6 +137,9 @@ export class UsuarioDashboard implements OnInit {
     this.cargarEstadoDiario();
     this.cargarInventarioSobres();
     this.verificarBienvenidaMazos();
+    if (this.popoutSesion.consumirPendiente()) {
+      this.expoPopoutAbierto.set(true);
+    }
   }
 
   private verificarBienvenidaMazos(): void {
@@ -247,5 +264,9 @@ export class UsuarioDashboard implements OnInit {
   abrirSobre(opcion: SobreOpcion): void {
     if (!opcion.disponible) return;
     this.cerrarSelectorSobres();
+  }
+
+  cerrarExpoPopout(): void {
+    this.expoPopoutAbierto.set(false);
   }
 }

@@ -1,0 +1,56 @@
+/* Sello postal: borde ondulado fino (perforaciones) alrededor de un fondo crema. */
+.sello {
+  --perf: 3.5px;
+  --linea: 2px;
+  /* Sobre fondo oscuro: la línea del sello es crema y las perforaciones dejan ver el fondo. */
+  --tinta: var(--crema, var(--color-amarillo-logo, #f5e064));
+  --papel: var(--fondo, var(--color-teal-profundo, #072326));
+  position: relative;
+  background-color: var(--tinta);
+  background-image:
+    radial-gradient(circle at 6px 0, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px)),
+    radial-gradient(circle at 6px 8px, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px)),
+    radial-gradient(circle at 0 6px, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px)),
+    radial-gradient(circle at 8px 6px, var(--papel) var(--perf), transparent calc(var(--perf) + 0.5px));
+  background-size: 12px 8px, 12px 8px, 8px 12px, 8px 12px;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+}
+
+/* Hoja crema interior: deja a la vista solo una línea fina de tinta en el borde. */
+.sello__hoja {
+  position: absolute;
+  inset: var(--linea);
+  background-color: var(--papel);
+  background-image:
+    radial-gradient(circle at calc(6px - var(--linea)) calc(0px - var(--linea)), transparent var(--perf), var(--tinta) var(--perf), var(--tinta) calc(var(--perf) + var(--linea)), transparent calc(var(--perf) + var(--linea) + 0.5px)),
+    radial-gradient(circle at calc(6px - var(--linea)) calc(8px + var(--linea)), transparent var(--perf), var(--tinta) var(--perf), var(--tinta) calc(var(--perf) + var(--linea)), transparent calc(var(--perf) + var(--linea) + 0.5px)),
+    radial-gradient(circle at calc(0px - var(--linea)) calc(6px - var(--linea)), transparent var(--perf), var(--tinta) var(--perf), var(--tinta) calc(var(--perf) + var(--linea)), transparent calc(var(--perf) + var(--linea) + 0.5px)),
+    radial-gradient(circle at calc(8px + var(--linea)) calc(6px - var(--linea)), transparent var(--perf), var(--tinta) var(--perf), var(--tinta) calc(var(--perf) + var(--linea)), transparent calc(var(--perf) + var(--linea) + 0.5px));
+  background-size: 12px 8px, 12px 8px, 8px 12px, 8px 12px;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+}
+
+/* Cupón: al pasar el mouse o enfocarlo se ilumina. */
+.sello:hover,
+.sello:focus-visible {
+  filter: brightness(1.07) saturate(1.15)
+    drop-shadow(0 0 0.7rem color-mix(in srgb, var(--color-verde-jugador, #3bd972) 85%, transparent));
+}
+
+/* Sello: las bandas del arte se mecen apenas al pasar el mouse. */
+.sello__arte {
+  transition: transform 0.6s ease;
+}
+
+.sello:hover .sello__arte,
+.sello:focus-visible .sello__arte {
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sello__arte {
+    transition: none;
+  }
+}

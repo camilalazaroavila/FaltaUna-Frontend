@@ -181,4 +181,12 @@
       </div>
     </div>
   }
+
+  <app-expo-popout
+    [abierto]="expoPopoutAbierto()"
+    [urlImagen]="urlImagenExpo"
+    altImagen="Stand de FALTA UNA en la expo"
+    titulo="¡Estamos en el stand!"
+    texto="¡Girá la ruleta y ganá premios en la web! Te estamos esperando."
+    (cerrar)="cerrarExpoPopout()"/>
 </div>

@@ -53,3 +53,11 @@
 .look-cartas :where(h1, h2, h3, h4, h5, h6) {
     font-family: var(--fuente-titulo);
 }
+
+
+/* Sombra tipo "Cupones" reutilizable en títulos de páginas de jugador.
+   Usa tokens semánticos para que funcione en cualquier página con el rol jugador. */
+.titulo-sombreado {
+    color: var(--marca-acento, var(--color-amarillo-logo));
+    text-shadow: 3px 3px 0 color-mix(in srgb, var(--color-verde-jugador) 55%, var(--fondo, var(--color-teal-profundo, #072326)));
+}

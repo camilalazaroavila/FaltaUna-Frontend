@@ -5,16 +5,20 @@
   <div class="look-cartas w-full px-1 pt-2 pb-8 sm:px-6 lg:px-8">
     <div class="px-3 pt-4 sm:px-0">
       <a routerLink="/usuario"
-        class="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-texto-apagado uppercase transition-colors hover:text-marca-coleccion">
-        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] uppercase transition-colors hover:text-marca-primaria">
+        <svg class="h-4 w-6" viewBox="0 0 28 16" fill="none" stroke="currentColor" stroke-width="2.5"
           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M15 6l-6 6 6 6" />
+          <path d="M27 8H2M9 1L2 8l7 7" />
         </svg>
         Volver
       </a>
     </div>
-    <div class="flex flex-wrap items-center gap-3 py-4">
-      <div class="relative min-w-0 flex-1 basis-56">
+    <div class="flex flex-wrap items-center gap-4 py-4">
+      <h1 class="shrink-0 titulo-sombreado font-titulo text-3xl uppercase tracking-[0.04em] text-marca-acento sm:text-3xl"> 
+        MIS CARTAS
+      </h1>
+      <div class="ml-auto flex flex-wrap items-center gap-3">
+      <div class="relative min-w-0 w-full sm:w-52">
         <svg class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-texto-apagado"
           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
           stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -56,7 +60,7 @@
       </div>
 
       <a routerLink="/usuario/mi-baraja"
-        class="ml-auto inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-pildora bg-marca-coleccion px-5 py-2 text-xs font-bold tracking-[0.06em] text-marca-coleccion-sobre uppercase transition-[filter] hover:brightness-105">
+        class="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-pildora bg-marca-coleccion px-5 py-2 text-xs font-bold tracking-[0.06em] text-marca-coleccion-sobre uppercase transition-[filter] hover:brightness-105">
         <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 3 3 7.5l9 4.5 9-4.5L12 3Z" />
@@ -65,6 +69,7 @@
         </svg>
         Gestión de barajas
       </a>
+      </div>
     </div>
 
     <div class="coleccion__layout">
@@ -92,7 +97,7 @@
       </aside>
 
       <main class="coleccion__contenido">
-        <p class="mb-3.5 text-xs text-texto-apagado" aria-live="polite">
+        <p class="mb-3.5 text-right text-xs text-texto-apagado" aria-live="polite">
           <strong class="text-marca-coleccion">{{ resumen().obtenidas }}</strong>
           de {{ resumen().total }} cartas obtenidas
         </p>

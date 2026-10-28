@@ -1,0 +1,64 @@
+<button
+  type="button"
+  (click)="alHacerClick($event)"
+  [attr.aria-label]="'Ver cupón de ' + cupon().marca + ': ' + cupon().descripcion"
+  class="sello group block aspect-[4/3] w-full cursor-pointer p-2 transition hover:-translate-y-1 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco motion-reduce:transition-none"
+  [class.opacity-55]="cupon().estado !== 'Disponible'"
+>
+  <span class="sello__hoja" aria-hidden="true"></span>
+
+  <!-- Arte del sello: verde con bandas onduladas crema y teal -->
+  <span
+    class="relative block size-full overflow-hidden border-2 border-solid border-(--crema) bg-marca-primaria"
+  >
+    <svg
+      class="sello__arte absolute inset-0 size-full"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      fill="none"
+      stroke-width="11"
+      aria-hidden="true"
+    >
+      <g stroke="var(--color-teal-profundo)" opacity="0.9">
+        <path d="M30 -10 C 52 22, 12 62, 36 110" />
+        <path d="M62 -10 C 84 22, 44 62, 68 110" />
+        <path d="M94 -10 C 116 22, 76 62, 100 110" />
+      </g>
+      <g stroke="var(--crema)">
+        <path d="M14 -10 C 36 22, -4 62, 20 110" />
+        <path d="M46 -10 C 68 22, 28 62, 52 110" />
+        <path d="M78 -10 C 100 22, 60 62, 84 110" />
+      </g>
+    </svg>
+
+    <span
+      class="absolute inset-x-1 top-0 bottom-9 flex items-center justify-center px-1 text-center font-titulo text-xl uppercase leading-[0.95] text-(--color-teal-profundo) sm:bottom-11 sm:text-xl xl:text-2xl"
+      style="text-shadow: 0 0 5px color-mix(in srgb, var(--crema) 85%, transparent)"
+    >
+      {{ cupon().marca }}
+    </span>
+
+    <!-- Franja de descuento -->
+    <span
+      class="absolute inset-x-0 bottom-0 flex items-center justify-between border-t-2 border-(--crema) bg-marca-primaria px-2 py-1.5 text-(--color-teal-profundo)"
+    >
+      <span class="whitespace-nowrap font-titulo text-sm uppercase sm:text-lg">
+        {{ etiquetaDescuento() }}
+      </span>
+
+      <span
+        class="flex size-5 items-center justify-center rounded-circulo bg-white text-xs font-bold leading-none sm:size-6 sm:text-sm"
+        aria-hidden="true"
+        >→</span
+      >
+    </span>
+  </span>
+
+  @if (cupon().estado !== 'Disponible') {
+    <span
+      class="absolute right-2 top-2 rounded-pildora bg-(--crema) px-2 py-0.5 font-interfaz text-[10px] font-bold uppercase text-(--color-teal-profundo)"
+    >
+      {{ cupon().estado }}
+    </span>
+  }
+</button>
