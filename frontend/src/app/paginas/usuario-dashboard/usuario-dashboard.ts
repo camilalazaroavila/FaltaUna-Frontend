@@ -28,6 +28,7 @@ export interface DestinoNavegacion {
   readonly ruta?: string;
   readonly urlIcono?: string;
   readonly icono?: string;
+  readonly deshabilitado?: boolean;
 }
 
 export interface SobreOpcion {
@@ -40,10 +41,25 @@ export interface SobreOpcion {
   readonly tipo: 'gratis' | 'tematico' | 'misterio';
 }
 
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import { Confeti } from '@compartidos/componentes/confeti/confeti';
+import { BarajaService } from '@servicios/baraja.service';
+import { SonidoService, SONIDOS_PARTIDA } from '@servicios/sonido.service';
+import type { MazoApi } from '@modelos/mazo.model';
+import { viewChild } from '@angular/core';
+
 @Component({
   selector: 'app-usuario-dashboard',
   standalone: true,
-  imports: [Header, BotonNavegacionCircular, FlujoAperturaSobres, SobreMarca, ExpoPopout],
+  imports: [
+    Header,
+    BotonNavegacionCircular,
+    FlujoAperturaSobres,
+    SobreMarca,
+    Boton,
+    Confeti,
+    ExpoPopout,
+  ],
   templateUrl: './usuario-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -51,9 +67,15 @@ export class UsuarioDashboard implements OnInit {
   private readonly router = inject(Router);
   private readonly sobresService = inject(SobresService);
   private readonly authService = inject(AuthService);
+  private readonly barajaService = inject(BarajaService, { optional: true });
+  private readonly sonidoService = inject(SonidoService, { optional: true });
+  private readonly confeti = viewChild(Confeti);
+
   protected readonly juegoHabilitado = true;
   protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
   protected readonly sobresInventario = signal<readonly SobreInventarioUsuario[]>([]);
+  protected readonly modalBienvenidaMazosVisible = signal<boolean>(false);
+  protected readonly mazosBienvenida = signal<readonly MazoApi[]>([]);
   protected readonly urlSobreIzquierda = urlSobreIzquierda;
   protected readonly urlSobreCentro = urlSobreCentro;
   protected readonly urlSobreDerecha = urlSobreDerecha;
@@ -67,8 +89,8 @@ export class UsuarioDashboard implements OnInit {
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
     { id: 'misiones', nombre: 'Misiones', ruta: '/usuario/misiones', icono: 'phosphorTrophyFill' },
     { id: 'album', nombre: 'Álbumes', ruta: '/usuario/albumes', urlIcono: urlIconoAlbum },
-    { id: 'intercambios', nombre: 'Intercambio', urlIcono: urlIconoIntercambios },
-    { id: 'qr', nombre: 'Canje', urlIcono: urlIconoQr },
+    { id: 'intercambios', nombre: 'Intercambio', urlIcono: urlIconoIntercambios, deshabilitado: true },
+    { id: 'qr', nombre: 'Canje', urlIcono: urlIconoQr, deshabilitado: true },
     { id: 'cupones', nombre: 'Mis cupones', ruta: '/usuario/cupones', urlIcono: urlIconoDescuento },
   ];
 
@@ -114,9 +136,67 @@ export class UsuarioDashboard implements OnInit {
     this.cargarSobres();
     this.cargarEstadoDiario();
     this.cargarInventarioSobres();
+    this.verificarBienvenidaMazos();
     if (this.popoutSesion.consumirPendiente()) {
       this.expoPopoutAbierto.set(true);
     }
+  }
+
+  private verificarBienvenidaMazos(): void {
+    if (typeof window === 'undefined') return;
+    const yaVisto = localStorage.getItem('faltauna_bienvenida_mazos_v1');
+    if (yaVisto === 'true') return;
+
+    if (this.barajaService) {
+      this.barajaService.obtenerMazos().subscribe({
+        next: (mazos) => {
+          if (mazos && mazos.length > 0) {
+            this.mazosBienvenida.set(mazos.slice(0, 3));
+            this.mostrarBienvenida();
+          } else {
+            this.mazosBienvenida.set([
+              { id: 1, nombre: 'Mazo de Bienvenida 1', completo: true, cartas: [] },
+              { id: 2, nombre: 'Mazo de Bienvenida 2', completo: true, cartas: [] },
+              { id: 3, nombre: 'Mazo de Bienvenida 3', completo: true, cartas: [] },
+            ]);
+            this.mostrarBienvenida();
+          }
+        },
+        error: () => {
+          this.mazosBienvenida.set([
+            { id: 1, nombre: 'Mazo de Bienvenida 1', completo: true, cartas: [] },
+            { id: 2, nombre: 'Mazo de Bienvenida 2', completo: true, cartas: [] },
+            { id: 3, nombre: 'Mazo de Bienvenida 3', completo: true, cartas: [] },
+          ]);
+          this.mostrarBienvenida();
+        },
+      });
+    }
+  }
+
+  private mostrarBienvenida(): void {
+    this.modalBienvenidaMazosVisible.set(true);
+    setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        this.confeti()?.lanzar(window.innerWidth / 2, window.innerHeight * 0.35, {
+          cantidad: 80,
+          alcance: 360,
+        });
+      }
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.victoria);
+    }, 250);
+  }
+
+  cerrarBienvenidaMazos(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('faltauna_bienvenida_mazos_v1', 'true');
+    }
+    this.modalBienvenidaMazosVisible.set(false);
+  }
+
+  irABarajasDesdeBienvenida(): void {
+    this.cerrarBienvenidaMazos();
+    this.router.navigateByUrl('/usuario/mi-baraja');
   }
 
   private cargarSobres(): void {
@@ -157,8 +237,11 @@ export class UsuarioDashboard implements OnInit {
   }
 
   seleccionarSeccion(id: string): void {
-    this.seccionActiva.set(id);
     const destino = this.destinos.find((d) => d.id === id);
+    if (destino?.deshabilitado) {
+      return;
+    }
+    this.seccionActiva.set(id);
     if (destino?.ruta) {
       this.router.navigateByUrl(destino.ruta);
     }

@@ -7,12 +7,16 @@ import { UsuarioDashboard } from './usuario-dashboard';
 import { AuthService } from '@servicios/auth.service';
 import { SobresService } from '@servicios/sobres.service';
 import { Usuario } from '@modelos/usuario.model';
+import { BarajaService } from '@servicios/baraja.service';
+import { SonidoService } from '@servicios/sonido.service';
 
 describe('UsuarioDashboard Component', () => {
   let component: UsuarioDashboard;
   let fixture: ComponentFixture<UsuarioDashboard>;
   let mockAuthService: Partial<AuthService>;
   let mockSobresService: Partial<SobresService>;
+  let mockBarajaService: Partial<BarajaService>;
+  let mockSonidoService: Partial<SonidoService>;
 
   const usuarioPrueba: Usuario = {
     id: 1,
@@ -25,9 +29,17 @@ describe('UsuarioDashboard Component', () => {
   };
 
   beforeEach(async () => {
+    localStorage.setItem('faltauna_bienvenida_mazos_v1', 'true');
     mockAuthService = {
       usuarioActual: signal<Usuario | null>(usuarioPrueba),
       logout: jest.fn(),
+    };
+    mockBarajaService = {
+      obtenerMazos: jest.fn().mockReturnValue(of([])),
+    };
+    mockSonidoService = {
+      reproducir: jest.fn(),
+      precargar: jest.fn(),
     };
 
     const signalSobres = signal({ actuales: 2, maximo: 2 });
@@ -57,6 +69,8 @@ describe('UsuarioDashboard Component', () => {
         provideRouter([]),
         { provide: AuthService, useValue: mockAuthService },
         { provide: SobresService, useValue: mockSobresService },
+        { provide: BarajaService, useValue: mockBarajaService },
+        { provide: SonidoService, useValue: mockSonidoService },
       ],
     }).compileComponents();
 
@@ -214,5 +228,29 @@ describe('UsuarioDashboard Component', () => {
     botonCerrar?.click();
 
     expect(mockAuthService.logout).toHaveBeenCalled();
+  });
+
+  it('no debe navegar ni cambiar sección activa si el destino está deshabilitado (intercambio y canje)', () => {
+    const router = TestBed.inject(Router);
+    const navigateSpy = jest.spyOn(router, 'navigateByUrl');
+
+    component.seleccionarSeccion('intercambios');
+    expect(component['seccionActiva']()).toBeNull();
+    expect(navigateSpy).not.toHaveBeenCalled();
+
+    component.seleccionarSeccion('qr');
+    expect(component['seccionActiva']()).toBeNull();
+    expect(navigateSpy).not.toHaveBeenCalled();
+  });
+
+  it('permite cerrar la bienvenida de mazos y guarda el flag en localStorage', () => {
+    component['modalBienvenidaMazosVisible'].set(true);
+    fixture.detectChanges();
+
+    component.cerrarBienvenidaMazos();
+    fixture.detectChanges();
+
+    expect(component['modalBienvenidaMazosVisible']()).toBe(false);
+    expect(localStorage.getItem('faltauna_bienvenida_mazos_v1')).toBe('true');
   });
 });

@@ -155,7 +155,9 @@ describe('Partida', () => {
       const texto = fixture.nativeElement.textContent;
       expect(texto).toContain('No tenés un mazo completo');
 
-      const enlaceBaraja = fixture.nativeElement.querySelector('a[routerLink="/usuario/baraja"]');
+      const enlaceBaraja = fixture.nativeElement.querySelector(
+        'a[routerLink="/usuario/mi-baraja"]',
+      );
       expect(enlaceBaraja).toBeTruthy();
       expect(enlaceBaraja.textContent).toContain('Ir a Mi baraja');
 

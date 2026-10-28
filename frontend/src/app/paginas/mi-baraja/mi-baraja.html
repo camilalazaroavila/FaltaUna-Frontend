@@ -11,11 +11,43 @@
         </svg>
         Mis cartas
       </a>
-      <h1 class="mt-1 font-titulo text-2xl text-texto-primario sm:text-3xl">Mi baraja</h1>
+      <h1 class="mt-1 font-titulo text-2xl text-texto-primario sm:text-3xl">Gestión de barajas</h1>
       <p class="mt-1 max-w-prose text-sm text-texto-secundario">
         Elegí exactamente <strong class="text-marca-coleccion">{{ tamanoBaraja }}</strong> cartas de
         tu colección: 5 comunes, 4 raras, 2 épicas y 1 legendaria.
       </p>
+
+      <!-- Selector de barajas del usuario -->
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <span class="font-titulo text-xs tracking-wider text-texto-apagado uppercase mr-1">Tus barajas:</span>
+        @for (mazo of mazos(); track mazo.id) {
+          <button
+            type="button"
+            class="cursor-pointer inline-flex items-center gap-2 rounded-pildora px-3.5 py-1.5 text-xs font-bold transition-all border"
+            [class.border-marca-coleccion]="mazoSeleccionadoId() === mazo.id"
+            [class.bg-marca-coleccion]="mazoSeleccionadoId() === mazo.id"
+            [class.text-marca-coleccion-sobre]="mazoSeleccionadoId() === mazo.id"
+            [class.border-borde-coleccion]="mazoSeleccionadoId() !== mazo.id"
+            [class.bg-fondo-coleccion-superficie]="mazoSeleccionadoId() !== mazo.id"
+            [class.text-texto-secundario]="mazoSeleccionadoId() !== mazo.id"
+            [class.hover:border-borde-coleccion-fuerte]="mazoSeleccionadoId() !== mazo.id"
+            [class.hover:text-texto-primario]="mazoSeleccionadoId() !== mazo.id"
+            (click)="seleccionarMazo(mazo)"
+          >
+            <span>{{ mazo.nombre }}</span>
+            <span class="rounded-full bg-black/20 px-1.5 py-0.5 text-[10px]">
+              {{ mazo.cartas.length }}/{{ tamanoBaraja }}
+            </span>
+          </button>
+        }
+        <button
+          type="button"
+          class="cursor-pointer inline-flex items-center gap-1.5 rounded-pildora border border-dashed border-marca-coleccion/60 px-3 py-1.5 text-xs font-bold text-marca-coleccion transition hover:bg-marca-coleccion/10"
+          (click)="iniciarNuevaBaraja()"
+        >
+          + Nueva baraja
+        </button>
+      </div>
     </div>
     <div class="baraja__layout">
       <!-- Panel: la baraja en construcción (grilla 3x4) -->
