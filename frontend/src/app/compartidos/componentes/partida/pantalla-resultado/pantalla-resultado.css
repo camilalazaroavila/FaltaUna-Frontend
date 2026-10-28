@@ -4,14 +4,14 @@
 
 .pantalla-resultado-contenedor--flotante {
   position: fixed;
-  inset-block-start: clamp(2.25rem, 5.5vh, 4.5rem);
-  margin-top: clamp(1.25rem, 3vh, 2.25rem);
+  inset-block-start: clamp(3.25rem, 7cqh, 4.5rem);
+  margin-top: 0;
   inset-inline: 0;
   z-index: 45;
   pointer-events: none;
   display: flex;
   justify-content: center;
-  padding-inline: 0.75rem;
+  padding-inline: clamp(3.5rem, 8cqw, 7rem);
 }
 
 .pantalla-resultado-contenedor--incrustado {
@@ -24,15 +24,19 @@
 .pantalla-resultado-panel {
   pointer-events: auto;
   width: 100%;
-  max-width: 58rem;
+  max-width: min(50rem, calc(100vw - clamp(7rem, 16vw, 13rem)));
   background-color: var(--color-teal-hundido);
   border: 2px solid var(--color-teal-borde);
-  border-radius: 1rem;
+  border-radius: var(--radio-lg);
   box-shadow: 0 0 0 2px rgb(0 0 0 / 0.5), 0 10px 25px -5px rgb(0 0 0 / 0.7), 4px 6px 0 var(--color-sombra-cartoon);
   color: var(--color-texto-primario);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pantalla-resultado-contenedor--incrustado .pantalla-resultado-panel {
+  max-width: 58rem;
 }
 
 .pantalla-resultado-panel--victoria {
@@ -79,7 +83,7 @@
 @keyframes heroicaEntrada {
   from {
     opacity: 0;
-    transform: scale(0.85) translateY(20px);
+    transform: scale(0.85) translateY(1.25rem);
   }
   to {
     opacity: 1;
@@ -90,8 +94,8 @@
 .pantalla-resultado-barra {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
-  padding: 0.625rem 0.875rem;
+  gap: clamp(0.4rem, 1cqh, 0.625rem);
+  padding: clamp(0.5rem, 1.2cqh, 0.75rem) clamp(0.65rem, 1.5cqw, 1rem);
 }
 
 @media (min-width: 640px) {
@@ -99,8 +103,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 0.875rem;
-    padding: 0.75rem 1rem;
+    gap: clamp(0.5rem, 1.2cqw, 0.875rem);
   }
 }
 
@@ -108,19 +111,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  inline-size: 2.25rem;
-  block-size: 2.25rem;
-  border-radius: 0.625rem;
+  inline-size: clamp(2rem, 4cqh, 2.5rem);
+  block-size: clamp(2rem, 4cqh, 2.5rem);
+  border-radius: var(--radio-md);
   border: 1.5px solid var(--color-borde-default);
   flex-shrink: 0;
-}
-
-@media (min-width: 640px) {
-  .pantalla-resultado-icono {
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
-    border-radius: 0.75rem;
-  }
 }
 
 .pantalla-resultado-icono--victoria {
@@ -166,15 +161,47 @@
 
 .pantalla-resultado-desglose {
   border-top: 1px solid var(--color-borde-default);
-  padding: 0.75rem;
-  max-height: 48vh;
+  padding: clamp(0.5rem, 1.5cqh, 1rem);
+  max-height: clamp(14rem, 44cqh, 23.75rem);
   overflow-y: auto;
 }
 
-@media (min-width: 640px) {
-  .pantalla-resultado-desglose {
-    padding: 1rem;
-    max-height: 380px;
+/* En alturas bajas (<= 820px): banner más compacto, ubicado debajo de la fila del rival
+   y acotado al centro para no tapar el chip del bot ni las barras verticales. */
+@media (max-height: 820px) {
+  .pantalla-resultado-contenedor--flotante {
+    inset-block-start: clamp(3.1rem, 6.8cqh, 3.6rem);
+    margin-top: 0;
+    padding-inline: clamp(3.75rem, 9cqw, 7.5rem);
+  }
+
+  .pantalla-resultado-panel {
+    max-width: min(46rem, calc(100vw - clamp(7.5rem, 18vw, 14rem)));
+  }
+
+  .pantalla-resultado-barra {
+    padding: clamp(0.35rem, 0.9cqh, 0.5rem) clamp(0.6rem, 1.2cqw, 0.85rem);
+    gap: clamp(0.35rem, 0.8cqw, 0.6rem);
+  }
+
+  .pantalla-resultado-icono {
+    inline-size: clamp(1.75rem, 3.5cqh, 2.1rem);
+    block-size: clamp(1.75rem, 3.5cqh, 2.1rem);
+  }
+
+  .pantalla-resultado-titulo {
+    font-size: var(--tipografia-cuerpo);
+  }
+}
+
+@media (max-width: 639px) {
+  .pantalla-resultado-contenedor--flotante {
+    inset-block-start: clamp(2.85rem, 6.5cqh, 3.4rem);
+    padding-inline: clamp(2.75rem, 10cqw, 3.5rem);
+  }
+
+  .pantalla-resultado-panel {
+    max-width: calc(100vw - clamp(5.5rem, 20vw, 7rem));
   }
 }
 

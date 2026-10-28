@@ -15,7 +15,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { SobresService } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
 import type { SobreInventarioUsuario, SobreAbiertoUsuario} from '@servicios/sobres.service';
-import { PanelDesplazable } from '@compartidos/componentes/controles/panel-desplazable/panel-desplazable';
+
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
 import type { VarianteSobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';

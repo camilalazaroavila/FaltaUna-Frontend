@@ -47,7 +47,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 25;
+    z-index: 10;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
     pointer-events: auto;
 }
@@ -76,6 +76,37 @@
     display: grid;
     place-items: center;
     padding-block: clamp(0.75rem, 2vh, 1.25rem);
+}
+
+@media (max-width: 1366px),
+(max-height: 820px) {
+    .zona-contenido {
+        gap: clamp(0.2rem, 0.8cqh, 0.65rem);
+    }
+
+    .zona-slots {
+        --slot-gap: clamp(0.2rem, 1.1cqw, 0.5rem);
+        --slot-por-alto: calc((100dvh - var(--tablero-alto-fijo, 22rem)) / var(--filas-total) * 0.75);
+        --slot-ancho: min(var(--slot-por-ancho), max(1.75rem, min(var(--slot-ancho-max, 7.5rem), var(--slot-por-alto))));
+    }
+
+    .zona-foto {
+        width: clamp(4.25rem, min(36cqw, 13.5cqh), 9.5rem);
+    }
+
+    .zona-indicadores-categoria--izq {
+        right: -1.15rem;
+    }
+
+    .zona-indicadores-categoria--der {
+        left: -1.15rem;
+    }
+
+    .zona-celda-foto {
+        padding-block: clamp(0.45rem, 1.2cqh, 0.9rem);
+        margin-top: clamp(0.75rem, 1vh, 0.25rem);
+        margin-bottom: clamp(0.75rem, 1vh, 0.25rem);
+    }
 }
 
 .zona-foto>button {
@@ -133,11 +164,11 @@
 }
 
 .burbuja-puntaje__icono {
-    font-size: 0.7rem;
+    font-size: var(--tipografia-etiqueta);
 }
 
 .burbuja-puntaje__numero {
-    font-size: 0.9rem;
+    font-size: var(--tipografia-menor);
     font-variant-numeric: tabular-nums;
 }
 
@@ -167,7 +198,7 @@
     padding: 0.1rem 0.35rem;
     border-radius: 9999px;
     font-family: var(--fuente-titulo);
-    font-size: 0.625rem;
+    font-size: var(--tipografia-etiqueta);
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.02em;
@@ -191,9 +222,12 @@
 }
 
 @keyframes pulsoModificadorSutil {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1) translateY(0);
     }
+
     50% {
         transform: scale(1.06) translateY(-1px);
     }
@@ -204,14 +238,17 @@
         opacity: 0;
         transform: translate(-50%, 0.4rem) scale(0.7);
     }
+
     20% {
         opacity: 1;
         transform: translate(-50%, 0) scale(1.15);
     }
+
     75% {
         opacity: 1;
         transform: translate(-50%, -1.8rem) scale(1);
     }
+
     100% {
         opacity: 0;
         transform: translate(-50%, -2.6rem) scale(0.9);
@@ -253,7 +290,7 @@
 }
 
 .burbuja-impacto__icono {
-    font-size: 0.75rem;
+    font-size: var(--tipografia-etiqueta);
 }
 
 .burbuja-impacto__texto {
@@ -263,12 +300,12 @@
 }
 
 .burbuja-impacto__delta {
-    font-size: 0.95rem;
+    font-size: var(--tipografia-menor);
     font-variant-numeric: tabular-nums;
 }
 
 .burbuja-impacto__etiqueta {
-    font-size: 0.625rem;
+    font-size: var(--tipografia-etiqueta);
     letter-spacing: 0.05em;
     opacity: 0.9;
 }
@@ -278,17 +315,21 @@
         opacity: 0;
         transform: translate(-50%, 0.4rem) scale(0.5);
     }
+
     18% {
         opacity: 1;
         transform: translate(-50%, -0.2rem) scale(1.15);
     }
+
     30% {
         transform: translate(-50%, -0.2rem) scale(1);
     }
+
     75% {
         opacity: 1;
         transform: translate(-50%, -1.2rem) scale(1);
     }
+
     100% {
         opacity: 0;
         transform: translate(-50%, -1.8rem) scale(0.85);
@@ -309,24 +350,32 @@
 }
 
 @keyframes sacudidaImpactoDebuff {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(0) rotate(0deg);
     }
+
     15% {
         transform: translateX(-4px) rotate(-2.5deg);
     }
+
     30% {
         transform: translateX(4px) rotate(2.5deg);
     }
+
     45% {
         transform: translateX(-3px) rotate(-1.5deg);
     }
+
     60% {
         transform: translateX(3px) rotate(1.5deg);
     }
+
     75% {
         transform: translateX(-1px) rotate(-0.5deg);
     }
+
     90% {
         transform: translateX(1px) rotate(0.5deg);
     }
@@ -336,18 +385,22 @@
     0% {
         transform: translateY(0) scale(1);
     }
+
     30% {
         transform: translateY(-4px) scale(1.08);
     }
+
     70% {
         transform: translateY(-2px) scale(1.04);
     }
+
     100% {
         transform: translateY(0) scale(1);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .burbuja-puntaje,
     .burbuja-impacto-poder {
         animation: none !important;

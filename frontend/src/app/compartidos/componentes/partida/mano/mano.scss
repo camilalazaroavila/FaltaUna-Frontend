@@ -1,6 +1,7 @@
 :host {
     --ancho-carta: clamp(6.75rem, 11cqw, 9rem);
-    --escala-arrastre: 1;
+    --ancho-disponible-mano: clamp(16rem, 62cqw, 52rem);
+    --escala-arrastre: 1.06;
     display: block;
     width: 100%;
     min-width: 0;
@@ -29,8 +30,17 @@
 }
 
 .mano-carta+.mano-carta {
-    /* Solape moderado de abanico abierto: las cartas no se sobreponen en las esquinas */
-    margin-left: calc(-1 * clamp(1.75rem, calc((var(--ancho-carta) * 0.28) + (var(--separaciones) * 0.15rem)), calc(var(--ancho-carta) * 0.55)));
+    /* Solape adaptativo: con 3, 6 o 12 cartas siempre entra en el ancho disponible del centro */
+    --paso-max: calc((var(--ancho-disponible-mano) - var(--ancho-carta)) / var(--separaciones, 1));
+    --solape-min-para-entrar: calc(var(--ancho-carta) - var(--paso-max));
+    --solape-base: calc((var(--ancho-carta) * 0.28) + (var(--separaciones, 1) * 0.15rem));
+    margin-left: calc(
+        -1 * clamp(
+            calc(var(--ancho-carta) * 0.22),
+            max(var(--solape-base), var(--solape-min-para-entrar)),
+            calc(var(--ancho-carta) * 0.78)
+        )
+    );
 }
 
 .mano-carta:hover,
@@ -57,17 +67,43 @@
 /*
  * Fantasma del arrastre: `position: fixed` se ancla al containing block creado
  * por `contain: layout` en el div .tablero, cuyo origen coincide con el host
- * (por eso `aLocal` resta el rect del host). Se centra bajo el puntero con un
- * pequeño desplazamiento hacia arriba.
+ * (por eso `aLocal` resta el rect del host). Se centra exactamente en el puntero
+ * (-50%, -50%) para agarrar y soltar la carta desde su centro (estilo Marvel Snap).
  */
 .mano-fantasma {
     position: fixed;
     z-index: 60;
     width: var(--ancho-carta);
     pointer-events: none;
-    transform: translate(-50%, -115%) scale(var(--escala-arrastre));
-    transform-origin: center bottom;
-    filter: drop-shadow(0 0.5rem 0.75rem rgb(0 0 0 / 0.25));
+    transform: translate(-50%, -50%) scale(var(--escala-arrastre));
+    transform-origin: center center;
+    filter: drop-shadow(0 0.65rem 1rem rgb(0 0 0 / 0.35));
+}
+
+@media (max-width: 1366px), (max-height: 820px) {
+    :host {
+        --ancho-carta: clamp(4.5rem, 11cqw, 8rem);
+        --ancho-disponible-mano: clamp(14.5rem, 56cqw, 42rem);
+        min-height: calc(var(--ancho-carta) * 1.4 * 0.75);
+        padding: clamp(0.85rem, 2.2cqh, 1.5rem) clamp(0.5rem, 1.5cqw, 1.25rem) clamp(0.65rem, 1.8cqh, 1.25rem);
+    }
+
+    .mano {
+        min-height: calc(var(--ancho-carta) * 1.4 * 0.75);
+    }
+
+    .mano-carta {
+        transform-origin: 50% 110%;
+    }
+
+    .mano-carta+.mano-carta {
+        --solape-base: calc((var(--ancho-carta) * 0.26) + (var(--separaciones, 1) * 0.14rem));
+    }
+
+    .mano-carta:hover,
+    .mano-carta:focus-visible {
+        transform: translateY(clamp(-1.85rem, -3.2cqh, -1.15rem)) scale(1.48) rotate(0deg);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

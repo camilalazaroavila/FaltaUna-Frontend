@@ -1,4 +1,6 @@
 :host {
+    display: block;
+    height: 100%;
     container-type: inline-size;
 }
 
@@ -21,6 +23,33 @@
 .barra-numero {
     font-size: clamp(0.8125rem, 20cqw, 1.25rem);
     transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), filter 0.85s ease-out;
+}
+
+@media (max-width: 1366px), (max-height: 820px) {
+    :host {
+        container-type: normal;
+        max-height: clamp(10rem, 48cqh, 22rem);
+    }
+
+    .barra-contenedor {
+        max-height: clamp(10rem, 48cqh, 22rem);
+        gap: 0.25rem;
+    }
+
+    .barra-etiqueta {
+        padding-inline: clamp(0.35rem, 0.8cqw, 0.65rem);
+        font-size: var(--tipografia-etiqueta);
+    }
+
+    .barra-cuerpo {
+        width: clamp(1.5rem, 2.6cqw, 2.5rem);
+        min-height: 6rem;
+        max-height: clamp(10rem, 48cqh, 22rem);
+    }
+
+    .barra-numero {
+        font-size: var(--tipografia-menor);
+    }
 }
 
 /* Estado llamativo cuando la barra se carga con puntos */

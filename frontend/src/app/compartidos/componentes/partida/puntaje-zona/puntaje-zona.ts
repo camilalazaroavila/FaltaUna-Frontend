@@ -15,7 +15,7 @@ import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
 const CLASES_BASE =
-  'inline-flex min-w-[clamp(3.5rem,18cqw,5.75rem)] items-center justify-center gap-1.5 rounded-pildora border-2 px-[clamp(0.4rem,2cqw,0.75rem)] py-[clamp(0.1rem,1cqw,0.25rem)] shadow-cartoon transition-all duration-200';
+  'puntaje-insignia inline-flex min-w-[clamp(3.5rem,18cqw,5.75rem)] items-center justify-center gap-1.5 rounded-pildora border-2 px-[clamp(0.4rem,2cqw,0.75rem)] py-[clamp(0.1rem,1cqw,0.25rem)] shadow-cartoon transition-all duration-200';
 
 const CLASES_ESTADO: Record<EstadoPuntajeZona, string> = {
   ganando: 'bg-puntaje-zona-ganando-fondo text-puntaje-zona-ganando-texto border-exito shadow-[0_0_10px_rgba(59,217,114,0.35)]',
@@ -37,6 +37,7 @@ const SIMBOLO_ESTADO: Record<EstadoPuntajeZona, string> = {
 @Component({
   selector: 'app-puntaje-zona',
   templateUrl: './puntaje-zona.html',
+  styleUrl: './puntaje-zona.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'inline-block',

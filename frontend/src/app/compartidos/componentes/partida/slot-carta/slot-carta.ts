@@ -6,7 +6,7 @@ import type { EstadoSlot, LadoPartida } from '@modelos/partida.model';
  * desbordar para que el zoom de la carta no se recorte contra el borde.
  */
 const CLASES_BASE =
-  'relative flex aspect-[6/8] w-full items-center justify-center rounded-irregular-slot border-2 transition-[box-shadow,border-color] duration-200 motion-reduce:transition-none';
+  'relative flex aspect-[3/4] w-full items-center justify-center rounded-irregular-slot border-2 transition-[box-shadow,border-color] duration-200 motion-reduce:transition-none';
 
 const CLASES_FONDO: Record<LadoPartida, string> = {
   propio: 'bg-slot-propio-fondo',

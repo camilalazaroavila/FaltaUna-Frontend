@@ -1,0 +1,13 @@
+@media (max-width: 1366px), (max-height: 820px) {
+    .puntaje-insignia {
+        min-width: clamp(2.75rem, 14cqw, 4.5rem);
+        gap: 0.25rem;
+        padding-inline: clamp(0.3rem, 1.4cqw, 0.55rem);
+        padding-block: clamp(0.05rem, 0.4cqw, 0.15rem);
+    }
+
+    .puntaje-numero {
+        font-size: var(--tipografia-menor);
+    }
+}
+

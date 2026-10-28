@@ -78,13 +78,13 @@ export class BarraPuntos implements AfterViewInit {
    */
   protected readonly clasesNumero = computed(() =>
     [
-      'absolute inset-x-0 flex justify-center overflow-hidden font-titulo tabular-nums texto-contorno text-texto-primario',
+      'absolute inset-x-0 flex justify-center overflow-hidden font-titulo text-menor tabular-nums texto-contorno text-texto-primario',
       this.esRival() ? 'top-1.5' : 'bottom-1.5',
     ].join(' '),
   );
   protected readonly clasesDelta = computed(() =>
     [
-      'pointer-events-none h-5 text-center font-titulo text-menor tabular-nums texto-contorno text-texto-primario',
+      'pointer-events-none h-4 text-center font-titulo text-etiqueta tabular-nums texto-contorno text-texto-primario',
       this.delta() === null ? 'opacity-0' : '',
     ].join(' '),
   );

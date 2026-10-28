@@ -16,7 +16,7 @@
       <span class="flex items-center" aria-hidden="true">
         @for (reverso of reversosRival(); track reverso.indice) {
           <span
-            class="reverso-rival h-[clamp(2.2rem,6cqw,3.4rem)] aspect-[3/4] shrink-0 rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
+            class="reverso-rival aspect-[3/4] shrink-0 rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
             [style.--angulo]="reverso.angulo"
           ></span>
         }
@@ -78,7 +78,7 @@
         (verCarta)="cartaAbierta.set($event)"
       />
     }
-        <app-cupon-recurso
+    <app-cupon-recurso
       [valor]="servicio.cuponesPropio()"
       [maximo]="servicio.cuponMaximo()"
       variante="completa"
@@ -124,12 +124,12 @@
   <div class="fixed top-4 right-4 z-50 pointer-events-auto">
     <button
       type="button"
-      class="boton-saltar cursor-pointer inline-flex items-center gap-2 rounded-pildora border-2 border-borde-foco bg-superficie-elevada px-4 py-2 font-titulo text-xs uppercase tracking-wider text-texto-primario shadow-cartoon transition hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      class="boton-saltar cursor-pointer inline-flex items-center gap-2 rounded-pildora border-2 border-borde-foco bg-superficie-elevada px-4 py-2 font-titulo text-etiqueta uppercase tracking-wider text-texto-primario shadow-cartoon transition hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
       (click)="saltarConteo()"
       aria-label="Saltar conteo de puntos (o presiona Escape)"
     >
       <span>Saltar</span>
-      <kbd class="rounded bg-fondo-hundido px-1.5 py-0.5 text-[10px] text-texto-secundario border border-borde-default">Esc</kbd>
+      <kbd class="rounded bg-fondo-hundido px-1.5 py-0.5 text-etiqueta text-texto-secundario border border-borde-default">Esc</kbd>
     </button>
   </div>
 }

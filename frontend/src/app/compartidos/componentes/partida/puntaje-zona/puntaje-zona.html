@@ -1,20 +1,20 @@
 <span #insignia [class]="clases()">
-  <span class="font-interfaz text-[0.625rem] font-bold tracking-wider uppercase opacity-90">
+  <span class="font-interfaz text-etiqueta font-bold tracking-wider uppercase opacity-90">
     {{ lado() === 'propio' ? 'Vos' : 'Rival' }}
   </span>
-  <span #numero class="inline-block font-titulo text-subtitulo leading-titulo tabular-nums">
+  <span #numero class="puntaje-numero inline-block font-titulo text-subtitulo leading-titulo tabular-nums">
     {{ puntos() }}
   </span>
   @if (estado() === 'ganando' && diferencia() > 0) {
     <span
-      class="rounded-pildora bg-white/25 px-1 py-0.5 font-titulo text-[0.625rem] font-bold leading-none tracking-tight text-white drop-shadow-sm"
+      class="rounded-pildora bg-white/25 px-1 py-0.5 font-titulo text-etiqueta font-bold leading-none tracking-tight text-white drop-shadow-sm"
       aria-hidden="true"
     >
       +{{ diferencia() }}
     </span>
   } @else if (estado() === 'perdiendo' && diferencia() > 0) {
     <span
-      class="rounded-pildora bg-black/25 px-1 py-0.5 font-titulo text-[0.625rem] font-bold leading-none tracking-tight opacity-90"
+      class="rounded-pildora bg-black/25 px-1 py-0.5 font-titulo text-etiqueta font-bold leading-none tracking-tight opacity-90"
       aria-hidden="true"
     >
       -{{ diferencia() }}

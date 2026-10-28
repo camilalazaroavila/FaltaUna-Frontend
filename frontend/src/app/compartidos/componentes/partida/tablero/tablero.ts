@@ -43,6 +43,9 @@ import {
 /** Grados del extremo del abanico que forman los reversos de la mano rival. */
 const ABANICO_RIVAL_GRADOS = 12;
 
+/** Radio magnético (px) para encajar la carta en el slot libre más cercano al soltarla desde su centro. */
+const RADIO_MAGNETICO_SLOT_PX = 28;
+
 /** Datos del slot que se está sobrevolando durante el arrastre. */
 interface SlotSobrevolado {
   readonly lugar: NombreLugar;
@@ -511,8 +514,9 @@ export class Tablero implements OnDestroy {
   }
 
   /**
-   * Devuelve el slot propio vacío que está bajo el puntero, o `null` si no hay
-   * ninguno o está ocupado.
+   * Devuelve el slot propio vacío que está bajo el centro de la carta (puntero),
+   * o el más cercano dentro de un radio magnético corto para que soltar la carta
+   * sobre el lugar encaje de forma fluida (estilo Marvel Snap).
    */
   private slotEnPosicion(posicion: PosicionArrastre): SlotSobrevolado | null {
     if (typeof document !== 'undefined' && typeof document.elementsFromPoint === 'function') {
@@ -526,22 +530,19 @@ export class Tablero implements OnDestroy {
           return null;
         }
 
-        const contenedor = slot.closest<HTMLElement>('[data-lugar][data-indice]');
-        const lugar = contenedor?.dataset['lugar'];
-        const indice = Number(contenedor?.dataset['indice']);
-
-        if ((lugar === 'izquierda' || lugar === 'derecha') && Number.isInteger(indice)) {
-          return { lugar, indice, elemento: slot };
+        const resuelto = this.extraerDatosSlot(slot);
+        if (resuelto) {
+          return resuelto;
         }
       }
-      return null;
+      return this.buscarSlotMagnetico(posicion);
     }
 
     const elemento = typeof document !== 'undefined' ? document.elementFromPoint(posicion.x, posicion.y) : null;
     const slot = elemento?.closest<HTMLElement>('[data-slot-lado="propio"]');
 
     if (!slot) {
-      return null;
+      return this.buscarSlotMagnetico(posicion);
     }
 
     const estado = slot.getAttribute('data-slot-estado');
@@ -549,6 +550,10 @@ export class Tablero implements OnDestroy {
       return null;
     }
 
+    return this.extraerDatosSlot(slot);
+  }
+
+  private extraerDatosSlot(slot: HTMLElement): SlotSobrevolado | null {
     const contenedor = slot.closest<HTMLElement>('[data-lugar][data-indice]');
     const lugar = contenedor?.dataset['lugar'];
     const indice = Number(contenedor?.dataset['indice']);
@@ -558,5 +563,42 @@ export class Tablero implements OnDestroy {
     }
 
     return null;
+  }
+
+  /**
+   * Si el centro de la carta cae sobre el pequeño margen entre casillas o en el
+   * borde inmediato de una casilla vacía, selecciona la más cercana dentro de
+   * `RADIO_MAGNETICO_SLOT_PX`.
+   */
+  private buscarSlotMagnetico(posicion: PosicionArrastre): SlotSobrevolado | null {
+    const candidatos = Array.from(
+      this.host.querySelectorAll<HTMLElement>(
+        '[data-slot-lado="propio"]:not([data-slot-estado="ocupado"])',
+      ),
+    );
+
+    let mejorSlot: SlotSobrevolado | null = null;
+    let menorDistancia = RADIO_MAGNETICO_SLOT_PX;
+
+    for (const slot of candidatos) {
+      const rect = slot.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) {
+        continue;
+      }
+
+      const dx = Math.max(rect.left - posicion.x, 0, posicion.x - rect.right);
+      const dy = Math.max(rect.top - posicion.y, 0, posicion.y - rect.bottom);
+      const distanciaBorde = Math.hypot(dx, dy);
+
+      if (distanciaBorde <= menorDistancia) {
+        const datos = this.extraerDatosSlot(slot);
+        if (datos) {
+          menorDistancia = distanciaBorde;
+          mejorSlot = datos;
+        }
+      }
+    }
+
+    return mejorSlot;
   }
 }

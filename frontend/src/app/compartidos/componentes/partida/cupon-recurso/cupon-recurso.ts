@@ -15,8 +15,8 @@ import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
 const CLASES_CUERPO: Record<'completa' | 'compacta', string> = {
-  completa: 'gap-2.5 px-5 py-2.5',
-  compacta: 'gap-1.5 px-4 py-2',
+  completa: 'cupon--completa gap-2.5 px-5 py-2.5',
+  compacta: 'cupon--compacta gap-1.5 px-4 py-2',
 };
 
 /**
@@ -36,11 +36,11 @@ const CLASES_CUERPO: Record<'completa' | 'compacta', string> = {
   styleUrl: './cupon-recurso.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgIcon],
-host: {
-  class: 'inline-flex font-titulo text-cupon-texto cupon-contorno',
-  role: 'status',
-  '[attr.aria-label]': 'etiqueta()',
-},
+  host: {
+    class: 'inline-flex font-titulo text-cupon-texto cupon-contorno',
+    role: 'status',
+    '[attr.aria-label]': 'etiqueta()',
+  },
 })
 export class CuponRecurso implements AfterViewInit {
   private readonly gsapServicio = inject(GsapService);
@@ -52,7 +52,7 @@ export class CuponRecurso implements AfterViewInit {
   readonly maximo = input(6);
   readonly variante = input<'completa' | 'compacta'>('completa');
 
-protected readonly clasesCuerpo = computed(() => CLASES_CUERPO[this.variante()]);
+  protected readonly clasesCuerpo = computed(() => CLASES_CUERPO[this.variante()]);
   protected readonly esCompacta = computed(() => this.variante() === 'compacta');
   protected readonly leyenda = computed(() => `cupones de ${this.maximo()}`);
   protected readonly etiqueta = computed(
