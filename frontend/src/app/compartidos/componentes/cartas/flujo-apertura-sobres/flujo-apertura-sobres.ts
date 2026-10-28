@@ -115,7 +115,7 @@ const CLIP_INFERIOR = `inset(${LINEA_CORTE}% 0 0 0)`;
 @Component({
   selector: 'app-flujo-apertura-sobres',
   standalone: true,
-  imports: [NgTemplateOutlet, PanelDesplazable, CartaComponent, SobreMarca],
+  imports: [NgTemplateOutlet, CartaComponent, SobreMarca],  /* agregar PanelDesplazable si se agrega despues*/
   templateUrl: './flujo-apertura-sobres.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
