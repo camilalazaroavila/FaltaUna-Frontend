@@ -39,7 +39,6 @@ import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja
   imports: [
     Boton,
     Caja,
-    CampoSelect,
     FormsModule,
     PantallaResultado,
     RouterLink,

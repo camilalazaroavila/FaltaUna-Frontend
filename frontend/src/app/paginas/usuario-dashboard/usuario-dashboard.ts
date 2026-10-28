@@ -166,7 +166,7 @@ export class UsuarioDashboard implements OnInit {
           alcance: 360,
         });
       }
-      this.sonidoService?.reproducir(SONIDOS_PARTIDA.bonusVictoria);
+      this.sonidoService?.reproducir(SONIDOS_PARTIDA.victoria);
     }, 250);
   }
 
