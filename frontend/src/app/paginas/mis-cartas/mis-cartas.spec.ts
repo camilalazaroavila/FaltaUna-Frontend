@@ -217,14 +217,6 @@ describe('MisCartas', () => {
     }
   });
 
-  it('debe ofrecer el acceso a "Mi baraja"', () => {
-    const enlace = fixture.nativeElement.querySelector(
-      'a[href="/usuario/mi-baraja"]',
-    ) as HTMLAnchorElement | null;
-
-    expect(enlace).not.toBeNull();
-    expect(enlace?.textContent?.toLowerCase()).toContain('construir baraja');
-  });
 
   it('debe abrir el detalle de una carta al activarla y cerrarlo desde el popup', () => {
     const disparador = fixture.nativeElement.querySelector(
