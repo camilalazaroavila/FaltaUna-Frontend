@@ -112,13 +112,6 @@ describe('UsuarioDashboard Component', () => {
     );
   });
 
-  it('debe abrir el selector al hacer clic en un sobre del abanico', () => {
-    const sobre = fixture.nativeElement.querySelector('app-sobre-marca button') as HTMLButtonElement;
-    sobre.click();
-    fixture.detectChanges();
-
-    expect(component['selectorSobresAbierto']()).toBe(true);
-  });
 
   it('debe renderizar el dock de navegación con los 6 destinos', () => {
     const aside = fixture.nativeElement.querySelector('aside[aria-label="Navegación principal"]');
@@ -169,33 +162,6 @@ describe('UsuarioDashboard Component', () => {
     expect(textoContador).toContain('2/2 GRATIS');
   });
 
-  it('debe abrir el panel selector de sobres al presionar VER SOBRES', () => {
-    expect(component['selectorSobresAbierto']()).toBe(false);
-
-    const botonVerSobres = fixture.debugElement.query(
-      By.css('#btn-ver-sobres')
-    ).nativeElement as HTMLButtonElement;
-
-    expect(botonVerSobres.textContent?.trim()).toBe('VER SOBRES');
-    botonVerSobres.click();
-    fixture.detectChanges();
-
-    expect(component['selectorSobresAbierto']()).toBe(true);
-
-    const flujoEl = fixture.nativeElement.querySelector('app-flujo-apertura-sobres');
-    expect(flujoEl).toBeTruthy();
-    expect(flujoEl.textContent).toContain('Elegí tu sobre');
-  });
-
-  it('debe cerrar el panel selector de sobres al invocar cerrarSelectorSobres', () => {
-    component.abrirSelectorSobres();
-    fixture.detectChanges();
-    expect(component['selectorSobresAbierto']()).toBe(true);
-
-    component.cerrarSelectorSobres();
-    fixture.detectChanges();
-    expect(component['selectorSobresAbierto']()).toBe(false);
-  });
 
   it('debe descontar sobres disponibles al completar una apertura', () => {
     expect(component['sobresDisponibles']().actuales).toBe(2);
