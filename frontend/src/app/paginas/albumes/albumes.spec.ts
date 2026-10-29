@@ -147,6 +147,54 @@ describe('Albumes', () => {
     expect(texto).toContain('1 de 2 cartas');
   });
 
+  it('ignora álbumes y cartas cuya marca no existe sin romper la vista', () => {
+    servicio.listarAlbumes.mockReturnValue(
+      of([
+        RESUMEN,
+        { ...RESUMEN2, id: 99, marcaNombre: '' },
+      ]),
+    );
+    servicio.obtenerDetalleAlbum.mockReturnValue(
+      of({
+        ...DETALLE,
+        cartas: [
+          ...DETALLE.cartas,
+          {
+            id: 'h1',
+            nombre: 'Ensalada Caesar con Pollo Crispy',
+            imagenUrl: '',
+            rareza: 'comun',
+            categoria: 'gastronomia',
+            poder: 5,
+            costoCupon: 2,
+            obtenida: true,
+            cantidad: 1,
+            favorita: false,
+          },
+          {
+            id: 'h2',
+            nombre: 'Super Cono',
+            imagenUrl: '',
+            rareza: 'comun',
+            categoria: 'gastronomia',
+            poder: 4,
+            costoCupon: 1,
+            obtenida: true,
+            cantidad: 1,
+            favorita: false,
+          },
+        ],
+      }),
+    );
+
+    fixture.componentInstance['cargarAlbumes']();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['albumes']()).toHaveLength(1);
+    const cartasDetalle = fixture.componentInstance['detalle']()?.cartas ?? [];
+    expect(cartasDetalle.map((c) => c.nombre)).toEqual(['Grido 1', 'Grido 2']);
+  });
+
   it('deriva las categorías del filtro a partir de los álbumes cargados', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
     fixture.componentInstance['cargarAlbumes']();

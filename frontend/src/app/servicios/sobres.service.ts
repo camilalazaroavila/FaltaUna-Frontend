@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import {
   AbrirSobreSolicitud,
@@ -7,6 +7,7 @@ import {
   EstadoSobreDiarioRespuesta,
   SobreRespuesta,
 } from '@modelos/sobre.model';
+import { esCartaSinMarca, esMarcaEliminada } from '@modelos/catalogo-cartas-imagenes';
 
 export interface SobreInventarioUsuario {
   readonly sobreId: number;
@@ -27,6 +28,30 @@ export interface SobresDisponiblesEstado {
   readonly maximo: number;
 }
 
+function esSobreConMarcaValida(sobre: SobreRespuesta | null | undefined): sobre is SobreRespuesta {
+  if (!sobre) return false;
+  if (sobre.tipo === 'MARCA') {
+    const marca = sobre.marca?.trim() ?? '';
+    if (!marca || esMarcaEliminada(marca)) {
+      return false;
+    }
+  }
+  if (sobre.marca && esMarcaEliminada(sobre.marca)) {
+    return false;
+  }
+  return true;
+}
+
+function filtrarRespuestaApertura(respuesta: AperturaSobreRespuesta): AperturaSobreRespuesta {
+  if (!respuesta || !Array.isArray(respuesta.cartas)) {
+    return respuesta;
+  }
+  return {
+    ...respuesta,
+    cartas: respuesta.cartas.filter((carta) => !esCartaSinMarca(carta)),
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -41,7 +66,9 @@ export class SobresService {
 
   /** Obtiene el catálogo completo de sobres disponibles del backend */
   obtenerSobres(): Observable<SobreRespuesta[]> {
-    return this.api.get<SobreRespuesta[]>('Sobres');
+    return this.api
+      .get<SobreRespuesta[]>('Sobres')
+      .pipe(map((sobres) => (sobres ?? []).filter(esSobreConMarcaValida)));
   }
 
   /** Obtiene el estado de sobres diarios del backend */
@@ -64,13 +91,16 @@ export class SobresService {
   /** Abre un sobre específico por su ID */
   abrirSobre(sobreId: number, usuarioId: number): Observable<AperturaSobreRespuesta> {
     const cuerpo: AbrirSobreSolicitud = { usuarioId };
-    return this.api.post<AperturaSobreRespuesta>(`Sobres/${sobreId}/abrir`, cuerpo);
+    return this.api
+      .post<AperturaSobreRespuesta>(`Sobres/${sobreId}/abrir`, cuerpo)
+      .pipe(map(filtrarRespuestaApertura));
   }
 
   /** Reclama y abre el sobre diario gratuito del usuario */
   reclamarSobreDiario(usuarioId: number): Observable<AperturaSobreRespuesta> {
     const cuerpo: AbrirSobreSolicitud = { usuarioId };
     return this.api.post<AperturaSobreRespuesta>('Sobres/diario', cuerpo).pipe(
+      map(filtrarRespuestaApertura),
       tap(() => {
         // El estado se refrescará desde el componente tras la apertura
       }),

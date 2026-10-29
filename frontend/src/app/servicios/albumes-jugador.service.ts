@@ -14,6 +14,7 @@ import {
   normalizarUrlImagen,
   rarezaDesdeNombre,
 } from '@modelos/carta.model';
+import { esCartaSinMarca } from '@modelos/catalogo-cartas-imagenes';
 
 /** Contrato del backend para el resumen de un álbum (`GET /api/Albumes`). */
 interface AlbumResumenApi {
@@ -48,9 +49,19 @@ interface AlbumDetalleApi extends AlbumResumenApi {
   readonly cartas: readonly AlbumCartaApi[];
 }
 
+const esAlbumConMarcaValida = (
+  album: AlbumResumenApi | null | undefined,
+): album is AlbumResumenApi =>
+  Boolean(
+    album &&
+      typeof album.marcaNombre === 'string' &&
+      album.marcaNombre.trim().length > 0 &&
+      album.total > 0,
+  );
+
 const mapearResumen = (album: AlbumResumenApi): ResumenAlbum => ({
   id: album.id,
-  marcaNombre: album.marcaNombre,
+  marcaNombre: album.marcaNombre.trim(),
   logoUrl: album.logoUrl,
   descripcion: album.descripcion,
   categoriaId: album.categoriaId,
@@ -85,22 +96,26 @@ export class AlbumesJugadorService {
   private readonly api = inject(ApiService);
 
   /**
-   * Álbumes activos que ya tienen cartas, con el progreso del jugador.
+   * Álbumes activos que ya tienen cartas y una marca válida, con el progreso del jugador.
    * El listado completo se carga una sola vez: el filtro por categoría y la
    * búsqueda se resuelven en el componente.
    */
   listarAlbumes(): Observable<ResumenAlbum[]> {
     return this.api
       .get<AlbumResumenApi[]>('Albumes')
-      .pipe(map((albumes) => albumes.map(mapearResumen)));
+      .pipe(
+        map((albumes) => (albumes ?? []).filter(esAlbumConMarcaValida).map(mapearResumen)),
+      );
   }
 
-  /** Detalle de un álbum con sus cartas y el estado de favoritas del jugador. */
+  /** Detalle de un álbum con sus cartas válidas y el estado de favoritas del jugador. */
   obtenerDetalleAlbum(id: number): Observable<DetalleAlbum> {
     return this.api.get<AlbumDetalleApi>(`Albumes/${id}`).pipe(
       map((detalle) => ({
         ...mapearResumen(detalle),
-        cartas: detalle.cartas.map(mapearCarta),
+        cartas: (detalle.cartas ?? [])
+          .filter((carta) => !esCartaSinMarca(carta))
+          .map(mapearCarta),
       })),
     );
   }

@@ -52,6 +52,42 @@ describe('SobresService', () => {
     req.flush(mockSobres);
   });
 
+  it('debe omitir sobres de marcas eliminadas o sin marca al listar el catálogo', () => {
+    const mockSobres: SobreRespuesta[] = [
+      {
+        id: 1,
+        nombre: 'Sobre Burger Bust',
+        tipo: 'MARCA',
+        marca: 'Burger Bust',
+        precio: 150,
+        cantidadCartas: 1,
+      },
+      {
+        id: 2,
+        nombre: 'Sobre McDonald\'s',
+        tipo: 'MARCA',
+        marca: 'McDonald\'s',
+        precio: 150,
+        cantidadCartas: 1,
+      },
+      {
+        id: 3,
+        nombre: 'Sobre Huérfano',
+        tipo: 'MARCA',
+        marca: '   ',
+        precio: 150,
+        cantidadCartas: 1,
+      },
+    ];
+
+    let resultado: SobreRespuesta[] = [];
+    service.obtenerSobres().subscribe((res) => (resultado = res));
+
+    httpTesting.expectOne(baseUrl).flush(mockSobres);
+    expect(resultado).toHaveLength(1);
+    expect(resultado[0].marca).toBe('Burger Bust');
+  });
+
   it('debe abrir un sobre con POST /api/Sobres/{id}/abrir', () => {
     const mockApertura: AperturaSobreRespuesta = {
       id: 10,
@@ -70,6 +106,25 @@ describe('SobresService', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ usuarioId: 5 });
     req.flush(mockApertura);
+  });
+
+  it('debe filtrar cartas huérfanas de marcas eliminadas al abrir un sobre o reclamar diario', () => {
+    const mockAperturaConHuerfanas: AperturaSobreRespuesta = {
+      id: 12,
+      sobreId: 1,
+      fecha: '2026-10-08T00:00:00Z',
+      cartas: [
+        { cartaId: 1, nombre: 'Royal Bacon Melt', cantidad: 1, imagenUrl: null },
+        { cartaId: 90, nombre: 'Ensalada Caesar con Pollo Crispy', cantidad: 1, imagenUrl: null },
+        { cartaId: 91, nombre: 'Super Cono', cantidad: 1, imagenUrl: null },
+      ],
+    };
+
+    let resultado: AperturaSobreRespuesta | undefined;
+    service.reclamarSobreDiario(5).subscribe((res) => (resultado = res));
+
+    httpTesting.expectOne(`${baseUrl}/diario`).flush(mockAperturaConHuerfanas);
+    expect(resultado?.cartas.map((c) => c.nombre)).toEqual(['Royal Bacon Melt']);
   });
 
   it('debe reclamar sobre diario con POST /api/Sobres/diario', () => {

@@ -14,6 +14,7 @@ import {
   type DetalleAlbum,
   type ResumenAlbum,
 } from '@modelos/album-jugador.model';
+import { esCartaSinMarca } from '@modelos/catalogo-cartas-imagenes';
 import { normalizarNombre } from '@modelos/categoria.model';
 import { categoriaCuponDesdeCarta, type CategoriaCupon } from '@modelos/cupon.model';
 import { AlbumesJugadorService } from '@servicios/albumes-jugador.service';
@@ -89,7 +90,7 @@ export class Albumes implements OnInit {
     return this.albumes().filter(
       (album) =>
         (categoriaId === null || album.categoriaId === categoriaId) &&
-        (!termino || normalizarNombre(album.marcaNombre).includes(termino)),
+        (!termino || normalizarNombre(album.marcaNombre ?? '').includes(termino)),
     );
   });
 
@@ -113,7 +114,10 @@ export class Albumes implements OnInit {
 
     this.servicio.listarAlbumes().subscribe({
       next: (albumes) => {
-        this.albumes.set(albumes);
+        const validos = (albumes ?? []).filter(
+          (album) => Boolean(album?.marcaNombre?.trim()) && album.total > 0,
+        );
+        this.albumes.set(validos);
         this.cargandoAlbumes.set(false);
         this.asegurarSeleccion();
       },
@@ -167,9 +171,13 @@ export class Albumes implements OnInit {
 
     this.servicio.obtenerDetalleAlbum(id).subscribe({
       next: (detalle) => {
-        this.detalle.set(detalle);
+        const cartasValidas = (detalle.cartas ?? []).filter((carta) => !esCartaSinMarca(carta));
+        this.detalle.set({
+          ...detalle,
+          cartas: cartasValidas,
+        });
         this.favoritas.set(
-          new Set(detalle.cartas.filter((carta) => carta.favorita).map((carta) => carta.id)),
+          new Set(cartasValidas.filter((carta) => carta.favorita).map((carta) => carta.id)),
         );
         this.cargandoDetalle.set(false);
       },
@@ -228,6 +236,10 @@ export class Albumes implements OnInit {
 
   protected mostrarLogo(album: ResumenAlbum): boolean {
     return !!album.logoUrl && !this.logosFallidos().has(album.id);
+  }
+
+  protected inicialMarca(album: ResumenAlbum): string {
+    return (album.marcaNombre?.trim().charAt(0) || '?').toUpperCase();
   }
 
   protected alFallarLogo(album: ResumenAlbum): void {
