@@ -334,4 +334,22 @@
     --shadow-cartoon: var(--sombra-cartoon);
     --shadow-cartoon-gruesa: var(--sombra-cartoon-gruesa);
     --shadow-cartoon-clara: var(--sombra-cartoon-clara);
+
+    /* Navegación inferior mobile */
+    --color-nav-inferior-superficie: var(--nav-inferior-superficie);
+    --color-nav-inferior-borde: var(--nav-inferior-borde);
+    --color-nav-inferior-icono: var(--nav-inferior-icono);
+    --color-nav-inferior-icono-activo: var(--nav-inferior-icono-activo);
+    --color-nav-inferior-activo-fondo: var(--nav-inferior-activo-fondo);
+    --color-nav-inferior-indicador: var(--nav-inferior-indicador);
+    --color-nav-inferior-fab-fondo: var(--nav-inferior-fab-fondo);
+    --color-nav-inferior-fab-hover: var(--nav-inferior-fab-hover);
+    --color-nav-inferior-fab-activo: var(--nav-inferior-fab-activo);
+    --color-nav-inferior-fab-texto: var(--nav-inferior-fab-texto);
+    --color-nav-inferior-fab-anillo: var(--nav-inferior-fab-anillo);
+    --spacing-nav-inferior-alto: var(--nav-inferior-alto);
+    --spacing-nav-inferior-franja: var(--nav-inferior-franja-asomada);
+    --spacing-nav-inferior-fab: var(--nav-inferior-fab-tamano);
+    --spacing-nav-inferior-reserva: var(--nav-inferior-reserva);
+    --shadow-nav-inferior: var(--nav-inferior-sombra);
 }

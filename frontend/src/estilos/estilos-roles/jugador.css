@@ -180,4 +180,22 @@
    --duracion-cambio-zona: 900ms;
    --duracion-vuelo-carta: 200ms;
    --duracion-micro: 200ms;
+
+   /* --- Navegación inferior mobile (verde con sombra amarilla de contraste) --- */
+   --nav-inferior-superficie: var(--color-teal-base);
+   --nav-inferior-borde: var(--color-amarillo-logo);
+   --nav-inferior-icono: var(--texto-primario);
+   --nav-inferior-icono-activo: var(--color-teal-profundo);
+   --nav-inferior-activo-fondo: var(--marca-primaria);
+   --nav-inferior-indicador: var(--color-amarillo-logo);
+   --nav-inferior-fab-fondo: var(--color-teal-hundido);
+   --nav-inferior-fab-hover: var(--color-teal-elevado);
+   --nav-inferior-fab-activo: var(--color-teal-superficie);
+   --nav-inferior-fab-texto: var(--texto-primario);
+   --nav-inferior-fab-anillo: var(--color-amarillo-logo);
+   --nav-inferior-sombra: 0 -3px 0 var(--color-amarillo-logo);
+   --nav-inferior-alto: 4.5rem;
+   --nav-inferior-franja-asomada: 1.25rem;
+   --nav-inferior-fab-tamano: 3.375rem;
+   --nav-inferior-reserva: calc(var(--nav-inferior-alto) + 1.25rem + env(safe-area-inset-bottom, 0px));
 }

@@ -1,0 +1,113 @@
+@if (esVisible()) {
+  <div
+    #contenedorAnimado
+    class="nav-inferior"
+    [class.nav-inferior--fija]="!modoVistaPrevia()"
+    [class.nav-inferior--vista-previa]="modoVistaPrevia()"
+  >
+    <nav
+      aria-label="Navegación inferior del jugador"
+      class="nav-inferior__barra"
+      [class.nav-inferior__barra--oculta]="ocultoParcial()"
+      [style.--ola-centro]="porcentajeCentroOla()"
+      [style.--total-columnas]="todosLosBotones().length"
+    >
+      <!-- Franja interactiva que queda asomando cuando la barra está ligeramente oculta -->
+      @if (ocultoParcial()) {
+        <button
+          type="button"
+          class="nav-inferior__franja-reactivacion"
+          aria-label="Mostrar barra de navegación completa"
+          (click)="mostrarCompleta()"
+        >
+          <span class="nav-inferior__franja-indicador" aria-hidden="true"></span>
+        </button>
+      }
+
+      <!-- Cuerpo verde de la barra con sombra amarilla de contraste y ola cóncava desplazable -->
+      <div class="nav-inferior__cuerpo">
+        <div class="nav-inferior__mascara-bordes">
+          <div class="nav-inferior__ola-pista" aria-hidden="true">
+            <div class="nav-inferior__ala nav-inferior__ala--izquierda"></div>
+            <svg
+              #olaSvg
+              class="nav-inferior__recorte-svg"
+              viewBox="0 0 116 72"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                class="nav-inferior__recorte-relleno"
+                d="M 0,0 C 13,0 20,10 25,24 A 35,35 0 0,0 91,24 C 96,10 103,0 116,0 L 116,72 L 0,72 Z"
+              />
+            </svg>
+            <div class="nav-inferior__ala nav-inferior__ala--derecha"></div>
+          </div>
+        </div>
+
+        <!-- Reserva interna para el área segura inferior del sistema -->
+        <div class="nav-inferior__area-segura" aria-hidden="true"></div>
+      </div>
+
+      <!-- Grilla de botones: al activarse cualquiera, la ola viaja hacia él y lo eleva -->
+      <ul class="nav-inferior__lista" role="list">
+        @for (boton of todosLosBotones(); track boton.id; let i = $index) {
+          @let activo = esItemActivo(boton);
+          @let enOla = indiceOlaActivo() === i;
+          @let esPrincipal = i === 0;
+          <li class="nav-inferior__item">
+            <a
+              [routerLink]="modoVistaPrevia() || boton.deshabilitado ? null : boton.ruta"
+              [attr.href]="modoVistaPrevia() ? '#' + boton.id : null"
+              [class.nav-inferior__fab]="esPrincipal"
+              [class.nav-inferior__fab--activo]="esPrincipal && activo"
+              [class.nav-inferior__enlace]="!esPrincipal"
+              [class.nav-inferior__enlace--activo]="!esPrincipal && activo"
+              [class.nav-inferior__enlace--deshabilitado]="boton.deshabilitado"
+              [class.nav-inferior__boton--en-ola]="enOla"
+              [attr.aria-label]="mostrarEtiquetas() && !esPrincipal ? null : boton.etiqueta"
+              [attr.aria-current]="activo ? 'page' : null"
+              [attr.aria-disabled]="boton.deshabilitado ? 'true' : null"
+              [attr.tabindex]="boton.deshabilitado ? -1 : null"
+              (click)="alInteractuarItem(boton, $event)"
+            >
+              <span
+                class="nav-inferior__circulo-icono"
+                [class.nav-inferior__circulo-icono--elevado]="enOla"
+                [class.nav-inferior__circulo-icono--pelea]="boton.esIconoMulticolor"
+              >
+                @if (boton.urlIcono) {
+                  <img
+                    [src]="boton.urlIcono"
+                    alt=""
+                    class="nav-inferior__img-icono"
+                    [class.nav-inferior__img-icono--multicolor]="boton.esIconoMulticolor"
+                    [class.nav-inferior__img-icono--invertido]="!boton.esIconoMulticolor && !enOla"
+                    aria-hidden="true"
+                  />
+                } @else if (boton.icono) {
+                  <ng-icon [name]="boton.icono" size="1.45rem" aria-hidden="true" />
+                }
+
+                @if (boton.tieneIndicador) {
+                  <span class="nav-inferior__notificacion" aria-hidden="true"></span>
+                }
+              </span>
+
+              @if (mostrarEtiquetas() && !esPrincipal) {
+                <span class="nav-inferior__etiqueta">{{ boton.etiqueta }}</span>
+              }
+
+              <span
+                class="nav-inferior__indicador-activo"
+                [class.nav-inferior__indicador-activo--visible]="activo"
+                aria-hidden="true"
+              ></span>
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+  </div>
+}

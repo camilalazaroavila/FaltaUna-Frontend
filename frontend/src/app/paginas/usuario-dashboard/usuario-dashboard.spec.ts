@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
-import { By } from '@angular/platform-browser';
 import { UsuarioDashboard } from './usuario-dashboard';
 import { AuthService } from '@servicios/auth.service';
 import { SobresService } from '@servicios/sobres.service';

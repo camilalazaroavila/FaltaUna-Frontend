@@ -405,8 +405,8 @@ Ubicación: `compartidos/componentes/textual/`, `compartidos/componentes/contene
 - **Tarjeta de indicador** (`app-tarjeta-kpi`): informativa, no clickeable y sin gráficos. Apoyada en `app-caja` con `acento="derecha"`. Inputs: `etiqueta` (requerido), `valor`, `variacion` (`{ valor, positiva }`, opcional), `contexto` (opcional) y `estado` (`listo`, `cargando`, `sin-datos`, `error`; default `listo`). Sin ícono ni input `tono`: el color del acento es el de marca y pasa a `--exito`/`--error` con una variación; el estado `error` cambia la caja a la variante de feedback.
 
 ### Galería de componentes
-- Ruta `/componentes`, con **15 secciones** (incluidas "Texto", "Cajas" y "Partida").
-- Las secciones de texto y cajas muestran **jugador y empresa a la vez** con contenedores `data-modo` propios; el resto usa el interruptor global de modo.
+- Ruta `/componentes`, con **17 secciones** (incluidas "Texto", "Cajas", "Partida", "Tablero" y `app-navegacion-inferior-mobile`).
+- Las secciones de texto, cajas y navegación inferior mobile muestran **jugador y empresa a la vez** con contenedores `data-modo` propios; el resto usa el interruptor global de modo.
 - Simula movimiento reducido con `data-movimiento="reducido"` (afecta solo a CSS, no a GSAP).
 - El spec de la galería valida que la cantidad y el orden de las secciones coincidan entre `secciones.ts`, `galeria-componentes.ts` y `galeria-componentes.html`.
 
@@ -434,7 +434,7 @@ FaltaUna-Frontend/
 │   │   │   │   ├── componentes/   → UI organizada por tema:
 │   │   │   │   │   ├── controles/ → boton, boton-flotante, boton-icono, boton-jugar, boton-opcion-juego, boton-navegacion-circular, campo-texto, campo-select, etiqueta-campo, encabezado-paso, desplegable-seleccion, subida-imagen, grilla-imagenes, panel-desplazable, calendario-mensual
 │   │   │   │   │   ├── cartas/    → carta, carta-popup, carta-seleccionable, estrella-rareza, barra-rareza, icono-categoria, sobre-marca, flujo-apertura-sobres, tarjeta-album
-│   │   │   │   │   ├── layout/    → body, header, header-empresa, navbar, auth-layout
+│   │   │   │   │   ├── layout/    → body, header, header-empresa, navbar, auth-layout, navegacion-inferior-mobile
 │   │   │   │   │   ├── landing/   → hero, carousel-marcas, acordeon-preguntas, faq-item, faq-section, team-section
 │   │   │   │   │   ├── empresa/   → stepper-suscripcion, plan-card, plans-section, tarjeta-plan, tarjeta-kpi, faq-item-empresa, faq-section-empresa
 │   │   │   │   │   ├── usuario/   → tarjeta-mision, panel-misiones, tarjeta-pity, tarjeta-recompensa
@@ -586,3 +586,4 @@ docker compose down    # Detener manteniendo datos
 13. Corregir `--texto-apagado` del modo jugador.
 14. Alinear el modelo de datos (sección 16) y verificar qué respalda el backend.
 15. Regla de quién revela primero en cada ronda.
+16. Navegación inferior mobile (`app-navegacion-inferior-mobile`): validar los 4 destinos definitivos cuando se habiliten Intercambios/Perfil, si llevan etiqueta de texto además del ícono, posición definitiva del botón flotante (izquierda como en la referencia o centrado), alto exacto de la franja asomada al ocultarse, si el panel de empresa también adopta esta barra, si se oculta siempre durante la partida y si muestra indicador de misiones/sobres disponibles.
