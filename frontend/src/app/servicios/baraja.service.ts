@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map, shareReplay, tap } from 'rxjs';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import { categoriaCartaDesdeNombre, normalizarUrlImagen } from '@modelos/carta.model';
-import { FOTOS_CARTAS_CATALOGO } from '@modelos/catalogo-cartas-imagenes';
+import { FOTOS_CARTAS_CATALOGO, esCartaSinMarca } from '@modelos/catalogo-cartas-imagenes';
 import { ApiService } from './api.service';
 import type { CartaInventarioApi, GuardarMazoRequest, MazoApi } from '@modelos/mazo.model';
 
@@ -60,12 +60,16 @@ export function resolverNombreMazoInicial(
 export class BarajaService {
   private readonly api = inject(ApiService);
   private mazoActual: MazoApi | null = null;
-  /** Cartas que el jugador ya obtuvo y por lo tanto puede usar en su baraja. */
+  /** Cartas que el jugador ya obtuvo y que pertenecen a una marca/colección activa. */
   obtenerCartasDisponibles(): Observable<Carta[]> {
     return this.api
       .get<CartaInventarioApi[]>('Mazos/cartas-disponibles')
       .pipe(
-        map((cartas) => cartas.filter((carta) => carta.cantidad > 0).map(mapearCartaInventario)),
+        map((cartas) =>
+          (cartas ?? [])
+            .filter((carta) => carta.cantidad > 0 && !esCartaSinMarca(carta))
+            .map(mapearCartaInventario),
+        ),
       );
   }
   /** Lista todos los mazos guardados del jugador con nombres e imágenes normalizados. */

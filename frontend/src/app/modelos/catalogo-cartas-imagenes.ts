@@ -28,85 +28,91 @@ export const FOTOS_CARTAS_CATALOGO: Readonly<Record<string, string>> = {
   'milhojas de caramelo y chocolate': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771230/MILHOJAS_DE_CARAMELO_Y_CHOCOLATE.jpg',
   'saint honore artesanal': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771233/SAINT_HONOR%C3%89_ARTESANAL.jpg',
   'domo glace de frambuesa': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771223/DOMO_GLACE_DE_FRAMBUESA.jpg',
-  'pavlova tropical de frutos rojos': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771230/PAVLOVA_TROPICAL_DE_FRUTOS_ROJOS.jpg',
-  'paris-brest de avellanas': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771230/PARIS-BREST_DE_AVELLANAS.jpg',
-  'brioche suisse especial': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771222/BRIOCHE_SUISSE_ESPECIA.jpg',
-  'profiterol supreme de cafe': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771231/PROFITEROL_SUPREME_DE_CAF%C3%89.jpg',
-  'royal de chocolate y rosa': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771232/ROYAL_DE_CHOCOLATE_Y_ROSA.jpg',
-  'tarta mousse frutos del bosque': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771234/TARTA_MOUSSE_FRUTOS_DEL_BOSQUE.jpg',
+  'macaron imperial de frambuesa': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771226/MACARON_IMPERIAL_DE_FRAMBUESA.jpg',
+  'tarta soleil de citricos': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771233/TARTA_SOLEIL_DE_C%C3%8DTRICOS.jpg',
+  'opera royale de chocolate': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771230/%C3%93PERA_ROYALE_DE_CHOCOLATE.jpg',
+  'petit gateau espejo dorado': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771231/PETIT_G%C3%82TEAU_ESPEJO_DORADO.jpg',
+  'paris-brest praline': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771231/PARIS-BREST_PRALIN%C3%89.jpg',
+  'tartaleta jardin de frutos rojos': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771235/TARTALETA_JARD%C3%8DN_DE_FRUTOS_ROJOS.jpg',
   'croquembouche imperial de caramelo': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771223/CROQUEMBOUCHE_IMPERIAL_DE_CARAMELO.jpg',
-  'lata coleccionable detras de camara': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792778436/LATA_COLECCIONABLE_DETR%C3%81S_DE_C%C3%81MARA.jpg',
-  'taza de cafe': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779063/TAZA_DE_CAF%C3%89.jpg',
-  'steelbook blu-ray edicion coleccionista': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779061/STEELBOOK_BLU-RAY_EDICI%C3%93N_COLECCIONISTA.jpg',
-  'gorra de alta calidad': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779261/GORRA_DE_ALTA_CALIDAD.jpg',
-  'libreta de cuero premium': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792778438/LIBRETA_DE_CUERO_PR%C3%89MIUM.jpg',
-  'memoria usb-c': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792778440/MEMORIA_USB-C.jpg',
-  'set de pines esmaltados': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779061/SET_DE_PINES_ESMALTADOS.jpg',
-  'coleccion de relojes cine-time': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779069/COLECCI%C3%93N_DE_RELOJES_CINE-TIM.jpg',
-  'bolso tote estampado': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779067/BOLSO_TOTE_ESTAMPADO.jpg',
-  'estatueta coleccionable con peso': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779257/ESTATUETA_COLECCIONABLE_CON_PESO.jpg',
-  'cuaderno edicion estudio': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779255/CUADERNO_EDICI%C3%93N_ESTUDIO.jpg',
-  'trofeo premium de coleccionista': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779065/TROFEO_PR%C3%89MIUM_DE_COLECCIONISTA.jpg',
-  'vortex arcade': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777614/VORTEX_ARCADE.jpg',
-  'neon link': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777610/NEON_LINK.jpg',
-  'vortex pod': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777615/VORTEX_POD.jpg',
-  'aether controller': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777612/VORTEX_AETHER.jpg',
-  'cyber spectra': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777966/VORTEX_SPECTRA.jpg',
-  'pulse charger': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777968/VORTEX_PULSE.jpg',
-  'quantum quest': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777611/QUANTUM_QUEST.jpg',
-  'vortex prime': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777970/VORTEX_PRIME.jpg',
-  'echo soundbar': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777617/VORTEX_ECHO.jpg',
-  'luma mouse': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777966/VORTEX_LUMA.jpg',
-  'vortex wear': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777971/VORTEX_WEAR.jpg',
-  'chronos dial': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792777609/CHRONOS_DIAL.jpg',
-  'axis pure': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792780044/AXIS_PURE.jpg',
-  'axis core': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779597/AXIS_CORE.jpg',
-  'axis kinetic': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779828/AXIS_KINETIC.jpg',
-  'axis nova': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792780040/AXIS_NOVA.jpg',
-  'axis aura': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792780049/AXIS_AURA.jpg',
-  'axis pulse': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792780047/AXIS_PULSE.jpg',
-  'axis sync': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1783307612/Axis_Sync.jpg',
-  'axis tactic': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792780051/AXIS_TACTIC.jpg',
-  'axis orbit': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792780042/AXIS_ORBIT.jpg',
-  'axis rift': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792780053/AXIS_RIFT.jpg',
-  'axis beam': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792780058/AXIS_BEAM.jpg',
-  'axis align': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792780056/AXIS_ALIGN.jpg',
-  'google home mini': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436956/google_home_mini.jpg',
-  'chromecast 4': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436751/chromecast_4.jpg',
-  'timbre google nest': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436800/Timbre_google_nest.jpg',
-  'google nest cam': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436795/Google_Nest_Cam_Exterior_O_Interior.jpg',
-  'pack google home': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436956/google_home_mini.jpg',
-  'google home hub': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436927/google_home_hub.jpg',
-  'pixel buds pro': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436799/pixel_buds_pro.jpg',
-  'chromebook': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436751/Chromebook.jpg',
-  'pixel watch 3': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436799/pixel_watch_3.jpg',
-  'google pixel tablet': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436796/google_pixel_tablet.jpg',
-  'pixel 1': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436799/pixel_1.png',
-  'pixel 11': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792436799/pixel_11.jpg',
-  'monsters': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433893/monsters.jpg',
-  'don\'t look up': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433789/dont_look_up.jpg',
-  'division palermo': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433788/division_palermo.jpg',
-  'bojack horseman': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792434368/bojack_horseman.jpg',
-  'black mirror': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433786/black_mirror.jpg',
-  'dark': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792434369/dark.jpg',
-  'la casa de papel': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433892/la_casa_de_papel.jpg',
-  'la sociedad de la nieve': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433892/la_sociedad_de_la_nieve.jpg',
-  'one piece': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792434370/one_piece.jpg',
-  'el eternauta': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433789/el_eternauta.jpg',
-  'stranger things': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792433896/stranger_things.jpg',
-  'el juego del calamar': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792434369/el_juego_del_calamar.jpg',
-  'pure de frutas': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381228/Pur%C3%A9_de_frutas.png',
-  'super cono': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381231/Super_Cono.png',
-  'chocolatada croccantella': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381190/Chocolatada_Croccantella.png',
-  'cappuccino bombon espresso': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381184/Cappuccino_Bomb%C3%B3n_Espresso.png',
-  'hamburguesa con queso': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381195/Hamburguesa_con_Queso.png',
-  'mcflurry oreo': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381223/McFlurry_Oreo.png',
-  'ensalada caesar con pollo crispy': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381192/Ensalada_Caesar_con_Pollo_Crispy.png',
-  'pileta de cheddar': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381226/Pileta_de_Cheddar.png',
-  'sandwich lomo napolitano': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381229/S%C3%A1ndwich_Lomo_Napolitano.png',
-  'big mac': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381183/big_mac.png',
-  'grand tasty turbo bacon triple': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381193/Grand_Tasty_Turbo_Bacon_Triple.png',
-  'mcdonald\'s obelisco': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792381220/mcdonals_obelisco.jpg',
+  'vino tinto reserva': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857410/Vino_Tinto_Reserva.jpg',
+  'espumante brut nature': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857407/Espumante_Brut_Nature.jpg',
+  'aceite de oliva virgen extra': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857397/Aceite_de_Oliva_Virgen_Extra.jpg',
+  'queso brie artesanal': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857409/Queso_Brie_Artesanal.jpg',
+  'jamon crudo serrano': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857407/Jam%C3%B3n_Crudo_Serrano.jpg',
+  'pan de masa madre': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857409/Pan_de_Masa_Madre.jpg',
+  'frutos secos seleccionados': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857407/Frutos_Secos_Seleccionados.jpg',
+  'miel pura de panal': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857409/Miel_Pura_de_Panal.jpg',
+  'trufas de chocolate amargo': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857410/Trufas_de_Chocolate_Amargo.jpg',
+  'aceto balsamico anejo': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857406/Aceto_Bals%C3%A1mico_A%C3%B1ejo.jpg',
+  'pate de foie artesanal': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857409/Pat%C3%A9_de_Foie_Artesanal.jpg',
+  'conserva de tomates secos': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792857406/Conserva_de_Tomates_Secos.jpg',
+  'laptop': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856256/Laptop_Ultrabook.jpg',
+  'telefono inteligente': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856262/Tel%C3%A9fono_Inteligente.jpg',
+  'reloj inteligente': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856260/Reloj_Inteligente.jpg',
+  'auriculares inalambricos': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856241/Auriculares_Inal%C3%A1mbricos.jpg',
+  'tableta grafica': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856260/Tableta_Gr%C3%A1fica.jpg',
+  'camara fotografica': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856254/C%C3%A1mara_Fotogr%C3%A1fica.jpg',
+  'altavoz bluetooth': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856205/Altavoz_Bluetooth.jpg',
+  'teclado mecanico': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856261/Teclado_Mec%C3%A1nico.jpg',
+  'raton inalambrico': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856259/Rat%C3%B3n_Inal%C3%A1mbrico.jpg',
+  'monitor curvo': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856259/Monitor_Curvo.jpg',
+  'unidad ssd externa': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856262/Unidad_SSD_Externa.jpg',
+  'bateria portatil': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792856248/Bater%C3%ADa_Port%C3%A1til.jpg',
+  'perfume': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792862467/Perfume.jpg',
+  // Aerox
+  'aerox': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294452/Aerox_Hub_Mini.jpg',
+  'aerox cast 4k': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294420/Aerox_Cast_4K.jpg',
+  'timbre aerox bell': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294426/Timbre_Aerox_Bell.jpg',
+  'aerox cam indoor': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294417/Aerox_Cam_Indoor.jpg',
+  'pack aerox smart home': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294422/Pack_Aerox_Smart_Home.jpg',
+  'aerox display hub': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294436/Aerox_Display_Hub.jpg',
+  'aerox pods pro': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294462/Aerox_Pods_Pro.jpg',
+  'aeroxbook air': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294450/AeroxBook_Air.jpg',
+  'aerox watch s3': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294430/Aerox_Watch_S3.jpg',
+  'aerox tab pro': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294446/Aerox_Tab_Pro.jpg',
+  'aerox phone 1': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294468/Aerox_Phone_1.jpg',
+  'aerox phone x': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294458/Aerox_Phone_X.jpg',
+  // Streamia
+  'pochoclo box XXL': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294709/Pochoclo_Box_XXL.jpg',
+  'pochoclo box xxl': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294709/Pochoclo_Box_XXL.jpg',
+  'claqueta de rodaje': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294689/Claqueta_de_Rodaje.jpg',
+  'ticket dorado premiere': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294725/Ticket_Dorado_Premiere.jpg',
+  'lentes 3d cinema': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294698/Lentes_3D_Cinema.jpg',
+  'control streamia voice': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294695/Control_Streamia_Voice.jpg',
+  'sillon recliner vip': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294717/Sill%C3%B3n_Recliner_VIP.jpg',
+  'barra de sonido dolby': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294685/Barra_de_Sonido_Dolby.jpg',
+  'proyector laser 4k': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294712/Proyector_L%C3%A1ser_4K.jpg',
+  'pantalla oled 77"': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294704/Pantalla_OLED_77_.jpg',
+  'camara cinema 8k': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294692/C%C3%A1mara_Cinema_8K.jpg',
+  'trofeo gran gala': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294728/Trofeo_Gran_Gala.jpg',
+  'home theater master': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294701/Home_Theater_Master.jpg',
+  // Kronos
+  'kronos diver 200m': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294626/Kronos_Diver_200M.jpg',
+  'kronos field titanium': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294629/Kronos_Field_Titanium.jpg',
+  'kronos dress rose gold': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294632/Kronos_Dress_Rose_Gold.jpg',
+  'kronos racing tachymeter': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294661/Kronos_Racing_Tachymeter.jpg',
+  'kronos gmt dual time': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294654/Kronos_GMT_Dual_Time.jpg',
+  'kronos minimal mesh': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294649/Kronos_Minimal_Mesh.jpg',
+  'kronos aviation pilot': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294658/Kronos_Aviation_Pilot.jpg',
+  'kronos moonphase classic': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294670/Kronos_Moonphase_Classic.jpg',
+  'kronos skeleton automatic': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294664/Kronos_Skeleton_Automatic.jpg',
+  'kronos chrono digital retro': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294673/Kronos_Chrono_Digital_Retro.jpg',
+  'kronos pocket heritage': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294651/Kronos_Pocket_Heritage.jpg',
+  'kronos tourbillon imperial': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294667/Kronos_Tourbillon_Imperial.jpg',
+  // Burger Bust
+  'grand bust triple': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294518/Grand_Bust_Triple.jpg',
+  'royal bacon melt': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294534/Royal_Bacon_Melt.jpg',
+  'papas bust cheddar': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294531/Papas_Bust_Cheddar.jpg',
+  'bust nuggets x10': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294520/Bust_Nuggets_x10.jpg',
+  'cono vainilla swirl': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294523/Cono_Vainilla_Swirl.jpg',
+  'bust sundae chocolate': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294509/Bust_Sundae_Chocolate.jpg',
+  'crispy chicken burger': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294512/Crispy_Chicken_Burger.jpg',
+  'aros de cebolla': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294529/Aros_de_Cebolla.jpg',
+  'bust kids box': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294538/Bust_Kids_Box.jpg',
+  'bust shake frutilla': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294506/Bust_Shake_Frutilla.jpg',
+  'doble cuarto bust': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294515/Doble_Cuarto_Bust.jpg',
+  'bust apple pie': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793294526/Bust_Apple_Pie.jpg',
   'serum facial': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792886042/S%C3%A9rum_Facial.jpg',
   'labial': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792886010/Labial.jpg',
   'paleta de sombras': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792886037/Paleta_de_Sombras.jpg',
@@ -202,5 +208,160 @@ export const FOTOS_CARTAS_CATALOGO: Readonly<Record<string, string>> = {
   'atril plegable para partituras': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793039454/Atril_Plegable.jpg',
   'pedal de efectos overdrive': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793039455/Pedal_de_Efectos_Overdrive.jpg',
   'afinador y metronomo digital': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793039455/Afinador_y_Metr%C3%B3nomo_Digital.jpg',
-  'baquetas de bateria 5a': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793039456/Baquetas_de_Bater%C3%ADa_5A.jpg'
+  'baquetas de bateria 5a': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1793039456/Baquetas_de_Bater%C3%ADa_5A.jpg',
 };
+
+/** Marcas eliminadas del catálogo que no deben exponer cartas ni sobres. */
+export const MARCAS_ELIMINADAS: ReadonlySet<string> = new Set([
+  'mcdonalds',
+  "mcdonald's",
+  'google',
+  'netflix',
+]);
+
+/**
+ * Nombres normalizados de cartas pertenecientes a marcas eliminadas del
+ * catálogo de la base de datos (McDonald's, Google, Netflix y seeds previos)
+ * que pueden haber quedado huérfanas en `usuariocarta` o `carta` en cuentas
+ * de desarrollo.
+ */
+export const CARTAS_MARCAS_ELIMINADAS: ReadonlySet<string> = new Set([
+  // McDonald's
+  'pure de frutas',
+  'super cono',
+  'chocolatada croccantella',
+  'cappuccino bombon espresso',
+  'hamburguesa con queso',
+  'mcflurry oreo',
+  'ensalada caesar con pollo crispy',
+  'pileta de cheddar',
+  'sandwich lomo napolitano',
+  'big mac',
+  'grand tasty turbo bacon triple',
+  "mcdonald's obelisco",
+  'mcnuggets',
+  'mcflurry',
+  // Google
+  'google home mini',
+  'chromecast 4',
+  'timbre google nest',
+  'google nest cam',
+  'pack google home',
+  'google home hub',
+  'pixel buds pro',
+  'chromebook',
+  'pixel watch 3',
+  'google pixel tablet',
+  'pixel 1',
+  'pixel 11',
+  // Netflix
+  'monsters',
+  "don't look up",
+  'division palermo',
+  'bojack horseman',
+  'black mirror',
+  'dark',
+  'la casa de papel',
+  'la sociedad de la nieve',
+  'one piece',
+  'el eternauta',
+  'stranger things',
+  'el juego del calamar',
+  // Seeds iniciales dados de baja (02_colecciones_y_cartas.sql)
+  'whopper',
+  'chicken fries',
+  'frosty',
+  'baconator',
+  'medusa jacket',
+]);
+
+/** Objeto con metadatos opcionales de marca/colección para validar si una carta quedó huérfana. */
+export interface CartaValidableMarca {
+  readonly nombre?: string | null;
+  readonly marca?: string | null;
+  readonly marcaNombre?: string | null;
+  readonly marcaId?: number | null;
+  readonly coleccionId?: number | null;
+  readonly coleccionActiva?: boolean | null;
+}
+
+function normalizarTextoCatalogo(valor: string): string {
+  return valor
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
+/** Devuelve la URL de imagen del catálogo activo para una carta según su nombre. */
+export function obtenerImagenCatalogo(nombreCarta?: string | null): string {
+  if (!nombreCarta) return '';
+  const clave = normalizarTextoCatalogo(nombreCarta);
+  return FOTOS_CARTAS_CATALOGO[clave] ?? '';
+}
+
+/** Indica si un nombre de marca corresponde a una marca eliminada de la base de datos. */
+export function esMarcaEliminada(nombreMarca?: string | null): boolean {
+  if (!nombreMarca) return false;
+  const normalizada = normalizarTextoCatalogo(nombreMarca);
+  return MARCAS_ELIMINADAS.has(normalizada);
+}
+
+/**
+ * Determina si una carta carece de marca/colección activa o pertenece a una
+ * marca eliminada de la base de datos, para mantener coherencia entre
+ * "Mis cartas", "Álbumes" y la apertura de sobres.
+ */
+export function esCartaSinMarca(carta: CartaValidableMarca | null | undefined): boolean {
+  if (!carta || typeof carta.nombre !== 'string') {
+    return true;
+  }
+
+  const nombreNormalizado = normalizarTextoCatalogo(carta.nombre);
+  if (!nombreNormalizado) {
+    return true;
+  }
+
+  if (CARTAS_MARCAS_ELIMINADAS.has(nombreNormalizado)) {
+    return true;
+  }
+
+  if ('coleccionActiva' in carta && carta.coleccionActiva === false) {
+    return true;
+  }
+
+  if (
+    'coleccionId' in carta &&
+    carta.coleccionId !== undefined &&
+    (carta.coleccionId === null || carta.coleccionId <= 0)
+  ) {
+    return true;
+  }
+
+  if (
+    'marcaId' in carta &&
+    carta.marcaId !== undefined &&
+    (carta.marcaId === null || carta.marcaId <= 0)
+  ) {
+    return true;
+  }
+
+  if ('marcaNombre' in carta && carta.marcaNombre !== undefined) {
+    if (carta.marcaNombre === null || !carta.marcaNombre.trim()) {
+      return true;
+    }
+    if (esMarcaEliminada(carta.marcaNombre)) {
+      return true;
+    }
+  }
+
+  if (
+    'marca' in carta &&
+    carta.marca !== undefined &&
+    (carta.marca === null || !carta.marca.trim())
+  ) {
+    return true;
+  }
+
+  return false;
+}

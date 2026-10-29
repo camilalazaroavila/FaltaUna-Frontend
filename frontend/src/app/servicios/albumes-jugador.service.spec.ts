@@ -75,6 +75,21 @@ describe('AlbumesJugadorService', () => {
       ]);
     });
 
+    it('filtra álbumes cuya marca no existe o que no tienen cartas', () => {
+      let resultado: readonly ResumenAlbum[] = [];
+
+      servicio.listarAlbumes().subscribe((albumes) => (resultado = albumes));
+
+      httpMock.expectOne((peticion) => peticion.url.includes('Albumes')).flush([
+        RESUMEN_API,
+        { ...RESUMEN_API, id: 2, marcaNombre: '   ' },
+        { ...RESUMEN_API, id: 3, total: 0 },
+      ]);
+
+      expect(resultado).toHaveLength(1);
+      expect(resultado[0].marcaNombre).toBe('Aura');
+    });
+
     it('no cae a datos de prueba cuando el backend falla', () => {
       let error: unknown;
 
@@ -123,6 +138,24 @@ describe('AlbumesJugadorService', () => {
           },
         ],
       });
+    });
+
+    it('filtra cartas huérfanas de marcas eliminadas al obtener el detalle del álbum', () => {
+      let resultado: DetalleAlbum | null = null;
+
+      servicio.obtenerDetalleAlbum(1).subscribe((detalle) => (resultado = detalle));
+
+      httpMock.expectOne((peticion) => peticion.url.includes('Albumes/1')).flush({
+        ...RESUMEN_API,
+        cartas: [
+          CARTA_API,
+          { ...CARTA_API, cartaId: 90, nombre: 'Ensalada Caesar con Pollo Crispy' },
+          { ...CARTA_API, cartaId: 91, nombre: 'Super Cono' },
+        ],
+      });
+
+      expect(resultado?.cartas).toHaveLength(1);
+      expect(resultado?.cartas[0].nombre).toBe('Aura Cap');
     });
 
     it('usa valores seguros cuando la carta no trae imagen, rareza ni categoría', () => {

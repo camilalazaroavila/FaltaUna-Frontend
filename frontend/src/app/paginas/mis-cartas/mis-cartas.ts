@@ -6,6 +6,7 @@ import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup
 import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
 import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
 import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
+import { esCartaSinMarca } from '@modelos/catalogo-cartas-imagenes';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { BarajaService } from '@servicios/baraja.service';
 import { AuthService } from '@servicios/auth.service';
@@ -175,7 +176,7 @@ export class MisCartas implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cartas) => {
-          this.coleccion.set(cartas);
+          this.coleccion.set((cartas ?? []).filter((carta) => !esCartaSinMarca(carta)));
           this.cargando.set(false);
         },
         error: () => {

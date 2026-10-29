@@ -86,6 +86,55 @@ describe('MisCartas', () => {
     expect(fixture.nativeElement.querySelectorAll('app-carta').length).toBe(CARTAS_MOCK.length);
   });
 
+  it('debe omitir cartas cuya marca no existe o fue eliminada sin romper la vista', () => {
+    const inventarioConHuerfanas = [
+      ...CARTAS_MOCK,
+      {
+        id: 'h-1',
+        nombre: 'Ensalada Caesar con Pollo Crispy',
+        imagenUrl: '',
+        rareza: 'comun' as const,
+        categoria: 'gastronomia' as const,
+        atributoIzquierdo: 2,
+        atributoDerecho: 5,
+        obtenida: true,
+      },
+      {
+        id: 'h-2',
+        nombre: 'Super Cono',
+        imagenUrl: '',
+        rareza: 'comun' as const,
+        categoria: 'gastronomia' as const,
+        atributoIzquierdo: 1,
+        atributoDerecho: 4,
+        obtenida: true,
+      },
+      {
+        id: 'h-3',
+        nombre: 'Carta sin marca explícita',
+        marca: '',
+        imagenUrl: '',
+        rareza: 'rara' as const,
+        categoria: 'gastronomia' as const,
+        atributoIzquierdo: 3,
+        atributoDerecho: 6,
+        obtenida: true,
+      },
+    ];
+
+    (mockBarajaService.obtenerCartasDisponibles as jest.Mock).mockReturnValueOnce(
+      of(inventarioConHuerfanas),
+    );
+
+    componente['cargarCartas']();
+    fixture.detectChanges();
+
+    expect(renderizadas().length).toBe(CARTAS_MOCK.length);
+    expect(nombres()).not.toContain('Ensalada Caesar con Pollo Crispy');
+    expect(nombres()).not.toContain('Super Cono');
+    expect(nombres()).not.toContain('Carta sin marca explícita');
+  });
+
   it('debe filtrar por nombre mientras se escribe, sin distinguir mayúsculas', () => {
     buscar('danon');
 
