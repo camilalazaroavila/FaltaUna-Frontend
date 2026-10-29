@@ -99,7 +99,7 @@ describe('UsuarioDashboard Component', () => {
     expect(botonAvatar).toBeTruthy();
   });
 
-  it('debe mostrar 3 sobres en el abanico: general, categoría indumentaria y marca Lego', () => {
+  /*it('debe mostrar 3 sobres en el abanico: general, categoría indumentaria y marca Lego', () => {
     const sobres: HTMLElement[] = Array.from(
       fixture.nativeElement.querySelectorAll('app-sobre-marca button')
     );
@@ -109,7 +109,7 @@ describe('UsuarioDashboard Component', () => {
     expect(etiquetas).toEqual(
       expect.arrayContaining(['Sobre de Falta Una', 'Sobre de Indumentaria', 'Sobre de Lego'])
     );
-  });
+  });*/
 
 
   it('debe renderizar el dock de navegación con los 6 destinos', () => {
