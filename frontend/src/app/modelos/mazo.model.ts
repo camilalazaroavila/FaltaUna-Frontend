@@ -1,3 +1,5 @@
+import type { HabilidadCartaApi } from './carta.model';
+
 export interface CartaInventarioApi {
     readonly cartaId: number;
     readonly nombre: string;
@@ -11,6 +13,8 @@ export interface CartaInventarioApi {
     readonly categoria: string;
     readonly imagenUrl: string | null;
     readonly cantidad: number;
+    /** Habilidad de la carta; de ahí salen los efectos de categoría que dibuja la carta. */
+    readonly habilidad?: HabilidadCartaApi | null;
 }
 export interface MazoCartaApi {
     readonly cartaId: number;

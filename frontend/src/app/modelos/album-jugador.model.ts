@@ -1,4 +1,4 @@
-import type { Carta, CategoriaCarta, RarezaCarta } from './carta.model';
+import type { Carta, CategoriaCarta, EfectoCategoriaCarta, RarezaCarta } from './carta.model';
 import {
   categoriaDesdeNombre,
   normalizarNombre,
@@ -45,6 +45,8 @@ export interface CartaAlbum {
   readonly cantidad: number;
   /** Si el jugador la marcó como "carta que quiero". */
   readonly favorita: boolean;
+  /** Efectos de categoría de la habilidad de la carta, si el backend los manda. */
+  readonly efectosCategoria?: readonly EfectoCategoriaCarta[];
 }
 
 /** Detalle de un álbum: encabezado de marca + progreso + grilla de cartas. */
@@ -105,5 +107,8 @@ export function cartaAlbumACarta(carta: CartaAlbum): Carta {
     atributoIzquierdo: carta.poder,
     atributoDerecho: carta.costoCupon,
     obtenida: carta.obtenida,
+    efectosCategoria: carta.efectosCategoria,
+    // Las faltantes se ven como la carta real, pero en blanco y negro.
+    blancoYNegro: !carta.obtenida,
   };
 }

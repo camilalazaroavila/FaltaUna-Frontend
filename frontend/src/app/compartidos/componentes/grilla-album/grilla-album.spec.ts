@@ -57,20 +57,21 @@ describe('GrillaAlbum', () => {
     fixture = TestBed.createComponent(GrillaAlbum);
   });
 
-  it('renderiza las obtenidas con app-carta y las faltantes con el slot vacío', () => {
+  it('renderiza todas las cartas con app-carta, sin slot vacío', () => {
     const el = montar();
 
-    expect(el.querySelectorAll('app-carta')).toHaveLength(1);
-    expect(el.querySelectorAll('app-slot-vacio')).toHaveLength(1);
+    expect(el.querySelectorAll('app-carta')).toHaveLength(2);
+    expect(el.querySelector('app-slot-vacio')).toBeNull();
     expect(el.querySelector('button.celda')).toBeNull();
   });
 
-  it('el slot vacío recibe el nombre y la rareza de la carta faltante', () => {
+  it('la carta faltante se ve en blanco y negro con su nombre real', () => {
     const el = montar();
 
-    const slot = el.querySelector('app-slot-vacio')!;
-    const contenedor = slot.querySelector('.slot-vacio[role="img"]')!;
-    expect(contenedor.getAttribute('aria-label')).toBe('Carta faltante: Carta faltante, Rara');
+    const cartas = el.querySelectorAll('app-carta');
+    expect(cartas[0].classList.contains('carta--blanco-y-negro')).toBe(false);
+    expect(cartas[1].classList.contains('carta--blanco-y-negro')).toBe(true);
+    expect(cartas[1].querySelector('.carta__nombre')!.textContent).toContain('Carta faltante');
   });
 
   it('muestra el corazón siempre visible en todas las celdas', () => {
@@ -107,7 +108,7 @@ describe('GrillaAlbum', () => {
     fixture.componentInstance.alternar.subscribe((id) => emitidos.push(id));
 
     const el = montar();
-    const faltante = el.querySelector('app-slot-vacio')!.closest('.celda-envoltorio')!;
+    const faltante = el.querySelectorAll('.celda-envoltorio')[1];
     faltante.dispatchEvent(new MouseEvent('dblclick'));
 
     expect(emitidos).toEqual(['c2']);

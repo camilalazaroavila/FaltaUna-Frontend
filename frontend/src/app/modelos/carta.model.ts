@@ -68,18 +68,49 @@ export interface Carta {
   readonly oculta?: boolean;
   /** Efectos sobre categorías que produce la habilidad de la carta. */
   readonly efectosCategoria?: readonly EfectoCategoriaCarta[];
+  /**
+   * Muestra la carta real (nombre e imagen) pero en blanco y negro. Se usa en
+   * los álbumes para las cartas que el jugador todavía no obtuvo.
+   */
+  readonly blancoYNegro?: boolean;
   /** Habilidad estructurada enviada por el servidor. */
-  readonly habilidad?: {
-    readonly tipo: string;
-    readonly momento: string;
-    readonly valor: number | null;
-    readonly categoriaObjetivo: string | null;
-    readonly descripcion: string | null;
-  } | null;
+  readonly habilidad?: HabilidadCartaApi | null;
   /** Texto descriptivo del efecto o habilidad de la carta. */
   readonly descripcionHabilidad?: string | null;
   /** Texto narrativo o descripción de catálogo de la carta. */
   readonly descripcion?: string | null;
+}
+
+/** Habilidad tal como la manda el backend. */
+export interface HabilidadCartaApi {
+  readonly tipo: string;
+  readonly momento?: string;
+  readonly valor: number | null;
+  readonly categoriaObjetivo: string | null;
+  readonly descripcion?: string | null;
+}
+
+/** Traduce la habilidad de una carta a los efectos de categoría que dibuja `app-carta`. */
+export function efectosDesdeHabilidad(
+  habilidad: HabilidadCartaApi | null | undefined,
+): EfectoCategoriaCarta[] {
+  if (!habilidad || !habilidad.categoriaObjetivo) {
+    return [];
+  }
+
+  const tipo =
+    (habilidad.valor !== null && habilidad.valor < 0) ||
+    habilidad.tipo?.toLowerCase().includes('reduc')
+      ? 'baja'
+      : 'sube';
+
+  return [
+    {
+      tipo,
+      categoria: categoriaCartaDesdeNombre(habilidad.categoriaObjetivo),
+      valor: habilidad.valor,
+    },
+  ];
 }
 
 /** Efecto sobre una categoría que mejora o empeora el poder. */
@@ -216,4 +247,3 @@ export function normalizarUrlImagen(url: string | null | undefined): string | nu
   }
   return limpia.startsWith('/') ? limpia : `/${limpia}`;
 }
-

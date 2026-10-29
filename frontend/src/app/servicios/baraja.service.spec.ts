@@ -22,6 +22,29 @@ describe('BarajaService', () => {
     http = TestBed.inject(HttpTestingController);
   });
   afterEach(() => http.verify());
+  it('traduce la habilidad de la carta a efectos de categoría', async () => {
+    const respuesta = firstValueFrom(servicio.obtenerCartasDisponibles());
+    http.expectOne(`${environment.apiUrl}/Mazos/cartas-disponibles`).flush([
+      {
+        cartaId: 9,
+        nombre: 'Con habilidad',
+        descripcion: null,
+        poder: 5,
+        costoCupon: 2,
+        rarezaId: 1,
+        rareza: 'Común',
+        rarezaOrden: 1,
+        categoriaId: 1,
+        categoria: 'Gastronomía',
+        imagenUrl: null,
+        cantidad: 1,
+        habilidad: { tipo: 'Bonus', valor: 2, categoriaObjetivo: 'Ropa' },
+      },
+    ]);
+    const [carta] = await respuesta;
+    expect(carta.efectosCategoria).toEqual([{ tipo: 'sube', categoria: 'indumentaria', valor: 2 }]);
+  });
+
   it('consulta y adapta las cartas disponibles del inventario', async () => {
     const respuesta = firstValueFrom(servicio.obtenerCartasDisponibles());
     const solicitud = http.expectOne(`${environment.apiUrl}/Mazos/cartas-disponibles`);

@@ -37,6 +37,7 @@ const FONDO_POR_RAREZA: Record<RarezaCarta, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.carta--no-obtenida]': '!carta().obtenida',
+    '[class.carta--blanco-y-negro]': 'carta().blancoYNegro',
     '[class.carta--oculta]': 'carta().oculta',
     '[class.carta--legendaria]': 'carta().rareza === "legendaria"',
     '[attr.aria-label]': 'ariaLabel()',
@@ -77,7 +78,7 @@ export class CartaComponent {
   protected readonly urlCuadrado = urlCuadradoNumero;
 
   protected readonly nombreVisible = computed(() =>
-    this.carta().obtenida ? this.carta().nombre : '???',
+    this.carta().obtenida || this.carta().blancoYNegro ? this.carta().nombre : '???',
   );
 
   protected readonly estrellas = computed(() =>
@@ -88,13 +89,17 @@ export class CartaComponent {
   );
 
   protected readonly altImagen = computed(() =>
-    this.carta().obtenida ? this.carta().nombre : 'Carta no obtenida',
+    this.carta().obtenida || this.carta().blancoYNegro ? this.carta().nombre : 'Carta no obtenida',
   );
 
   protected readonly ariaLabel = computed(() => {
     const c = this.carta();
     const rareza = ETIQUETA_RAREZA[c.rareza];
     const categoria = ETIQUETA_CATEGORIA[c.categoria];
+
+    if (!c.obtenida && c.blancoYNegro) {
+      return `Carta ${c.nombre}, ${rareza}, ${categoria}, todavía no obtenida`;
+    }
 
     if (!c.obtenida) {
       return `Carta no obtenida, ${rareza}, ${categoria}`;

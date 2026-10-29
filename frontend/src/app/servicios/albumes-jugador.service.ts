@@ -11,8 +11,10 @@ import {
 } from '@modelos/album-jugador.model';
 import {
   CATEGORIA_POR_DEFECTO,
+  efectosDesdeHabilidad,
   normalizarUrlImagen,
   rarezaDesdeNombre,
+  type HabilidadCartaApi,
 } from '@modelos/carta.model';
 
 /** Contrato del backend para el resumen de un álbum (`GET /api/Albumes`). */
@@ -41,6 +43,7 @@ interface AlbumCartaApi {
   readonly cantidad: number;
   readonly obtenida: boolean;
   readonly favorita: boolean;
+  readonly habilidad?: HabilidadCartaApi | null;
 }
 
 /** Contrato del backend para el detalle (`GET /api/Albumes/{id}`). */
@@ -71,6 +74,7 @@ const mapearCarta = (carta: AlbumCartaApi): CartaAlbum => ({
   obtenida: carta.obtenida,
   cantidad: carta.cantidad,
   favorita: carta.favorita,
+  efectosCategoria: efectosDesdeHabilidad(carta.habilidad),
 });
 
 /**

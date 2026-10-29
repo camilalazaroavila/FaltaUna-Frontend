@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { BotonFavorita } from '@compartidos/componentes/cartas/boton-favorita/boton-favorita';
-import { SlotVacio } from '@compartidos/componentes/slot-vacio/slot-vacio';
 import {
   cartaAlbumACarta,
   type CartaAlbum,
@@ -16,8 +15,8 @@ import type { Carta } from '@modelos/carta.model';
 const VENTANA_ALTERNANCIA_MS = 320;
 
 /**
- * Grilla de un álbum: las cartas obtenidas se renderizan con `app-carta` y las
- * faltantes con el slot vacío (sobre + nombre + estrellas de rareza).
+ * Grilla de un álbum: todas las cartas se renderizan con `app-carta`; las
+ * faltantes se ven en blanco y negro (`blancoYNegro`) en lugar del signo de pregunta.
  *
  * Cada carta tiene un corazón propio (`app-boton-favorita`) siempre visible, que
  * es el disparo principal y el que usan teclado y touch; además se puede alternar
@@ -25,7 +24,7 @@ const VENTANA_ALTERNANCIA_MS = 320;
  */
 @Component({
   selector: 'app-grilla-album',
-  imports: [CartaComponent, BotonFavorita, SlotVacio],
+  imports: [CartaComponent, BotonFavorita],
   templateUrl: './grilla-album.html',
   styleUrl: './grilla-album.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
