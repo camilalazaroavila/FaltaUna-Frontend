@@ -1,0 +1,112 @@
+@if (esVisible()) {
+  <div
+    #contenedorAnimado
+    class="nav-inferior"
+    [class.nav-inferior--fija]="!modoVistaPrevia()"
+    [class.nav-inferior--vista-previa]="modoVistaPrevia()"
+  >
+    <nav
+      aria-label="Navegación inferior del jugador"
+      class="nav-inferior__barra"
+      [class.nav-inferior__barra--oculta]="ocultoParcial()"
+    >
+      <!-- Botón circular flotante izquierdo ("Jugar") abrazado por el recorte cóncavo -->
+      @let fab = accionPrincipal();
+      @let fabActivo = esItemActivo(fab);
+      <a
+        [routerLink]="modoVistaPrevia() ? null : fab.ruta"
+        [attr.href]="modoVistaPrevia() ? '#' + fab.id : null"
+        class="nav-inferior__fab"
+        [class.nav-inferior__fab--activo]="fabActivo"
+        [attr.aria-label]="fab.etiqueta"
+        [attr.aria-current]="fabActivo ? 'page' : null"
+        (click)="alInteractuarItem(fab, $event)"
+      >
+        <ng-icon [name]="fab.icono" size="1.625rem" aria-hidden="true" />
+        @if (fabActivo) {
+          <span class="nav-inferior__fab-punto" aria-hidden="true"></span>
+        }
+      </a>
+
+      <!-- Franja interactiva que queda asomando cuando la barra está ligeramente oculta -->
+      @if (ocultoParcial()) {
+        <button
+          type="button"
+          class="nav-inferior__franja-reactivacion"
+          aria-label="Mostrar barra de navegación completa"
+          (click)="mostrarCompleta()"
+        >
+          <span class="nav-inferior__franja-indicador" aria-hidden="true"></span>
+        </button>
+      }
+
+      <!-- Cuerpo curvo de la barra con recorte cóncavo vectorial a la izquierda -->
+      <div class="nav-inferior__cuerpo">
+        <div class="nav-inferior__fila-principal">
+          <!-- Pieza vectorial izquierda con el recorte cóncavo circular exacto alrededor del botón flotante -->
+          <svg
+            class="nav-inferior__recorte-svg"
+            viewBox="0 0 120 72"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              class="nav-inferior__recorte-relleno"
+              d="M 0,72 L 0,34 C 0,22 7,17 11,28 A 37,37 0 0,0 81,28 C 87,10.5 96,0 112,0 L 120,0 L 120,72 Z"
+            />
+            <path
+              class="nav-inferior__recorte-borde"
+              d="M 0,34 C 0,22 7,17 11,28 A 37,37 0 0,0 81,28 C 87,10.5 96,0 112,0 L 120,0"
+            />
+          </svg>
+
+          <!-- Meseta derecha con los 4 íconos de línea fina repartidos parejo -->
+          <div class="nav-inferior__meseta">
+            <ul class="nav-inferior__lista" role="list">
+              @for (item of items(); track item.id) {
+                @let activo = esItemActivo(item);
+                <li class="nav-inferior__item">
+                  <a
+                    [routerLink]="modoVistaPrevia() || item.deshabilitado ? null : item.ruta"
+                    [attr.href]="modoVistaPrevia() ? '#' + item.id : null"
+                    class="nav-inferior__enlace"
+                    [class.nav-inferior__enlace--activo]="activo"
+                    [class.nav-inferior__enlace--deshabilitado]="item.deshabilitado"
+                    [attr.aria-label]="mostrarEtiquetas() ? null : item.etiqueta"
+                    [attr.aria-current]="activo ? 'page' : null"
+                    [attr.aria-disabled]="item.deshabilitado ? 'true' : null"
+                    [attr.tabindex]="item.deshabilitado ? -1 : null"
+                    (click)="alInteractuarItem(item, $event)"
+                  >
+                    <span class="nav-inferior__icono-envoltura">
+                      <ng-icon [name]="item.icono" size="1.5rem" aria-hidden="true" />
+                      @if (item.tieneIndicador) {
+                        <span class="nav-inferior__notificacion" aria-hidden="true"></span>
+                      }
+                    </span>
+
+                    @if (mostrarEtiquetas()) {
+                      <span class="nav-inferior__etiqueta">{{ item.etiqueta }}</span>
+                    }
+
+                    <!-- Indicador visible adicional al color para el estado activo (A11y) -->
+                    <span
+                      class="nav-inferior__indicador-activo"
+                      [class.nav-inferior__indicador-activo--visible]="activo"
+                      aria-hidden="true"
+                    ></span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+
+        <!-- Reserva interna para el área segura inferior del sistema (sin dibujar la píldora gris del SO) -->
+        <div class="nav-inferior__area-segura" aria-hidden="true"></div>
+      </div>
+    </nav>
+  </div>
+}
+

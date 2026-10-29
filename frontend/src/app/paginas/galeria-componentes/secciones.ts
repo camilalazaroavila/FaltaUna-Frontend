@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Índice de la galería de componentes.
  *
  * Es la única fuente de verdad del menu de navegacion superior: el shell lo
@@ -104,5 +104,11 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     titulo: 'Partida',
     descripcion:
       'Átomos de la pantalla de partida: casilla, contador de cupones, barra de puntos, chip de jugador, cabecera de turno y puntaje por zona.',
+  },
+  {
+    id: 'navegacion-inferior-mobile',
+    titulo: 'app-navegacion-inferior-mobile',
+    descripcion:
+      'Barra de navegación inferior mobile con botón flotante izquierdo abrazado por recorte cóncavo vectorial, en modo jugador y empresa.',
   },
 ] as const;

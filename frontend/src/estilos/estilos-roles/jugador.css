@@ -180,4 +180,22 @@
    --duracion-cambio-zona: 900ms;
    --duracion-vuelo-carta: 200ms;
    --duracion-micro: 200ms;
+
+   /* --- Navegación inferior mobile --- */
+   --nav-inferior-superficie: var(--color-amarillo-logo);
+   --nav-inferior-borde: color-mix(in srgb, var(--color-teal-profundo) 18%, transparent);
+   --nav-inferior-icono: var(--color-teal-profundo);
+   --nav-inferior-icono-activo: var(--color-teal-profundo);
+   --nav-inferior-activo-fondo: color-mix(in srgb, var(--color-teal-profundo) 10%, transparent);
+   --nav-inferior-indicador: var(--marca-primaria);
+   --nav-inferior-fab-fondo: var(--marca-primaria);
+   --nav-inferior-fab-hover: var(--marca-primaria-hover);
+   --nav-inferior-fab-activo: var(--marca-primaria-activa);
+   --nav-inferior-fab-texto: var(--marca-sobre-primaria);
+   --nav-inferior-fab-anillo: var(--color-teal-profundo);
+   --nav-inferior-sombra: 0 -6px 24px rgba(0, 0, 0, 0.34);
+   --nav-inferior-alto: 4.5rem;
+   --nav-inferior-franja-asomada: 1.25rem;
+   --nav-inferior-fab-tamano: 3.5rem;
+   --nav-inferior-reserva: calc(var(--nav-inferior-alto) + 1.25rem + env(safe-area-inset-bottom, 0px));
 }

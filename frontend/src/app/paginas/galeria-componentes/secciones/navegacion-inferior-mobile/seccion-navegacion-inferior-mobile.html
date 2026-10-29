@@ -1,0 +1,67 @@
+<div class="space-y-8">
+  <app-tarjeta-muestra
+    titulo="app-navegacion-inferior-mobile"
+    descripcion="Barra inferior mobile con botón flotante izquierdo abrazado por recorte cóncavo vectorial (SVG) y cuatro íconos de línea fina. Comparativa en modo jugador y modo empresa, estado desplegado y estado ligeramente oculto."
+  >
+    <div class="mb-4 flex flex-wrap items-center gap-4">
+      <label class="inline-flex cursor-pointer items-center gap-2 font-interfaz text-xs text-texto-secundario">
+        <input
+          type="checkbox"
+          class="size-4 accent-marca-primaria"
+          [checked]="mostrarEtiquetas()"
+          (change)="mostrarEtiquetas.set(!mostrarEtiquetas())"
+        />
+        Mostrar etiquetas de texto (Open Decision)
+      </label>
+      <span class="font-interfaz text-xs text-texto-apagado">
+        Ruta simulada activa: <code class="text-texto-primario">{{ rutaActiva() }}</code>
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      @for (modo of modos; track modo) {
+        <div
+          [attr.data-modo]="modo"
+          class="flex flex-col gap-6 rounded-lg border border-borde-default bg-fondo-app p-4 text-texto-primario shadow-media"
+        >
+          <div class="flex items-center justify-between">
+            <span class="font-titulo text-sm uppercase tracking-wider text-marca-primaria">
+              data-modo=&quot;{{ modo }}&quot;
+            </span>
+            <span class="font-interfaz text-xs text-texto-secundario">Viewport 393 px</span>
+          </div>
+
+          <!-- Estado visible completo -->
+          <div class="mx-auto w-full max-w-[24.5625rem] overflow-hidden rounded-lg border border-borde-default bg-fondo-hundido pt-10">
+            <p class="mb-4 px-4 font-interfaz text-xs text-texto-secundario">
+              Estado visible completo (tocá cualquier ícono o el botón flotante)
+            </p>
+            <app-navegacion-inferior-mobile
+              [modoVistaPrevia]="true"
+              [rutaActivaManual]="rutaActiva()"
+              [mostrarEtiquetas]="mostrarEtiquetas()"
+              (seleccionarItem)="seleccionar($event, modo)"
+            />
+          </div>
+
+          <!-- Estado ligeramente oculto (scroll hacia abajo) -->
+          <div class="mx-auto w-full max-w-[24.5625rem] overflow-hidden rounded-lg border border-borde-default bg-fondo-hundido pt-10">
+            <p class="mb-4 px-4 font-interfaz text-xs text-texto-secundario">
+              Estado ligeramente oculto al bajar (tocá la franja para desplegar)
+            </p>
+            <app-navegacion-inferior-mobile
+              [modoVistaPrevia]="true"
+              [rutaActivaManual]="rutaActiva()"
+              [mostrarEtiquetas]="mostrarEtiquetas()"
+              [ocultoInicial]="true"
+              (seleccionarItem)="seleccionar($event, modo)"
+            />
+          </div>
+        </div>
+      }
+    </div>
+
+    <app-registro-eventos slot="eventos" [registros]="registros()" />
+  </app-tarjeta-muestra>
+</div>
+

@@ -82,4 +82,18 @@
     /* --- Interacciones --- */
     --interactivo-seleccionado: var(--color-violeta-suave);
     --interactivo-hover: rgba(10, 46, 54, 0.05);
+
+    /* --- Navegación inferior mobile (Modo Empresa) --- */
+    --nav-inferior-superficie: var(--fondo-superficie);
+    --nav-inferior-borde: var(--borde-default);
+    --nav-inferior-icono: var(--texto-primario);
+    --nav-inferior-icono-activo: var(--marca-primaria);
+    --nav-inferior-activo-fondo: var(--marca-primaria-suave);
+    --nav-inferior-indicador: var(--marca-acento);
+    --nav-inferior-fab-fondo: var(--marca-primaria);
+    --nav-inferior-fab-hover: var(--marca-primaria-hover);
+    --nav-inferior-fab-activo: var(--marca-primaria-activa);
+    --nav-inferior-fab-texto: var(--marca-sobre-primaria);
+    --nav-inferior-fab-anillo: var(--marca-acento);
+    --nav-inferior-sombra: 0 -6px 20px rgba(10, 46, 54, 0.14);
 }
