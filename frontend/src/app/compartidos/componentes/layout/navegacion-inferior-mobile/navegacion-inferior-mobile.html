@@ -9,25 +9,9 @@
       aria-label="Navegación inferior del jugador"
       class="nav-inferior__barra"
       [class.nav-inferior__barra--oculta]="ocultoParcial()"
+      [style.--ola-centro]="porcentajeCentroOla()"
+      [style.--total-columnas]="todosLosBotones().length"
     >
-      <!-- Botón circular flotante izquierdo ("Jugar") abrazado por el recorte cóncavo -->
-      @let fab = accionPrincipal();
-      @let fabActivo = esItemActivo(fab);
-      <a
-        [routerLink]="modoVistaPrevia() ? null : fab.ruta"
-        [attr.href]="modoVistaPrevia() ? '#' + fab.id : null"
-        class="nav-inferior__fab"
-        [class.nav-inferior__fab--activo]="fabActivo"
-        [attr.aria-label]="fab.etiqueta"
-        [attr.aria-current]="fabActivo ? 'page' : null"
-        (click)="alInteractuarItem(fab, $event)"
-      >
-        <ng-icon [name]="fab.icono" size="1.625rem" aria-hidden="true" />
-        @if (fabActivo) {
-          <span class="nav-inferior__fab-punto" aria-hidden="true"></span>
-        }
-      </a>
-
       <!-- Franja interactiva que queda asomando cuando la barra está ligeramente oculta -->
       @if (ocultoParcial()) {
         <button
@@ -40,73 +24,90 @@
         </button>
       }
 
-      <!-- Cuerpo curvo de la barra con recorte cóncavo vectorial a la izquierda -->
+      <!-- Cuerpo verde de la barra con sombra amarilla de contraste y ola cóncava desplazable -->
       <div class="nav-inferior__cuerpo">
-        <div class="nav-inferior__fila-principal">
-          <!-- Pieza vectorial izquierda con el recorte cóncavo circular exacto alrededor del botón flotante -->
-          <svg
-            class="nav-inferior__recorte-svg"
-            viewBox="0 0 120 72"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path
-              class="nav-inferior__recorte-relleno"
-              d="M 0,72 L 0,34 C 0,22 7,17 11,28 A 37,37 0 0,0 81,28 C 87,10.5 96,0 112,0 L 120,0 L 120,72 Z"
-            />
-            <path
-              class="nav-inferior__recorte-borde"
-              d="M 0,34 C 0,22 7,17 11,28 A 37,37 0 0,0 81,28 C 87,10.5 96,0 112,0 L 120,0"
-            />
-          </svg>
-
-          <!-- Meseta derecha con los 4 íconos de línea fina repartidos parejo -->
-          <div class="nav-inferior__meseta">
-            <ul class="nav-inferior__lista" role="list">
-              @for (item of items(); track item.id) {
-                @let activo = esItemActivo(item);
-                <li class="nav-inferior__item">
-                  <a
-                    [routerLink]="modoVistaPrevia() || item.deshabilitado ? null : item.ruta"
-                    [attr.href]="modoVistaPrevia() ? '#' + item.id : null"
-                    class="nav-inferior__enlace"
-                    [class.nav-inferior__enlace--activo]="activo"
-                    [class.nav-inferior__enlace--deshabilitado]="item.deshabilitado"
-                    [attr.aria-label]="mostrarEtiquetas() ? null : item.etiqueta"
-                    [attr.aria-current]="activo ? 'page' : null"
-                    [attr.aria-disabled]="item.deshabilitado ? 'true' : null"
-                    [attr.tabindex]="item.deshabilitado ? -1 : null"
-                    (click)="alInteractuarItem(item, $event)"
-                  >
-                    <span class="nav-inferior__icono-envoltura">
-                      <ng-icon [name]="item.icono" size="1.5rem" aria-hidden="true" />
-                      @if (item.tieneIndicador) {
-                        <span class="nav-inferior__notificacion" aria-hidden="true"></span>
-                      }
-                    </span>
-
-                    @if (mostrarEtiquetas()) {
-                      <span class="nav-inferior__etiqueta">{{ item.etiqueta }}</span>
-                    }
-
-                    <!-- Indicador visible adicional al color para el estado activo (A11y) -->
-                    <span
-                      class="nav-inferior__indicador-activo"
-                      [class.nav-inferior__indicador-activo--visible]="activo"
-                      aria-hidden="true"
-                    ></span>
-                  </a>
-                </li>
-              }
-            </ul>
+        <div class="nav-inferior__mascara-bordes">
+          <div class="nav-inferior__ola-pista" aria-hidden="true">
+            <div class="nav-inferior__ala nav-inferior__ala--izquierda"></div>
+            <svg
+              #olaSvg
+              class="nav-inferior__recorte-svg"
+              viewBox="0 0 116 72"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                class="nav-inferior__recorte-relleno"
+                d="M 0,0 C 13,0 20,10 25,24 A 35,35 0 0,0 91,24 C 96,10 103,0 116,0 L 116,72 L 0,72 Z"
+              />
+            </svg>
+            <div class="nav-inferior__ala nav-inferior__ala--derecha"></div>
           </div>
         </div>
 
-        <!-- Reserva interna para el área segura inferior del sistema (sin dibujar la píldora gris del SO) -->
+        <!-- Reserva interna para el área segura inferior del sistema -->
         <div class="nav-inferior__area-segura" aria-hidden="true"></div>
       </div>
+
+      <!-- Grilla de botones: al activarse cualquiera, la ola viaja hacia él y lo eleva -->
+      <ul class="nav-inferior__lista" role="list">
+        @for (boton of todosLosBotones(); track boton.id; let i = $index) {
+          @let activo = esItemActivo(boton);
+          @let enOla = indiceOlaActivo() === i;
+          @let esPrincipal = i === 0;
+          <li class="nav-inferior__item">
+            <a
+              [routerLink]="modoVistaPrevia() || boton.deshabilitado ? null : boton.ruta"
+              [attr.href]="modoVistaPrevia() ? '#' + boton.id : null"
+              [class.nav-inferior__fab]="esPrincipal"
+              [class.nav-inferior__fab--activo]="esPrincipal && activo"
+              [class.nav-inferior__enlace]="!esPrincipal"
+              [class.nav-inferior__enlace--activo]="!esPrincipal && activo"
+              [class.nav-inferior__enlace--deshabilitado]="boton.deshabilitado"
+              [class.nav-inferior__boton--en-ola]="enOla"
+              [attr.aria-label]="mostrarEtiquetas() && !esPrincipal ? null : boton.etiqueta"
+              [attr.aria-current]="activo ? 'page' : null"
+              [attr.aria-disabled]="boton.deshabilitado ? 'true' : null"
+              [attr.tabindex]="boton.deshabilitado ? -1 : null"
+              (click)="alInteractuarItem(boton, $event)"
+            >
+              <span
+                class="nav-inferior__circulo-icono"
+                [class.nav-inferior__circulo-icono--elevado]="enOla"
+                [class.nav-inferior__circulo-icono--pelea]="boton.esIconoMulticolor"
+              >
+                @if (boton.urlIcono) {
+                  <img
+                    [src]="boton.urlIcono"
+                    alt=""
+                    class="nav-inferior__img-icono"
+                    [class.nav-inferior__img-icono--multicolor]="boton.esIconoMulticolor"
+                    [class.nav-inferior__img-icono--invertido]="!boton.esIconoMulticolor && !enOla"
+                    aria-hidden="true"
+                  />
+                } @else if (boton.icono) {
+                  <ng-icon [name]="boton.icono" size="1.45rem" aria-hidden="true" />
+                }
+
+                @if (boton.tieneIndicador) {
+                  <span class="nav-inferior__notificacion" aria-hidden="true"></span>
+                }
+              </span>
+
+              @if (mostrarEtiquetas() && !esPrincipal) {
+                <span class="nav-inferior__etiqueta">{{ boton.etiqueta }}</span>
+              }
+
+              <span
+                class="nav-inferior__indicador-activo"
+                [class.nav-inferior__indicador-activo--visible]="activo"
+                aria-hidden="true"
+              ></span>
+            </a>
+          </li>
+        }
+      </ul>
     </nav>
   </div>
 }
-

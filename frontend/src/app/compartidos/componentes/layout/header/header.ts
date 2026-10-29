@@ -24,10 +24,10 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
   host: { class: 'block' },
   template: `
     @if (logueado()) {
-      <!-- VARIANTE LOGUEADO -->
-      <header class="relative z-40 m-5">
+      <!-- VARIANTE LOGUEADO: en mobile (< md) adopta la misma silueta curva al borde con sombra amarilla que la barra inferior -->
+      <header class="relative z-40 m-0 mb-2 md:m-5">
         <div
-          class="flex items-center justify-between gap-2 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:gap-4 sm:px-4 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
+          class="flex items-center justify-between gap-2 rounded-t-none rounded-b-[1.5rem] bg-landing-oscuro-fondo px-4 py-2.5 text-landing-oscuro-texto shadow-[0_3px_0_0_var(--nav-inferior-borde),0_8px_18px_rgba(0,0,0,0.32)] sm:gap-4 md:rounded-md md:px-4 md:py-2 md:shadow-md lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
         >
           <a
             [routerLink]="destinoLogo()"

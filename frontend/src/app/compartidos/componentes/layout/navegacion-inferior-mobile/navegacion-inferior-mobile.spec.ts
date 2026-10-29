@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Router, provideRouter } from '@angular/router';
-import { Component } from '@angular/core';
 import { NavegacionInferiorMobile } from './navegacion-inferior-mobile';
 import { GsapService } from '@servicios/gsap.service';
 
@@ -14,9 +13,11 @@ describe('NavegacionInferiorMobile', () => {
   let router: Router;
   let movimientoReducidoSignal = signal(false);
   let crearContextoSpy: jest.Mock;
+  let gsapFromToSpy: jest.Mock;
 
   beforeEach(async () => {
     movimientoReducidoSignal = signal(false);
+    gsapFromToSpy = jest.fn();
     crearContextoSpy = jest.fn((elemento: Element, configurar: (el: Element) => void) => {
       configurar(elemento);
       return { revert: jest.fn() };
@@ -28,6 +29,7 @@ describe('NavegacionInferiorMobile', () => {
       duracionPartida: jest.fn().mockReturnValue(0.24),
       gsap: {
         from: jest.fn(),
+        fromTo: gsapFromToSpy,
         set: jest.fn(),
       },
     };
@@ -85,20 +87,19 @@ describe('NavegacionInferiorMobile', () => {
     }
   });
 
-  it('debe renderizarse en las rutas del jugador y marcar el ítem activo con aria-current="page"', async () => {
+  it('debe renderizarse en las rutas del jugador, marcar el ítem activo con aria-current="page" y mover la ola hacia cada botón', async () => {
     await router.navigateByUrl('/usuario/misiones');
     fixture = TestBed.createComponent(NavegacionInferiorMobile);
     component = fixture.componentInstance;
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
-    const nav = host.querySelector('nav[aria-label="Navegación inferior del jugador"]');
+    const nav = host.querySelector<HTMLElement>('nav[aria-label="Navegación inferior del jugador"]');
     expect(nav).not.toBeNull();
 
     const enlaces = Array.from(host.querySelectorAll<HTMLAnchorElement>('.nav-inferior__enlace'));
     expect(enlaces.length).toBe(4);
 
-    // Todos los enlaces de solo ícono tienen aria-label accesible
     for (const enlace of enlaces) {
       expect(enlace.getAttribute('aria-label')).toBeTruthy();
     }
@@ -107,9 +108,10 @@ describe('NavegacionInferiorMobile', () => {
       '.nav-inferior__enlace[aria-label="Misiones"]',
     );
     expect(misionesEnlace?.getAttribute('aria-current')).toBe('page');
-    expect(misionesEnlace?.classList.contains('nav-inferior__enlace--activo')).toBe(true);
+    expect(misionesEnlace?.classList.contains('nav-inferior__boton--en-ola')).toBe(true);
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('70%');
 
-    // Al navegar a /usuario/mi-baraja se activa el ítem "Mis cartas"
+    // Al navegar a /usuario/mi-baraja se activa "Mis cartas" y la ola viaja al 30%
     await router.navigateByUrl('/usuario/mi-baraja');
     fixture.detectChanges();
 
@@ -117,15 +119,29 @@ describe('NavegacionInferiorMobile', () => {
       '.nav-inferior__enlace[aria-label="Mis cartas"]',
     );
     expect(cartasEnlace?.getAttribute('aria-current')).toBe('page');
-    expect(misionesEnlace?.getAttribute('aria-current')).toBeNull();
+    expect(cartasEnlace?.classList.contains('nav-inferior__boton--en-ola')).toBe(true);
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('30%');
 
-    // Al navegar a /usuario/jugar se activa el botón flotante principal ("Jugar")
+    // Al hacer clic en "Mis cupones", la ola se desplaza inmediatamente al 90% y dispara el pulso de ola
+    const cuponesEnlace = host.querySelector<HTMLAnchorElement>(
+      '.nav-inferior__enlace[aria-label="Mis cupones"]',
+    );
+    cuponesEnlace?.click();
+    fixture.detectChanges();
+
+    expect(cuponesEnlace?.classList.contains('nav-inferior__boton--en-ola')).toBe(true);
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('90%');
+    expect(gsapFromToSpy).toHaveBeenCalled();
+
+    // Al navegar a /usuario/jugar se activa el botón principal ("Jugar") con el ícono de pelea en el 10%
     await router.navigateByUrl('/usuario/jugar');
     fixture.detectChanges();
 
     const fab = host.querySelector<HTMLAnchorElement>('.nav-inferior__fab');
     expect(fab?.getAttribute('aria-current')).toBe('page');
     expect(fab?.classList.contains('nav-inferior__fab--activo')).toBe(true);
+    expect(fab?.classList.contains('nav-inferior__boton--en-ola')).toBe(true);
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('10%');
   });
 
   it('debe pasar a estado ligeramente oculto al hacer scroll hacia abajo y volver al subir o tocar la franja', async () => {
@@ -139,13 +155,11 @@ describe('NavegacionInferiorMobile', () => {
 
     expect(barra.classList.contains('nav-inferior__barra--oculta')).toBe(false);
 
-    // Scroll hacia abajo supera el umbral -> se oculta parcialmente
     component.procesarScroll(120);
     fixture.detectChanges();
 
     expect(barra.classList.contains('nav-inferior__barra--oculta')).toBe(true);
 
-    // La franja de reactivación aparece cuando está ligeramente oculta y al tocarla despliega la barra
     const franja = host.querySelector<HTMLButtonElement>('.nav-inferior__franja-reactivacion');
     expect(franja).not.toBeNull();
     franja?.click();
@@ -153,7 +167,6 @@ describe('NavegacionInferiorMobile', () => {
 
     expect(barra.classList.contains('nav-inferior__barra--oculta')).toBe(false);
 
-    // Si vuelve a bajar y luego sube con scroll hacia arriba, también vuelve a mostrarse completa
     component.procesarScroll(180);
     fixture.detectChanges();
     expect(barra.classList.contains('nav-inferior__barra--oculta')).toBe(true);
@@ -171,11 +184,9 @@ describe('NavegacionInferiorMobile', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    // Con movimiento reducido no crea animación de entrada con GsapService.crearContexto
     expect(crearContextoSpy).not.toHaveBeenCalled();
     expect(component.esMovimientoReducido()).toBe(true);
 
-    // Cambia de estado inmediatamente al hacer scroll sin requerir animación
     component.procesarScroll(100);
     fixture.detectChanges();
     expect(
@@ -185,4 +196,3 @@ describe('NavegacionInferiorMobile', () => {
     ).toBe(true);
   });
 });
-

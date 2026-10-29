@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { phosphorTrophyFill } from '@ng-icons/phosphor-icons/fill';
 import {
   phosphorArrowsLeftRight,
   phosphorBookOpen,
@@ -28,19 +29,25 @@ import {
 import { filter } from 'rxjs/operators';
 import { GsapService } from '@servicios/gsap.service';
 
+import urlIconPelea from '@svgs/IconPelea.svg';
+import urlIconoMisCartas from '@svgs/Icon_misCartas.svg';
+import urlIconoAlbum from '@svgs/Icon_Album.svg';
+import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
+
 export interface ItemNavegacionInferior {
   readonly id: string;
   readonly etiqueta: string;
   readonly ruta: string;
   readonly rutasCoincidentes?: readonly string[];
-  readonly icono: string;
+  readonly icono?: string;
+  readonly urlIcono?: string;
+  readonly esIconoMulticolor?: boolean;
   readonly deshabilitado?: boolean;
   readonly tieneIndicador?: boolean;
 }
 
 /**
- * Cuatro destinos principales del panel del jugador con ruta activa en `app.routes.ts`.
- * Reutiliza exactamente las rutas reales del jugador sin inventar URLs nuevas.
+ * Cuatro destinos principales del panel del jugador con los mismos íconos y rutas que desktop.
  */
 export const DESTINOS_NAVEGACION_INFERIOR_JUGADOR: readonly ItemNavegacionInferior[] = [
   {
@@ -48,49 +55,50 @@ export const DESTINOS_NAVEGACION_INFERIOR_JUGADOR: readonly ItemNavegacionInferi
     etiqueta: 'Mis cartas',
     ruta: '/usuario/mis-cartas',
     rutasCoincidentes: ['/usuario/mis-cartas', '/usuario/mi-baraja'],
-    icono: 'phosphorCards',
+    urlIcono: urlIconoMisCartas,
   },
   {
     id: 'albumes',
     etiqueta: 'Álbumes',
     ruta: '/usuario/albumes',
     rutasCoincidentes: ['/usuario/albumes'],
-    icono: 'phosphorBookOpen',
+    urlIcono: urlIconoAlbum,
   },
   {
     id: 'misiones',
     etiqueta: 'Misiones',
     ruta: '/usuario/misiones',
     rutasCoincidentes: ['/usuario/misiones'],
-    icono: 'phosphorTrophy',
+    icono: 'phosphorTrophyFill',
   },
   {
     id: 'cupones',
     etiqueta: 'Mis cupones',
     ruta: '/usuario/cupones',
     rutasCoincidentes: ['/usuario/cupones'],
-    icono: 'phosphorTicket',
+    urlIcono: urlIconoDescuento,
   },
 ];
 
+/**
+ * Acción principal de jugar con el mismo ícono de pelea (`IconPelea.svg`) de desktop achicado.
+ */
 export const ACCION_PRINCIPAL_JUGADOR: ItemNavegacionInferior = {
   id: 'jugar',
   etiqueta: 'Jugar',
   ruta: '/usuario/jugar',
   rutasCoincidentes: ['/usuario/jugar'],
-  icono: 'phosphorGameController',
+  urlIcono: urlIconPelea,
+  esIconoMulticolor: true,
 };
 
 /**
  * Barra de navegación inferior mobile para el modo jugador.
  *
- * - Visible únicamente en pantallas menores al breakpoint `md` (< 768px), salvo en
- *   `modoVistaPrevia` (usado en la galería de componentes).
- * - Incluye botón circular flotante a la izquierda abrazado por un recorte cóncavo
- *   vectorial (SVG) y cuatro íconos de línea fina a la derecha.
- * - Al hacer scroll hacia abajo pasa al estado "ligeramente oculto", dejando asomada
- *   una franja mínima con el botón flotante visible; al subir o tocar la franja,
- *   vuelve a desplegarse completa.
+ * - Superficie verde (`--nav-inferior-superficie`) con sombra/reborde amarillo de contraste.
+ * - Incluye el botón de jugar (`IconPelea.svg`) y los 4 destinos con los mismos íconos de desktop.
+ * - Efecto de "ola": el recorte curvo cóncavo vectorial se desplaza horizontalmente hacia
+ *   el botón activo/seleccionado y eleva ese botón en un círculo flotante abrazado por la ola.
  */
 @Component({
   selector: 'app-navegacion-inferior-mobile',
@@ -98,6 +106,7 @@ export const ACCION_PRINCIPAL_JUGADOR: ItemNavegacionInferior = {
   imports: [RouterLink, NgIcon],
   viewProviders: [
     provideIcons({
+      phosphorTrophyFill,
       phosphorCards,
       phosphorBookOpen,
       phosphorTrophy,
@@ -118,10 +127,10 @@ export class NavegacionInferiorMobile {
   private readonly destroyRef = inject(DestroyRef);
   private readonly esNavegador = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** Cuatro ítems de navegación repartidos a la derecha del botón flotante. */
+  /** Cuatro ítems de navegación repartidos a la derecha del botón de jugar. */
   readonly items = input<readonly ItemNavegacionInferior[]>(DESTINOS_NAVEGACION_INFERIOR_JUGADOR);
 
-  /** Acción principal del botón circular flotante izquierdo ("Jugar"). */
+  /** Acción principal de jugar (`IconPelea.svg`). */
   readonly accionPrincipal = input<ItemNavegacionInferior>(ACCION_PRINCIPAL_JUGADOR);
 
   /** Permite mostrar etiquetas de texto debajo del ícono (Open Decision; por defecto solo íconos). */
@@ -140,9 +149,11 @@ export class NavegacionInferiorMobile {
   readonly seleccionarItem = output<ItemNavegacionInferior>();
 
   private readonly contenedorAnimado = viewChild<ElementRef<HTMLElement>>('contenedorAnimado');
+  private readonly olaSvgRef = viewChild<ElementRef<SVGElement>>('olaSvg');
 
   protected readonly rutaActual = signal<string>(this.limpiarUrl(this.router.url));
   protected readonly ocultoParcial = signal<boolean>(false);
+  protected readonly idSeleccionadoOla = signal<string | null>(null);
 
   private ultimoScrollY = 0;
   private rafScrollPendiente = false;
@@ -153,11 +164,35 @@ export class NavegacionInferiorMobile {
     return manual !== null ? this.limpiarUrl(manual) : this.rutaActual();
   });
 
+  protected readonly todosLosBotones = computed<readonly ItemNavegacionInferior[]>(() => [
+    this.accionPrincipal(),
+    ...this.items(),
+  ]);
+
   /**
-   * Determina si la barra debe mostrarse según la ruta actual:
-   * - Se muestra en las rutas del panel del jugador (`/usuario` y `/usuario/*`).
-   * - No se muestra en login, registro, landing pública (`/`, `/empresa/landing`) ni partida (`/juego/*`).
+   * Índice del botón que actualmente recibe el recorte cóncavo de la ola y se eleva.
+   * Si hay un ítem activo por ruta o clic lo sigue; en `/usuario` (home) descansa en el botón 0 ("Jugar").
    */
+  protected readonly indiceOlaActivo = computed<number>(() => {
+    const lista = this.todosLosBotones();
+    const idManual = this.idSeleccionadoOla();
+    if (idManual) {
+      const idxManual = lista.findIndex((b) => b.id === idManual);
+      if (idxManual >= 0) return idxManual;
+    }
+
+    const idxRuta = lista.findIndex((b) => this.esItemActivo(b));
+    return idxRuta >= 0 ? idxRuta : 0;
+  });
+
+  /** Coordenada horizontal porcentual del centro de la ola para el botón activo. */
+  protected readonly porcentajeCentroOla = computed<string>(() => {
+    const total = Math.max(1, this.todosLosBotones().length);
+    const idx = this.indiceOlaActivo();
+    const pct = ((idx + 0.5) / total) * 100;
+    return `${pct}%`;
+  });
+
   protected readonly esVisible = computed(() => {
     if (this.modoVistaPrevia()) {
       return true;
@@ -170,10 +205,17 @@ export class NavegacionInferiorMobile {
       .pipe(filter((ev): ev is NavigationEnd => ev instanceof NavigationEnd))
       .subscribe((ev) => {
         this.rutaActual.set(this.limpiarUrl(ev.urlAfterRedirects || ev.url));
+        this.idSeleccionadoOla.set(null);
         this.ocultoParcial.set(false);
       });
 
     this.destroyRef.onDestroy(() => sub.unsubscribe());
+
+    effect(() => {
+      // Al cambiar rutaActivaManual desde afuera, sincroniza la ola con la ruta manual
+      this.rutaActivaManual();
+      this.idSeleccionadoOla.set(null);
+    });
 
     effect(() => {
       this.ocultoParcial.set(this.ocultoInicial());
@@ -239,11 +281,6 @@ export class NavegacionInferiorMobile {
     return false;
   }
 
-  /**
-   * Procesa una nueva posición vertical de scroll sin provocar cambios de layout:
-   * - Al bajar (`delta > 10` y `scrollY > 24`): oculta parcialmente la barra dejando la franja y el botón flotante.
-   * - Al subir (`delta < -8` o cerca del tope `scrollY <= 16`): vuelve a mostrar la barra completa.
-   */
   procesarScroll(scrollYActual: number): void {
     if (scrollYActual <= 16) {
       this.ocultoParcial.set(false);
@@ -261,7 +298,6 @@ export class NavegacionInferiorMobile {
     }
   }
 
-  /** Despliega nuevamente la barra completa cuando estaba ligeramente oculta. */
   mostrarCompleta(): void {
     this.ocultoParcial.set(false);
   }
@@ -274,10 +310,36 @@ export class NavegacionInferiorMobile {
     if (this.ocultoParcial()) {
       this.mostrarCompleta();
     }
+    this.idSeleccionadoOla.set(item.id);
+    this.animarPulsoOla();
     this.seleccionarItem.emit(item);
     if (this.modoVistaPrevia()) {
       event.preventDefault();
     }
+  }
+
+  private animarPulsoOla(): void {
+    const svg = this.olaSvgRef()?.nativeElement;
+    if (!svg || this.esMovimientoReducido()) {
+      return;
+    }
+
+    this.gsapService.crearContexto(
+      svg,
+      (ambito) => {
+        this.gsapService.gsap.fromTo(
+          ambito,
+          { scaleY: 0.88, transformOrigin: '50% 100%' },
+          {
+            scaleY: 1,
+            duration: 0.36,
+            ease: 'elastic.out(1.1, 0.5)',
+            clearProps: 'transform',
+          },
+        );
+      },
+      this.destroyRef,
+    );
   }
 
   private ejecutarAnimacionEntrada(elemento: HTMLElement): void {
@@ -328,4 +390,3 @@ export class NavegacionInferiorMobile {
     return sinQuery.length > 1 && sinQuery.endsWith('/') ? sinQuery.slice(0, -1) : sinQuery;
   }
 }
-
