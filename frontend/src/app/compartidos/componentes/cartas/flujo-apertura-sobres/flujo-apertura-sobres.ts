@@ -31,6 +31,11 @@ import { categoriaCartaDesdeNombre, rarezaDesdeNombre } from '@modelos/carta.mod
 import { categoriaDesdeNombre } from '@modelos/categoria.model';
 import type { CategoriaSobre } from '@modelos/categoria.model';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
+import {
+  esCartaSinMarca,
+  esMarcaEliminada,
+  obtenerImagenCatalogo,
+} from '@modelos/catalogo-cartas-imagenes';
 
 export type FaseApertura = 'cerrado' | 'seleccion' | 'preview' | 'carrusel' | 'corte' | 'revelacion';
 
@@ -62,7 +67,12 @@ const numeroDeId = (id: string): number => Number(id.replace(/\D/g, ''));
 
 const CARTAS_DEL_FLUJO: readonly Carta[] = CARTAS_MOCK.filter((c) => {
   const n = numeroDeId(c.id);
-  return n >= ID_MOCK_DESDE && n <= ID_MOCK_HASTA;
+  return (
+    n >= ID_MOCK_DESDE &&
+    n <= ID_MOCK_HASTA &&
+    !esCartaSinMarca(c) &&
+    !esMarcaEliminada(c.marca)
+  );
 });
 
 /** La categoría del sobre (backend) se llama distinto que la de la carta: acá se traduce. */
@@ -90,13 +100,11 @@ const PESO_POR_RAREZA: Record<Carta['rareza'], number> = {
  * Una marca que no esté acá ni traiga logo se dibuja con el envoltorio genérico.
  */
 const LOGOS_MARCA_PROVISORIOS: Readonly<Record<string, string>> = {
-  mcdonalds: 'imagenes/McDonalds.jpg',
   lego: 'imagenes/lego.png',
   grido: 'imagenes/grido.jpg',
   zara: 'imagenes/zara.png',
   cocacola: 'imagenes/cocacola.jpg',
   sony: 'imagenes/sony.png',
-  google: 'imagenes/google.jpg',
   sprite: 'imagenes/Sprite.png',
 };
 
@@ -345,6 +353,10 @@ export class FlujoAperturaSobres {
       if (!inv || inv.cantidad <= 0) continue;
       const sobreCatalogo = catalogo.find((s) => s.id === inv.sobreId);
       const tipo = (sobreCatalogo?.tipo ?? inv.tipo) as 'GENERAL' | 'CATEGORIA' | 'MARCA';
+      const marcaSobre = sobreCatalogo?.marca ?? null;
+      if (tipo === 'MARCA' && esMarcaEliminada(marcaSobre ?? inv.nombre)) {
+        continue;
+      }
       const etiqueta = sobreCatalogo?.marca ?? sobreCatalogo?.categoria ?? inv.nombre;
       for (let i = 0; i < inv.cantidad; i++) {
         items.push({
@@ -358,7 +370,7 @@ export class FlujoAperturaSobres {
           esDiario: false,
           disponible: true,
           categoria: sobreCatalogo?.categoria ?? null,
-          marca: sobreCatalogo?.marca ?? null,
+          marca: marcaSobre,
           logoUrl: sobreCatalogo?.logoUrl ?? null,
         });
       }
@@ -369,6 +381,9 @@ export class FlujoAperturaSobres {
     for (const ab of abiertos) {
       const cat = catalogo.find((s) => s.id === ab.sobreId);
       const tipo = (cat?.tipo ?? ab.tipo) as 'GENERAL' | 'CATEGORIA' | 'MARCA';
+      if (tipo === 'MARCA' && esMarcaEliminada(cat?.marca ?? ab.nombre)) {
+        continue;
+      }
       for (let i = 0; i < ab.cantidadAbiertos; i++) {
         items.push({
           id: ab.sobreId,
@@ -645,14 +660,20 @@ export class FlujoAperturaSobres {
         this.cargandoApertura.set(false);
         this.errorApertura.set(null);
 
-        const cartasBackend = resp?.cartas ?? [];
-        if (cartasBackend.length > 0) {
-          this.mostrarCartasDesdeBackend(cartasBackend);
+        const cartasOriginales = resp?.cartas ?? [];
+        const totalOriginal = this.sumarCantidadCartas(cartasOriginales);
+        const cartasValidas = cartasOriginales.filter((carta) => !esCartaSinMarca(carta));
+
+        if (cartasValidas.length > 0) {
+          this.mostrarCartasDesdeBackend(cartasValidas, totalOriginal, sobre);
         } else {
-          this.mostrarCartas(this.cantidadDeCartas(cartasBackend, sobre), sobre);
+          this.mostrarCartas(this.cantidadDeCartas(cartasValidas, sobre), sobre);
         }
         this.indiceCartaActual.set(0);
-        this.aperturaRealizada.emit(resp);
+        this.aperturaRealizada.emit({
+          ...resp,
+          cartas: this.cartasObtenidas(),
+        });
 
         setTimeout(() => {
           this.fase.set('revelacion');
@@ -672,6 +693,10 @@ export class FlujoAperturaSobres {
     });
   }
 
+  private sumarCantidadCartas(cartas: readonly CartaObtenidaRespuesta[]): number {
+    return cartas.reduce((suma, c) => suma + Math.max(1, c.cantidad ?? 1), 0);
+  }
+
   /**
    * Cantidad de cartas a mostrar. Prioridad:
    * 1. Lo que devolvió el backend (suma de `cantidad` de cada carta).
@@ -681,7 +706,7 @@ export class FlujoAperturaSobres {
     delBackend: readonly CartaObtenidaRespuesta[],
     sobre: SobreItemUI | null,
   ): number {
-    const total = delBackend.reduce((suma, c) => suma + Math.max(1, c.cantidad ?? 1), 0);
+    const total = this.sumarCantidadCartas(delBackend);
     if (total > 0) return total;
     return sobre && sobre.cantidadCartas > 0 ? sobre.cantidadCartas : CARTAS_SOBRE_DIARIO;
   }
@@ -718,7 +743,7 @@ export class FlujoAperturaSobres {
   // Siguiente carta o finalizar
   avanzarOFinalizar(): void {
     const actual = this.indiceCartaActual();
-    const total = this.cartasObtenidas().length;
+    const total = this.cartasUI().length;
 
     if (actual < total - 1) {
       // Reiniciamos la animación para la siguiente carta.
@@ -742,17 +767,25 @@ export class FlujoAperturaSobres {
     this.cerrar.emit();
   }
 
-  private mostrarCartasDesdeBackend(cartasBackend: readonly CartaObtenidaRespuesta[]): void {
+  private mostrarCartasDesdeBackend(
+    cartasBackend: readonly CartaObtenidaRespuesta[],
+    totalOriginal = 0,
+    sobre: SobreItemUI | null = null,
+  ): void {
     const cartasUI: Carta[] = [];
+    const obtenidasValidas: CartaObtenidaRespuesta[] = [];
 
     for (const cartaBackend of cartasBackend) {
       const cantidad = Math.max(1, cartaBackend.cantidad ?? 1);
+      const imagenResuelta =
+        cartaBackend.imagenUrl || obtenerImagenCatalogo(cartaBackend.nombre);
+
       for (let i = 0; i < cantidad; i++) {
         cartasUI.push({
           id: `${cartaBackend.cartaId}-${i}`,
           cartaId: cartaBackend.cartaId,
           nombre: cartaBackend.nombre,
-          imagenUrl: cartaBackend.imagenUrl ?? '',
+          imagenUrl: imagenResuelta,
           rareza: rarezaDesdeNombre(cartaBackend.rareza),
           categoria: categoriaCartaDesdeNombre(cartaBackend.categoria),
           atributoIzquierdo: cartaBackend.poder ?? 0,
@@ -760,22 +793,40 @@ export class FlujoAperturaSobres {
           obtenida: true,
         });
       }
+
+      obtenidasValidas.push({
+        cartaId: cartaBackend.cartaId,
+        nombre: cartaBackend.nombre,
+        cantidad: cartaBackend.cantidad,
+        imagenUrl: imagenResuelta || cartaBackend.imagenUrl,
+        rareza: cartaBackend.rareza,
+        poder: cartaBackend.poder,
+        costoMana: cartaBackend.costoMana,
+        categoria: cartaBackend.categoria,
+      });
+    }
+
+    const faltantesPorHuerfanas = Math.max(0, totalOriginal - cartasUI.length);
+    if (faltantesPorHuerfanas > 0) {
+      const reemplazos = this.sortearCartas(faltantesPorHuerfanas, this.cartasPosibles(sobre));
+      cartasUI.push(...reemplazos);
+      for (const reemplazo of reemplazos) {
+        obtenidasValidas.push({
+          cartaId: reemplazo.cartaId ?? (Number(reemplazo.id.replace(/\D/g, '')) || 1),
+          nombre: reemplazo.nombre,
+          cantidad: 1,
+          imagenUrl: reemplazo.imagenUrl,
+          rareza: reemplazo.rareza,
+          poder: reemplazo.atributoIzquierdo,
+          costoMana: reemplazo.atributoDerecho,
+          categoria: reemplazo.categoria,
+        });
+      }
     }
 
     this.cartasUI.set(cartasUI);
     this.marcarRepetidas(cartasUI);
-    this.cartasObtenidas.set(
-      cartasBackend.map((c) => ({
-        cartaId: c.cartaId,
-        nombre: c.nombre,
-        cantidad: c.cantidad,
-        imagenUrl: c.imagenUrl,
-        rareza: c.rareza,
-        poder: c.poder,
-        costoMana: c.costoMana,
-        categoria: c.categoria,
-      })),
-    );
+    this.cartasObtenidas.set(obtenidasValidas);
   }
 
   /** Sortea las cartas del sobre y las deja listas para `app-carta`. */
@@ -831,7 +882,10 @@ export class FlujoAperturaSobres {
    * - General y marca: todas las del flujo (el filtro por marca se agrega más adelante).
    */
   private cartasPosibles(sobre: SobreItemUI | null): readonly Carta[] {
-    const base = CARTAS_DEL_FLUJO.length > 0 ? CARTAS_DEL_FLUJO : CARTAS_MOCK;
+    const base =
+      CARTAS_DEL_FLUJO.length > 0
+        ? CARTAS_DEL_FLUJO
+        : CARTAS_MOCK.filter((c) => !esCartaSinMarca(c) && !esMarcaEliminada(c.marca));
 
     if (sobre?.tipo === 'CATEGORIA') {
       const categoriaSobre = categoriaDesdeNombre(sobre.categoria);

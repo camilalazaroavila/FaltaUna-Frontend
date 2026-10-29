@@ -22,6 +22,11 @@ export interface CartaObtenidaRespuesta {
   readonly poder?: number | null;
   readonly costoMana?: number | null;
   readonly categoria?: string | null;
+  readonly marca?: string | null;
+  readonly marcaNombre?: string | null;
+  readonly marcaId?: number | null;
+  readonly coleccionId?: number | null;
+  readonly coleccionActiva?: boolean | null;
 }
 
 export interface EstadoSobreDiarioRespuesta {

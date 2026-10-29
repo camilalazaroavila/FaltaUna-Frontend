@@ -220,6 +220,54 @@ describe('FlujoAperturaSobres Component', () => {
     expect(sonidoServiceMock.reproducir).toHaveBeenCalledWith(SONIDOS_PARTIDA.estrellitas, 0.32);
   }));
 
+  it('debe filtrar y reemplazar cartas huérfanas de marcas eliminadas al abrir un sobre', fakeAsync(() => {
+    sobresServiceSpy.reclamarSobreDiario.mockReturnValue(
+      of({
+        id: 15,
+        sobreId: 1,
+        fecha: '2026-10-08T00:00:00Z',
+        cartas: [
+          {
+            cartaId: 101,
+            nombre: 'Royal Bacon Melt',
+            cantidad: 1,
+            imagenUrl: null,
+            rareza: 'Épica',
+            categoria: 'Gastronomía',
+          },
+          {
+            cartaId: 90,
+            nombre: 'Ensalada Caesar con Pollo Crispy',
+            cantidad: 1,
+            imagenUrl: null,
+            rareza: 'Común',
+            categoria: 'Gastronomía',
+          },
+          {
+            cartaId: 91,
+            nombre: 'Super Cono',
+            cantidad: 1,
+            imagenUrl: null,
+            rareza: 'Común',
+            categoria: 'Gastronomía',
+          },
+        ],
+      }),
+    );
+
+    const sobreDiario = component['listaSobresUI']()[0];
+    component.seleccionarSobre(sobreDiario);
+    component.elegirSobreDelCarrusel(0);
+    component.ejecutarCorte();
+    tick(1100);
+
+    const nombresRevelados = component['cartasUI']().map((c) => c.nombre);
+    expect(nombresRevelados).toHaveLength(3);
+    expect(nombresRevelados[0]).toBe('Royal Bacon Melt');
+    expect(nombresRevelados).not.toContain('Ensalada Caesar con Pollo Crispy');
+    expect(nombresRevelados).not.toContain('Super Cono');
+  }));
+
   it('muestra el error del backend y no inventa cartas si falla la apertura', fakeAsync(() => {
     sobresServiceSpy.reclamarSobreDiario.mockReturnValue(
       throwError(() => new Error('Conexión fallida con el backend')),

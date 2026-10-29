@@ -11,6 +11,10 @@ export interface CartaInventarioApi {
     readonly categoria: string;
     readonly imagenUrl: string | null;
     readonly cantidad: number;
+    readonly marcaId?: number | null;
+    readonly marcaNombre?: string | null;
+    readonly coleccionId?: number | null;
+    readonly coleccionActiva?: boolean | null;
 }
 export interface MazoCartaApi {
     readonly cartaId: number;

@@ -53,6 +53,88 @@ describe('BarajaService', () => {
       }),
     ]);
   });
+  it('filtra cartas huérfanas cuya marca o colección fue eliminada', async () => {
+    const respuesta = firstValueFrom(servicio.obtenerCartasDisponibles());
+    const solicitud = http.expectOne(`${environment.apiUrl}/Mazos/cartas-disponibles`);
+    solicitud.flush([
+      {
+        cartaId: 1,
+        nombre: 'Royal Bacon Melt',
+        descripcion: null,
+        poder: 8,
+        costoCupon: 5,
+        rarezaId: 3,
+        rareza: 'Épica',
+        rarezaOrden: 3,
+        categoriaId: 1,
+        categoria: 'Gastronomía',
+        imagenUrl: null,
+        cantidad: 2,
+      },
+      {
+        cartaId: 90,
+        nombre: 'Ensalada Caesar con Pollo Crispy',
+        descripcion: null,
+        poder: 5,
+        costoCupon: 2,
+        rarezaId: 1,
+        rareza: 'Común',
+        rarezaOrden: 1,
+        categoriaId: 1,
+        categoria: 'Gastronomía',
+        imagenUrl: null,
+        cantidad: 1,
+      },
+      {
+        cartaId: 91,
+        nombre: 'Super Cono',
+        descripcion: null,
+        poder: 4,
+        costoCupon: 1,
+        rarezaId: 1,
+        rareza: 'Común',
+        rarezaOrden: 1,
+        categoriaId: 1,
+        categoria: 'Gastronomía',
+        imagenUrl: null,
+        cantidad: 1,
+      },
+      {
+        cartaId: 92,
+        nombre: 'Carta sin marca en API',
+        descripcion: null,
+        poder: 6,
+        costoCupon: 2,
+        rarezaId: 2,
+        rareza: 'Rara',
+        rarezaOrden: 2,
+        categoriaId: 1,
+        categoria: 'Gastronomía',
+        imagenUrl: null,
+        cantidad: 1,
+        marcaNombre: '',
+      },
+      {
+        cartaId: 93,
+        nombre: 'Carta de colección inactiva',
+        descripcion: null,
+        poder: 6,
+        costoCupon: 2,
+        rarezaId: 2,
+        rareza: 'Rara',
+        rarezaOrden: 2,
+        categoriaId: 1,
+        categoria: 'Gastronomía',
+        imagenUrl: null,
+        cantidad: 1,
+        coleccionActiva: false,
+      },
+    ]);
+
+    const cartas = await respuesta;
+    expect(cartas).toHaveLength(1);
+    expect(cartas[0].nombre).toBe('Royal Bacon Melt');
+  });
   it('obtiene un mazo vacío cuando el usuario todavía no creó uno', async () => {
     const respuesta = firstValueFrom(servicio.obtenerMazoActual());
     http.expectOne(`${environment.apiUrl}/Mazos`).flush([]);
