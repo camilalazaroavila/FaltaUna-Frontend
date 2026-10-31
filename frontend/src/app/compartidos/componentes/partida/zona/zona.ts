@@ -71,7 +71,7 @@ export interface InfoModificadorPoder {
 
 /**
  * Un lugar del tablero: foto de la zona con marco, puntaje de cada lado y
- * 6 slots por lado (2 filas x 3). El lado propio SIEMPRE va abajo.
+ * 5 slots por lado (3 en fila de adelante, 2 en fila de atrás). El lado propio SIEMPRE va abajo.
  *
  * Las cartas pertenecen al LUGAR: cuando cambia la zona no se mueven ni se
  * animan. Solo se anima el marco, la foto y los deltas de puntaje.

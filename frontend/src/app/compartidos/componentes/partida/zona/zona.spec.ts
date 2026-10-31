@@ -67,8 +67,8 @@ describe('Zona', () => {
     fixture = TestBed.createComponent(Zona);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('zona', ZONAS_MOCK[0]);
-    fixture.componentRef.setInput('cartasRival', [null, null, null, null, null, null]);
-    fixture.componentRef.setInput('cartasPropias', [null, null, null, null, null, null]);
+    fixture.componentRef.setInput('cartasRival', [null, null, null, null, null]);
+    fixture.componentRef.setInput('cartasPropias', [null, null, null, null, null]);
     fixture.componentRef.setInput('puntajeRival', 0);
     fixture.componentRef.setInput('puntajePropio', 0);
     fixture.detectChanges();
@@ -80,6 +80,20 @@ describe('Zona', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('renderiza exactamente 5 slots por lado en rival y en propio con índices 0 a 4', () => {
+    const celdasRival = fixture.nativeElement.querySelectorAll('.zona-slots--rival .zona-celda');
+    const celdasPropias = fixture.nativeElement.querySelectorAll('.zona-slots--propio .zona-celda');
+
+    expect(celdasRival).toHaveLength(5);
+    expect(celdasPropias).toHaveLength(5);
+
+    const indicesRival = Array.from(celdasRival).map((el: any) => el.getAttribute('data-indice'));
+    const indicesPropios = Array.from(celdasPropias).map((el: any) => el.getAttribute('data-indice'));
+
+    expect(indicesRival).toEqual(['0', '1', '2', '3', '4']);
+    expect(indicesPropios).toEqual(['0', '1', '2', '3', '4']);
   });
 
   it('muestra el indicador de categorías cuando la zona tiene efectos de categoría', () => {
@@ -112,7 +126,7 @@ describe('Zona', () => {
       nombre: 'Carta oculta',
       oculta: true,
     });
-    fixture.componentRef.setInput('cartasRival', [cartaOculta, null, null, null, null, null]);
+    fixture.componentRef.setInput('cartasRival', [cartaOculta, null, null, null, null]);
     fixture.detectChanges();
 
     const reverso = fixture.nativeElement.querySelector('[aria-label="Carta oculta del rival"]');
@@ -126,7 +140,7 @@ describe('Zona', () => {
       nombre: 'Messi Bot',
       oculta: false,
     });
-    fixture.componentRef.setInput('cartasRival', [cartaRevelada, null, null, null, null, null]);
+    fixture.componentRef.setInput('cartasRival', [cartaRevelada, null, null, null, null]);
     fixture.detectChanges();
 
     const appCarta = fixture.nativeElement.querySelector('app-carta');
@@ -138,7 +152,7 @@ describe('Zona', () => {
   describe('cartas provisionales y confirmadas', () => {
     it('muestra el botón de quitar carta provisoria sin tapar los atributos', () => {
       const carta = cartaMock({ id: 'prov-1', nombre: 'Carta Prov' });
-      fixture.componentRef.setInput('cartasPropias', [carta, null, null, null, null, null]);
+      fixture.componentRef.setInput('cartasPropias', [carta, null, null, null, null]);
       fixture.componentRef.setInput('esProvisionalFn', (c: Carta) => c.id === 'prov-1');
       fixture.detectChanges();
 
@@ -153,7 +167,7 @@ describe('Zona', () => {
 
     it('al pulsar el botón de quitar carta provisoria, emite retirarCarta', () => {
       const carta = cartaMock({ id: 'prov-1', nombre: 'Carta Prov' });
-      fixture.componentRef.setInput('cartasPropias', [carta, null, null, null, null, null]);
+      fixture.componentRef.setInput('cartasPropias', [carta, null, null, null, null]);
       fixture.componentRef.setInput('esProvisionalFn', (c: Carta) => c.id === 'prov-1');
       fixture.detectChanges();
 
@@ -170,7 +184,7 @@ describe('Zona', () => {
 
     it('al hacer clic en una carta de la zona, emite verCarta', () => {
       const carta = cartaMock({ id: 'prov-1', nombre: 'Carta Prov' });
-      fixture.componentRef.setInput('cartasPropias', [carta, null, null, null, null, null]);
+      fixture.componentRef.setInput('cartasPropias', [carta, null, null, null, null]);
       fixture.detectChanges();
 
       const spyVer = jest.fn();
@@ -186,7 +200,7 @@ describe('Zona', () => {
 
     it('no muestra el botón de quitar en cartas ya confirmadas', () => {
       const cartaConfirmada = cartaMock({ id: 'conf-1', nombre: 'Carta Confirmada' });
-      fixture.componentRef.setInput('cartasPropias', [cartaConfirmada, null, null, null, null, null]);
+      fixture.componentRef.setInput('cartasPropias', [cartaConfirmada, null, null, null, null]);
       fixture.componentRef.setInput('esProvisionalFn', () => false);
       fixture.detectChanges();
 
@@ -210,11 +224,11 @@ describe('Zona', () => {
 
     it('con movimiento reducido no se llama a GSAP', () => {
       const cartaOculta = cartaMock({ id: 'oculta-1', oculta: true });
-      fixture.componentRef.setInput('cartasRival', [cartaOculta, null, null, null, null, null]);
+      fixture.componentRef.setInput('cartasRival', [cartaOculta, null, null, null, null]);
       fixture.detectChanges();
 
       const cartaRevelada = cartaMock({ id: 'cp-1', oculta: false });
-      fixture.componentRef.setInput('cartasRival', [cartaRevelada, null, null, null, null, null]);
+      fixture.componentRef.setInput('cartasRival', [cartaRevelada, null, null, null, null]);
       fixture.detectChanges();
       jest.runAllTimers();
 
@@ -257,7 +271,7 @@ describe('Zona', () => {
         oculta: false,
       });
 
-      fixture.componentRef.setInput('cartasRival', [cartaInicial, null, null, null, null, null]);
+      fixture.componentRef.setInput('cartasRival', [cartaInicial, null, null, null, null]);
       fixture.componentRef.setInput('modificadoresRival', {
         0: { tipo: 'reduccion', delta: -3, id: 1 },
       });
@@ -283,7 +297,7 @@ describe('Zona', () => {
         poderBase: 5,
       });
 
-      fixture.componentRef.setInput('cartasPropias', [cartaInicial, null, null, null, null, null]);
+      fixture.componentRef.setInput('cartasPropias', [cartaInicial, null, null, null, null]);
       fixture.componentRef.setInput('modificadoresPropio', {
         0: { tipo: 'aumento', delta: 4, id: 1 },
       });

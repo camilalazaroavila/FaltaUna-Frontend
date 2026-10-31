@@ -10,6 +10,7 @@ import type {
   ResultadoRondaApi,
   ZonaPartidaApi,
 } from '@modelos/partida.model';
+import { SLOTS_POR_LADO } from '@modelos/partida.model';
 import { PartidaApiService } from './partida-api.service';
 import { PartidaServicio } from './partida-servicio';
 
@@ -238,7 +239,7 @@ describe('PartidaServicio', () => {
 
       expect(lugares.izquierda.zona.nombre).toBe('Grido');
       expect(lugares.izquierda.zona.zonaPartidaId).toBe(10);
-      expect(lugares.izquierda.propio).toHaveLength(6);
+      expect(lugares.izquierda.propio).toHaveLength(SLOTS_POR_LADO);
       expect(puntajes.izquierda.propio).toBe(10);
       expect(puntajes.izquierda.rival).toBe(4);
       expect(puntajes.izquierda.estadoPropio).toBe('ganando');

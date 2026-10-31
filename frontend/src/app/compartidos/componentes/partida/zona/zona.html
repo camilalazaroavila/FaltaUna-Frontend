@@ -1,5 +1,5 @@
 <div class="zona-contenido">
-  <div class="zona-slots">
+  <div class="zona-slots zona-slots--rival">
     @for (slot of slotsRival(); track slot.indice) {
       <div
         class="zona-celda relative"
@@ -186,7 +186,7 @@
   </div>
 
   <!-- Lado propio (abajo) -->
-  <div class="zona-slots">
+  <div class="zona-slots zona-slots--propio">
     @for (slot of slotsPropios(); track slot.indice) {
       <div
         class="zona-celda relative"

@@ -7,13 +7,17 @@ import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estad
 import { JUGADORES_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import { FOTOS_CARTAS_CATALOGO } from '@modelos/catalogo-cartas-imagenes';
-import type { Carta, EfectoCategoriaCarta, RarezaCarta } from '@modelos/carta.model';
+import { SLOTS_POR_LADO } from '@modelos/partida.model';
+import type {
+  Carta,
+  EfectoCategoriaCarta,
+  RarezaCarta } from '@modelos/carta.model';
 import {
   CATEGORIA_POR_DEFECTO,
   categoriaCartaDesdeNombre,
   normalizarUrlImagen,
   rarezaDesdeNombre,
-} from '@modelos/carta.model';
+  } from '@modelos/carta.model';
 import type {
   CartaApi,
   CartaEnMesaApi,
@@ -36,9 +40,6 @@ import type {
   ZonaPartidaApi,
   ZonaTablero,
 } from '@modelos/partida.model';
-
-/** Slots por lado en el tablero. */
-const SLOTS_POR_LADO = 6;
 
 /** Fotos de la zona con rutas absolutas cuando el backend no mande `imagenUrl` o falle la carga. */
 const IMAGEN_ZONA_RESPALDO_IZQ = '/imagenes/zona-generica.svg';

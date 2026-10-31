@@ -27,12 +27,12 @@ describe('PartidaEstadoService (mock)', () => {
     expect(p.izquierda.estadoRival).toBe('perdiendo');
   });
 
-  it('cada lugar tiene 6 slots por lado', () => {
+  it('cada lugar tiene 5 slots por lado', () => {
     const { izquierda, derecha } = servicio.lugares();
 
     for (const lugar of [izquierda, derecha]) {
-      expect(lugar.propio).toHaveLength(6);
-      expect(lugar.rival).toHaveLength(6);
+      expect(lugar.propio).toHaveLength(5);
+      expect(lugar.rival).toHaveLength(5);
     }
   });
 

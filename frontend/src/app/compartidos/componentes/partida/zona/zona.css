@@ -15,31 +15,89 @@
    Más angosta: 3 columnas x 2 filas (4 filas en total).
    El slot toma el menor entre lo que permite el ANCHO de la zona, lo que
    permite el ALTO de la pantalla y el tope --slot-ancho-max. */
+/* Slots por lado en disposición fija 3 y 2:
+   - 3 cartas en la fila de adelante (cerca de la foto de la zona).
+   - 2 cartas en la fila de atrás (centradas respecto a la fila de adelante).
+   - Disposición simétrica (espejo): para el rival, la fila de adelante también queda pegada a la foto.
+   - Escala fluida mediante container units (cqw/cqh) en todos los viewports sin reordenar. */
 .zona-slots {
     --columnas: 6;
     --filas-total: 2;
     --slot-gap: clamp(0.2rem, 1.2cqw, 0.6rem);
-    --slot-por-ancho: calc((100cqw - (var(--columnas) - 1) * var(--slot-gap)) / var(--columnas));
-    --slot-por-alto: calc((100dvh - var(--tablero-alto-fijo, 30rem)) / var(--filas-total) * 0.75);
-    --slot-ancho: max(2.5rem, min(var(--slot-ancho-max, 9rem), var(--slot-por-ancho), var(--slot-por-alto)));
+    --slot-por-ancho: calc((90cqw - 2 * var(--slot-gap)) / 3);
+    --slot-por-alto: calc((90dvh - var(--tablero-alto-fijo, 28rem)) / var(--filas-total) * 0.75);
+    --slot-ancho: max(2rem, min(var(--slot-ancho-max, 7rem), var(--slot-por-ancho), var(--slot-por-alto)));
 
     display: grid;
-    grid-template-columns: repeat(var(--columnas), var(--slot-ancho));
+    grid-template-columns: repeat(var(--columnas), minmax(0, calc(var(--slot-ancho) / 2)));
     justify-content: center;
     gap: var(--slot-gap);
     width: 100%;
 }
 
-@container (max-width: 28rem) {
-    .zona-slots {
-        --columnas: 3;
-        --filas-total: 4;
-    }
+.zona-slots--rival {
+    /* Rival: índices 3 y 4 atrás (fila 1), índices 0, 1 y 2 adelante (fila 2, pegada a la foto) */
+    grid-template-rows: auto auto;
+}
+
+.zona-slots--rival [data-indice="3"] {
+    grid-column: 2 / span 2;
+    grid-row: 1;
+}
+
+.zona-slots--rival [data-indice="4"] {
+    grid-column: 4 / span 2;
+    grid-row: 1;
+}
+
+.zona-slots--rival [data-indice="0"] {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+}
+
+.zona-slots--rival [data-indice="1"] {
+    grid-column: 3 / span 2;
+    grid-row: 2;
+}
+
+.zona-slots--rival [data-indice="2"] {
+    grid-column: 5 / span 2;
+    grid-row: 2;
+}
+
+.zona-slots--propio {
+    /* Propio: índices 0, 1 y 2 adelante (fila 1, pegada a la foto), índices 3 y 4 atrás (fila 2) */
+    grid-template-rows: auto auto;
+}
+
+.zona-slots--propio [data-indice="0"] {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+}
+
+.zona-slots--propio [data-indice="1"] {
+    grid-column: 3 / span 2;
+    grid-row: 1;
+}
+
+.zona-slots--propio [data-indice="2"] {
+    grid-column: 5 / span 2;
+    grid-row: 1;
+}
+
+.zona-slots--propio [data-indice="3"] {
+    grid-column: 2 / span 2;
+    grid-row: 2;
+}
+
+.zona-slots--propio [data-indice="4"] {
+    grid-column: 4 / span 2;
+    grid-row: 2;
 }
 
 .zona-foto {
     position: relative;
-    width: clamp(5rem, min(40cqw, 15dvh), 11rem);
+    width: clamp(8rem, min(50cqw, 20dvh), 15rem);
     margin-inline: auto;
 }
 
