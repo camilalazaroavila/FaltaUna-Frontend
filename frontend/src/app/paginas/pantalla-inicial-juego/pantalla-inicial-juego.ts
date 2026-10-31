@@ -13,11 +13,12 @@ interface OpcionJuego {
   readonly requiereTutorial?: boolean;
 }
  
-// Las rutas de partida contra jugador y contra la IA ya existen; falta la pantalla de tutorial.
+// El tutorial guiado vive en /usuario/tutorial y no depende de haberlo
+// completado antes. La partida contra jugador sigue requiriéndolo.
 const OPCIONES_JUEGO: readonly OpcionJuego[] = [
   { id: 'jugador', texto: 'Partida contra jugador', ruta: '/juego/jugador', requiereTutorial: true },
   { id: 'ia', texto: 'Partida contra la IA', ruta: '/juego/ia' },
-  { id: 'tutorial', texto: 'Tutorial', ruta: '/juego/tutorial', requiereTutorial: true },
+  { id: 'tutorial', texto: 'Tutorial', ruta: '/usuario/tutorial' },
 ];
  
 @Component({

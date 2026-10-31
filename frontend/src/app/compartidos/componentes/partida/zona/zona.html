@@ -186,7 +186,10 @@
   </div>
 
   <!-- Lado propio (abajo) -->
-  <div class="zona-slots">
+  <div
+    class="zona-slots"
+    [attr.data-tutorial]="lugar() === 'izquierda' ? 'slots-propios' : null"
+  >
     @for (slot of slotsPropios(); track slot.indice) {
       <div
         class="zona-celda relative"

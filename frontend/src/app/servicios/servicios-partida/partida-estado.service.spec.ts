@@ -1,4 +1,8 @@
 import { TestBed } from '@angular/core/testing';
+import {
+  CARTA_RIVAL_TUTORIAL,
+  ESCENARIO_TUTORIAL,
+} from '@compartidos/componentes/tutorial/tutorial.escenario';
 import { PartidaEstadoService } from './partida-estado.service';
 
 describe('PartidaEstadoService (mock)', () => {
@@ -106,6 +110,54 @@ describe('PartidaEstadoService (mock)', () => {
       servicio.anunciar('Aviso de prueba');
 
       expect(servicio.anuncio()).toBe('Aviso de prueba');
+    });
+  });
+
+  describe('escenario del tutorial', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('reemplaza la maqueta por el escenario guionado', () => {
+      servicio.prepararEscenarioTutorial(ESCENARIO_TUTORIAL);
+
+      expect(servicio.manoPropia()).toHaveLength(ESCENARIO_TUTORIAL.mano.length);
+      expect(servicio.turno()).toBe(1);
+      expect(servicio.cuponesPropio()).toBe(3);
+      expect(servicio.cuponMaximo()).toBe(3);
+      expect(servicio.barraPropia()).toBe(0);
+      expect(servicio.lugares().izquierda.propio.every((carta) => carta === null)).toBe(true);
+      expect(servicio.lugares().izquierda.rival.every((carta) => carta === null)).toBe(true);
+    });
+
+    it('cierra la ronda guionada y suma los puntos de cada zona', () => {
+      servicio.prepararEscenarioTutorial(ESCENARIO_TUTORIAL);
+      servicio.cerrarRondaGuionadaTutorial(CARTA_RIVAL_TUTORIAL, 'derecha');
+
+      expect(servicio.estadoRondaMock()).toBe('resolviendo');
+
+      jest.advanceTimersByTime(1200);
+
+      expect(servicio.lugares().derecha.rival[0]?.id).toBe(CARTA_RIVAL_TUTORIAL.id);
+      expect(servicio.turno()).toBe(2);
+      expect(servicio.cuponMaximo()).toBe(2);
+      expect(servicio.estadoRondaMock()).toBe('jugando');
+      expect(servicio.barraRival()).toBeGreaterThan(0);
+    });
+
+    it('restaura la maqueta original al salir del tutorial', () => {
+      servicio.prepararEscenarioTutorial(ESCENARIO_TUTORIAL);
+      servicio.restaurarEscenario();
+
+      expect(servicio.manoPropia()).toHaveLength(5);
+      expect(servicio.turno()).toBe(3);
+      expect(servicio.cuponesPropio()).toBe(3);
+      expect(servicio.cuponMaximo()).toBe(3);
+      expect(servicio.barraPropia()).toBe(42);
     });
   });
 });

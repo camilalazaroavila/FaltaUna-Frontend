@@ -1,7 +1,8 @@
 <div class="mano" role="group" aria-label="Tu mano" [style.--separaciones]="separaciones()">
-  @for (item of disposicion(); track idCarta(item.carta)) {
+  @for (item of disposicion(); track idCarta(item.carta); let i = $index) {
     <button
       type="button"
+      [attr.data-tutorial]="i === 0 ? 'carta-mano' : null"
       class="mano-carta cursor-grab hover:z-20 focus-visible:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed disabled:opacity-60"
       [class.mano-carta--arrastrando]="arrastrando()?.id === item.carta.id"
       [style.--angulo]="item.angulo"

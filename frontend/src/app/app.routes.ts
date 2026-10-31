@@ -63,6 +63,13 @@ export const routes: Routes = [
   { path: 'juego/tutorial', loadComponent: cargaJuego, data: { modo: 'tutorial' } },
 
   {
+    path: 'usuario/tutorial',
+    title: 'Tutorial · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () => import('@paginas/tutorial/tutorial').then((m) => m.Tutorial),
+  },
+  {
     path: 'usuario/cupones',
     title: 'Mis cupones · Falta Una',
     canActivate: [rolGuard],

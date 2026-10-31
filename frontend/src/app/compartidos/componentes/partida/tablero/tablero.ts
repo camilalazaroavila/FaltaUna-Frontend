@@ -101,6 +101,12 @@ export class Tablero implements OnDestroy {
   readonly conteoCambio = output<boolean>();
   /** Emite el número de la ronda cuyo conteo secuencial acaba de finalizar por completo. */
   readonly conteoRondaTerminada = output<number>();
+  /** Emite la carta que el jugador abrió para ver su detalle. */
+  readonly cartaVista = output<Carta>();
+  /** Emite la carta que el jugador bajó al tablero. */
+  readonly cartaJugada = output<Carta>();
+  /** Emite cuando el jugador confirma el fin del turno. */
+  readonly turnoFinalizado = output<void>();
 
   protected readonly lugares: readonly NombreLugar[] = ['izquierda', 'derecha'];
   protected readonly lugarAbierto = signal<NombreLugar | null>(null);
@@ -480,6 +486,7 @@ export class Tablero implements OnDestroy {
     if (slot && this.servicio.jugarCarta(carta, slot.lugar, slot.indice)) {
       this.mano()?.volarHacia(slot.elemento.getBoundingClientRect());
       this.sonido.reproducir(SONIDOS_PARTIDA.apoyarCarta);
+      this.cartaJugada.emit(carta);
       return;
     }
 
@@ -510,7 +517,25 @@ export class Tablero implements OnDestroy {
     if (carta && this.servicio.jugarCarta(carta, lugar, indice)) {
       this.cartaSeleccionada.set(null);
       this.sonido.reproducir(SONIDOS_PARTIDA.apoyarCarta);
+      this.cartaJugada.emit(carta);
     }
+  }
+
+  /** Abre el detalle de una carta de la mano o de la mesa. */
+  protected alVerCarta(carta: Carta): void {
+    this.cartaAbierta.set(carta);
+    this.cartaVista.emit(carta);
+  }
+
+  /** Cierra el detalle de carta abierto (lo usa el tutorial al avanzar). */
+  cerrarCarta(): void {
+    this.cartaAbierta.set(null);
+  }
+
+  /** Confirma el fin del turno y avisa a quien escuche (tutorial, página). */
+  protected alFinalizarTurno(): void {
+    this.servicio.marcarListo();
+    this.turnoFinalizado.emit();
   }
 
   /**

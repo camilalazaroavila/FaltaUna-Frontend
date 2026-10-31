@@ -1,0 +1,128 @@
+@if (activo()) {
+  <div
+    class="tutorial"
+    [class.tutorial--vista-previa]="vistaPrevia()"
+    [class.tutorial--sin-foco]="!rect()"
+  >
+    <div class="tutorial__velo" aria-hidden="true"></div>
+
+    @if (rect(); as caja) {
+      <div
+        class="tutorial__spotlight"
+        [style.top.px]="caja.top"
+        [style.left.px]="caja.left"
+        [style.width.px]="caja.width"
+        [style.height.px]="caja.height"
+        aria-hidden="true"
+      ></div>
+    }
+
+    <section
+      #globo
+      id="tutorial-globo"
+      class="tutorial__globo"
+      [style.top.px]="posicion().top"
+      [style.left.px]="posicion().left"
+      [style.width.px]="posicion().width"
+      role="dialog"
+      aria-labelledby="tutorial-titulo"
+      [attr.aria-modal]="vistaPrevia() ? null : 'false'"
+      tabindex="-1"
+    >
+      <div class="flex items-start justify-between gap-3">
+        <p class="font-interfaz text-etiqueta uppercase tracking-wider text-texto-apagado">
+          Paso {{ indice() + 1 }} de {{ total() }}
+        </p>
+
+        @if (!vistaPrevia()) {
+          <button
+            type="button"
+            class="cursor-pointer rounded-sm font-interfaz text-etiqueta uppercase tracking-wider text-texto-apagado transition-colors hover:text-texto-primario focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+            (click)="pedirSalida()"
+          >
+            Salir
+          </button>
+        }
+      </div>
+
+      <h2 id="tutorial-titulo" class="mt-2 font-titulo text-subtitulo text-texto-primario">
+        {{ paso().titulo }}
+      </h2>
+
+      <p class="mt-1.5 font-cuerpo text-menor text-texto-secundario">
+        {{ paso().texto }}
+      </p>
+
+      @if (paso().pista && (pistaVisible() || vistaPrevia())) {
+        <p class="mt-3 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2 font-interfaz text-xs text-info-texto">
+          Pista: {{ paso().pista }}
+        </p>
+      }
+
+      @if (paso().espera && !esperaCumplida()) {
+        <p class="mt-3 font-interfaz text-etiqueta uppercase tracking-wider text-advertencia-texto">
+          Hacé la acción para continuar
+        </p>
+      }
+
+      <div class="mt-4 flex items-center justify-end gap-2">
+        @if (!vistaPrevia()) {
+          <button
+            type="button"
+            app-boton
+            variante="fantasma"
+            tamanio="sm"
+            [disabled]="indice() === 0"
+            (click)="atras()"
+          >
+            Atrás
+          </button>
+        }
+
+        <button
+          type="button"
+          app-boton
+          variante="primario"
+          tamanio="sm"
+          [disabled]="!esperaCumplida()"
+          (click)="siguiente()"
+        >
+          {{ esUltimo() ? 'Terminar' : 'Siguiente' }}
+        </button>
+      </div>
+    </section>
+
+    @if (confirmandoSalida()) {
+      <div class="tutorial__confirmacion" role="alertdialog" aria-modal="true" aria-labelledby="tutorial-salir-titulo">
+        <div class="tutorial__confirmacion-panel">
+          <h2 id="tutorial-salir-titulo" class="font-titulo text-subtitulo text-texto-primario">
+            ¿Salir del tutorial?
+          </h2>
+          <p class="mt-1.5 font-cuerpo text-menor text-texto-secundario">
+            Podés retomarlo cuando quieras desde el menú de juego.
+          </p>
+          <div class="mt-4 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              app-boton
+              variante="fantasma"
+              tamanio="sm"
+              (click)="cancelarSalida()"
+            >
+              Seguir
+            </button>
+            <button
+              type="button"
+              app-boton
+              variante="peligro"
+              tamanio="sm"
+              (click)="confirmarSalida()"
+            >
+              Salir
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

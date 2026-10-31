@@ -50,13 +50,14 @@
     />
   </div>
 
-  <div class="area-zonas">
+  <div class="area-zonas" data-tutorial="zonas">
     @for (lugar of lugares; track lugar) {
       @let datos = servicio.lugares()[lugar];
       @let puntaje = servicio.puntajes()[lugar];
       @let delta = servicio.deltas()[lugar];
 
       <app-zona
+        [attr.data-tutorial]="lugar === 'izquierda' ? 'zona-izquierda' : null"
         [lugar]="lugar"
         [zona]="zonasVisuales()[lugar]"
         [cartasRival]="datos.rival"
@@ -79,6 +80,7 @@
       />
     }
     <app-cupon-recurso
+      data-tutorial="cupones"
       [valor]="servicio.cuponesPropio()"
       [maximo]="servicio.cuponMaximo()"
       variante="completa"
@@ -87,9 +89,10 @@
 
   <div class="area-mano">
     <app-mano
+      data-tutorial="mano"
       [cartas]="servicio.manoPropia()"
       [referencia]="host"
-      (ver)="cartaAbierta.set($event)"
+      (ver)="alVerCarta($event)"
       (arrastreInicio)="alIniciarArrastre($event)"
       (arrastreFin)="alTerminarArrastre($event)"
       (seleccion)="alSeleccionar($event)"
@@ -107,13 +110,14 @@
 
   <div class="area-control">
     <app-control-turno
+      data-tutorial="control-turno"
       [turno]="servicio.turno()"
       [totalTurnos]="servicio.rondasTotales()"
       [segundosRestantes]="servicio.segundosRestantes()"
       [segundosTotales]="servicio.segundosTotales()"
       [estado]="enConteo() ? 'resolviendo' : servicio.estadoRonda()"
       [terminada]="servicio.terminada()"
-      (finalizar)="servicio.marcarListo()"
+      (finalizar)="alFinalizarTurno()"
       (abandonar)="abandonar.emit()"
       (rendirse)="rendirse.emit()"
     />

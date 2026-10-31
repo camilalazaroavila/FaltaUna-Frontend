@@ -17,6 +17,7 @@ import { SeccionTexto } from '@paginas/galeria-componentes/secciones/texto/secci
 import { SeccionCajas } from '@paginas/galeria-componentes/secciones/cajas/seccion-cajas';
 import { SeccionPartida } from '@paginas/galeria-componentes/secciones/partida/seccion-partida';
 import { SeccionTablero } from './secciones/tablero/seccion-tablero';
+import { SeccionTutorial } from '@paginas/galeria-componentes/secciones/tutorial/seccion-tutorial';
 import { SeccionNavegacionInferiorMobile } from '@paginas/galeria-componentes/secciones/navegacion-inferior-mobile/seccion-navegacion-inferior-mobile';
 
 export type ModoGaleria = 'jugador' | 'empresa';
@@ -41,6 +42,7 @@ export type ModoGaleria = 'jugador' | 'empresa';
     SeccionCajas,
     SeccionPartida,
     SeccionTablero,
+    SeccionTutorial,
     SeccionNavegacionInferiorMobile,
   ],
   templateUrl: './galeria-componentes.html',

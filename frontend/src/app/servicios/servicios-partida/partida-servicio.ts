@@ -4,6 +4,7 @@ import { toast } from 'ngx-sonner';
 
 import { PartidaApiService } from '@servicios/servicios-partida/partida-api.service';
 import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
+import type { EscenarioPartidaTutorial } from '@servicios/servicios-partida/partida-estado.service';
 import { JUGADORES_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import { FOTOS_CARTAS_CATALOGO } from '@modelos/catalogo-cartas-imagenes';
@@ -411,7 +412,7 @@ export class PartidaServicio {
 
   /** Máximo de cupones de la ronda, definido por el servidor. */
   readonly cuponMaximo = computed(() =>
-    this.modoRealSignal() ? (this.estadoRealSignal()?.cuponMaximo ?? 1) : this.mock.turno(),
+    this.modoRealSignal() ? (this.estadoRealSignal()?.cuponMaximo ?? 1) : this.mock.cuponMaximo(),
   );
 
   readonly barraPropia = computed(() =>
@@ -617,6 +618,33 @@ export class PartidaServicio {
     this.ultimaJugadaTimestamp = 0;
     this.secuenciaJugadas = 0;
     this.modoRealSignal.set(false);
+  }
+
+  /**
+   * Prepara la maqueta guionada del tutorial. Solo funciona en modo mock: no
+   * crea ni modifica partidas reales.
+   */
+  prepararEscenarioTutorial(escenario: EscenarioPartidaTutorial): void {
+    this.modoGaleria();
+    this.mock.prepararEscenarioTutorial(escenario);
+  }
+
+  /** Cierra la ronda guionada del tutorial (solo mock). */
+  cerrarRondaGuionadaTutorial(cartaRival: Carta, lugar: NombreLugar): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.cerrarRondaGuionadaTutorial(cartaRival, lugar);
+  }
+
+  /** Restaura la maqueta original del tablero al salir del tutorial (solo mock). */
+  restaurarEscenarioMock(): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.restaurarEscenario();
   }
 
   /**

@@ -1,0 +1,15 @@
+<main
+  class="flex h-[100dvh] min-h-[100dvh] flex-col overflow-hidden bg-fondo-app p-1 text-texto-primario sm:p-2"
+>
+  <div class="min-h-0 flex-1">
+    <app-tablero
+      (cartaVista)="alVerCarta()"
+      (cartaJugada)="alJugarCarta()"
+      (turnoFinalizado)="alFinalizarTurno()"
+      (abandonar)="volver()"
+      (rendirse)="volver()"
+    />
+  </div>
+</main>
+
+<app-tutorial-overlay (salir)="volver()" (terminar)="volver()" />

@@ -94,6 +94,12 @@ export const SECCIONES: readonly SeccionGaleria[] = [
       'Pantalla de partida armada con los átomos. Todo es mock: las zonas, las cartas, los puntajes y las barras salen de PartidaEstadoService.',
   },
   {
+    id: 'tutorial',
+    titulo: 'app-tutorial-overlay',
+    descripcion:
+      'Globo guiado con spotlight sobre el tablero, contador de pasos, pista diferida y confirmación de salida.',
+  },
+  {
     id: 'cajas',
     titulo: 'Cajas',
     descripcion:

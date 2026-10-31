@@ -283,6 +283,17 @@ El tablero ([`frontend/src/app/compartidos/componentes/partida/`](frontend/src/a
 - **Chips de jugador:** sin `width: max-content` ni `container-type` propios; el nombre se muestra completo (`whitespace-nowrap`, sin `truncate`) dentro del ancho de su celda. A ~375 px el chip tiene ~276 px disponibles y los nombres mock (~10 caracteres) entran sin problemas; solo nombres de 30+ caracteres correrían riesgo de recorte.
 - **Reversos de la mano rival:** `--carta-reverso` es `var(--color-teal-profundo)` con borde `var(--color-gris-teal)` y `shadow-cartoon`; cada reverso recibe `--angulo` (`-12°..12°`, abanico calculado en `Tablero.reversosRival`) y se rota con `transform-origin: bottom center`. Es un `<span>` con `role="img"` y aria-label, no un componente nuevo.
 
+### Tutorial guiado (frontend)
+
+- **Ruta:** `/usuario/tutorial`, protegida con `rolGuard` y rol `Usuario`. La antigua `juego/tutorial` se conserva para la pantalla de carga, pero el menú de juego ya apunta a la nueva ruta.
+- **Alcance:** práctica local en modo mock; no crea ni modifica partidas reales. `PartidaServicio.prepararEscenarioTutorial()` cambia a modo mock, monta un escenario guionado y `restaurarEscenarioMock()` devuelve la maqueta al salir.
+- **Escenario:** 4 cartas propias baratas (`t-001` a `t-004`) con costo = poder, 3 cupones, turno 1, barras en 0, zonas mock izquierda/derecha y slots vacíos. Al cerrar la ronda el bot juega una carta fija (`t-rival`) y el mock pasa a turno 2 con 2 cupones.
+- **Pasos:** 9 pasos en `tutorial.pasos.ts`; los pasos con `espera` (`carta-vista`, `carta-jugada`, `turno-finalizado`) bloquean "Siguiente" hasta que el tablero emite el evento correspondiente. Los textos son un borrador en voseo pendiente de aprobación de copy.
+- **Overlay:** `app-tutorial-overlay` se monta a nivel de página (nunca dentro de `app-tablero`, que usa `contain: layout`). Resalta el ancla `data-tutorial` con spotlight, no captura punteros fuera del globo y muestra la pista a los 8 s. En pasos de acción el globo se ancla arriba a la izquierda para no tapar la mano ni el control de turno; al avanzar desde el detalle de carta, la página cierra el popup del tablero.
+- **Anclas:** `data-tutorial` en `cupones`, `zonas`, `zona-izquierda`, `mano`, `carta-mano`, `slots-propios` y `control-turno`.
+- **Progreso:** al completar, `ProgresoJuegoService.marcarTutorialCompletado()` guarda la marca en `localStorage` (provisional) y se desbloquea la partida contra jugador. Salir antes no marca el progreso.
+- **Galería:** sección "Tutorial" con `[vistaPrevia]="true"`; el conteo de secciones pasó a 18.
+
 ---
 
 ## 17. Stack Tecnológico y Entorno de Ejecución
@@ -587,3 +598,4 @@ docker compose down    # Detener manteniendo datos
 14. Alinear el modelo de datos (sección 16) y verificar qué respalda el backend.
 15. Regla de quién revela primero en cada ronda.
 16. Navegación inferior mobile (`app-navegacion-inferior-mobile`): validar los 4 destinos definitivos cuando se habiliten Intercambios/Perfil, si llevan etiqueta de texto además del ícono, posición definitiva del botón flotante (izquierda como en la referencia o centrado), alto exacto de la franja asomada al ocultarse, si el panel de empresa también adopta esta barra, si se oculta siempre durante la partida y si muestra indicador de misiones/sobres disponibles.
+17. Tutorial guiado: recompensa al completarlo, si es obligatorio, frecuencia de repetición, persistencia real (hoy `localStorage`) y validación de que la carta se juegue en la zona indicada.

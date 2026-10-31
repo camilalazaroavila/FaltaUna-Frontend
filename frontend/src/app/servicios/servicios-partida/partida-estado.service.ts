@@ -14,7 +14,7 @@ import type {
 } from '@modelos/partida.model';
 import { JUGADORES_MOCK, ZONAS_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
 
-const SLOTS_POR_LADO = 6;
+export const SLOTS_POR_LADO = 6;
 
 const NOMBRES_LUGAR: readonly NombreLugar[] = ['izquierda', 'derecha'];
 
@@ -49,6 +49,42 @@ const puntajeLado = (cartas: SlotsLado, zona: ZonaTablero): number =>
     return total + carta.atributoIzquierdo + bonus;
   }, 0);
 
+/** Estado inicial de la maqueta, reutilizado al restaurar el tablero. */
+const crearLugaresIniciales = (): PorLugar<LugarPartida> => ({
+  izquierda: {
+    zona: ZONAS_MOCK[0],
+    rival: slots('c-004', 'c-040'),
+    propio: slots('c-006', 'c-046'),
+  },
+  derecha: {
+    zona: ZONAS_MOCK[1],
+    rival: slots('c-003'),
+    propio: slots('c-025', 'c-026'),
+  },
+});
+
+const crearManoInicial = (): readonly Carta[] =>
+  ['c-015', 'c-016', 'c-018', 'c-028', 'c-029'].map(cartaMock);
+
+const DELTAS_VACIOS: PorLugar<DeltaLugar> = {
+  izquierda: { propio: 0, rival: 0 },
+  derecha: { propio: 0, rival: 0 },
+};
+
+/**
+ * Datos que necesita el tutorial para armar su ronda guiada sobre el mock.
+ * No cambia reglas de negocio: solo reemplaza el estado de la maqueta.
+ */
+export interface EscenarioPartidaTutorial {
+  readonly lugares: PorLugar<LugarPartida>;
+  readonly mano: readonly Carta[];
+  readonly turno: number;
+  readonly segundos: number;
+  readonly cupones: number;
+  readonly barraPropia: number;
+  readonly barraRival: number;
+}
+
 const barajar = <T>(items: readonly T[], azar: () => number): T[] => {
   const copia = [...items];
 
@@ -71,25 +107,12 @@ export class PartidaEstadoService {
   /** Inyectable para tests: devuelve un número en [0, 1). */
   azar: () => number = Math.random;
 
-  private readonly estadoLugares = signal<PorLugar<LugarPartida>>({
-    izquierda: {
-      zona: ZONAS_MOCK[0],
-      rival: slots('c-004', 'c-040'),
-      propio: slots('c-006', 'c-046'),
-    },
-    derecha: {
-      zona: ZONAS_MOCK[1],
-      rival: slots('c-003'),
-      propio: slots('c-025', 'c-026'),
-    },
-  });
+  private readonly estadoLugares = signal<PorLugar<LugarPartida>>(crearLugaresIniciales());
 
-  private readonly estadoDeltas = signal<PorLugar<DeltaLugar>>({
-    izquierda: { propio: 0, rival: 0 },
-    derecha: { propio: 0, rival: 0 },
-  });
+  private readonly estadoDeltas = signal<PorLugar<DeltaLugar>>({ ...DELTAS_VACIOS });
   private readonly estadoRotaciones = signal(0);
   private readonly estadoAnuncio = signal('');
+  private temporizadorGuionado?: ReturnType<typeof setTimeout>;
   private readonly estadoRonda = signal<EstadoRondaPartida>('jugando');
 
   readonly lugares = this.estadoLugares.asReadonly();
@@ -102,17 +125,23 @@ export class PartidaEstadoService {
   readonly resolviendo = computed(() => this.estadoRonda() === 'resolviendo');
 
   // ── MOCK: valores fijos, sin cálculo de victoria por 100 (§10 pendiente) ──
-  readonly turno = signal(3).asReadonly();
-  readonly segundosRestantes = signal(28).asReadonly();
+  private readonly estadoTurno = signal(3);
+  private readonly estadoSegundos = signal(28);
   /** El máximo del cupón es el turno actual (A confirmar con §10). */
-  readonly cuponesPropio = signal(3).asReadonly();
-  readonly barraPropia = signal(42).asReadonly();
-  readonly barraRival = signal(18).asReadonly();
+  private readonly estadoCupones = signal(3);
+  private readonly estadoCuponMaximo = signal(3);
+  private readonly estadoBarraPropia = signal(42);
+  private readonly estadoBarraRival = signal(18);
+
+  readonly turno = this.estadoTurno.asReadonly();
+  readonly segundosRestantes = this.estadoSegundos.asReadonly();
+  readonly cuponesPropio = this.estadoCupones.asReadonly();
+  readonly cuponMaximo = this.estadoCuponMaximo.asReadonly();
+  readonly barraPropia = this.estadoBarraPropia.asReadonly();
+  readonly barraRival = this.estadoBarraRival.asReadonly();
   readonly jugadores = JUGADORES_MOCK;
   /** MOCK: mano del jugador. `jugarCarta()` saca la carta de acá y la baja al tablero. */
-  private readonly estadoManoPropia = signal<readonly Carta[]>(
-    ['c-015', 'c-016', 'c-018', 'c-028', 'c-029'].map(cartaMock),
-  );
+  private readonly estadoManoPropia = signal<readonly Carta[]>(crearManoInicial());
   readonly manoPropia = this.estadoManoPropia.asReadonly();
   /** MOCK: cuántas cartas le quedan al rival en la mano. */
   readonly cartasManoRival = signal(3).asReadonly();
@@ -247,6 +276,89 @@ export class PartidaEstadoService {
   /** MOCK: vuelve a "jugando" (galería). */
   reiniciarRonda(): void {
     this.estadoRonda.set('jugando');
+  }
+
+  /**
+   * MOCK: reemplaza la maqueta por el escenario guionado del tutorial.
+   *
+   * Es aditivo: no toca las reglas de `jugarCarta()` ni de la partida real.
+   */
+  prepararEscenarioTutorial(escenario: EscenarioPartidaTutorial): void {
+    this.limpiarTemporizadorGuionado();
+    this.estadoLugares.set(escenario.lugares);
+    this.estadoManoPropia.set(escenario.mano);
+    this.estadoTurno.set(escenario.turno);
+    this.estadoSegundos.set(escenario.segundos);
+    this.estadoCupones.set(escenario.cupones);
+    this.estadoCuponMaximo.set(escenario.cupones);
+    this.estadoBarraPropia.set(escenario.barraPropia);
+    this.estadoBarraRival.set(escenario.barraRival);
+    this.estadoDeltas.set({ ...DELTAS_VACIOS });
+    this.estadoRotaciones.set(0);
+    this.estadoRonda.set('jugando');
+    this.estadoAnuncio.set('Tutorial: ronda de práctica.');
+  }
+
+  /**
+   * MOCK: cierra la ronda del tutorial. El bot revela una carta y, después de
+   * una pausa, se actualizan los marcadores con los puntos de cada zona.
+   */
+  cerrarRondaGuionadaTutorial(cartaRival: Carta, lugar: NombreLugar): void {
+    this.limpiarTemporizadorGuionado();
+    this.estadoRonda.set('resolviendo');
+    this.estadoAnuncio.set(`El bot juega ${cartaRival.nombre}.`);
+
+    this.temporizadorGuionado = setTimeout(() => {
+      this.estadoLugares.update((lugares) => {
+        const rival = lugares[lugar].rival;
+        const indiceLibre = rival.findIndex((carta) => carta === null);
+        const destino = indiceLibre === -1 ? rival.length - 1 : indiceLibre;
+        const nuevosRival = rival.map((carta, i) => (i === destino ? cartaRival : carta));
+
+        return { ...lugares, [lugar]: { ...lugares[lugar], rival: nuevosRival } };
+      });
+
+      const puntos = this.puntajes();
+
+      this.estadoBarraPropia.set(puntos.izquierda.propio + puntos.derecha.propio);
+      this.estadoBarraRival.set(puntos.izquierda.rival + puntos.derecha.rival);
+      this.estadoDeltas.set({
+        izquierda: { propio: puntos.izquierda.propio, rival: puntos.izquierda.rival },
+        derecha: { propio: puntos.derecha.propio, rival: puntos.derecha.rival },
+      });
+      this.estadoTurno.set(2);
+      this.estadoCupones.set(2);
+      this.estadoCuponMaximo.set(2);
+      this.estadoRonda.set('jugando');
+      this.estadoAnuncio.set('Ronda guiada completada. Así se suman los puntos.');
+      this.temporizadorGuionado = undefined;
+    }, 1200);
+  }
+
+  /** MOCK: devuelve la maqueta a su estado original al salir del tutorial. */
+  restaurarEscenario(): void {
+    this.limpiarTemporizadorGuionado();
+    this.estadoLugares.set(crearLugaresIniciales());
+    this.estadoManoPropia.set(crearManoInicial());
+    this.estadoTurno.set(3);
+    this.estadoSegundos.set(28);
+    this.estadoCupones.set(3);
+    this.estadoCuponMaximo.set(3);
+    this.estadoBarraPropia.set(42);
+    this.estadoBarraRival.set(18);
+    this.estadoDeltas.set({ ...DELTAS_VACIOS });
+    this.estadoRotaciones.set(0);
+    this.estadoRonda.set('jugando');
+    this.estadoAnuncio.set('');
+  }
+
+  private limpiarTemporizadorGuionado(): void {
+    if (this.temporizadorGuionado === undefined) {
+      return;
+    }
+
+    clearTimeout(this.temporizadorGuionado);
+    this.temporizadorGuionado = undefined;
   }
 
   /** MOCK: rendirse. */

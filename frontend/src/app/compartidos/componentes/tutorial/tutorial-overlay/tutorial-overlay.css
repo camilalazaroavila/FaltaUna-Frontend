@@ -1,0 +1,118 @@
+:host {
+  display: contents;
+}
+
+.tutorial {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+}
+
+.tutorial--vista-previa {
+  position: absolute;
+}
+
+.tutorial__velo {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  transition: background-color 180ms ease-out;
+}
+
+.tutorial--sin-foco .tutorial__velo {
+  background: var(--overlay);
+}
+
+.tutorial--vista-previa .tutorial__velo {
+  background: color-mix(in srgb, var(--overlay) 65%, transparent);
+}
+
+.tutorial__spotlight {
+  position: absolute;
+  border-radius: var(--radio-md);
+  box-shadow:
+    0 0 0 4px var(--borde-foco),
+    0 0 0 100vmax var(--overlay);
+  outline: 2px solid var(--borde-foco);
+  outline-offset: 2px;
+  pointer-events: none;
+  transition:
+    top 180ms ease-out,
+    left 180ms ease-out,
+    width 180ms ease-out,
+    height 180ms ease-out;
+}
+
+.tutorial__globo {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 1rem;
+  border: 2px solid var(--borde-default);
+  border-radius: var(--radio-lg);
+  background: var(--fondo-elevado);
+  color: var(--texto-primario);
+  box-shadow: var(--sombra-alta);
+  max-height: calc(100dvh - 1.5rem);
+  overflow-y: auto;
+  pointer-events: auto;
+  animation: tutorial-globo-entra 260ms ease-out both;
+}
+
+.tutorial__globo:focus-visible {
+  outline: 2px solid var(--borde-foco);
+  outline-offset: 2px;
+}
+
+.tutorial__confirmacion {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: var(--overlay);
+  pointer-events: auto;
+}
+
+.tutorial__confirmacion-panel {
+  width: min(26rem, 100%);
+  padding: 1.25rem;
+  border: 2px solid var(--borde-default);
+  border-radius: var(--radio-lg);
+  background: var(--fondo-elevado);
+  box-shadow: var(--sombra-alta);
+}
+
+@keyframes tutorial-globo-entra {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorial__velo,
+  .tutorial__spotlight {
+    transition: none;
+  }
+
+  .tutorial__globo {
+    animation: none;
+  }
+}
+
+:host-context([data-movimiento='reducido']) .tutorial__velo,
+:host-context([data-movimiento='reducido']) .tutorial__spotlight {
+  transition: none;
+}
+
+:host-context([data-movimiento='reducido']) .tutorial__globo {
+  animation: none;
+}
