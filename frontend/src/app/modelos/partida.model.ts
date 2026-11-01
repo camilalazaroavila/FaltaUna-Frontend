@@ -45,7 +45,13 @@ export type EstadoRondaPartida = 'jugando' | 'esperando' | 'resolviendo';
 /** Columna del tablero: la zona activa de la izquierda y la de la derecha. */
 export type NombreLugar = 'izquierda' | 'derecha';
 
-/** Seis slots por lado; `null` = slot vacío. */
+/**
+ * Cantidad de slots por lado en cada zona del tablero (3 en fila delantera, 2 en fila trasera).
+ * Única fuente de verdad de la cantidad de slots por lado.
+ */
+export const SLOTS_POR_LADO = 5;
+
+/** Cinco slots por lado; `null` = slot vacío. */
 export type SlotsLado = readonly (Carta | null)[];
 
 /** Los dos lugares del tablero, indexados por nombre. */

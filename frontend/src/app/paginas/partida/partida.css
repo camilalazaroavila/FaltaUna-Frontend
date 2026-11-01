@@ -10,6 +10,14 @@
     /* Ocupa todo el alto disponible del viewport dinámico */
     height: 100dvh;
     overflow: hidden;
+    position: relative;
+    background-color: var(--fondo-app);
+    background-image:
+        linear-gradient(var(--overlay), var(--overlay)),
+        url('/imagenes/fondos/Fondo de juego con gato acuático.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 /* Alto disponible para el tablero: el resto son la barra de

@@ -148,6 +148,15 @@ describe('Tablero', () => {
     }
   });
 
+  it('muestra el aviso con el gatito señalando la zona que va a rotar', () => {
+    fixture.detectChanges();
+    const aviso = fixture.nativeElement.querySelector('.zona-aviso-cambio');
+    expect(aviso).toBeTruthy();
+    expect(aviso.textContent).toContain('Esta zona va a cambiar');
+    const gatito = aviso.querySelector('.gatito-senialando');
+    expect(gatito).toBeTruthy();
+  });
+
   describe('Conteo secuencial de ronda con burbujas y botón saltar', () => {
     it('bloquea acciones y muestra botón saltar al iniciar el conteo', () => {
       const emitSpy = jest.spyOn(component.conteoCambio, 'emit');
@@ -187,7 +196,7 @@ describe('Tablero', () => {
       expect(servicio.manoPropia()).toHaveLength(totalMano);
     });
 
-    it('libera el bloqueo y apaga burbujas al pulsar Saltar o presionar Escape', () => {
+    it('libera el bloqueo y apaga burbujas al pulsar Saltar animación', () => {
       const emitSpy = jest.spyOn(component.conteoCambio, 'emit');
 
       component.iniciarConteoSecuencial({

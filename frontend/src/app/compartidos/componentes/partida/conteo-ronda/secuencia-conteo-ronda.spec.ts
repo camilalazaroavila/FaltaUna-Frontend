@@ -186,18 +186,18 @@ describe('SecuenciaConteoRonda (Cola única de animación)', () => {
     expect(b1.deltaPoder).toBe(-3);
   });
 
-  it('soporta 6 cartas por lado en una misma zona sin errores', () => {
-    const seisPropias = Array.from({ length: 6 }, (_, i) => crearCartaMock(`p${i}`, i + 1));
-    const seisRivales = Array.from({ length: 6 }, (_, i) => crearCartaMock(`r${i}`, i + 2));
+  it('soporta 5 cartas por lado en una misma zona sin errores', () => {
+    const cincoPropias = Array.from({ length: 5 }, (_, i) => crearCartaMock(`p${i}`, i + 1));
+    const cincoRivales = Array.from({ length: 5 }, (_, i) => crearCartaMock(`r${i}`, i + 2));
 
     const cartasPorLugar: Record<NombreLugar, ContextoCartasLugar> = {
-      izquierda: { propio: seisPropias, rival: seisRivales },
+      izquierda: { propio: cincoPropias, rival: cincoRivales },
       derecha: { propio: [], rival: [] },
     };
 
     const cola = construirColaPasos(lugares, cartasPorLugar, resultadoRondaMock);
     const burbujas = cola.filter((p) => p.tipo === 'burbuja');
 
-    expect(burbujas).toHaveLength(12);
+    expect(burbujas).toHaveLength(10);
   });
 });

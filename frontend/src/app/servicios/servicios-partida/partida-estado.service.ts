@@ -1,5 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core';
-import type { Carta } from '@modelos/carta.model';
+import { SLOTS_POR_LADO } from '@modelos/partida.model';
+import type {
+  Carta } from '@modelos/carta.model';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import type {
   DeltaLugar,
@@ -14,7 +16,6 @@ import type {
 } from '@modelos/partida.model';
 import { JUGADORES_MOCK, ZONAS_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
 
-export const SLOTS_POR_LADO = 6;
 
 const NOMBRES_LUGAR: readonly NombreLugar[] = ['izquierda', 'derecha'];
 
@@ -28,7 +29,7 @@ const cartaMock = (id: string): Carta => {
   return carta;
 };
 
-/** Completa con `null` hasta los 6 slots del lado. */
+/** Completa con `null` hasta los 5 slots del lado. */
 const slots = (...ids: string[]): SlotsLado => [
   ...ids.map(cartaMock),
   ...Array.from({ length: SLOTS_POR_LADO - ids.length }, () => null),

@@ -214,7 +214,7 @@ export const FOTOS_CARTAS_CATALOGO: Readonly<Record<string, string>> = {
 /** Marcas eliminadas del catálogo que no deben exponer cartas ni sobres. */
 export const MARCAS_ELIMINADAS: ReadonlySet<string> = new Set([
   'mcdonalds',
-  "mcdonald's",
+  'mcdonald\'s',
   'google',
   'netflix',
 ]);
@@ -238,7 +238,7 @@ export const CARTAS_MARCAS_ELIMINADAS: ReadonlySet<string> = new Set([
   'sandwich lomo napolitano',
   'big mac',
   'grand tasty turbo bacon triple',
-  "mcdonald's obelisco",
+  'mcdonald\'s obelisco',
   'mcnuggets',
   'mcflurry',
   // Google
@@ -256,7 +256,7 @@ export const CARTAS_MARCAS_ELIMINADAS: ReadonlySet<string> = new Set([
   'pixel 11',
   // Netflix
   'monsters',
-  "don't look up",
+  'don\'t look up',
   'division palermo',
   'bojack horseman',
   'black mirror',

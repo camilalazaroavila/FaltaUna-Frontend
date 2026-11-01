@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  HostListener,
   OnDestroy,
   computed,
   effect,
@@ -158,8 +157,21 @@ export class Tablero implements OnDestroy {
   /** Carta enfocada con teclado: alternativa accesible al arrastre. */
   private readonly cartaSeleccionada = signal<Carta | null>(null);
 
+  /** Zona que va a cambiar en el siguiente turno. */
+  protected readonly zonaQueCambia = computed<NombreLugar>(() =>
+    this.servicio.turno() % 2 === 1 ? 'derecha' : 'izquierda',
+  );
+  private rondaPreviaZona: NombreLugar | null = null;
+
   constructor() {
     this.sonido.precargarSonidosPartida();
+    effect(() => {
+      const zona = this.zonaQueCambia();
+      if (this.rondaPreviaZona !== null && this.rondaPreviaZona !== zona) {
+        this.sonido.reproducir(SONIDOS_PARTIDA.rotarZona);
+      }
+      this.rondaPreviaZona = zona;
+    });
 
     effect(() => {
       const propia = this.servicio.barraPropia();
@@ -191,13 +203,7 @@ export class Tablero implements OnDestroy {
     });
   }
 
-  @HostListener('keydown.escape', ['$event'])
-  alPresionarEscape(evento: Event): void {
-    if (this.enConteo()) {
-      evento.preventDefault();
-      this.saltarConteo();
-    }
-  }
+  
 
   /**
    * Inicia el conteo secuencial lento de la ronda: burbuja por carta (propias y rivales),

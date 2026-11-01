@@ -11,11 +11,6 @@ const DURACION_SIMULADA_MS: Record<ModoJuego, number> = {
 
 @Injectable({ providedIn: 'root' })
 export class EmparejamientoService {
-  /**
-   * Emite `true` cuando la partida está lista.
-   * TODO: reemplazar el temporizador por la llamada al backend cuando esté el endpoint.
-   * Los componentes no cambian: solo consumen este Observable.
-   */
   buscarPartida(modo: ModoJuego): Observable<boolean> {
     return timer(DURACION_SIMULADA_MS[modo]).pipe(map(() => true));
   }

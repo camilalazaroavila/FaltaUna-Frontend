@@ -1,16 +1,24 @@
-<div class="barra-contenedor flex h-full flex-col items-center gap-1.5">
+<div
+  class="barra-contenedor"
+  [class.barra-contenedor--horizontal]="orientacion() === 'horizontal'"
+  [class.barra-contenedor--vertical]="orientacion() === 'vertical'"
+>
   <span
-    class="barra-etiqueta rounded-pildora border-2 border-zona-marco bg-hundido py-0.5 font-titulo text-etiqueta tracking-etiqueta text-texto-primario uppercase"
+    class="barra-etiqueta rounded-pildora border-2 py-0.5 font-titulo text-etiqueta tracking-etiqueta uppercase shrink-0"
+    [class.bg-hundido]="!esRival()"
+    [class.border-zona-marco]="!esRival()"
+    [class.text-texto-primario]="!esRival()"
+    [class.bg-error]="esRival()"
+    [class.border-error-borde]="esRival()"
+    [class.text-blanco-puro]="esRival()"
     [class.cargando]="enCarga()"
     aria-hidden="true"
   >
     {{ etiquetaLado() }}
   </span>
 
-  <!-- Misma pastilla cartoon que app-barra-progreso (álbumes): borde de tinta
-       y sombra sólida de 3px, adaptada a vertical y a los tokens del tablero. -->
   <div
-    class="barra-cuerpo relative flex-1 overflow-hidden rounded-pildora border-2 border-barra-puntos-borde bg-barra-puntos-fondo shadow-[0_3px_0_var(--barra-puntos-sombra)]"
+    class="barra-cuerpo relative flex items-center overflow-hidden rounded-pildora border-2 border-barra-puntos-borde bg-barra-puntos-fondo shadow-[0_3px_0_var(--barra-puntos-sombra)]"
     [class.cargando]="enCarga()"
     [class.cargando-propio]="enCarga() && !esRival()"
     [class.cargando-rival]="enCarga() && esRival()"
@@ -23,7 +31,8 @@
   >
     <span
       [class]="clasesRelleno()"
-      [style.height]="'calc(' + porcentaje() + '% - 4px)'"
+      [style.width]="orientacion() === 'horizontal' ? 'calc(' + porcentaje() + '% - 4px)' : null"
+      [style.height]="orientacion() === 'vertical' ? 'calc(' + porcentaje() + '% - 4px)' : null"
       aria-hidden="true"
     ></span>
 
@@ -31,9 +40,20 @@
       <span class="barra-haz-luz" aria-hidden="true"></span>
     }
 
-    <span class="barra-numero" [class]="clasesNumero()" [class.cargando]="enCarga()" aria-hidden="true">
-      {{ puntos() }}
-    </span>
+    @if (orientacion() === 'horizontal') {
+      <div class="relative z-10 flex w-full items-center justify-between px-2.5 font-titulo text-menor tabular-nums text-texto-primario select-none leading-none">
+        <span class="barra-numero font-bold texto-contorno" [class.cargando]="enCarga()" aria-hidden="true">
+          {{ puntos() }}
+        </span>
+        <span class="barra-meta text-etiqueta font-bold opacity-85 texto-contorno" aria-hidden="true">
+          / {{ maximo() }}
+        </span>
+      </div>
+    } @else {
+      <span class="barra-numero" [class]="clasesNumero()" [class.cargando]="enCarga()" aria-hidden="true">
+        {{ puntos() }}
+      </span>
+    }
   </div>
 
   <span #deltaFlotante [class]="clasesDelta()" aria-hidden="true">
