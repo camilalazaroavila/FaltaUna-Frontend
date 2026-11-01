@@ -65,10 +65,10 @@ export class ControlTurno {
       return 'Fin de la partida';
     }
     if (this.estado() === 'jugando') {
-      return this.turno() >= this.totalTurnos() ? 'Ronda final' : 'Realizar';
+      return this.turno() >= this.totalTurnos() ? 'Ronda final' : 'Terminar mi turno';
     }
     if (this.estado() === 'esperando') {
-      return 'Esperando';
+      return 'Esperando a mi rival';
     }
     return 'Realizando';
   });

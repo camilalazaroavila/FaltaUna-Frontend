@@ -27,22 +27,22 @@ const NOMBRE_LADO: Record<LadoPartida, string> = {
 };
 
 const ETIQUETA_LADO: Record<LadoPartida, string> = {
-  propio: 'Vos',
-  rival: 'Rival',
+  propio: 'VOS',
+  rival: 'RIVAL',
 };
 
 /**
- * Barra vertical de puntos hacia los 100 de la partida (jugador a la izquierda,
- * rival a la derecha). La barra propia se llena desde abajo y la del rival
- * desde arriba; el relleno anima la altura con una transición CSS y el `delta`
- * muestra un "+5"/"-5" flotante que se apaga solo con GSAP.
+ * Barra horizontal de puntos (de 0 a 100) hacia la meta de la partida.
+ * Se ubica en la misma fila que el chip del jugador (rival arriba, propio abajo).
+ * El relleno crece de izquierda a derecha tanto para el jugador como para el rival.
+ * El `delta` muestra un "+5"/"-5" flotante que se apaga solo con GSAP.
  */
 @Component({
   selector: 'app-barra-puntos',
   templateUrl: './barra-puntos.html',
   styleUrl: './barra-puntos.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'block h-full' },
+  host: { class: 'block w-full' },
 })
 export class BarraPuntos implements AfterViewInit {
   private readonly gsapServicio = inject(GsapService);
@@ -55,6 +55,7 @@ export class BarraPuntos implements AfterViewInit {
   readonly lado = input<LadoPartida>('propio');
   readonly delta = input<number | null>(null);
   readonly cargando = input(false);
+  readonly orientacion = input<'horizontal' | 'vertical'>('horizontal');
 
   private readonly cargandoInterno = signal(false);
   protected readonly enCarga = computed(() => this.cargando() || this.cargandoInterno());
@@ -63,36 +64,42 @@ export class BarraPuntos implements AfterViewInit {
   protected readonly porcentaje = computed(() => porcentaje(this.puntos(), this.maximo()));
   protected readonly esRival = computed(() => this.lado() === 'rival');
   protected readonly etiquetaLado = computed(() => ETIQUETA_LADO[this.lado()]);
-  /** La barra propia se llena desde abajo; la del rival, desde arriba. */
-  protected readonly clasesRelleno = computed(() =>
-    [
-      'absolute inset-x-0.5 rounded-pildora transition-[height] duration-700 ease-out motion-reduce:transition-none',
+
+  /** En horizontal, ambos rellenos crecen de izquierda a derecha desde left-0.5. */
+  protected readonly clasesRelleno = computed(() => {
+    if (this.orientacion() === 'vertical') {
+      return [
+        'absolute inset-x-0.5 rounded-pildora transition-[height] duration-700 ease-out motion-reduce:transition-none',
+        CLASES_RELLENO[this.lado()],
+        this.esRival() ? 'top-0.5' : 'bottom-0.5',
+      ].join(' ');
+    }
+
+    return [
+      'absolute inset-y-0.5 left-0.5 rounded-pildora transition-[width] duration-700 ease-out motion-reduce:transition-none',
       CLASES_RELLENO[this.lado()],
-      this.esRival() ? 'top-0.5' : 'bottom-0.5',
-    ].join(' '),
-  );
-  /**
-   * Número sobre la pastilla con `texto-contorno` y la misma tipografía
-   * `font-titulo` que la leyenda de `app-barra-progreso` (álbumes). Propio
-   * abajo, rival arriba, para leerse desde el lado de cada jugador.
-   */
+    ].join(' ');
+  });
+
   protected readonly clasesNumero = computed(() =>
     [
       'absolute inset-x-0 flex justify-center overflow-hidden font-titulo text-menor tabular-nums texto-contorno text-texto-primario',
       this.esRival() ? 'top-1.5' : 'bottom-1.5',
     ].join(' '),
   );
+
   protected readonly clasesDelta = computed(() =>
     [
-      'pointer-events-none h-4 text-center font-titulo text-etiqueta tabular-nums texto-contorno text-texto-primario',
+      'pointer-events-none shrink-0 font-titulo text-etiqueta tabular-nums texto-contorno text-texto-primario',
       this.delta() === null ? 'opacity-0' : '',
     ].join(' '),
   );
+
   protected readonly textoDelta = computed(() => {
     const delta = this.delta();
-
     return delta === null ? '' : `${delta > 0 ? '+' : ''}${delta}`;
   });
+
   protected readonly etiqueta = computed(
     () => `Puntos ${NOMBRE_LADO[this.lado()]}: ${this.puntos()} de ${this.maximo()}`,
   );
@@ -126,7 +133,6 @@ export class BarraPuntos implements AfterViewInit {
       }
 
       const objetivo = this.referenciaDelta()?.nativeElement;
-
       if (!objetivo) {
         return;
       }
@@ -149,17 +155,17 @@ export class BarraPuntos implements AfterViewInit {
 
     gsap.fromTo(
       objetivo,
-      { y: 6, scale: 0.7, opacity: 0 },
+      { y: 4, scale: 0.7, opacity: 0 },
       {
-        y: -30,
-        scale: 1.3,
+        y: -18,
+        scale: 1.25,
         opacity: 1,
         duration: 0.45,
         ease: 'back.out(2)',
         onComplete: () => {
           gsap.to(objetivo, {
             opacity: 0,
-            y: -44,
+            y: -28,
             duration: 0.35,
             delay: 0.45,
             ease: 'power2.in',

@@ -1,8 +1,8 @@
 <div class="zona-contenido">
-  <div class="zona-slots">
+  <div class="zona-slots zona-slots--rival">
     @for (slot of slotsRival(); track slot.indice) {
       <div
-        class="zona-celda relative"
+        class="zona-celda relative min-w-0 hover:z-30 focus-within:z-30"
         [attr.data-lugar]="lugar()"
         data-lado="rival"
         [attr.data-indice]="slot.indice"
@@ -16,12 +16,12 @@
               role="status"
               [attr.aria-label]="'Aporte de rival: ' + b.poder"
             >
-              <span class="burbuja-puntaje__icono" aria-hidden="true">
+              <span class="text-etiqueta" aria-hidden="true">
                 @if (b.modificador === 'aumento') { ▲ }
                 @else if (b.modificador === 'reduccion') { ▼ }
                 @else { ◆ }
               </span>
-              <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
+              <span class="text-menor tabular-nums">+{{ b.poder }}</span>
               @if (b.modificador === 'aumento' && b.deltaPoder) {
                 <span class="burbuja-puntaje__delta text-exito font-bold text-etiqueta ml-0.5">(+{{ b.deltaPoder }})</span>
               } @else if (b.modificador === 'reduccion' && b.deltaPoder) {
@@ -38,12 +38,12 @@
             role="status"
             [attr.aria-label]="mod.tipo === 'aumento' ? 'Poder aumentado +' + mod.delta : 'Poder reducido ' + mod.delta"
           >
-            <span class="burbuja-impacto__icono" aria-hidden="true">
+            <span class="text-etiqueta" aria-hidden="true">
               @if (mod.tipo === 'aumento') { ▲ } @else { ▼ }
             </span>
-            <span class="burbuja-impacto__texto">
-              <span class="burbuja-impacto__delta">{{ mod.delta > 0 ? '+' + mod.delta : mod.delta }}</span>
-              <span class="burbuja-impacto__etiqueta">PODER</span>
+            <span class="inline-flex items-baseline gap-1">
+              <span class="text-menor tabular-nums">{{ mod.delta > 0 ? '+' + mod.delta : mod.delta }}</span>
+              <span class="text-etiqueta tracking-wider opacity-90">PODER</span>
             </span>
           </div>
         }
@@ -89,7 +89,7 @@
 
   <!-- Foto de la zona con sus dos puntajes -->
   <div class="zona-celda-foto">
-    <div class="zona-foto aspect-[5/4]">
+    <div class="zona-foto aspect-[16/10]">
       <button
         type="button"
         class="absolute inset-0 block cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-borde-foco"
@@ -103,18 +103,6 @@
           alt=""
           (error)="alFallarImagen()"
         />
-        <!-- Marco anterior: invisible hasta que cambia la zona y se desarma. -->
-        <span
-          #marcoViejo
-          class="marco-zona-irregular pointer-events-none absolute inset-0 opacity-0"
-          aria-hidden="true"
-        ></span>
-        <span
-          #marcoNuevo
-          class="marco-zona-irregular absolute inset-0 transition-colors duration-300 motion-reduce:transition-none"
-          [class]="clasesMarco()"
-          aria-hidden="true"
-        ></span>
       </button>
 
       <!-- Puntaje del rival: arriba de la foto -->
@@ -167,29 +155,36 @@
         </div>
       </div>
 
-      <!-- Indicador de categorías que la zona mejora o empeora -->
-      @if (efectosCategoria().length > 0) {
-        <div
-          class="zona-indicadores-categoria"
-          [class.zona-indicadores-categoria--izq]="lugar() === 'izquierda'"
-          [class.zona-indicadores-categoria--der]="lugar() === 'derecha'"
-        >
+      <!-- Indicador de mejora (+) a la izquierda de la foto -->
+      @if (efectosSube().length > 0) {
+        <div class="zona-indicadores-categoria zona-indicadores-categoria--izq">
           <app-indicador-categorias-habilidad
-            [efectos]="efectosCategoria()"
-            [maxVisibles]="3"
+            [efectos]="efectosSube()"
+            [maxVisibles]="2"
             orientacion="vertical"
-            tamanio="sm"
+            tamanio="md"
+          />
+        </div>
+      }
+
+      <!-- Indicador de empeora (−) a la derecha de la foto -->
+      @if (efectosBaja().length > 0) {
+        <div class="zona-indicadores-categoria zona-indicadores-categoria--der">
+          <app-indicador-categorias-habilidad
+            [efectos]="efectosBaja()"
+            [maxVisibles]="2"
+            orientacion="vertical"
+            tamanio="md"
           />
         </div>
       }
     </div>
   </div>
 
-  <!-- Lado propio (abajo) -->
-  <div class="zona-slots">
+  <div class="zona-slots zona-slots--propio">
     @for (slot of slotsPropios(); track slot.indice) {
       <div
-        class="zona-celda relative"
+        class="zona-celda relative min-w-0 hover:z-30 focus-within:z-30"
         [attr.data-lugar]="lugar()"
         data-lado="propio"
         [attr.data-indice]="slot.indice"
@@ -203,12 +198,12 @@
               role="status"
               [attr.aria-label]="'Tu aporte: ' + b.poder"
             >
-              <span class="burbuja-puntaje__icono" aria-hidden="true">
+              <span class="text-etiqueta" aria-hidden="true">
                 @if (b.modificador === 'aumento') { ▲ }
                 @else if (b.modificador === 'reduccion') { ▼ }
                 @else { ★ }
               </span>
-              <span class="burbuja-puntaje__numero">+{{ b.poder }}</span>
+              <span class="text-menor tabular-nums">+{{ b.poder }}</span>
               @if (b.modificador === 'aumento' && b.deltaPoder) {
                 <span class="burbuja-puntaje__delta text-exito font-bold text-etiqueta ml-0.5">(+{{ b.deltaPoder }})</span>
               } @else if (b.modificador === 'reduccion' && b.deltaPoder) {
@@ -225,12 +220,12 @@
             role="status"
             [attr.aria-label]="mod.tipo === 'aumento' ? 'Poder aumentado +' + mod.delta : 'Poder reducido ' + mod.delta"
           >
-            <span class="burbuja-impacto__icono" aria-hidden="true">
+            <span class="text-etiqueta" aria-hidden="true">
               @if (mod.tipo === 'aumento') { ▲ } @else { ▼ }
             </span>
-            <span class="burbuja-impacto__texto">
-              <span class="burbuja-impacto__delta">{{ mod.delta > 0 ? '+' + mod.delta : mod.delta }}</span>
-              <span class="burbuja-impacto__etiqueta">PODER</span>
+            <span class="inline-flex items-baseline gap-1">
+              <span class="text-menor tabular-nums">{{ mod.delta > 0 ? '+' + mod.delta : mod.delta }}</span>
+              <span class="text-etiqueta tracking-wider opacity-90">PODER</span>
             </span>
           </div>
         }

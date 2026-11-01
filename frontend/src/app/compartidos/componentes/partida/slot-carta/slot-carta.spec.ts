@@ -43,6 +43,7 @@ describe('SlotCarta Component', () => {
   it('debe exponer el estado y el lado como atributos de datos', () => {
     expect(slot().getAttribute('data-slot-estado')).toBe('vacio');
     expect(slot().getAttribute('data-slot-lado')).toBe('propio');
+    expect(slot().getAttribute('aria-disabled')).toBeNull();
   });
 
   it('debe describir la casilla vacía del jugador', () => {
@@ -71,13 +72,24 @@ describe('SlotCarta Component', () => {
     expect(slot().querySelector('#contenido')?.textContent).toBe('Carta jugada');
   });
 
-  it('debe pintar la casilla con el fondo del lado rival cuando corresponde', () => {
+  it('debe pintar la casilla con el fondo bloqueado del lado rival cuando está vacía', () => {
     host.lado.set('rival');
     fixture.detectChanges();
 
     expect(slot().getAttribute('data-slot-lado')).toBe('rival');
-    expect(marco().classList.contains('bg-slot-rival-fondo')).toBe(true);
+    expect(slot().getAttribute('aria-disabled')).toBe('true');
+    expect(marco().classList.contains('bg-slot-rival-bloqueado-fondo')).toBe(true);
     expect(slot().getAttribute('aria-label')).toBe('Casilla vacía del rival');
+  });
+
+  it('debe pintar la casilla ocupada del rival con estilo normal de carta', () => {
+    host.lado.set('rival');
+    cambiarEstado('ocupado');
+
+    expect(slot().getAttribute('data-slot-lado')).toBe('rival');
+    expect(slot().getAttribute('aria-disabled')).toBe('true');
+    expect(marco().classList.contains('bg-slot-rival-fondo')).toBe(true);
+    expect(marco().classList.contains('border-slot-borde')).toBe(true);
   });
 
   it('no debe mostrar el botón de jugar si la casilla no está resaltada', () => {

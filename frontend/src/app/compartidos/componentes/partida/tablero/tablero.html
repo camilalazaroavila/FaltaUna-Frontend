@@ -1,56 +1,50 @@
-<div class="tablero rounded-lg bg-tablero-fondo">
-  <!-- Rival: arriba a la derecha (chip arriba, mano oculta debajo) -->
-  <div class="area-rival">
-    <app-jugador-chip
-      [nombre]="servicio.jugadores().rival.nombre"
-      [avatarUrl]="servicio.jugadores().rival.avatarUrl"
-      lado="rival"
-      tamanio="lg"
-    />
+<div class="tablero rounded-lg">
+  <!-- Fila 1: Cabecera del Rival (Chip + Mano + Barra Horizontal de Puntos) -->
+  <header class="area-cabecera-rival">
+    <div class="area-rival">
+      <app-jugador-chip
+        [nombre]="servicio.jugadores().rival.nombre"
+        [avatarUrl]="servicio.jugadores().rival.avatarUrl"
+        lado="rival"
+        tamanio="lg"
+      />
 
-    <div
-      class="rival-mano"
-      role="img"
-      [attr.aria-label]="'El rival tiene ' + servicio.cartasManoRival() + ' cartas en la mano'"
-    >
-      <span class="flex items-center" aria-hidden="true">
-        @for (reverso of reversosRival(); track reverso.indice) {
-          <span
-            class="reverso-rival aspect-[3/4] shrink-0 rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
-            [style.--angulo]="reverso.angulo"
-          ></span>
-        }
-      </span>
-      <span
-        class="shrink-0 rounded-pildora border-2 border-zona-marco bg-hundido px-2 font-titulo text-etiqueta tabular-nums text-texto-primario"
-        aria-hidden="true"
+      <div
+        class="rival-mano"
+        role="img"
+        [attr.aria-label]="'El rival tiene ' + servicio.cartasManoRival() + ' cartas en la mano'"
       >
-        ×{{ servicio.cartasManoRival() }}
-      </span>
+        <span class="flex items-center" aria-hidden="true">
+          @for (reverso of reversosRival(); track reverso.indice) {
+            <span
+              class="reverso-rival aspect-[3/4] shrink-0 rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
+              [style.--angulo]="reverso.angulo"
+            ></span>
+          }
+        </span>
+        <span
+          class="shrink-0 rounded-pildora border-2 border-zona-marco bg-hundido px-2 font-titulo text-etiqueta tabular-nums text-texto-primario"
+          aria-hidden="true"
+        >
+          ×{{ servicio.cartasManoRival() }}
+        </span>
+      </div>
     </div>
-  </div>
 
-  <div class="area-barra-propia">
-    <app-barra-puntos
-      [puntos]="puntosBarraPropiaVisual()"
-      [maximo]="servicio.puntosMaximos()"
-      [delta]="deltaBarraPropiaVisual()"
-      [cargando]="barraCargando()"
-      lado="propio"
-    />
-  </div>
+    <!-- Barra horizontal de puntos del rival -->
+    <div class="area-barra-rival">
+      <app-barra-puntos
+        [puntos]="puntosBarraRivalVisual()"
+        [maximo]="servicio.puntosMaximos()"
+        [delta]="deltaBarraRivalVisual()"
+        [cargando]="barraCargando()"
+        lado="rival"
+      />
+    </div>
+  </header>
 
-  <div class="area-barra-rival">
-    <app-barra-puntos
-      [puntos]="puntosBarraRivalVisual()"
-      [maximo]="servicio.puntosMaximos()"
-      [delta]="deltaBarraRivalVisual()"
-      [cargando]="barraCargando()"
-      lado="rival"
-    />
-  </div>
-
-  <div class="area-zonas">
+  <!-- Fila 2: Zonas de combate (ocupa todo el ancho central del tablero) -->
+  <main class="area-zonas">
     @for (lugar of lugares; track lugar) {
       @let datos = servicio.lugares()[lugar];
       @let puntaje = servicio.puntajes()[lugar];
@@ -78,58 +72,97 @@
         (verCarta)="cartaAbierta.set($event)"
       />
     }
+    <!-- Indicador central de rotación de zona con el gatito señalando -->
+    <div
+      class="zona-aviso-cambio"
+      [class.zona-aviso-cambio--derecha]="zonaQueCambia() === 'derecha'"
+      [class.zona-aviso-cambio--izquierda]="zonaQueCambia() === 'izquierda'"
+      aria-live="polite"
+    >
+      <div class="aviso-burbuja-texto">
+        <span class="block">Esta zona va a cambiar</span>
+        <span class="block text-marca-secundaria text-[1rem] tracking-wider">el turno que sigue</span>
+      </div>
+      <div class="gatito-marco">
+        <img
+          src="/imagenes/gatito/gatito señalando.jpg"
+          alt="Gatito señalando la zona que va a cambiar"
+          class="gatito-senialando"
+          [class.flip-izquierda]="zonaQueCambia() === 'izquierda'"
+        />
+      </div>
+    </div>
+
     <app-cupon-recurso
       [valor]="servicio.cuponesPropio()"
       [maximo]="servicio.cuponMaximo()"
       variante="completa"
     />
-  </div>
+  </main>
 
-  <div class="area-mano">
-    <app-mano
-      [cartas]="servicio.manoPropia()"
-      [referencia]="host"
-      (ver)="cartaAbierta.set($event)"
-      (arrastreInicio)="alIniciarArrastre($event)"
-      (arrastreFin)="alTerminarArrastre($event)"
-      (seleccion)="alSeleccionar($event)"
-    />
-  </div>
+  <!-- Fila 3: Pie inferior (Jugador propio a la izquierda, Mano al centro, Control a la derecha) -->
+  <footer class="area-inferior">
+    <div class="area-jugador-propio">
+      <div class="area-propio">
+        <app-jugador-chip
+          [nombre]="servicio.jugadores().propio.nombre"
+          [avatarUrl]="servicio.jugadores().propio.avatarUrl"
+          lado="propio"
+          tamanio="lg"
+        />
+      </div>
 
-  <div class="area-propio">
-    <app-jugador-chip
-      [nombre]="servicio.jugadores().propio.nombre"
-      [avatarUrl]="servicio.jugadores().propio.avatarUrl"
-      lado="propio"
-      tamanio="lg"
-    />
-  </div>
+      <!-- Barra horizontal de puntos propia -->
+      <div class="area-barra-propia">
+        <app-barra-puntos
+          [puntos]="puntosBarraPropiaVisual()"
+          [maximo]="servicio.puntosMaximos()"
+          [delta]="deltaBarraPropiaVisual()"
+          [cargando]="barraCargando()"
+          lado="propio"
+        />
+      </div>
+    </div>
 
-  <div class="area-control">
-    <app-control-turno
-      [turno]="servicio.turno()"
-      [totalTurnos]="servicio.rondasTotales()"
-      [segundosRestantes]="servicio.segundosRestantes()"
-      [segundosTotales]="servicio.segundosTotales()"
-      [estado]="enConteo() ? 'resolviendo' : servicio.estadoRonda()"
-      [terminada]="servicio.terminada()"
-      (finalizar)="servicio.marcarListo()"
-      (abandonar)="abandonar.emit()"
-      (rendirse)="rendirse.emit()"
-    />
-  </div>
+    <div class="area-mano">
+      <app-mano
+        [cartas]="servicio.manoPropia()"
+        [referencia]="host"
+        (ver)="cartaAbierta.set($event)"
+        (arrastreInicio)="alIniciarArrastre($event)"
+        (arrastreFin)="alTerminarArrastre($event)"
+        (seleccion)="alSeleccionar($event)"
+      />
+    </div>
+
+    <div class="area-control">
+      <app-control-turno
+        [turno]="servicio.turno()"
+        [totalTurnos]="servicio.rondasTotales()"
+        [segundosRestantes]="servicio.segundosRestantes()"
+        [segundosTotales]="servicio.segundosTotales()"
+        [estado]="enConteo() ? 'resolviendo' : servicio.estadoRonda()"
+        [terminada]="servicio.terminada()"
+        (finalizar)="servicio.marcarListo()"
+        (abandonar)="abandonar.emit()"
+        (rendirse)="rendirse.emit()"
+      />
+    </div>
+  </footer>
 </div>
 
 @if (enConteo()) {
-  <div class="fixed top-4 right-4 z-50 pointer-events-auto">
+  <div class="fixed top-1/2 right-4 -translate-y-1/2 z-50 pointer-events-auto">
     <button
       type="button"
-      class="boton-saltar cursor-pointer inline-flex items-center gap-2 rounded-pildora border-2 border-borde-foco bg-superficie-elevada px-4 py-2 font-titulo text-etiqueta uppercase tracking-wider text-texto-primario shadow-cartoon transition hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      class="boton-saltar cursor-pointer inline-flex items-center gap-2.5 rounded-pildora border-4 border-borde-foco bg-marca-primaria px-5 py-2 font-titulo text-base font-black uppercase tracking-wider text-texto-sobre-claro shadow-cartoon-gruesa transition-transform hover:scale-110 active:scale-95 animate-pulse focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
       (click)="saltarConteo()"
-      aria-label="Saltar conteo de puntos (o presiona Escape)"
+      aria-label="Saltar animación de ronda"
     >
-      <span>Saltar</span>
-      <kbd class="rounded bg-fondo-hundido px-1.5 py-0.5 text-etiqueta text-texto-secundario border border-borde-default">Esc</kbd>
+      <span>Saltar animación</span>
+      <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+      </svg>
     </button>
   </div>
 }
