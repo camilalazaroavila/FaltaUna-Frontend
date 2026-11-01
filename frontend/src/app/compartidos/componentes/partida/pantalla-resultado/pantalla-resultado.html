@@ -34,20 +34,17 @@
         [class.border-borde-default]="tipo() === 'finalizada'"
       >
         @if (tipo() === 'victoria') {
-          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-            <path d="M4 22h16" />
-            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-          </svg>
+          <img
+            src="/imagenes/gatito/jaime diciendo si.png"
+            alt="Victoria"
+            class="size-16 object-contain"
+          />
         } @else if (tipo() === 'derrota') {
-          <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="m15 9-6 6" />
-            <path d="m9 9 6 6" />
-          </svg>
+          <img
+            src="/imagenes/gatito/jaime diciendo no.png"
+            alt="Derrota"
+            class="size-16 object-contain"
+          />
         } @else if (tipo() === 'empate') {
           <svg class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10" />
@@ -123,22 +120,17 @@
           aria-hidden="true"
         >
           @if (tipo() === 'victoria') {
-            <!-- Trofeo -->
-            <svg class="size-4 sm:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-              <path d="M4 22h16" />
-              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-            </svg>
+            <img
+              src="/imagenes/gatito/jaime diciendo si.png"
+              alt="Victoria"
+              class="gatito-resultado shrink-0 object-contain"
+            />
           } @else if (tipo() === 'derrota') {
-            <!-- Cruz / Escudo -->
-            <svg class="size-4 sm:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="m15 9-6 6" />
-              <path d="m9 9 6 6" />
-            </svg>
+            <img
+              src="/imagenes/gatito/jaime diciendo no.png"
+              alt="Derrota"
+              class="gatito-resultado shrink-0 object-contain"
+            />
           } @else if (tipo() === 'empate') {
             <!-- Balanza / Igualdad -->
             <svg class="size-4 sm:size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

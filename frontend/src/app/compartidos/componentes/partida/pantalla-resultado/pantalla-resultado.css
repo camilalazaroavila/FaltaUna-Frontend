@@ -118,6 +118,12 @@
   flex-shrink: 0;
 }
 
+.gatito-resultado {
+  inline-size: clamp(2.25rem, 4.5cqh, 2.85rem);
+  block-size: clamp(2.25rem, 4.5cqh, 2.85rem);
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.45));
+}
+
 .pantalla-resultado-icono--victoria {
   background-color: var(--color-exito);
   color: var(--color-exito-sobre);
@@ -170,27 +176,32 @@
    y acotado al centro para no tapar el chip del bot ni las barras verticales. */
 @media (max-height: 820px) {
   .pantalla-resultado-contenedor--flotante {
-    inset-block-start: clamp(3.1rem, 6.8cqh, 3.6rem);
+    inset-block-start: clamp(2.35rem, 4.8cqh, 2.75rem);
     margin-top: 0;
-    padding-inline: clamp(3.75rem, 9cqw, 7.5rem);
+    padding-inline: clamp(2.5rem, 6cqw, 5rem);
   }
 
   .pantalla-resultado-panel {
-    max-width: min(46rem, calc(100vw - clamp(7.5rem, 18vw, 14rem)));
+    max-width: min(44rem, calc(100vw - clamp(6rem, 15vw, 12rem)));
   }
 
   .pantalla-resultado-barra {
-    padding: clamp(0.35rem, 0.9cqh, 0.5rem) clamp(0.6rem, 1.2cqw, 0.85rem);
-    gap: clamp(0.35rem, 0.8cqw, 0.6rem);
+    padding: clamp(0.25rem, 0.6cqh, 0.4rem) clamp(0.5rem, 1cqw, 0.75rem);
+    gap: clamp(0.3rem, 0.7cqw, 0.5rem);
   }
 
   .pantalla-resultado-icono {
-    inline-size: clamp(1.75rem, 3.5cqh, 2.1rem);
-    block-size: clamp(1.75rem, 3.5cqh, 2.1rem);
+    inline-size: clamp(1.5rem, 3cqh, 1.85rem);
+    block-size: clamp(1.5rem, 3cqh, 1.85rem);
+  }
+
+  .gatito-resultado {
+    inline-size: clamp(1.75rem, 3.2cqh, 2.15rem);
+    block-size: clamp(1.75rem, 3.2cqh, 2.15rem);
   }
 
   .pantalla-resultado-titulo {
-    font-size: var(--tipografia-cuerpo);
+    font-size: var(--tipografia-menor);
   }
 }
 

@@ -3,6 +3,19 @@
   [class.barra-contenedor--horizontal]="orientacion() === 'horizontal'"
   [class.barra-contenedor--vertical]="orientacion() === 'vertical'"
 >
+  <span
+    class="barra-etiqueta rounded-pildora border-2 py-0.5 font-titulo text-etiqueta tracking-etiqueta uppercase shrink-0"
+    [class.bg-hundido]="!esRival()"
+    [class.border-zona-marco]="!esRival()"
+    [class.text-texto-primario]="!esRival()"
+    [class.bg-error]="esRival()"
+    [class.border-error-borde]="esRival()"
+    [class.text-blanco-puro]="esRival()"
+    [class.cargando]="enCarga()"
+    aria-hidden="true"
+  >
+    {{ etiquetaLado() }}
+  </span>
 
   <div
     class="barra-cuerpo relative flex items-center overflow-hidden rounded-pildora border-2 border-barra-puntos-borde bg-barra-puntos-fondo shadow-[0_3px_0_var(--barra-puntos-sombra)]"

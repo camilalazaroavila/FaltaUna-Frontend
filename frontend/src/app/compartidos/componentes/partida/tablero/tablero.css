@@ -24,7 +24,7 @@
     grid-template-rows: auto 1fr auto;
     row-gap: clamp(0.2rem, 0.8vh, 0.6rem);
     padding: clamp(0.25rem, 0.8vh, 0.6rem) clamp(0.5rem, 1.2cqw, 1.25rem);
-    overflow-x: clip;
+    overflow-x: visible;
     /* Containing block determinístico del fantasma `fixed` de la mano. */
     contain: layout;
     background: transparent;
@@ -92,6 +92,7 @@
 .area-zonas app-zona {
     min-width: 0;
 }
+
 
 .area-zonas app-cupon-recurso {
     position: absolute;
@@ -172,6 +173,84 @@
     max-width: 100%;
 }
 
+
+/* ---- Pantallas de menor altura o notebooks (1366x768, pantallas <= 820px) ---- */
+@media (max-width: 1366px),
+(max-height: 820px) {
+    :host {
+        --tablero-alto-fijo: clamp(14rem, 30cqh, 18rem);
+        --slot-ancho-max: 4.85rem;
+    }
+
+    .tablero {
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        row-gap: clamp(0.15rem, 0.5vh, 0.35rem);
+        padding: clamp(0.2rem, 0.5vh, 0.35rem) clamp(0.35rem, 1cqw, 0.75rem);
+    }
+
+    .area-cabecera-rival {
+        gap: 0.5rem;
+    }
+
+    .area-barra-rival {
+        width: clamp(9rem, 20cqw, 15rem);
+        justify-content: flex-end;
+    }
+
+    .area-barra-propia {
+        width: clamp(7rem, 14cqw, 12rem);
+    }
+
+    .reverso-rival {
+        height: clamp(1.6rem, 3.2cqw, 2.2rem);
+    }
+
+    .area-zonas {
+        column-gap: clamp(0.35rem, 1cqw, 0.85rem);
+        row-gap: clamp(0.15rem, 0.6vh, 0.35rem);
+    }
+
+    .area-inferior {
+        gap: clamp(0.25rem, 0.8cqw, 0.6rem);
+        align-items: end;
+        /* AJUSTABLE: la columna derecha reserva el ancho del control (12.5rem)
+           y la mano usa lo que sobra. Antes era 1fr / auto / 1fr. */
+        grid-template-columns: minmax(0, 1fr) minmax(0, 40rem) minmax(12.5rem, 1fr);
+    }
+
+    .area-mano {
+        max-width: 100%;
+    }
+
+    .area-control {
+        align-self: end;
+        justify-self: end;
+        /* Pegado al borde pero adentro, con un respiro. */
+        margin-right: 0.25rem;
+    }
+
+    .boton-saltar {
+        padding: 0.35rem 0.85rem !important;
+        font-size: 0.75rem !important;
+        border-width: 2px !important;
+    }
+
+    .boton-saltar svg {
+        width: 1rem !important;
+        height: 1rem !important;
+    }
+
+    .gatito-senialando {
+        width: clamp(2.5rem, 5.5cqw, 3.8rem);
+    }
+
+    .aviso-burbuja-texto {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.45rem;
+    }
+
+}
+
 /* ---- Pantallas medianas o estrechas (<= 1024px o pantallas móviles) ---- */
 @media (max-width: 1024px) {
     :host {
@@ -204,5 +283,60 @@
         grid-row: 2;
         width: 100%;
         max-width: 11rem;
+    }
+}
+
+/* ---- Indicador central de rotación de zona con el gatito ---- */
+.zona-aviso-cambio {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.2rem, 0.6vh, 0.45rem);
+    pointer-events: none;
+    user-select: none;
+    text-align: center;
+}
+
+.aviso-burbuja-texto {
+    background-color: color-mix(in srgb, var(--color-teal-profundo) 90%, black);
+    border: 2px solid var(--color-amarillo-logo);
+    color: var(--texto-primario);
+    font-family: var(--fuente-titulo);
+    font-size: clamp(1.1rem, 1.1cqw, 1rem);
+    font-weight: 800;
+    line-height: 1.2;
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--radio-pildora, 9999px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65);
+    white-space: nowrap;
+}
+
+.gatito-marco {
+    display: grid;
+    place-items: center;
+}
+
+.gatito-senialando {
+    width: clamp(9rem, 12.5cqw, 10rem);
+    height: auto;
+    object-fit: contain;
+    border-radius: 1.25rem;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: scaleX(1);
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.65));
+}
+
+.gatito-senialando.flip-izquierda {
+    transform: scaleX(-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gatito-senialando {
+        transition: none;
     }
 }

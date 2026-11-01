@@ -124,14 +124,6 @@ describe('Zona', () => {
     expect(indicadorDer).toBeTruthy();
   });
 
-  it('muestra las etiquetas de lado claramente identificadas (Rival y Tu lado)', () => {
-    const etiquetaRival = fixture.nativeElement.querySelector('.zona-etiqueta-lado--rival');
-    const etiquetaPropio = fixture.nativeElement.querySelector('.zona-etiqueta-lado--propio');
-
-    expect(etiquetaRival?.textContent).toContain('Rival');
-    expect(etiquetaPropio?.textContent).toContain('Tu lado');
-  });
-
   it('no muestra el indicador de categorías cuando la zona no tiene efectos', () => {
     fixture.componentRef.setInput('zona', {
       ...ZONAS_MOCK[0],

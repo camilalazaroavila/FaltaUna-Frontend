@@ -97,6 +97,7 @@ describe('BarraPuntos Component', () => {
 
     expect(etiquetaPropia.textContent?.trim()).toBe('VOS');
     expect(etiquetaRival.textContent?.trim()).toBe('RIVAL');
+    expect(etiquetaRival.classList).toContain('bg-error');
   });
 
   it('debe mostrar el número y la meta 100 dentro de la barra', async () => {

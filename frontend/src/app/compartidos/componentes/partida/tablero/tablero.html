@@ -72,6 +72,27 @@
         (verCarta)="cartaAbierta.set($event)"
       />
     }
+    <!-- Indicador central de rotación de zona con el gatito señalando -->
+    <div
+      class="zona-aviso-cambio"
+      [class.zona-aviso-cambio--derecha]="zonaQueCambia() === 'derecha'"
+      [class.zona-aviso-cambio--izquierda]="zonaQueCambia() === 'izquierda'"
+      aria-live="polite"
+    >
+      <div class="aviso-burbuja-texto">
+        <span class="block">Esta zona va a cambiar</span>
+        <span class="block text-marca-secundaria text-[1rem] tracking-wider">el turno que sigue</span>
+      </div>
+      <div class="gatito-marco">
+        <img
+          src="/imagenes/gatito/gatito señalando.jpg"
+          alt="Gatito señalando la zona que va a cambiar"
+          class="gatito-senialando"
+          [class.flip-izquierda]="zonaQueCambia() === 'izquierda'"
+        />
+      </div>
+    </div>
+
     <app-cupon-recurso
       [valor]="servicio.cuponesPropio()"
       [maximo]="servicio.cuponMaximo()"
@@ -131,16 +152,17 @@
 </div>
 
 @if (enConteo()) {
-  <!-- Poner el boton en el medio de la pantalla de manera vertical, y al fondo -->
-  <div class="absolute bottom-15 right-5 z-50 pointer-events-auto">
+  <div class="fixed top-1/2 right-4 -translate-y-1/2 z-50 pointer-events-auto">
     <button
       type="button"
-      class="boton-saltar cursor-pointer inline-flex items-center gap-2 rounded-pildora border-2 border-borde-foco bg-fondo-hundido px-4 py-2 font-titulo text-etiqueta uppercase tracking-wider text-texto-primario shadow-cartoon transition hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      class="boton-saltar cursor-pointer inline-flex items-center gap-2.5 rounded-pildora border-4 border-borde-foco bg-marca-primaria px-5 py-2 font-titulo text-base font-black uppercase tracking-wider text-texto-sobre-claro shadow-cartoon-gruesa transition-transform hover:scale-110 active:scale-95 animate-pulse focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
       (click)="saltarConteo()"
-      aria-label="Saltar conteo de puntos (o presiona Escape)"
+      aria-label="Saltar animación de ronda"
     >
-      <span>Saltar</span>
-      <kbd class="rounded bg-fondo-hundido px-1.5 py-0.5 text-etiqueta text-texto-secundario border border-borde-default">Esc</kbd>
+      <span>Saltar animación</span>
+      <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+      </svg>
     </button>
   </div>
 }

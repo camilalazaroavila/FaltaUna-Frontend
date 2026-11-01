@@ -177,3 +177,39 @@
         display: none !important;
     }
 }
+
+@media (max-width: 1366px), (max-height: 820px) {
+    :host {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .barra-contenedor--horizontal {
+        gap: 0.35rem;
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .barra-etiqueta {
+        font-size: 0.75rem;
+        padding-inline: 0.45rem;
+        padding-block: 0.1rem;
+        flex-shrink: 0;
+    }
+
+    .barra-contenedor--horizontal .barra-cuerpo {
+        min-width: 0;
+        width: 100%;
+        max-width: 11.5rem;
+        height: 1.85rem;
+    }
+
+    .barra-numero {
+        font-size: 0.875rem;
+    }
+
+    .barra-meta {
+        font-size: 0.75rem;
+    }
+}

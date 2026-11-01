@@ -122,6 +122,7 @@
    --slot-rival-bloqueado-fondo: color-mix(in srgb, var(--fondo-hundido) 75%, #151e20);
    --slot-rival-bloqueado-borde: color-mix(in srgb, var(--color-teal-borde) 30%, transparent);
    --slot-propio-fondo: color-mix(in srgb, var(--fondo-superficie) 85%, transparent);
+   --slot-propio-borde: #ffffff;
    --slot-borde: var(--color-teal-profundo);
    --slot-resaltado: var(--marca-primaria);
    --slot-resaltado-anillo: color-mix(in srgb, var(--marca-primaria) 45%, transparent);

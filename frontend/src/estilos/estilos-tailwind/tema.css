@@ -253,6 +253,7 @@
     --color-slot-rival-bloqueado-fondo: var(--slot-rival-bloqueado-fondo);
     --color-slot-rival-bloqueado-borde: var(--slot-rival-bloqueado-borde);
     --color-slot-propio-fondo: var(--slot-propio-fondo);
+    --color-slot-propio-borde: var(--slot-propio-borde);
     --color-slot-borde: var(--slot-borde);
     --color-slot-resaltado: var(--slot-resaltado);
     --color-slot-resaltado-anillo: var(--slot-resaltado-anillo);
