@@ -31,7 +31,7 @@ describe('TutorialOverlay', () => {
 
     const host = fixture.nativeElement as HTMLElement;
 
-    expect(host.querySelector('#tutorial-titulo')?.textContent).toContain('Tu primera ronda');
+    expect(host.querySelector('#tutorial-titulo')?.textContent).toContain('Bienvenido');
 
     botonConTexto(host, 'Siguiente')?.click();
     fixture.detectChanges();
@@ -90,5 +90,46 @@ describe('TutorialOverlay', () => {
     expect(host.querySelector('.tutorial--vista-previa')).not.toBeNull();
     expect(botonConTexto(host, 'Salir')).toBeUndefined();
     expect(host.querySelector('#tutorial-titulo')?.textContent).toContain('Los cupones');
+  });
+
+  it('poseJaime devuelve si cuando se cumple la espera y la pose del paso en los demás casos', () => {
+    servicio.iniciar();
+    const fixture = TestBed.createComponent(TutorialOverlay);
+    fixture.detectChanges();
+
+    // Paso 0: pose 'si'
+    expect((fixture.componentInstance as any).poseJaime()).toBe('si');
+
+    // Avanzar a paso 1 (cupones, sin pose específica -> 'senalando')
+    servicio.siguiente();
+    fixture.detectChanges();
+    expect((fixture.componentInstance as any).poseJaime()).toBe('senalando');
+
+    // Avanzar hasta paso 3 (costo y poder, con espera 'carta-vista')
+    servicio.siguiente();
+    servicio.siguiente();
+    fixture.detectChanges();
+    expect((fixture.componentInstance as any).poseJaime()).toBe('senalando');
+
+    // Cumplir espera -> cambia a 'si'
+    servicio.notificar('carta-vista');
+    fixture.detectChanges();
+    expect((fixture.componentInstance as any).poseJaime()).toBe('si');
+  });
+
+  it('mirarHacia determina izquierda o derecha según la posición del elemento', () => {
+    const fixture = TestBed.createComponent(TutorialOverlay);
+    fixture.detectChanges();
+    const comp = fixture.componentInstance as any;
+
+    comp.posicion.set({ top: 100, left: 300, width: 200 }); // centro = 400
+
+    // Elemento a la derecha (centro = 600)
+    comp.mirarHacia({ left: 550, width: 100 } as DOMRect);
+    expect(comp.mira()).toBe('derecha');
+
+    // Elemento a la izquierda (centro = 100)
+    comp.mirarHacia({ left: 50, width: 100 } as DOMRect);
+    expect(comp.mira()).toBe('izquierda');
   });
 });

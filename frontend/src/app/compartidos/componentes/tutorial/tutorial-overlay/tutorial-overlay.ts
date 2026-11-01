@@ -11,11 +11,15 @@ import {
   input,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import { Jaime } from '@compartidos/componentes/tutorial/jaime/jaime';
+import type { MiradaJaime, PoseJaime } from '@compartidos/componentes/tutorial/jaime/jaime';
 import { PASO_VISTA_PREVIA } from '@compartidos/componentes/tutorial/tutorial.pasos';
 import { TutorialServicio } from '@compartidos/componentes/tutorial/tutorial.servicio';
+import { SonidoService, SONIDOS_PARTIDA } from '@servicios/sonido.service';
 
 interface Rectangulo {
   readonly top: number;
@@ -54,17 +58,32 @@ const limitar = (valor: number, minimo: number, maximo: number): number =>
   templateUrl: './tutorial-overlay.html',
   styleUrl: './tutorial-overlay.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Boton],
+  imports: [Boton, Jaime],
 })
 export class TutorialOverlay {
   private readonly servicio = inject(TutorialServicio);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly sonidos = inject(SonidoService, { optional: true });
   private readonly globo = viewChild<ElementRef<HTMLElement>>('globo');
 
   /** Muestra el overlay estático dentro de un contenedor (galería). */
   readonly vistaPrevia = input(false);
   readonly salir = output<void>();
   readonly terminar = output<void>();
+
+  protected readonly mira = signal<MiradaJaime>('derecha');
+  /** Sin elemento resaltado: presentación, cierre o ancla no encontrada. */
+  protected readonly centrado = computed(() => !this.rect());
+  protected readonly poseJaime = computed<PoseJaime>(() => {
+    const paso = this.paso();
+
+    // Al cumplir la acción pedida, Jaime festeja.
+    if (paso.espera && this.esperaCumplida()) {
+      return 'si';
+    }
+
+    return paso.pose ?? 'senalando';
+  });
 
   protected readonly activo = computed(() => this.vistaPrevia() || this.servicio.activo());
   protected readonly paso = computed(() =>
@@ -114,6 +133,22 @@ export class TutorialOverlay {
       // en el tablero para no interrumpir el arrastre.
       if (!paso.espera) {
         queueMicrotask(() => this.globo()?.nativeElement.focus());
+      }
+    });
+
+    effect(() => {
+      this.servicio.indice();
+
+      if (!this.activo() || this.vistaPrevia()) {
+        return;
+      }
+
+      untracked(() => this.sonar('pop'));
+    });
+
+    effect(() => {
+      if (!this.vistaPrevia() && this.paso().espera && this.esperaCumplida()) {
+        untracked(() => this.sonar('ping'));
       }
     });
 
@@ -195,6 +230,18 @@ export class TutorialOverlay {
     this.salir.emit();
   }
 
+  /** PENDIENTE: enganchar el servicio de sonidos que ya usan los botones. */
+  private sonar(tipo: 'pop' | 'ping'): void {
+    if (!this.sonidos) {
+      return;
+    }
+    if (tipo === 'pop') {
+      this.sonidos.reproducir(SONIDOS_PARTIDA.boton, 0.25);
+    } else {
+      this.sonidos.reproducir(SONIDOS_PARTIDA.estrellitas, 0.35);
+    }
+  }
+
   private medir(): void {
     if (typeof window === 'undefined' || typeof document === 'undefined') {
       return;
@@ -202,6 +249,7 @@ export class TutorialOverlay {
 
     if (this.vistaPrevia()) {
       this.rect.set(null);
+      this.mira.set('derecha');
       this.centrarGlobo();
       return;
     }
@@ -210,6 +258,7 @@ export class TutorialOverlay {
 
     if (!ancla) {
       this.rect.set(null);
+      this.mira.set('derecha');
       this.centrarGlobo();
       return;
     }
@@ -218,6 +267,7 @@ export class TutorialOverlay {
 
     if (!objetivo) {
       this.rect.set(null);
+      this.mira.set('derecha');
       this.centrarGlobo();
       return;
     }
@@ -231,6 +281,16 @@ export class TutorialOverlay {
       height: caja.height + 12,
     });
     this.posicionarGlobo(caja);
+    this.mirarHacia(caja);
+  }
+
+  /** Jaime mira hacia el lado donde está el elemento resaltado. */
+  private mirarHacia(caja: DOMRect): void {
+    const globo = this.posicion();
+    const centroGlobo = globo.left + globo.width / 2;
+    const centroObjetivo = caja.left + caja.width / 2;
+
+    this.mira.set(centroObjetivo < centroGlobo ? 'izquierda' : 'derecha');
   }
 
   private posicionarGlobo(caja: DOMRect): void {

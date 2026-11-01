@@ -27,4 +27,55 @@
       </p>
     </div>
   </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="app-jaime"
+    descripcion="Mascota del tutorial en sus 3 poses (señalando, sí, no) y tamaños (sm, lg) con volteo según mirada."
+  >
+    <div class="space-y-6">
+      <div>
+        <h4 class="mb-2 font-interfaz text-xs uppercase tracking-wider text-texto-secundario">
+          Poses y orientación (tamaño sm)
+        </h4>
+        <div class="flex flex-wrap items-end gap-6 rounded-lg border border-borde-default bg-fondo-elevado p-4">
+          <div class="text-center">
+            <app-jaime pose="senalando" mirada="derecha" tamanio="sm" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Señalando (der)</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="senalando" mirada="izquierda" tamanio="sm" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Señalando (izq)</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="si" mirada="derecha" tamanio="sm" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Sí</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="no" mirada="derecha" tamanio="sm" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">No</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="mb-2 font-interfaz text-xs uppercase tracking-wider text-texto-secundario">
+          Tamaño grande (lg, centrado en presentación y cierre)
+        </h4>
+        <div class="flex flex-wrap items-end gap-8 rounded-lg border border-borde-default bg-fondo-elevado p-4">
+          <div class="text-center">
+            <app-jaime pose="si" tamanio="lg" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Sí (lg)</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="no" tamanio="lg" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">No (lg)</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="senalando" tamanio="lg" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Señalando (lg)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </app-tarjeta-muestra>
 </div>

@@ -45,11 +45,22 @@
         }
       </div>
 
-      <h2 id="tutorial-titulo" class="mt-2 font-titulo text-subtitulo text-texto-primario">
-        {{ paso().titulo }}
-      </h2>
+      <div
+        class="mt-2 flex items-center gap-3"
+        [class.flex-col]="centrado()"
+        [class.text-center]="centrado()"
+      >
+        <app-jaime [pose]="poseJaime()" [mirada]="mira()" [tamanio]="centrado() ? 'lg' : 'sm'" />
 
-      <p class="mt-1.5 font-cuerpo text-menor text-texto-secundario">
+        <h2 id="tutorial-titulo" class="font-titulo text-subtitulo text-texto-primario">
+          {{ paso().titulo }}
+        </h2>
+      </div>
+
+      <p
+        class="mt-1.5 font-cuerpo text-menor text-texto-secundario"
+        [class.text-center]="centrado()"
+      >
         {{ paso().texto }}
       </p>
 

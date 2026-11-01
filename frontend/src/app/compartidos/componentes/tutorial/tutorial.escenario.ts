@@ -1,9 +1,7 @@
 import type { Carta } from '@modelos/carta.model';
 import type { SlotsLado } from '@modelos/partida.model';
-import {
-  SLOTS_POR_LADO,
-  type EscenarioPartidaTutorial,
-} from '@servicios/servicios-partida/partida-estado.service';
+import { SLOTS_POR_LADO } from '@modelos/partida.model';
+import type { EscenarioPartidaTutorial } from '@servicios/servicios-partida/partida-estado.service';
 import { ZONAS_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
 
 /**

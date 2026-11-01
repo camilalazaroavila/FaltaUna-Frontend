@@ -58,7 +58,7 @@
   max-height: calc(100dvh - 1.5rem);
   overflow-y: auto;
   pointer-events: auto;
-  animation: tutorial-globo-entra 260ms ease-out both;
+  animation: tutorial-globo-entra 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 .tutorial__globo:focus-visible {
@@ -88,7 +88,7 @@
 @keyframes tutorial-globo-entra {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(10px) scale(0.9);
   }
 
   to {
