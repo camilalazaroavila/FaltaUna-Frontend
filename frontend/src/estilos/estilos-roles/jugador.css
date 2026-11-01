@@ -113,14 +113,15 @@
    --interletrado-titulo: 0.02em;
    --interletrado-etiqueta: 0.06em;
 
-   /* --- Tablero de partida --- */
-   --tablero-fondo: linear-gradient(to bottom,
-         color-mix(in srgb, var(--color-teal-superficie) 45%, var(--color-gris-teal)) 0%,
-         var(--color-amarillo-logo) 100%);
+      /* --- Tablero de partida --- */
+   /* Fondo neutro y sólido del sistema, sin degradados */
+   --tablero-fondo: var(--fondo-app);
 
-   /* Slots: el rival arriba (claro), el propio abajo (oscuro), como en el diseño del tablero */
-   --slot-rival-fondo: var(--color-amarillo-logo);
-   --slot-propio-fondo: var(--color-teal-superficie);
+   /* Slots: diferenciados por tono neutro (hundido para rival, superficie para aliado) */
+   --slot-rival-fondo: color-mix(in srgb, var(--fondo-hundido) 80%, black);
+   --slot-rival-bloqueado-fondo: color-mix(in srgb, var(--fondo-hundido) 75%, #151e20);
+   --slot-rival-bloqueado-borde: color-mix(in srgb, var(--color-teal-borde) 30%, transparent);
+   --slot-propio-fondo: color-mix(in srgb, var(--fondo-superficie) 85%, transparent);
    --slot-borde: var(--color-teal-profundo);
    --slot-resaltado: var(--marca-primaria);
    --slot-resaltado-anillo: color-mix(in srgb, var(--marca-primaria) 45%, transparent);

@@ -245,11 +245,13 @@
     --background-image-landing-gradiente-amarillo-verde: var(--landing-gradiente-amarillo-verde);
     --background-image-usuario-gradiente-amarillo-verde: var(--usuario-gradiente-amarillo-verde);
 
-    /* Tablero de partida: el degradado va en `background-image` para que
-       `bg-tablero-fondo` genere `background-image` y no `background-color`. */
-    --background-image-tablero-fondo: var(--tablero-fondo);
+    /* Tablero de partida: fondo sólido y neutro */
+    --color-tablero-fondo: var(--tablero-fondo);
+    --background-image-tablero-fondo: none;
 
     --color-slot-rival-fondo: var(--slot-rival-fondo);
+    --color-slot-rival-bloqueado-fondo: var(--slot-rival-bloqueado-fondo);
+    --color-slot-rival-bloqueado-borde: var(--slot-rival-bloqueado-borde);
     --color-slot-propio-fondo: var(--slot-propio-fondo);
     --color-slot-borde: var(--slot-borde);
     --color-slot-resaltado: var(--slot-resaltado);

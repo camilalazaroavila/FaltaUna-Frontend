@@ -111,13 +111,23 @@ export class Zona implements AfterViewInit {
   /** Burbuja de puntaje flotante activa para un slot de esta zona durante el conteo. */
   readonly burbujaActiva = input<PasoBurbuja | null>(null);
 
-  protected readonly efectosCategoria = computed(() => {
+    protected readonly efectosCategoria = computed(() => {
     const zona = this.zona();
     if (zona.efectosCategoria && zona.efectosCategoria.length > 0) {
       return zona.efectosCategoria;
     }
     return this.calcularEfectosCategoria(zona);
   });
+
+  /** Efectos positivos (mejora) ubicados a la izquierda de la zona. */
+  protected readonly efectosSube = computed(() =>
+    this.efectosCategoria().filter((e) => e.tipo === 'sube'),
+  );
+
+  /** Efectos negativos (empeora) ubicados a la derecha de la zona. */
+  protected readonly efectosBaja = computed(() =>
+    this.efectosCategoria().filter((e) => e.tipo === 'baja'),
+  );
 
 
   readonly verCarta = output<Carta>();

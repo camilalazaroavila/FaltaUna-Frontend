@@ -107,6 +107,31 @@ describe('Zona', () => {
     expect(indicador).toBeTruthy();
   });
 
+  it('muestra indicadores separados a cada lado: mejora a la izquierda y empeora a la derecha', () => {
+    fixture.componentRef.setInput('zona', {
+      ...ZONAS_MOCK[0],
+      efectosCategoria: [
+        { tipo: 'sube', categoria: 'gastronomia', valor: 2 },
+        { tipo: 'baja', categoria: 'cosmeticos', valor: -1 },
+      ],
+    });
+    fixture.detectChanges();
+
+    const indicadorIzq = fixture.nativeElement.querySelector('.zona-indicadores-categoria--izq app-indicador-categorias-habilidad');
+    const indicadorDer = fixture.nativeElement.querySelector('.zona-indicadores-categoria--der app-indicador-categorias-habilidad');
+
+    expect(indicadorIzq).toBeTruthy();
+    expect(indicadorDer).toBeTruthy();
+  });
+
+  it('muestra las etiquetas de lado claramente identificadas (Rival y Tu lado)', () => {
+    const etiquetaRival = fixture.nativeElement.querySelector('.zona-etiqueta-lado--rival');
+    const etiquetaPropio = fixture.nativeElement.querySelector('.zona-etiqueta-lado--propio');
+
+    expect(etiquetaRival?.textContent).toContain('Rival');
+    expect(etiquetaPropio?.textContent).toContain('Tu lado');
+  });
+
   it('no muestra el indicador de categorías cuando la zona no tiene efectos', () => {
     fixture.componentRef.setInput('zona', {
       ...ZONAS_MOCK[0],

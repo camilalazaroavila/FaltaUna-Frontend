@@ -1,56 +1,50 @@
-<div class="tablero rounded-lg bg-tablero-fondo">
-  <!-- Rival: arriba a la derecha (chip arriba, mano oculta debajo) -->
-  <div class="area-rival">
-    <app-jugador-chip
-      [nombre]="servicio.jugadores().rival.nombre"
-      [avatarUrl]="servicio.jugadores().rival.avatarUrl"
-      lado="rival"
-      tamanio="lg"
-    />
+<div class="tablero rounded-lg">
+  <!-- Fila 1: Cabecera del Rival (Chip + Mano + Barra Horizontal de Puntos) -->
+  <header class="area-cabecera-rival">
+    <div class="area-rival">
+      <app-jugador-chip
+        [nombre]="servicio.jugadores().rival.nombre"
+        [avatarUrl]="servicio.jugadores().rival.avatarUrl"
+        lado="rival"
+        tamanio="lg"
+      />
 
-    <div
-      class="rival-mano"
-      role="img"
-      [attr.aria-label]="'El rival tiene ' + servicio.cartasManoRival() + ' cartas en la mano'"
-    >
-      <span class="flex items-center" aria-hidden="true">
-        @for (reverso of reversosRival(); track reverso.indice) {
-          <span
-            class="reverso-rival aspect-[3/4] shrink-0 rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
-            [style.--angulo]="reverso.angulo"
-          ></span>
-        }
-      </span>
-      <span
-        class="shrink-0 rounded-pildora border-2 border-zona-marco bg-hundido px-2 font-titulo text-etiqueta tabular-nums text-texto-primario"
-        aria-hidden="true"
+      <div
+        class="rival-mano"
+        role="img"
+        [attr.aria-label]="'El rival tiene ' + servicio.cartasManoRival() + ' cartas en la mano'"
       >
-        ×{{ servicio.cartasManoRival() }}
-      </span>
+        <span class="flex items-center" aria-hidden="true">
+          @for (reverso of reversosRival(); track reverso.indice) {
+            <span
+              class="reverso-rival aspect-[3/4] shrink-0 rounded-sm border-2 border-[var(--color-gris-teal)] bg-carta-reverso shadow-cartoon"
+              [style.--angulo]="reverso.angulo"
+            ></span>
+          }
+        </span>
+        <span
+          class="shrink-0 rounded-pildora border-2 border-zona-marco bg-hundido px-2 font-titulo text-etiqueta tabular-nums text-texto-primario"
+          aria-hidden="true"
+        >
+          ×{{ servicio.cartasManoRival() }}
+        </span>
+      </div>
     </div>
-  </div>
 
-  <div class="area-barra-propia">
-    <app-barra-puntos
-      [puntos]="puntosBarraPropiaVisual()"
-      [maximo]="servicio.puntosMaximos()"
-      [delta]="deltaBarraPropiaVisual()"
-      [cargando]="barraCargando()"
-      lado="propio"
-    />
-  </div>
+    <!-- Barra horizontal de puntos del rival -->
+    <div class="area-barra-rival">
+      <app-barra-puntos
+        [puntos]="puntosBarraRivalVisual()"
+        [maximo]="servicio.puntosMaximos()"
+        [delta]="deltaBarraRivalVisual()"
+        [cargando]="barraCargando()"
+        lado="rival"
+      />
+    </div>
+  </header>
 
-  <div class="area-barra-rival">
-    <app-barra-puntos
-      [puntos]="puntosBarraRivalVisual()"
-      [maximo]="servicio.puntosMaximos()"
-      [delta]="deltaBarraRivalVisual()"
-      [cargando]="barraCargando()"
-      lado="rival"
-    />
-  </div>
-
-  <div class="area-zonas">
+  <!-- Fila 2: Zonas de combate (ocupa todo el ancho central del tablero) -->
+  <main class="area-zonas">
     @for (lugar of lugares; track lugar) {
       @let datos = servicio.lugares()[lugar];
       @let puntaje = servicio.puntajes()[lugar];
@@ -83,48 +77,65 @@
       [maximo]="servicio.cuponMaximo()"
       variante="completa"
     />
-  </div>
+  </main>
 
-  <div class="area-mano">
-    <app-mano
-      [cartas]="servicio.manoPropia()"
-      [referencia]="host"
-      (ver)="cartaAbierta.set($event)"
-      (arrastreInicio)="alIniciarArrastre($event)"
-      (arrastreFin)="alTerminarArrastre($event)"
-      (seleccion)="alSeleccionar($event)"
-    />
-  </div>
+  <!-- Fila 3: Pie inferior (Jugador propio a la izquierda, Mano al centro, Control a la derecha) -->
+  <footer class="area-inferior">
+    <div class="area-jugador-propio">
+      <div class="area-propio">
+        <app-jugador-chip
+          [nombre]="servicio.jugadores().propio.nombre"
+          [avatarUrl]="servicio.jugadores().propio.avatarUrl"
+          lado="propio"
+          tamanio="lg"
+        />
+      </div>
 
-  <div class="area-propio">
-    <app-jugador-chip
-      [nombre]="servicio.jugadores().propio.nombre"
-      [avatarUrl]="servicio.jugadores().propio.avatarUrl"
-      lado="propio"
-      tamanio="lg"
-    />
-  </div>
+      <!-- Barra horizontal de puntos propia -->
+      <div class="area-barra-propia">
+        <app-barra-puntos
+          [puntos]="puntosBarraPropiaVisual()"
+          [maximo]="servicio.puntosMaximos()"
+          [delta]="deltaBarraPropiaVisual()"
+          [cargando]="barraCargando()"
+          lado="propio"
+        />
+      </div>
+    </div>
 
-  <div class="area-control">
-    <app-control-turno
-      [turno]="servicio.turno()"
-      [totalTurnos]="servicio.rondasTotales()"
-      [segundosRestantes]="servicio.segundosRestantes()"
-      [segundosTotales]="servicio.segundosTotales()"
-      [estado]="enConteo() ? 'resolviendo' : servicio.estadoRonda()"
-      [terminada]="servicio.terminada()"
-      (finalizar)="servicio.marcarListo()"
-      (abandonar)="abandonar.emit()"
-      (rendirse)="rendirse.emit()"
-    />
-  </div>
+    <div class="area-mano">
+      <app-mano
+        [cartas]="servicio.manoPropia()"
+        [referencia]="host"
+        (ver)="cartaAbierta.set($event)"
+        (arrastreInicio)="alIniciarArrastre($event)"
+        (arrastreFin)="alTerminarArrastre($event)"
+        (seleccion)="alSeleccionar($event)"
+      />
+    </div>
+
+    <div class="area-control">
+      <app-control-turno
+        [turno]="servicio.turno()"
+        [totalTurnos]="servicio.rondasTotales()"
+        [segundosRestantes]="servicio.segundosRestantes()"
+        [segundosTotales]="servicio.segundosTotales()"
+        [estado]="enConteo() ? 'resolviendo' : servicio.estadoRonda()"
+        [terminada]="servicio.terminada()"
+        (finalizar)="servicio.marcarListo()"
+        (abandonar)="abandonar.emit()"
+        (rendirse)="rendirse.emit()"
+      />
+    </div>
+  </footer>
 </div>
 
 @if (enConteo()) {
-  <div class="fixed top-4 right-4 z-50 pointer-events-auto">
+  <!-- Poner el boton en el medio de la pantalla de manera vertical, y al fondo -->
+  <div class="absolute bottom-15 right-5 z-50 pointer-events-auto">
     <button
       type="button"
-      class="boton-saltar cursor-pointer inline-flex items-center gap-2 rounded-pildora border-2 border-borde-foco bg-superficie-elevada px-4 py-2 font-titulo text-etiqueta uppercase tracking-wider text-texto-primario shadow-cartoon transition hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+      class="boton-saltar cursor-pointer inline-flex items-center gap-2 rounded-pildora border-2 border-borde-foco bg-fondo-hundido px-4 py-2 font-titulo text-etiqueta uppercase tracking-wider text-texto-primario shadow-cartoon transition hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
       (click)="saltarConteo()"
       aria-label="Saltar conteo de puntos (o presiona Escape)"
     >

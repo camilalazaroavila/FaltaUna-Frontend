@@ -35,8 +35,8 @@
 }
 
 :host(.indicador--md) .indicador-item {
-  width: 2rem;
-  height: 2rem;
+  width: 3.2rem;
+  height: 3.2rem;
 }
 
 .indicador-item--sube {
@@ -64,8 +64,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 0.85rem;
-  height: 0.85rem;
+  width: 1rem;
+  height: 1rem;
   border-radius: var(--radio-pildora);
   font-family: var(--fuente-titulo);
   font-size: 0.65rem;

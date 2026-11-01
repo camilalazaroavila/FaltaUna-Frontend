@@ -89,17 +89,26 @@ describe('BarraPuntos Component', () => {
     expect(barra('rival').getAttribute('aria-valuenow')).toBe('42');
   });
 
-  it('debe mostrar el número a un costado de la barra', async () => {
+  it('debe mostrar las etiquetas visibles fijas VOS y RIVAL', async () => {
+    const { fixture } = await configurar();
+
+    const etiquetaPropia = fixture.debugElement.query(By.css('#propia .barra-etiqueta')).nativeElement;
+    const etiquetaRival = fixture.debugElement.query(By.css('#rival .barra-etiqueta')).nativeElement;
+
+    expect(etiquetaPropia.textContent?.trim()).toBe('VOS');
+    expect(etiquetaRival.textContent?.trim()).toBe('RIVAL');
+  });
+
+  it('debe mostrar el número y la meta 100 dentro de la barra', async () => {
     const { fixture } = await configurar();
 
     fixture.componentInstance.puntos.set(37);
     fixture.detectChanges();
 
-    const etiquetas = Array.from(
-      fixture.debugElement.query(By.css('#propia')).nativeElement.querySelectorAll('span'),
-    ).map((nodo) => nodo.textContent?.trim());
+    const textoBarra = fixture.debugElement.query(By.css('#propia .barra-cuerpo')).nativeElement.textContent;
 
-    expect(etiquetas).toContain('37');
+    expect(textoBarra).toContain('37');
+    expect(textoBarra).toContain('/ 100');
   });
 
   it('debe pintar el relleno con el token del lado', async () => {
@@ -109,19 +118,24 @@ describe('BarraPuntos Component', () => {
     expect(relleno('rival').classList.contains('bg-barra-puntos-rival-relleno')).toBe(true);
   });
 
-  it('debe animar la altura del relleno con una transición CSS', async () => {
+  it('debe animar el ancho del relleno de izquierda a derecha con una transición CSS', async () => {
     const { fixture, relleno } = await configurar();
 
-    const el = relleno('propia');
+    const elPropia = relleno('propia');
+    const elRival = relleno('rival');
 
-    expect(el.classList.contains('transition-[height]')).toBe(true);
-    expect(el.classList.contains('motion-reduce:transition-none')).toBe(true);
-    expect(el.style.height).toBe('calc(0% - 4px)');
+    expect(elPropia.classList.contains('transition-[width]')).toBe(true);
+    expect(elPropia.classList.contains('motion-reduce:transition-none')).toBe(true);
+    expect(elPropia.classList.contains('left-0.5')).toBe(true);
+    expect(elPropia.style.width).toBe('calc(0% - 4px)');
+
+    // Ambos crecen de izquierda a derecha
+    expect(elRival.classList.contains('left-0.5')).toBe(true);
 
     fixture.componentInstance.puntos.set(50);
     fixture.detectChanges();
 
-    expect(relleno('propia').style.height).toBe('calc(50% - 4px)');
+    expect(elPropia.style.width).toBe('calc(50% - 4px)');
   });
 
   it('debe mostrar el signo del delta y lanzar su animación', async () => {
@@ -134,8 +148,8 @@ describe('BarraPuntos Component', () => {
     expect(el.textContent?.trim()).toBe('+5');
     expect(doble.gsap.fromTo).toHaveBeenCalledWith(
       el,
-      { y: 6, opacity: 0, scale: 0.7 },
-      expect.objectContaining({ y: -30, opacity: 1, scale: 1.3 }),
+      { y: 4, opacity: 0, scale: 0.7 },
+      expect.objectContaining({ y: -18, opacity: 1, scale: 1.25 }),
     );
   });
 
