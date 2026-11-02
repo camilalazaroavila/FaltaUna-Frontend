@@ -286,9 +286,17 @@ export class PartidaServicio {
   /** `true` mientras se está cerrando la ronda o abandonando. */
   readonly confirmando = this.confirmandoSignal.asReadonly();
   /** La partida terminó (no se puede seguir jugando). */
-  readonly terminada = computed(() => this.estadoRealSignal()?.terminada ?? false);
+  readonly terminada = computed(() => {
+    if (this.modoRealSignal()) {
+      return this.estadoRealSignal()?.terminada ?? false;
+    }
+    return this.mock.terminada();
+  });
   /** El jugador ganó la partida (`null` si sigue en curso o terminó empatada). */
   readonly gane = computed(() => {
+    if (!this.modoRealSignal()) {
+      return this.mock.terminada() ? true : null;
+    }
     const fin = this.resultadoFinalSignal();
     if (fin && fin.ganador) {
       if (fin.ganador === 'empate') {
@@ -646,6 +654,24 @@ export class PartidaServicio {
     }
 
     this.mock.restaurarEscenario();
+  }
+
+  /** Salta la partida a las rondas finales (5 y 6) con 5 cupones (solo mock). */
+  saltarARondasDecisivasTutorial(): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.saltarARondasDecisivasTutorial();
+  }
+
+  /** Simula el turno del bot en el juego libre contra la máquina (solo mock). */
+  simularTurnoPracticaBot(): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.simularTurnoPracticaBot();
   }
 
   /**

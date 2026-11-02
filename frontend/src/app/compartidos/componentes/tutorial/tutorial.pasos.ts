@@ -44,6 +44,13 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
       'El juego se disputa en dos zonas, una a cada lado. Cada una tiene un local y un efecto que puede subir o bajar el poder de ciertas categorías. Ojo con eso.',
   },
   {
+    ancla: 'zona-izquierda',
+    titulo: 'Efectos de cartas y locales',
+    texto:
+      'Al lado de la foto de cada zona ves los modificadores de categoría (+ y −). Grido, por ejemplo, suma +1 a Gastronomía. Además, fijate en las habilidades de tus cartas: combinarlas con el local correcto es la clave para ganar.',
+    pista: 'Mirá los iconos de suma y resta junto al logo del local.',
+  },
+  {
     pose: 'no',
     ancla: 'slots-propios',
     titulo: 'Dónde bajar cartas',
@@ -55,7 +62,7 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
     ancla: 'slots-propios',
     titulo: 'Ahora te toca a vos',
     texto:
-      'Bajá una carta a uno de tus casilleros de la izquierda y mirá cómo su poder se suma al marcador.',
+      'Bajá a Danonino (1 cupón) a un casillero de la izquierda: al ser de Gastronomía, ¡el local le sumará +1 de poder automáticamente!',
     espera: 'carta-jugada',
     pista: 'Arrastrá la carta o usá el botón del casillero resaltado.',
   },
@@ -68,7 +75,7 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
     pista: 'El botón muestra el número de ronda, por ejemplo 1/6.',
   },
   {
-    ancla: 'zonas',
+    ancla: 'zona-izquierda',
     titulo: 'Puntajes por diferencia',
     texto:
       '¡Mirá los marcadores de las zonas! Los puntajes se restan: si en una zona el rival tiene 5 de poder y vos 4, él suma solo 1 punto (la diferencia) y vos 0. Quien sume más poder en la zona se lleva los puntos.',
@@ -91,10 +98,10 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
   },
   {
     pose: 'si',
-    titulo: '¡A jugar!',
+    titulo: '¡Rondas 5 y 6 hacia la victoria!',
     texto:
-      '¡Ya conocés todas las reglas básicas de Falta Una! Podés seguir jugando esta partida contra el bot hasta terminarla o rendirte en cualquier momento. ¡Muchos éxitos!',
-    pista: 'Elegí "Seguir jugando" para continuar o "Volver al menú".',
+      '¡Ya dominás las reglas! Para ver la acción completa, te salteo a las rondas finales con 5 cupones y cartas poderosas. ¡Encadená efectos y ganale al bot!',
+    pista: 'Elegí "Seguir jugando" para las rondas finales o "Volver al menú".',
   },
 ];
 

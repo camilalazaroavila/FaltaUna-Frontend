@@ -15,6 +15,7 @@ import type {
   ZonaTablero,
 } from '@modelos/partida.model';
 import { JUGADORES_MOCK, ZONAS_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
+import { CARTAS_FINALES_TUTORIAL } from '@compartidos/componentes/tutorial/tutorial.escenario';
 
 
 const NOMBRES_LUGAR: readonly NombreLugar[] = ['izquierda', 'derecha'];
@@ -121,6 +122,8 @@ export class PartidaEstadoService {
   /** Se incrementa en cada rotación. */
   readonly rotaciones = this.estadoRotaciones.asReadonly();
   /** Texto para la región aria-live. */
+  private readonly estadoTerminada = signal(false);
+  readonly terminada = this.estadoTerminada.asReadonly();
   readonly anuncio = this.estadoAnuncio.asReadonly();
   readonly estadoRondaMock = this.estadoRonda.asReadonly();
   readonly resolviendo = computed(() => this.estadoRonda() === 'resolviendo');
@@ -297,12 +300,13 @@ export class PartidaEstadoService {
     this.estadoDeltas.set({ ...DELTAS_VACIOS });
     this.estadoRotaciones.set(0);
     this.estadoRonda.set('jugando');
+    this.estadoTerminada.set(false);
     this.estadoAnuncio.set('Tutorial: ronda de práctica.');
   }
 
   /**
    * MOCK: cierra la ronda del tutorial. El bot revela una carta y, después de
-   * una pausa, se actualizan los marcadores con los puntos de cada zona.
+   * una pausa, se actualizan los marcadores con los puntos de cada zona por diferencia.
    */
   cerrarRondaGuionadaTutorial(cartaRival: Carta, lugar: NombreLugar): void {
     this.limpiarTemporizadorGuionado();
@@ -321,17 +325,138 @@ export class PartidaEstadoService {
 
       const puntos = this.puntajes();
 
-      this.estadoBarraPropia.set(puntos.izquierda.propio + puntos.derecha.propio);
-      this.estadoBarraRival.set(puntos.izquierda.rival + puntos.derecha.rival);
+      // Puntuación por diferencia en cada zona
+      const difIzq = puntos.izquierda.propio - puntos.izquierda.rival;
+      const difDer = puntos.derecha.propio - puntos.derecha.rival;
+
+      const deltaPropioIzq = difIzq > 0 ? difIzq : 0;
+      const deltaRivalIzq = difIzq < 0 ? Math.abs(difIzq) : 0;
+      const deltaPropioDer = difDer > 0 ? difDer : 0;
+      const deltaRivalDer = difDer < 0 ? Math.abs(difDer) : 0;
+
+      const sumaPropia = deltaPropioIzq + deltaPropioDer;
+      const sumaRival = deltaRivalIzq + deltaRivalDer;
+
+      this.estadoBarraPropia.set(sumaPropia);
+      this.estadoBarraRival.set(sumaRival);
       this.estadoDeltas.set({
-        izquierda: { propio: puntos.izquierda.propio, rival: puntos.izquierda.rival },
-        derecha: { propio: puntos.derecha.propio, rival: puntos.derecha.rival },
+        izquierda: { propio: deltaPropioIzq, rival: deltaRivalIzq },
+        derecha: { propio: deltaPropioDer, rival: deltaRivalDer },
       });
       this.estadoTurno.set(2);
       this.estadoCupones.set(2);
       this.estadoCuponMaximo.set(2);
       this.estadoRonda.set('jugando');
-      this.estadoAnuncio.set('Ronda guiada completada. Así se suman los puntos.');
+      this.estadoAnuncio.set('Ronda guiada completada. Así se suman los puntos por diferencia.');
+      this.temporizadorGuionado = undefined;
+    }, 1200);
+  }
+
+  /**
+   * MOCK: salta la partida a las rondas decisivas 5 y 6 con 5 cupones,
+   * cartas reales con habilidades y puntuación previa para jugar hasta ganar.
+   */
+  saltarARondasDecisivasTutorial(): void {
+    this.limpiarTemporizadorGuionado();
+    this.estadoTurno.set(5);
+    this.estadoCupones.set(5);
+    this.estadoCuponMaximo.set(5);
+    this.estadoBarraPropia.set(58);
+    this.estadoBarraRival.set(40);
+    this.estadoManoPropia.set([...CARTAS_FINALES_TUTORIAL]);
+    this.rotarZonas();
+    this.estadoRonda.set('jugando');
+    this.estadoTerminada.set(false);
+    this.estadoAnuncio.set('¡Ronda 5 de 6! Tenés 5 cupones. Bajá tus mejores cartas.');
+  }
+
+  /**
+   * MOCK: simula el turno del bot en el juego libre / rondas finales.
+   * El bot juega una carta, se calculan deltas por diferencia y avanza
+   * a la siguiente ronda (o culmina en victoria al terminar ronda 6).
+   */
+  simularTurnoPracticaBot(): void {
+    this.limpiarTemporizadorGuionado();
+    this.estadoRonda.set('resolviendo');
+    const turnoActual = this.estadoTurno();
+    this.estadoAnuncio.set('El bot está jugando su carta...');
+
+    const cartasBotPool: readonly Carta[] = [
+      {
+        id: 'c-bot-1',
+        nombre: 'Cine Royal',
+        imagenUrl: 'imagenes/lego.png',
+        rareza: 'comun',
+        categoria: 'entretenimiento',
+        atributoIzquierdo: 2,
+        atributoDerecho: 3,
+        obtenida: true,
+        jugable: true,
+        descripcionHabilidad: 'Aporte de entretenimiento del rival.',
+      },
+      {
+        id: 'c-bot-2',
+        nombre: 'Grido Frutilla',
+        imagenUrl: 'imagenes/grido.jpg',
+        rareza: 'comun',
+        categoria: 'gastronomia',
+        atributoIzquierdo: 2,
+        atributoDerecho: 3,
+        obtenida: true,
+        jugable: true,
+        descripcionHabilidad: 'Delicioso helado que suma poder.',
+      },
+    ];
+
+    this.temporizadorGuionado = setTimeout(() => {
+      const cartaBot = cartasBotPool[turnoActual % cartasBotPool.length];
+      const lugares = this.estadoLugares();
+      const lugarElegido: NombreLugar =
+        lugares.derecha.rival.some((c) => c === null) ? 'derecha' : 'izquierda';
+
+      this.estadoLugares.update((lugs) => {
+        const rival = lugs[lugarElegido].rival;
+        const indiceLibre = rival.findIndex((carta) => carta === null);
+        const destino = indiceLibre === -1 ? rival.length - 1 : indiceLibre;
+        const nuevosRival = rival.map((carta, i) => (i === destino ? cartaBot : carta));
+        return { ...lugs, [lugarElegido]: { ...lugs[lugarElegido], rival: nuevosRival } };
+      });
+
+      const puntos = this.puntajes();
+      const difIzq = puntos.izquierda.propio - puntos.izquierda.rival;
+      const difDer = puntos.derecha.propio - puntos.derecha.rival;
+
+      const deltaPropioIzq = difIzq > 0 ? difIzq : 0;
+      const deltaRivalIzq = difIzq < 0 ? Math.abs(difIzq) : 0;
+      const deltaPropioDer = difDer > 0 ? difDer : 0;
+      const deltaRivalDer = difDer < 0 ? Math.abs(difDer) : 0;
+
+      const sumaPropia = deltaPropioIzq + deltaPropioDer;
+      const sumaRival = deltaRivalIzq + deltaRivalDer;
+
+      const nuevaBarraPropia = this.estadoBarraPropia() + sumaPropia;
+      const nuevaBarraRival = this.estadoBarraRival() + sumaRival;
+
+      this.estadoBarraPropia.set(nuevaBarraPropia);
+      this.estadoBarraRival.set(nuevaBarraRival);
+      this.estadoDeltas.set({
+        izquierda: { propio: deltaPropioIzq, rival: deltaRivalIzq },
+        derecha: { propio: deltaPropioDer, rival: deltaRivalDer },
+      });
+
+      const siguienteTurno = turnoActual + 1;
+      if (siguienteTurno > 6 || nuevaBarraPropia >= 100) {
+        this.estadoTerminada.set(true);
+        this.estadoRonda.set('jugando');
+        this.estadoAnuncio.set('¡Victoria! Has superado al bot.');
+      } else {
+        this.estadoTurno.set(siguienteTurno);
+        this.estadoCupones.set(siguienteTurno);
+        this.estadoCuponMaximo.set(siguienteTurno);
+        this.rotarZonas();
+        this.estadoRonda.set('jugando');
+        this.estadoAnuncio.set(`Ronda final ${siguienteTurno} de 6. ¡Tenés ${siguienteTurno} cupones!`);
+      }
       this.temporizadorGuionado = undefined;
     }, 1200);
   }
@@ -350,6 +475,7 @@ export class PartidaEstadoService {
     this.estadoDeltas.set({ ...DELTAS_VACIOS });
     this.estadoRotaciones.set(0);
     this.estadoRonda.set('jugando');
+    this.estadoTerminada.set(false);
     this.estadoAnuncio.set('');
   }
 

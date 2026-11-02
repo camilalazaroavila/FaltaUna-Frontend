@@ -51,6 +51,11 @@ export interface PosicionArrastre {
 export class Mano {
   readonly cartas = input.required<readonly Carta[]>();
   /**
+   * Bloquea el arrastre de cartas (por ejemplo durante pasos explicativos del
+   * tutorial). Tocar la carta sigue abriendo el detalle de la misma.
+   */
+  readonly bloquearArrastre = input<boolean>(false);
+  /**
    * Referencia para pasar coordenadas de viewport a coordenadas locales del
    * tablero. El containing block real del fantasma `fixed` es el div `.tablero`
    * (`contain: layout`); este host comparte origen con ese div (el host no tiene
@@ -115,6 +120,12 @@ export class Mano {
       return;
     }
 
+    if (this.bloquearArrastre()) {
+      this.punteroActivo = evento.pointerId;
+      this.arrastrando.set(carta);
+      return;
+    }
+
     // Si había una animación de vuelo en curso, limpiarla para que no interrumpa este arrastre
     this.animacionId++;
     if (this.animacionActiva) {
@@ -136,6 +147,10 @@ export class Mano {
   }
 
   protected alMover(evento: PointerEvent): void {
+    if (this.bloquearArrastre()) {
+      return;
+    }
+
     const carta = this.arrastrando();
 
     if (!carta || evento.pointerId !== this.punteroActivo) {

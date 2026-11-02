@@ -1,4 +1,4 @@
-﻿import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -71,17 +71,17 @@ describe('Tutorial', () => {
     const fixture = TestBed.createComponent(Tutorial);
     fixture.detectChanges();
 
-    // Llevar al paso de jugar carta (índice 6)
-    avanzarHasta(6);
+    // Llevar al paso de jugar carta (índice 7)
+    avanzarHasta(7);
     fixture.detectChanges();
     expect(tutorial.paso().espera).toBe('carta-jugada');
-    expect(tutorial.indice()).toBe(6);
+    expect(tutorial.indice()).toBe(7);
 
     const comp = fixture.componentInstance as any;
     comp.alJugarCarta();
     fixture.detectChanges();
 
-    expect(tutorial.indice()).toBe(7);
+    expect(tutorial.indice()).toBe(8);
   });
 
   it('el avance de turno-finalizado ocurre recién tras los 1200 ms y se limpia al salir', () => {
@@ -90,24 +90,24 @@ describe('Tutorial', () => {
     const fixture = TestBed.createComponent(Tutorial);
     fixture.detectChanges();
 
-    // Llevar al paso de fin de turno (índice 7)
-    avanzarHasta(7);
+    // Llevar al paso de fin de turno (índice 8)
+    avanzarHasta(8);
     fixture.detectChanges();
     expect(tutorial.paso().espera).toBe('turno-finalizado');
-    expect(tutorial.indice()).toBe(7);
+    expect(tutorial.indice()).toBe(8);
 
     const comp = fixture.componentInstance as any;
     comp.alFinalizarTurno();
     fixture.detectChanges();
 
-    // Aún no transcurrieron los 1200 ms: sigue en el paso 7
-    expect(tutorial.indice()).toBe(7);
+    // Aún no transcurrieron los 1200 ms: sigue en el paso 8
+    expect(tutorial.indice()).toBe(8);
 
-    // Avanzan los 1200 ms: se resuelve la ronda guionada y avanza al paso 8
+    // Avanzan los 1200 ms: se resuelve la ronda guionada y avanza al paso 9
     jest.advanceTimersByTime(1200);
     fixture.detectChanges();
 
-    expect(tutorial.indice()).toBe(8);
+    expect(tutorial.indice()).toBe(9);
   });
 
   it('restaura la maqueta original al destruir la página', () => {

@@ -191,6 +191,29 @@ export class TutorialOverlay {
         window.removeEventListener('resize', this.alRedimensionar);
         window.removeEventListener('scroll', this.alDesplazar, true);
       });
+
+      if (typeof ResizeObserver !== 'undefined' && this.globo()?.nativeElement) {
+        const ro = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const h = entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height;
+            if (h > 0) {
+              const altoVista = window.innerHeight;
+              this.posicion.update((p) => {
+                if (p.top + h > altoVista - MARGEN) {
+                  return {
+                    ...p,
+                    top: Math.max(MARGEN, altoVista - h - MARGEN),
+                  };
+                }
+                return p;
+              });
+            }
+          }
+        });
+        ro.observe(this.globo()!.nativeElement);
+        this.destroyRef.onDestroy(() => ro.disconnect());
+      }
+
       this.medir();
     });
   }
@@ -282,12 +305,14 @@ export class TutorialOverlay {
     }
 
     const caja = objetivo.getBoundingClientRect();
+    const extraX = ancla === 'slots-propios' ? 16 : 6;
+    const extraY = ancla === 'slots-propios' ? 10 : 6;
 
     this.rect.set({
-      top: caja.top - 6,
-      left: caja.left - 6,
-      width: caja.width + 12,
-      height: caja.height + 12,
+      top: caja.top - extraY,
+      left: caja.left - extraX,
+      width: caja.width + extraX * 2,
+      height: caja.height + extraY * 2,
     });
     this.posicionarGlobo(caja);
     this.mirarHacia(caja);
@@ -314,7 +339,7 @@ export class TutorialOverlay {
     const altoVista = window.innerHeight;
     const ancho = Math.min(ANCHO_MAXIMO_GLOBO, anchoVista - MARGEN * 2);
     const altoReal = this.globo()?.nativeElement.offsetHeight || ALTO_ESTIMADO_GLOBO;
-    const alto = Math.min(altoReal, altoVista - MARGEN * 2);
+    const alto = Math.min(Math.max(altoReal, ALTO_ESTIMADO_GLOBO), altoVista - MARGEN * 2);
 
     // 1. Probar abajo del elemento
     const cabeAbajo = caja.bottom + SEPARACION + alto <= altoVista - MARGEN;

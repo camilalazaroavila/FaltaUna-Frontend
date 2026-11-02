@@ -94,6 +94,10 @@ export class Tablero implements OnDestroy {
 
   /** `true` cuando el drag de la galería fuerza el resaltado (demo). */
   readonly cartaAgarrada = input(false);
+  readonly tutorialActivo = input(false);
+  readonly bloquearArrastre = input(false);
+  readonly bloquearTurno = input(false);
+  readonly bloquearJugada = input(false);
   readonly abandonar = output<void>();
   readonly rendirse = output<void>();
   /** Emite true cuando arranca el conteo secuencial y false al terminar o saltar. */
@@ -475,7 +479,7 @@ export class Tablero implements OnDestroy {
   }
 
   protected alTerminarArrastre(posicion: PosicionArrastre): void {
-    if (this.enConteo()) {
+    if (this.enConteo() || this.bloquearJugada()) {
       this.mano()?.cancelarArrastre();
       return;
     }
@@ -516,7 +520,7 @@ export class Tablero implements OnDestroy {
 
   /** Jugar con el botón de un slot disponible (alternativa accesible al drag). */
   protected alJugarEnSlot(lugar: NombreLugar, indice: number): void {
-    if (this.enConteo()) {
+    if (this.enConteo() || this.bloquearJugada()) {
       return;
     }
     const carta = this.cartaEnArrastre() ?? this.cartaSeleccionada();
