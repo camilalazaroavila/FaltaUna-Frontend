@@ -1,24 +1,28 @@
-import type { PoseJaime } from '@compartidos/componentes/tutorial/jaime/jaime';
+﻿import type { PoseJaime } from '@compartidos/componentes/tutorial/jaime/jaime';
 
 /**
- * Acción concreta que el jugador tiene que hacer en el tablero para que el
- * tutorial pueda avanzar al paso siguiente.
+ * Eventos del tablero que pueden completar una espera del tutorial.
+ * Se incluyen alias en infinitivo e indicativo para tolerar ambos estilos.
  */
-export type EventoTutorial = 'carta-vista' | 'carta-jugada' | 'turno-finalizado';
+export type EventoTutorial =
+  | 'carta-vista'
+  | 'carta-jugada'
+  | 'jugar-carta'
+  | 'turno-finalizado'
+  | 'finalizar-turno';
 
-/** Un paso del tutorial guiado de la partida contra el bot. */
+/**
+ * Paso individual del guion del tutorial.
+ * Puede tener una segunda ancla (`anclaAlIniciarAccion`) que el overlay usa
+ * cuando la acción del paso empezó (por ejemplo, al abrir el detalle de una carta).
+ */
 export interface PasoTutorial {
+  readonly ancla?: string;
+  readonly anclaAlIniciarAccion?: string;
+  readonly textoAlIniciarAccion?: string;
   readonly titulo: string;
   readonly texto: string;
-  /** Pose que adopta Jaime en este paso (si falta, Jaime señala). */
-  readonly pose?: PoseJaime;
-  /**
-   * Valor del atributo `data-tutorial` del elemento que se resalta. Si no se
-   * indica, el globo se centra en la pantalla (bienvenida y cierre).
-   */
-  readonly ancla?: string;
-  /** Ayuda extra que aparece si el jugador tarda en avanzar. */
   readonly pista?: string;
-  /** Acción que el jugador debe completar antes de poder avanzar. */
   readonly espera?: EventoTutorial;
+  readonly pose?: PoseJaime;
 }

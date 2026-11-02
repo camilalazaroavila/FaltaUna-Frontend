@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectionStrategy,
   Component,
   OnDestroy,
@@ -31,6 +31,9 @@ import { ProgresoJuegoService } from '@servicios/progreso-juego.service';
   templateUrl: './tutorial.html',
   styleUrl: './tutorial.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[attr.data-tutorial-activo]': '"true"',
+  },
 })
 export class Tutorial implements OnInit, OnDestroy {
   private readonly servicio = inject(PartidaServicio);
@@ -39,6 +42,8 @@ export class Tutorial implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly tablero = viewChild(Tablero);
 
+  private resolviendoRonda = false;
+
   constructor() {
     effect(() => {
       if (this.tutorial.completado()) {
@@ -46,46 +51,74 @@ export class Tutorial implements OnInit, OnDestroy {
       }
     });
 
-    // Al avanzar desde el paso de "Costo y poder" se cierra el detalle de la
-    // carta para que no tape el tablero en los pasos siguientes.
+    // Al cambiar de paso se cierra cualquier detalle de carta abierto
+    // para que no tape los elementos del paso siguiente.
     effect(() => {
-      if (this.tutorial.indice() > 3) {
-        this.tablero()?.cerrarCarta();
+      this.tutorial.indice();
+      this.tablero()?.cerrarCarta();
+    });
+
+    // Detecta la conclusión de la resolución guionada de la ronda (1200 ms).
+    // Notifica y avanza el paso cuando los puntos y la revelación son visibles.
+    effect(() => {
+      const resolviendo = this.servicio.resolviendo();
+      if (resolviendo) {
+        this.resolviendoRonda = true;
+      } else if (this.resolviendoRonda) {
+        this.resolviendoRonda = false;
+        if (this.tutorial.paso().espera === 'turno-finalizado') {
+          this.tutorial.notificar('turno-finalizado');
+          this.tutorial.siguiente();
+        }
       }
     });
   }
 
   ngOnInit(): void {
+    if (typeof document !== 'undefined') {
+      document.body.setAttribute('data-tutorial-activo', 'true');
+    }
     this.servicio.prepararEscenarioTutorial(ESCENARIO_TUTORIAL);
     this.tutorial.iniciar();
   }
 
   ngOnDestroy(): void {
+    if (typeof document !== 'undefined') {
+      document.body.removeAttribute('data-tutorial-activo');
+    }
+    this.resolviendoRonda = false;
     this.tutorial.salir();
     this.servicio.restaurarEscenarioMock();
   }
 
   protected alVerCarta(): void {
+    this.tutorial.iniciarAccion();
     this.tutorial.notificar('carta-vista');
+  }
+
+  protected alCerrarCarta(): void {
+    this.tutorial.cancelarAccion();
   }
 
   protected alJugarCarta(): void {
     this.tutorial.notificar('carta-jugada');
+    this.tutorial.siguiente();
   }
 
   protected alFinalizarTurno(): void {
-    // El tablero ya marcó la ronda como lista; si el jugador se adelantó, se
-    // devuelve la ronda a "jugando" para no cerrar el guion antes de tiempo.
+    // Si el jugador se adelantó sin estar en el paso de turno, se devuelve la ronda a "jugando".
     if (this.tutorial.paso().espera !== 'turno-finalizado') {
       this.servicio.reiniciarRonda();
       return;
     }
 
+    // Marca que se inició el cierre de la ronda guionada.
+    this.resolviendoRonda = true;
     this.servicio.cerrarRondaGuionadaTutorial(CARTA_RIVAL_TUTORIAL, 'derecha');
-    this.tutorial.notificar('turno-finalizado');
   }
 
   protected volver(): void {
+    this.tablero()?.cerrarCarta();
     this.router.navigate(['/usuario/jugar']);
   }
 }

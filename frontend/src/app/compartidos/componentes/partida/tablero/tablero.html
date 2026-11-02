@@ -75,7 +75,7 @@
     }
     <!-- Indicador central de rotación de zona con el gatito señalando -->
     <div
-      class="zona-aviso-cambio"
+      class="zona-aviso-cambio" data-tutorial="aviso-rotacion"
       [class.zona-aviso-cambio--derecha]="zonaQueCambia() === 'derecha'"
       [class.zona-aviso-cambio--izquierda]="zonaQueCambia() === 'izquierda'"
       aria-live="polite"
@@ -115,7 +115,7 @@
       </div>
 
       <!-- Barra horizontal de puntos propia -->
-      <div class="area-barra-propia">
+      <div class="area-barra-propia" data-tutorial="barra-propia">
         <app-barra-puntos
           [puntos]="puntosBarraPropiaVisual()"
           [maximo]="servicio.puntosMaximos()"
@@ -185,7 +185,7 @@
     [carta]="carta"
     [esProvisional]="servicio.esCartaProvisional(carta)"
     (retirar)="alRetirarCarta(carta)"
-    (cerrar)="cartaAbierta.set(null)"
+    (cerrar)="alCerrarDetalleCarta()"
   />
 }
 

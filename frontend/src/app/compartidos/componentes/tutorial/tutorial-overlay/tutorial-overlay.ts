@@ -51,7 +51,8 @@ const limitar = (valor: number, minimo: number, maximo: number): number =>
  * punteros, así el jugador puede arrastrar cartas y cerrar la ronda mientras
  * el tutorial está abierto.
  *
- * `vistaPrevia` lo muestra inline, sin partida, para la galería de componentes.
+ * Soporta anclas dinámicas (`anclaAlIniciarAccion`) que mueven el foco
+ * cuando la acción empieza (por ejemplo, al abrir el detalle de la carta).
  */
 @Component({
   selector: 'app-tutorial-overlay',
@@ -70,6 +71,7 @@ export class TutorialOverlay {
   readonly vistaPrevia = input(false);
   readonly salir = output<void>();
   readonly terminar = output<void>();
+  readonly seguir = output<void>();
 
   protected readonly mira = signal<MiradaJaime>('derecha');
   /** Sin elemento resaltado: presentación, cierre o ancla no encontrada. */
@@ -96,6 +98,30 @@ export class TutorialOverlay {
     () => this.vistaPrevia() || this.servicio.esperaCumplida(),
   );
 
+  /** Determina el ancla actual considerando si la acción del paso ya inició. */
+  protected readonly anclaActual = computed<string | undefined>(() => {
+    if (this.vistaPrevia()) {
+      return this.paso().ancla;
+    }
+    const paso = this.paso();
+    if (this.servicio.accionIniciada() && paso.anclaAlIniciarAccion) {
+      return paso.anclaAlIniciarAccion;
+    }
+    return paso.ancla;
+  });
+
+  /** Texto del globo, conmutable al iniciar la acción del paso. */
+  protected readonly textoActual = computed<string>(() => {
+    if (this.vistaPrevia()) {
+      return this.paso().texto;
+    }
+    const paso = this.paso();
+    if (this.servicio.accionIniciada() && paso.textoAlIniciarAccion) {
+      return paso.textoAlIniciarAccion;
+    }
+    return paso.texto;
+  });
+
   protected readonly rect = signal<Rectangulo | null>(null);
   protected readonly posicion = signal<PosicionGlobo>({ top: MARGEN, left: MARGEN, width: 320 });
   protected readonly pistaVisible = signal(false);
@@ -120,7 +146,9 @@ export class TutorialOverlay {
 
     effect(() => {
       const activo = this.activo();
+      const ancla = this.anclaActual();
       const paso = this.servicio.paso();
+      void ancla;
 
       if (!activo || this.vistaPrevia()) {
         return;
@@ -178,41 +206,23 @@ export class TutorialOverlay {
       return;
     }
 
-    // Si hay otro diálogo abierto (por ejemplo, el detalle de una carta),
-    // Escape le pertenece a ese diálogo y no al tutorial.
-    if (
-      typeof document !== 'undefined' &&
-      document.querySelector('[role="dialog"]:not(#tutorial-globo)')
-    ) {
-      return;
-    }
-
     this.pedirSalida();
   }
 
   protected siguiente(): void {
-    if (this.vistaPrevia()) {
-      return;
-    }
-
-    if (!this.servicio.esperaCumplida()) {
-      return;
-    }
-
-    if (this.servicio.esUltimo()) {
-      this.servicio.completar();
-      this.terminar.emit();
-      return;
-    }
-
     this.servicio.siguiente();
+    if (this.servicio.completado()) {
+      this.terminar.emit();
+    }
+  }
+
+  protected seguirJugando(): void {
+    this.servicio.completar();
+    this.servicio.salir();
+    this.seguir.emit();
   }
 
   protected atras(): void {
-    if (this.vistaPrevia()) {
-      return;
-    }
-
     this.servicio.atras();
   }
 
@@ -230,9 +240,8 @@ export class TutorialOverlay {
     this.salir.emit();
   }
 
-  /** PENDIENTE: enganchar el servicio de sonidos que ya usan los botones. */
   private sonar(tipo: 'pop' | 'ping'): void {
-    if (!this.sonidos) {
+    if (!this.sonidos || this.vistaPrevia()) {
       return;
     }
     if (tipo === 'pop') {
@@ -254,7 +263,7 @@ export class TutorialOverlay {
       return;
     }
 
-    const ancla = this.paso().ancla;
+    const ancla = this.anclaActual();
 
     if (!ancla) {
       this.rect.set(null);
@@ -293,34 +302,81 @@ export class TutorialOverlay {
     this.mira.set(centroObjetivo < centroGlobo ? 'izquierda' : 'derecha');
   }
 
+  /**
+   * Posiciona el globo evitando tapar el elemento resaltado:
+   * 1. Prueba abajo.
+   * 2. Si no entra, prueba arriba.
+   * 3. Si no entra, prueba al costado (derecha, luego izquierda).
+   * 4. Fallback: lado vertical con mayor espacio disponible.
+   */
   private posicionarGlobo(caja: DOMRect): void {
     const anchoVista = window.innerWidth;
     const altoVista = window.innerHeight;
     const ancho = Math.min(ANCHO_MAXIMO_GLOBO, anchoVista - MARGEN * 2);
-    const alto = Math.min(ALTO_ESTIMADO_GLOBO, altoVista - MARGEN * 2);
+    const altoReal = this.globo()?.nativeElement.offsetHeight || ALTO_ESTIMADO_GLOBO;
+    const alto = Math.min(altoReal, altoVista - MARGEN * 2);
 
-    // En los pasos de acción el globo se ancla arriba a la izquierda para no
-    // tapar la mano, las zonas ni el botón de turno que el jugador debe usar.
-    if (this.paso().espera) {
-      this.posicion.set({ top: MARGEN, left: MARGEN, width: ancho });
+    // 1. Probar abajo del elemento
+    const cabeAbajo = caja.bottom + SEPARACION + alto <= altoVista - MARGEN;
+    if (cabeAbajo) {
+      const left = limitar(
+        caja.left + caja.width / 2 - ancho / 2,
+        MARGEN,
+        anchoVista - ancho - MARGEN,
+      );
+      this.posicion.set({ top: caja.bottom + SEPARACION, left, width: ancho });
       return;
     }
 
-    const izquierda = limitar(
+    // 2. Probar arriba del elemento
+    const cabeArriba = caja.top - SEPARACION - alto >= MARGEN;
+    if (cabeArriba) {
+      const left = limitar(
+        caja.left + caja.width / 2 - ancho / 2,
+        MARGEN,
+        anchoVista - ancho - MARGEN,
+      );
+      this.posicion.set({ top: caja.top - SEPARACION - alto, left, width: ancho });
+      return;
+    }
+
+    // 3. Probar al costado (derecha primero, luego izquierda)
+    const cabeDerecha = caja.right + SEPARACION + ancho <= anchoVista - MARGEN;
+    if (cabeDerecha) {
+      const top = limitar(
+        caja.top + caja.height / 2 - alto / 2,
+        MARGEN,
+        altoVista - alto - MARGEN,
+      );
+      this.posicion.set({ top, left: caja.right + SEPARACION, width: ancho });
+      return;
+    }
+
+    const cabeIzquierda = caja.left - SEPARACION - ancho >= MARGEN;
+    if (cabeIzquierda) {
+      const top = limitar(
+        caja.top + caja.height / 2 - alto / 2,
+        MARGEN,
+        altoVista - alto - MARGEN,
+      );
+      this.posicion.set({ top, left: caja.left - SEPARACION - ancho, width: ancho });
+      return;
+    }
+
+    // 4. Fallback: lado vertical con más espacio disponible
+    const espacioAbajo = altoVista - caja.bottom;
+    const espacioArriba = caja.top;
+    const top =
+      espacioAbajo >= espacioArriba
+        ? limitar(caja.bottom + SEPARACION, MARGEN, altoVista - alto - MARGEN)
+        : limitar(caja.top - SEPARACION - alto, MARGEN, altoVista - alto - MARGEN);
+    const left = limitar(
       caja.left + caja.width / 2 - ancho / 2,
       MARGEN,
       anchoVista - ancho - MARGEN,
     );
-    const arriba =
-      caja.top > alto + SEPARACION + MARGEN
-        ? caja.top - alto - SEPARACION
-        : caja.bottom + SEPARACION;
 
-    this.posicion.set({
-      top: limitar(arriba, MARGEN, altoVista - alto - MARGEN),
-      left: izquierda,
-      width: ancho,
-    });
+    this.posicion.set({ top, left, width: ancho });
   }
 
   private centrarGlobo(): void {

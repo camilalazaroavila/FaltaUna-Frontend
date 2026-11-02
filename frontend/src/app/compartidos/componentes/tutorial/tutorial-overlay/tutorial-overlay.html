@@ -61,7 +61,7 @@
         class="mt-1.5 font-cuerpo text-menor text-texto-secundario"
         [class.text-center]="centrado()"
       >
-        {{ paso().texto }}
+        {{ textoActual() }}
       </p>
 
       @if (paso().pista && (pistaVisible() || vistaPrevia())) {
@@ -90,16 +90,37 @@
           </button>
         }
 
-        <button
-          type="button"
-          app-boton
-          variante="primario"
-          tamanio="sm"
-          [disabled]="!esperaCumplida()"
-          (click)="siguiente()"
-        >
-          {{ esUltimo() ? 'Terminar' : 'Siguiente' }}
-        </button>
+        @if (esUltimo()) {
+          <button
+            type="button"
+            app-boton
+            variante="secundario"
+            tamanio="sm"
+            (click)="terminar.emit()"
+          >
+            Volver al menú
+          </button>
+          <button
+            type="button"
+            app-boton
+            variante="primario"
+            tamanio="sm"
+            (click)="seguirJugando()"
+          >
+            Seguir jugando
+          </button>
+        } @else {
+          <button
+            type="button"
+            app-boton
+            variante="primario"
+            tamanio="sm"
+            [disabled]="!esperaCumplida()"
+            (click)="siguiente()"
+          >
+            Siguiente
+          </button>
+        }
       </div>
     </section>
 
@@ -137,3 +158,4 @@
     }
   </div>
 }
+

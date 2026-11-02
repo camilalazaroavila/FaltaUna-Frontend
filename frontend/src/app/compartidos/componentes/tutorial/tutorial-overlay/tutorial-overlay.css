@@ -1,22 +1,24 @@
-:host {
+﻿:host {
   display: contents;
 }
 
 .tutorial {
-  position: fixed;
-  inset: 0;
-  z-index: 70;
-  pointer-events: none;
+  display: contents;
 }
 
 .tutorial--vista-previa {
+  display: block;
   position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .tutorial__velo {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: var(--z-tutorial-velo, 70);
   background: transparent;
+  pointer-events: none;
   transition: background-color 180ms ease-out;
 }
 
@@ -25,11 +27,13 @@
 }
 
 .tutorial--vista-previa .tutorial__velo {
+  position: absolute;
   background: color-mix(in srgb, var(--overlay) 65%, transparent);
 }
 
 .tutorial__spotlight {
-  position: absolute;
+  position: fixed;
+  z-index: var(--z-tutorial-resaltado, 72);
   border-radius: var(--radio-md);
   box-shadow:
     0 0 0 4px var(--borde-foco),
@@ -44,8 +48,13 @@
     height 180ms ease-out;
 }
 
-.tutorial__globo {
+.tutorial--vista-previa .tutorial__spotlight {
   position: absolute;
+}
+
+.tutorial__globo {
+  position: fixed;
+  z-index: var(--z-tutorial-globo, 73);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -61,19 +70,28 @@
   animation: tutorial-globo-entra 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+.tutorial--vista-previa .tutorial__globo {
+  position: absolute;
+}
+
 .tutorial__globo:focus-visible {
   outline: 2px solid var(--borde-foco);
   outline-offset: 2px;
 }
 
 .tutorial__confirmacion {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: var(--z-tutorial-confirmacion, 74);
   display: grid;
   place-items: center;
   padding: 1rem;
   background: var(--overlay);
   pointer-events: auto;
+}
+
+.tutorial--vista-previa .tutorial__confirmacion {
+  position: absolute;
 }
 
 .tutorial__confirmacion-panel {

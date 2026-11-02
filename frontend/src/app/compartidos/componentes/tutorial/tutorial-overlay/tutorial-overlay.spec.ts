@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { SonidoService } from '@servicios/sonido.service';
 import { TutorialServicio } from '@compartidos/componentes/tutorial/tutorial.servicio';
 import { TutorialOverlay } from './tutorial-overlay';
 
@@ -10,9 +11,15 @@ const botonConTexto = (host: HTMLElement, texto: string): HTMLButtonElement | un
 
 describe('TutorialOverlay', () => {
   let servicio: TutorialServicio;
+  let mockSonidos: { reproducir: jest.Mock };
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [TutorialOverlay] }).compileComponents();
+    mockSonidos = { reproducir: jest.fn() };
+
+    await TestBed.configureTestingModule({
+      imports: [TutorialOverlay],
+      providers: [{ provide: SonidoService, useValue: mockSonidos }],
+    }).compileComponents();
     servicio = TestBed.inject(TutorialServicio);
   });
 
@@ -92,6 +99,18 @@ describe('TutorialOverlay', () => {
     expect(host.querySelector('#tutorial-titulo')?.textContent).toContain('Los cupones');
   });
 
+  it('el overlay en vistaPrevia no reproduce sonidos', () => {
+    const fixture = TestBed.createComponent(TutorialOverlay);
+    fixture.componentRef.setInput('vistaPrevia', true);
+    fixture.detectChanges();
+
+    const comp = fixture.componentInstance as any;
+    comp.sonar('pop');
+    comp.sonar('ping');
+
+    expect(mockSonidos.reproducir).not.toHaveBeenCalled();
+  });
+
   it('poseJaime devuelve si cuando se cumple la espera y la pose del paso en los demás casos', () => {
     servicio.iniciar();
     const fixture = TestBed.createComponent(TutorialOverlay);
@@ -131,5 +150,31 @@ describe('TutorialOverlay', () => {
     // Elemento a la izquierda (centro = 100)
     comp.mirarHacia({ left: 50, width: 100 } as DOMRect);
     expect(comp.mira()).toBe('izquierda');
+  });
+  it('el ancla y el texto cambian cuando la acción del paso empieza', () => {
+    servicio.iniciar();
+    const fixture = TestBed.createComponent(TutorialOverlay);
+    fixture.detectChanges();
+
+    // Avanzar hasta paso 3 (Costo y poder)
+    servicio.siguiente();
+    servicio.siguiente();
+    servicio.siguiente();
+    fixture.detectChanges();
+
+    const comp = fixture.componentInstance as any;
+    expect(comp.anclaActual()).toBe('mano');
+    expect(comp.textoActual()).toContain('Tocá una carta de tu mano');
+
+    servicio.iniciarAccion();
+    fixture.detectChanges();
+
+    expect(comp.anclaActual()).toBe('carta-detalle');
+    expect(comp.textoActual()).toContain('Fijate en los números');
+
+    servicio.cancelarAccion();
+    fixture.detectChanges();
+
+    expect(comp.anclaActual()).toBe('mano');
   });
 });

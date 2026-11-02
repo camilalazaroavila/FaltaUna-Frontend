@@ -106,6 +106,7 @@ export class Tablero implements OnDestroy {
   readonly cartaJugada = output<Carta>();
   /** Emite cuando el jugador confirma el fin del turno. */
   readonly turnoFinalizado = output<void>();
+  readonly cartaDetalleCerrado = output<void>();
 
   protected readonly lugares: readonly NombreLugar[] = ['izquierda', 'derecha'];
   protected readonly lugarAbierto = signal<NombreLugar | null>(null);
@@ -536,6 +537,12 @@ export class Tablero implements OnDestroy {
   /** Cierra el detalle de carta abierto (lo usa el tutorial al avanzar). */
   cerrarCarta(): void {
     this.cartaAbierta.set(null);
+    this.cartaDetalleCerrado.emit();
+  }
+
+  protected alCerrarDetalleCarta(): void {
+    this.cartaAbierta.set(null);
+    this.cartaDetalleCerrado.emit();
   }
 
   /** Confirma el fin del turno y avisa a quien escuche (tutorial, página). */
