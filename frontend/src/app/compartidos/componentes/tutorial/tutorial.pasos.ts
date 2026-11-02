@@ -30,7 +30,7 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
   {
     ancla: 'mano',
     anclaAlIniciarAccion: 'carta-detalle',
-    titulo: 'Costo, poder y efectos',
+    titulo: 'Costo y poder',
     texto: 'Tocá una carta de tu mano para mirarla de cerca.',
     textoAlIniciarAccion:
       'Fijate en los números: el de la izquierda es el costo en cupones; el de la derecha, el poder que sumás a la zona. Abajo tenés su habilidad especial y su categoría. Tocá "Siguiente" o cerrá el detalle para continuar.',
