@@ -108,7 +108,9 @@ export class Partida implements OnInit, OnDestroy {
   protected readonly mazoSeleccionado = signal<number | null>(null);
   protected readonly cargandoMazos = signal(true);
   protected readonly errorMazos = signal<string | null>(null);
-  protected readonly mazosCompletos = computed(() => this.mazos().filter((mazo) => mazo.completo));
+  protected readonly mazosCompletos = computed(() =>
+    this.mazos().filter((mazo) => mazo.completo || mazo.cartas?.length === 12),
+  );
   protected readonly opcionesMazos = computed<OpcionSelect[]>(() =>
     this.mazosCompletos().map((mazo) => ({
       valor: String(mazo.id),
@@ -245,7 +247,8 @@ export class Partida implements OnInit, OnDestroy {
       .subscribe({
         next: (mazos) => {
           this.mazos.set(mazos);
-          this.mazoSeleccionado.set(mazos.find((mazo) => mazo.completo)?.id ?? null);
+          const valido = mazos.find((mazo) => mazo.completo || mazo.cartas?.length === 12) ?? mazos[0];
+          this.mazoSeleccionado.set(valido?.id ?? null);
           this.cargandoMazos.set(false);
         },
         error: () => {

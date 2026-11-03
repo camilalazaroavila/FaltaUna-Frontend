@@ -110,9 +110,9 @@
           [disabled]="!estado().puedeConfirmar || !nombreBaraja().trim() || guardando()" (click)="guardar()">
           {{ guardando() ? 'Guardando…' : guardado() ? 'Baraja guardada' : 'Guardar baraja' }}
         </button>
-        @if (!estado().completa) {
+        @if (mensajeFaltantes(); as mensaje) {
         <p class="mt-2 text-center text-xs text-texto-apagado">
-          Faltan {{ estado().faltantes }} cartas para poder guardar.
+          {{ mensaje }}
         </p>
         }
       </aside>

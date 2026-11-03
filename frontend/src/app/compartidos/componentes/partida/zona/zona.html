@@ -47,7 +47,7 @@
             </span>
           </div>
         }
-        <app-slot-carta lado="rival" [estado]="slot.estado">
+        <app-slot-carta lado="rival" [estado]="slot.estado" [appTooltipPartida]="slot.carta ? 'Carta jugada por el rival en esta zona.' : ''" [esCarta]="!!slot.carta">
           @if (slot.carta; as carta) {
             @if (carta.oculta) {
               <span
@@ -94,6 +94,7 @@
         type="button"
         class="absolute inset-0 block cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-borde-foco"
         [attr.aria-label]="etiquetaFoto()"
+        [appTooltipPartida]="textoTooltipZona()"
         (click)="abrirPopup.emit()"
       >
         <img
@@ -157,7 +158,7 @@
 
       <!-- Indicador de mejora (+) a la izquierda de la foto -->
       @if (efectosSube().length > 0) {
-        <div class="zona-indicadores-categoria zona-indicadores-categoria--izq">
+        <div class="zona-indicadores-categoria zona-indicadores-categoria--izq" appTooltipPartida="Efecto de zona: aumenta el poder de las cartas de estas categorías jugadas en esta zona.">
           <app-indicador-categorias-habilidad
             [efectos]="efectosSube()"
             [maxVisibles]="2"
@@ -169,7 +170,7 @@
 
       <!-- Indicador de empeora (−) a la derecha de la foto -->
       @if (efectosBaja().length > 0) {
-        <div class="zona-indicadores-categoria zona-indicadores-categoria--der">
+        <div class="zona-indicadores-categoria zona-indicadores-categoria--der" appTooltipPartida="Efecto de zona: reduce el poder de las cartas de estas categorías jugadas en esta zona.">
           <app-indicador-categorias-habilidad
             [efectos]="efectosBaja()"
             [maxVisibles]="2"
@@ -233,7 +234,7 @@
             </span>
           </div>
         }
-        <app-slot-carta lado="propio" [estado]="slot.estado" (jugar)="jugarSlot.emit(slot.indice)">
+        <app-slot-carta lado="propio" [estado]="slot.estado" [appTooltipPartida]="slot.carta ? 'Carta jugada en esta zona. Izquierda: costo. Derecha: poder.' : 'Casillero libre. Arrastrá una carta desde tu mano o tocala para jugarla acá.'" [esCarta]="!!slot.carta" (jugar)="jugarSlot.emit(slot.indice)">
           @if (slot.carta; as carta) {
             <div
               class="relative h-full w-full"
@@ -266,6 +267,7 @@
                   class="absolute -top-2 left-1/2 -translate-x-1/2 z-30 flex size-5.5 items-center justify-center rounded-full border border-white/90 bg-error text-etiqueta font-bold text-white shadow-cartoon transition hover:scale-120 hover:bg-error-borde active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-borde-foco cursor-pointer"
                   [attr.aria-label]="'Retirar ' + carta.nombre + ' y devolver a la mano'"
                   title="Devolver a mi mano"
+                  appTooltipPartida="Devolver esta carta a tu mano antes de finalizar el turno."
                   (click)="alRetirarCarta(carta, $event)"
                 >
                   ✕

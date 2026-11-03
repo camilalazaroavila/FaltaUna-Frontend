@@ -22,6 +22,7 @@ import type { PosicionArrastre } from '@compartidos/componentes/partida/mano/man
 import { Zona } from '@compartidos/componentes/partida/zona/zona';
 import type { InfoModificadorPoder } from '@compartidos/componentes/partida/zona/zona';
 import { ZonaPopupComponent } from '@compartidos/componentes/partida/zona-popup/zona-popup';
+import { TooltipPartidaDirective } from '@compartidos/directivas/tooltip-partida.directive';
 import type { Carta } from '@modelos/carta.model';
 import type { NombreLugar, PorLugar, ResultadoRonda, ZonaTablero } from '@modelos/partida.model';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
@@ -78,6 +79,7 @@ interface SlotSobrevolado {
     CuponRecurso,
     ControlTurno,
     Mano,
+    TooltipPartidaDirective,
   ],
 })
 export class Tablero implements OnDestroy {

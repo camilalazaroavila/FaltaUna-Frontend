@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { TooltipPartidaDirective } from '@compartidos/directivas/tooltip-partida.directive';
 import type { Carta } from '@modelos/carta.model';
 import { GsapService } from '@servicios/gsap.service';
 
@@ -45,7 +46,7 @@ export interface PosicionArrastre {
   templateUrl: './mano.html',
   styleUrl: './mano.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CartaComponent],
+  imports: [CartaComponent, TooltipPartidaDirective],
   host: { class: 'block' },
 })
 export class Mano {

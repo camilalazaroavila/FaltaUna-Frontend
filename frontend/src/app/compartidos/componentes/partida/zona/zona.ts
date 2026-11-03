@@ -15,11 +15,12 @@ import {
   viewChild,
 } from '@angular/core';
 import { PuntajeZona } from '@compartidos/componentes/partida/puntaje-zona/puntaje-zona';
+import { TooltipPartidaDirective } from '@compartidos/directivas/tooltip-partida.directive';
 import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-carta';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { IndicadorCategoriasHabilidad } from '@compartidos/componentes/cartas/indicador-categorias-habilidad/indicador-categorias-habilidad';
 import type { Carta, EfectoCategoriaCarta } from '@modelos/carta.model';
-import { categoriaCartaDesdeNombre, normalizarUrlImagen } from '@modelos/carta.model';
+import { ETIQUETA_CATEGORIA, categoriaCartaDesdeNombre, normalizarUrlImagen } from '@modelos/carta.model';
 import type {
   EstadoPuntajeZona,
   EstadoSlot,
@@ -85,7 +86,7 @@ export interface InfoModificadorPoder {
   templateUrl: './zona.html',
   styleUrl: './zona.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SlotCarta, PuntajeZona, CartaComponent, IndicadorCategoriasHabilidad],
+  imports: [SlotCarta, PuntajeZona, CartaComponent, IndicadorCategoriasHabilidad, TooltipPartidaDirective],
   host: { class: 'block w-full' },
 })
 export class Zona implements AfterViewInit {
@@ -99,6 +100,33 @@ export class Zona implements AfterViewInit {
   private readonly referenciaFoto = viewChild<ElementRef<HTMLElement>>('foto');
   private readonly referenciaDeltaPropio = viewChild<ElementRef<HTMLElement>>('refDeltaPropio');
   private readonly referenciaDeltaRival = viewChild<ElementRef<HTMLElement>>('refDeltaRival');
+
+  /** Texto legible del tooltip de la zona, describiendo el local y sus efectos reales. */
+  protected readonly textoTooltipZona = computed(() => {
+    const z = this.zona();
+    const nombre = z.nombre;
+    let efectoDesc = '';
+
+    if (z.efecto?.texto) {
+      efectoDesc = z.efecto.texto;
+    } else if (z.efectosCategoria && z.efectosCategoria.length > 0) {
+      efectoDesc = z.efectosCategoria
+        .map((e) => {
+          const cat = ETIQUETA_CATEGORIA[e.categoria] ?? e.categoria;
+          const val = e.valor != null ? `${e.valor}` : '1';
+          return e.tipo === 'sube' ? `+${val} poder a ${cat}` : `-${val} poder a ${cat}`;
+        })
+        .join(', ');
+    } else if (z.efecto?.categoria && z.efecto?.bonus) {
+      const signo = z.efecto.bonus > 0 ? `+${z.efecto.bonus}` : `${z.efecto.bonus}`;
+      const cat = ETIQUETA_CATEGORIA[z.efecto.categoria] ?? z.efecto.categoria;
+      efectoDesc = `${signo} de poder a cartas de ${cat}`;
+    } else {
+      efectoDesc = 'Sin efectos especiales';
+    }
+
+    return `Local de la zona: ${nombre}. Efecto: ${efectoDesc}.`;
+  });
 
   readonly lugar = input<NombreLugar>('izquierda');
   readonly zona = input.required<ZonaTablero>();
