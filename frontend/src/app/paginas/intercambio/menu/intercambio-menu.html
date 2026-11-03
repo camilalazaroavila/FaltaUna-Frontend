@@ -1,0 +1,86 @@
+<div class="pantalla-intercambio relative flex min-h-dvh flex-col overflow-x-hidden text-white md:h-dvh md:overflow-hidden">
+  <app-header [logueado]="true" />
+
+  <!-- Botón Volver -->
+  <div class="px-4 pt-4 sm:px-6 lg:px-8">
+    <a
+      routerLink="/usuario"
+      class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] text-combate-titulo uppercase transition-colors hover:opacity-80"
+    >
+      <svg
+        class="h-4 w-6"
+        viewBox="0 0 28 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M27 8H2M9 1L2 8l7 7" />
+      </svg>
+      Volver
+    </a>
+  </div>
+
+  <main class="grid min-h-0 flex-1 grid-cols-1 gap-6 pt-4 max-md:pb-nav-inferior-reserva md:grid-cols-[32%_1fr] md:gap-0 md:grid-rows-[minmax(0,1fr)]">
+    <!-- Menú lateral izquierdo: botones inclinados con animación GSAP -->
+    <nav
+      aria-label="Opciones de intercambio"
+      class="flex min-h-0 flex-col gap-3 pr-4 sm:pr-6 md:justify-center md:gap-[clamp(1.5rem,4dvh,2.5rem)] md:pr-0"
+    >
+      @for (opcion of opciones; track opcion.id) {
+        <div class="relative w-full">
+          <a
+            app-boton-opcion-juego
+            data-anim="boton"
+            ancho="completo"
+            tamanio="lg"
+            class="md:h-[clamp(5.5rem,20dvh,10rem)] md:flex-none md:text-2xl! lg:text-3xl!"
+            [routerLink]="opcion.ruta"
+            [disabled]="opcion.deshabilitada ?? false"
+          >
+            {{ opcion.texto }}
+          </a>
+
+          @if (opcion.id === 'activos' && tieneNovedadActivos()) {
+            <span
+              class="absolute -top-2 -right-1 sm:-top-2.5 sm:-right-2 z-20 flex size-7 sm:size-8 items-center justify-center rounded-full bg-amber-400 text-[#072326] font-black text-sm sm:text-base font-titulo shadow-xl border-2 border-white animate-pulse pointer-events-none select-none"
+              title="Intercambios con novedades"
+              aria-label="Novedades en intercambios activos"
+            >
+              !
+            </span>
+          }
+        </div>
+      }
+    </nav>
+
+    <!-- Ilustración derecha: animación Jaime y Falti pegada al lateral derecho -->
+    <section class="flex min-h-0 items-center justify-center md:justify-end px-4 sm:px-6 md:px-0 md:pr-4 lg:pr-8 xl:pr-12">
+      <div
+        data-anim="ilustracion"
+        class="relative grid grid-cols-1 grid-rows-1 h-full max-h-[680px] w-full max-w-[760px] lg:max-w-[880px] xl:max-w-[960px] items-center justify-items-end p-0"
+      >
+        <img
+          src="imagenes/pantalla-intercambio/jaimeyfalti1.png"
+          alt="Jaime y Falti"
+          class="col-start-1 row-start-1 max-h-full max-w-full object-contain object-right drop-shadow-2xl select-none"
+          [class.hidden]="frameActual() !== 0 && frameActual() !== 2"
+        />
+        <img
+          src="imagenes/pantalla-intercambio/jaimeyfalti2.png"
+          alt="Jaime y Falti"
+          class="col-start-1 row-start-1 max-h-full max-w-full object-contain object-right drop-shadow-2xl select-none"
+          [class.hidden]="frameActual() !== 1"
+        />
+        <img
+          src="imagenes/pantalla-intercambio/jaimeyfalti3.png"
+          alt="Jaime y Falti"
+          class="col-start-1 row-start-1 max-h-full max-w-full object-contain object-right drop-shadow-2xl select-none"
+          [class.hidden]="frameActual() !== 3"
+        />
+      </div>
+    </section>
+  </main>
+</div>

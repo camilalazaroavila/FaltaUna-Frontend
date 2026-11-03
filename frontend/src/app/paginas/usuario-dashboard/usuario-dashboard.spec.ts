@@ -8,6 +8,7 @@ import { SobresService } from '@servicios/sobres.service';
 import { Usuario } from '@modelos/usuario.model';
 import { BarajaService, NOMBRES_MAZOS_BIENVENIDA } from '@servicios/baraja.service';
 import { SonidoService } from '@servicios/sonido.service';
+import { IntercambioService } from '@servicios/intercambio.service';
 
 describe('UsuarioDashboard Component', () => {
   let component: UsuarioDashboard;
@@ -42,6 +43,12 @@ describe('UsuarioDashboard Component', () => {
       precargar: jest.fn(),
     };
 
+    const mockIntercambioService = {
+      verificarNovedades: jest.fn().mockReturnValue(of({ dashboard: false, menu: false })),
+      marcarDashboardIntercambioVisto: jest.fn(),
+      tieneNovedadDashboardSignal: signal(false),
+    };
+
     const signalSobres = signal({ actuales: 2, maximo: 2 });
     let primeraCarga = true;
     mockSobresService = {
@@ -71,6 +78,7 @@ describe('UsuarioDashboard Component', () => {
         { provide: SobresService, useValue: mockSobresService },
         { provide: BarajaService, useValue: mockBarajaService },
         { provide: SonidoService, useValue: mockSonidoService },
+        { provide: IntercambioService, useValue: mockIntercambioService },
       ],
     }).compileComponents();
 
@@ -196,17 +204,36 @@ describe('UsuarioDashboard Component', () => {
     expect(mockAuthService.logout).toHaveBeenCalled();
   });
 
-  it('no debe navegar ni cambiar sección activa si el destino está deshabilitado (intercambio y canje)', () => {
+  it('no debe navegar ni cambiar sección activa si el destino está deshabilitado (canje)', () => {
     const router = TestBed.inject(Router);
     const navigateSpy = jest.spyOn(router, 'navigateByUrl');
-
-    component.seleccionarSeccion('intercambios');
-    expect(component['seccionActiva']()).toBeNull();
-    expect(navigateSpy).not.toHaveBeenCalled();
 
     component.seleccionarSeccion('qr');
     expect(component['seccionActiva']()).toBeNull();
     expect(navigateSpy).not.toHaveBeenCalled();
+  });
+
+  it('debe navegar a Intercambio al seleccionar su destino del dock', () => {
+    const router = TestBed.inject(Router);
+    const navigateSpy = jest.spyOn(router, 'navigateByUrl');
+
+    component.seleccionarSeccion('intercambios');
+    expect(component['seccionActiva']()).toBe('intercambios');
+    expect(navigateSpy).toHaveBeenCalledWith('/usuario/intercambio');
+  });
+
+  it('debe mostrar la insignia ! en el botón de intercambio si hay novedades pendientes', () => {
+    const mockIntercambioService = TestBed.inject(IntercambioService);
+    (mockIntercambioService.tieneNovedadDashboardSignal as any).set(true);
+    fixture.detectChanges();
+
+    const botonesNavegacion = fixture.nativeElement.querySelectorAll('app-boton-navegacion-circular');
+    const botonIntercambios = Array.from(botonesNavegacion).find((b: any) =>
+      b.textContent?.includes('Intercambio')
+    ) as HTMLElement;
+
+    expect(botonIntercambios).toBeTruthy();
+    expect(botonIntercambios.textContent).toContain('!');
   });
 
   it('permite cerrar la bienvenida de mazos y guarda el flag por usuario en localStorage', () => {

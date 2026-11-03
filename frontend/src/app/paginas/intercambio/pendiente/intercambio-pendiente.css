@@ -1,0 +1,24 @@
+:host,
+.pantalla-pendiente {
+  min-height: 100dvh;
+  background-image: url('/imagenes/pantalla-intercambio/fondointercambioliso.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.slot-carta-wrapper {
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slot-vacio-pendiente {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 0 30px rgba(0, 0, 0, 0.4);
+}
+
+.divisor-destello {
+  min-height: 180px;
+}
