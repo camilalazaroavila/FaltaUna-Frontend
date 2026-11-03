@@ -27,12 +27,13 @@
     </div>
   }
 
+  <div class="w-full" appTooltipPartida="Termina tu turno y la IA (o el jugador) dependiendo el caso va a ejecutar su turno.">
   <button
     type="button"
     app-boton
     variante="primario"
     tamanio="lg"
-    class="control-boton" appTooltipPartida="Finalizar turno: Confirma tus cartas jugadas, revela la jugada del rival y calcula los puntos de las zonas."
+    class="control-boton" 
     [attr.aria-label]="nombreAccesible()"
     [disabled]="!activo() || terminada() || deshabilitado()"
     [cargando]="!activo() && !terminada() && !deshabilitado()"
@@ -48,6 +49,7 @@
       </span>
     }
   </button>
+  </div>
 
   @if (!resolviendo() && !terminada()) {
     <div class="control-acciones-secundarias flex items-center justify-between gap-1.5 pt-1">

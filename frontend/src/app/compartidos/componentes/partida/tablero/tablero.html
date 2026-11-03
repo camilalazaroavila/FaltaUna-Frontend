@@ -32,8 +32,9 @@
     </div>
 
     <!-- Barra horizontal de puntos del rival -->
-    <div class="area-barra-rival" appTooltipPartida="Barra de puntos del rival. El primero en llegar a 100 puntos gana la partida.">
+    <div class="area-barra-rival pointer-events-auto" appTooltipPartida="Barra de puntos del rival. El primero en llegar a 100 puntos gana la partida.">
       <app-barra-puntos
+        appTooltipPartida="Barra de puntos del rival. El primero en llegar a 100 puntos gana la partida."
         [puntos]="puntosBarraRivalVisual()"
         [maximo]="servicio.puntosMaximos()"
         [delta]="deltaBarraRivalVisual()"
@@ -84,10 +85,11 @@
         <span class="block">Esta zona va a cambiar</span>
         <span class="block text-marca-secundaria text-[1rem] tracking-wider">el turno que sigue</span>
       </div>
-      <div class="gatito-marco">
+      <div class="gatito-marco" appTooltipPartida="Jaime">
         <img
           src="/imagenes/gatito/gatito señalando.jpg"
-          alt="Gatito señalando la zona que va a cambiar"
+          alt="Jaime señalando la zona que va a cambiar"
+          appTooltipPartida="Jaime"
           class="gatito-senialando"
           [class.flip-izquierda]="zonaQueCambia() === 'izquierda'"
         />
@@ -99,6 +101,7 @@
       [valor]="servicio.cuponesPropio()"
       [maximo]="servicio.cuponMaximo()"
       variante="completa"
+      appTooltipPartida="Tus cupones de recurso disponibles en esta ronda. Cada carta requiere una cantidad de cupones para ser jugada."
     />
   </main>
 
@@ -115,8 +118,9 @@
       </div>
 
       <!-- Barra horizontal de puntos propia -->
-      <div class="area-barra-propia" data-tutorial="barra-propia" appTooltipPartida="Tu barra de puntos acumulados. Sumás puntos al ganar zonas al final de cada ronda. Llegá a 100 puntos para ganar.">
+      <div class="area-barra-propia pointer-events-auto" data-tutorial="barra-propia" appTooltipPartida="Tu barra de puntos acumulados. Sumás puntos al ganar zonas al final de cada ronda. Llegá a 100 puntos para ganar.">
         <app-barra-puntos
+          appTooltipPartida="Tu barra de puntos acumulados. Sumás puntos al ganar zonas al final de cada ronda. Llegá a 100 puntos para ganar."
           [puntos]="puntosBarraPropiaVisual()"
           [maximo]="servicio.puntosMaximos()"
           [delta]="deltaBarraPropiaVisual()"

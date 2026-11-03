@@ -47,7 +47,7 @@
             </span>
           </div>
         }
-        <app-slot-carta lado="rival" [estado]="slot.estado" appTooltipPartida="Carta jugada por el rival en esta zona." [esCarta]="true">
+        <app-slot-carta lado="rival" [estado]="slot.estado" [appTooltipPartida]="slot.carta ? 'Carta jugada por el rival en esta zona.' : ''" [esCarta]="!!slot.carta">
           @if (slot.carta; as carta) {
             @if (carta.oculta) {
               <span
@@ -89,11 +89,12 @@
 
   <!-- Foto de la zona con sus dos puntajes -->
   <div class="zona-celda-foto">
-    <div class="zona-foto aspect-[16/10]" [appTooltipPartida]="'Local de la zona: ' + zona().nombre + '. Efecto: ' + zona().efecto">
+    <div class="zona-foto aspect-[16/10]">
       <button
         type="button"
         class="absolute inset-0 block cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-borde-foco"
         [attr.aria-label]="etiquetaFoto()"
+        [appTooltipPartida]="textoTooltipZona()"
         (click)="abrirPopup.emit()"
       >
         <img

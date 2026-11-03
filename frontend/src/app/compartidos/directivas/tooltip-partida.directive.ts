@@ -29,6 +29,7 @@ const MARGEN_PANTALLA_PX = 10;
   standalone: true,
 })
 export class TooltipPartidaDirective implements OnDestroy {
+  private static tooltipActivo: TooltipPartidaDirective | null = null;
   readonly appTooltipPartida = input.required<string>();
   readonly posicionTooltip = input<'arriba' | 'abajo' | 'auto'>('auto');
   readonly esCarta = input(false);
@@ -41,8 +42,9 @@ export class TooltipPartidaDirective implements OnDestroy {
   private touchOrigen = { x: 0, y: 0 };
   private touchActivo = false;
 
-  @HostListener('mouseenter')
-  alEntrarMouse(): void {
+  @HostListener('mouseenter', ['$event'])
+  alEntrarMouse(evento?: MouseEvent): void {
+    evento?.stopPropagation();
     if (this.touchActivo) {
       return;
     }
@@ -163,6 +165,10 @@ export class TooltipPartidaDirective implements OnDestroy {
       return;
     }
 
+    if (TooltipPartidaDirective.tooltipActivo && TooltipPartidaDirective.tooltipActivo !== this) {
+      TooltipPartidaDirective.tooltipActivo.ocultarGlobo();
+    }
+    TooltipPartidaDirective.tooltipActivo = this;
     this.ocultarGlobo();
 
     const globo = document.createElement('div');
@@ -224,6 +230,9 @@ export class TooltipPartidaDirective implements OnDestroy {
   }
 
   protected ocultarGlobo(): void {
+    if (TooltipPartidaDirective.tooltipActivo === this) {
+      TooltipPartidaDirective.tooltipActivo = null;
+    }
     if (this.globoElemento) {
       if (this.globoElemento.parentNode) {
         this.globoElemento.parentNode.removeChild(this.globoElemento);
