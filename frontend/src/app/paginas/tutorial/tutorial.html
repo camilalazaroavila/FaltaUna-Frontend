@@ -13,16 +13,6 @@
       (rendirse)="volver()"
     />
   </div>
-
-  @if (resultadoFinal(); as fin) {
-    <app-pantalla-resultado
-      [resultado]="fin"
-      [nombreJugador]="servicio.jugadores().propio.nombre"
-      [nombreRival]="servicio.jugadores().rival.nombre"
-      (volverAlMenu)="volver()"
-      (jugarOtraVez)="reintentar()"
-    />
-  }
 </main>
 
-<app-tutorial-overlay (salir)="volver()" (terminar)="volver()" (seguir)="alSeguirJugando()" />
+<app-tutorial-overlay (salir)="volver()" (terminar)="volver()" (seguir)="irAPartidaBot()" />

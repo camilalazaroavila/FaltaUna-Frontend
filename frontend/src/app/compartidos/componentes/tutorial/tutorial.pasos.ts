@@ -62,9 +62,9 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
     ancla: 'slots-propios',
     titulo: 'Ahora te toca a vos',
     texto:
-      'Bajá a Danonino (1 cupón) a un casillero de la izquierda: al ser de Gastronomía, ¡el local le sumará +1 de poder automáticamente!',
+      'Bajá una carta a uno de tus casilleros de la izquierda y mirá cómo su poder se suma al marcador de la zona.',
     espera: 'carta-jugada',
-    pista: 'Arrastrá la carta o usá el botón del casillero resaltado.',
+    pista: 'Arrastrá una carta o seleccionala para jugarla en el casillero.',
   },
   {
     ancla: 'control-turno',
@@ -98,10 +98,10 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
   },
   {
     pose: 'si',
-    titulo: '¡Rondas 5 y 6 hacia la victoria!',
+    titulo: '¡A jugar contra el bot!',
     texto:
-      '¡Ya dominás las reglas! Para ver la acción completa, te salteo a las rondas finales con 5 cupones y cartas poderosas. ¡Encadená efectos y ganale al bot!',
-    pista: 'Elegí "Seguir jugando" para las rondas finales o "Volver al menú".',
+      '¡Felicitaciones! Ya conocés todas las reglas básicas de Falta Una. Ahora vamos directo a una partida completa contra el bot para que pongas en práctica tu estrategia. ¡Muchos éxitos!',
+    pista: 'Tocá "Jugar contra el bot" para empezar la partida.',
   },
 ];
 

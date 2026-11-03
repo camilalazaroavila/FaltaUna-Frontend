@@ -22,7 +22,7 @@
           ancho="completo"
           tamanio="lg"
           class="md:h-[clamp(5.5rem,22dvh,11rem)] md:flex-none md:text-3xl! lg:text-4xl!"
-          [routerLink]="opcion.ruta"
+          [routerLink]="opcion.bloqueada ? null : opcion.ruta"
           [disabled]="opcion.bloqueada">
           {{ opcion.texto }}
         </a> 

@@ -647,6 +647,15 @@ export class PartidaServicio {
     this.mock.cerrarRondaGuionadaTutorial(cartaRival, lugar);
   }
 
+  /** Actualiza la mano del tutorial con cartas reales del inventario (solo mock). */
+  actualizarManoTutorial(cartas: readonly Carta[]): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.actualizarManoTutorial(cartas);
+  }
+
   /** Restaura la maqueta original del tablero al salir del tutorial (solo mock). */
   restaurarEscenarioMock(): void {
     if (this.modoRealSignal()) {

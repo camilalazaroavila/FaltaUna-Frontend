@@ -461,6 +461,10 @@ export class PartidaEstadoService {
     }, 1200);
   }
 
+  actualizarManoTutorial(cartas: readonly Carta[]): void {
+    this.estadoManoPropia.set(cartas);
+  }
+
   /** MOCK: devuelve la maqueta a su estado original al salir del tutorial. */
   restaurarEscenario(): void {
     this.limpiarTemporizadorGuionado();

@@ -35,8 +35,10 @@ export class PantallaInicialJuego {
 
     protected readonly opciones = computed(() =>
        OPCIONES_JUEGO.map((opcion) => {
-         const bloqueada = opcion.requiereTutorial === true && !this.progreso.tutorialCompletado();
-         return { ...opcion, bloqueada};
+         const bloqueada =
+           opcion.id === 'jugador' ||
+           (opcion.requiereTutorial === true && !this.progreso.tutorialCompletado());
+         return { ...opcion, bloqueada };
     }),
   );
 

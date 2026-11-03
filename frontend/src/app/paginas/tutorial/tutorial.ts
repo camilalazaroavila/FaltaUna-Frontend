@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnDestroy,
   OnInit,
   computed,
@@ -8,8 +9,8 @@ import {
   inject,
   viewChild,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { PantallaResultado } from '@compartidos/componentes/partida/pantalla-resultado/pantalla-resultado';
 import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
 import {
   CARTA_RIVAL_TUTORIAL,
@@ -17,8 +18,9 @@ import {
 } from '@compartidos/componentes/tutorial/tutorial.escenario';
 import { TutorialOverlay } from '@compartidos/componentes/tutorial/tutorial-overlay/tutorial-overlay';
 import { TutorialServicio } from '@compartidos/componentes/tutorial/tutorial.servicio';
-import type { ResultadoPartidaApi } from '@modelos/partida.model';
+import { BarajaService } from '@servicios/baraja.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
+import { catchError, of } from 'rxjs';
 
 /**
  * Tutorial guiado de la partida contra el bot.
@@ -29,7 +31,7 @@ import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
  */
 @Component({
   selector: 'app-tutorial',
-  imports: [Tablero, TutorialOverlay, PantallaResultado],
+  imports: [Tablero, TutorialOverlay],
   templateUrl: './tutorial.html',
   styleUrl: './tutorial.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +42,8 @@ import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
 export class Tutorial implements OnInit, OnDestroy {
   protected readonly servicio = inject(PartidaServicio);
   protected readonly tutorial = inject(TutorialServicio);
+  private readonly baraja = inject(BarajaService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly tablero = viewChild(Tablero);
 
@@ -54,20 +58,6 @@ export class Tutorial implements OnInit, OnDestroy {
   protected readonly bloquearJugada = computed(
     () => this.tutorial.activo() && this.tutorial.paso().espera !== 'carta-jugada',
   );
-
-  protected readonly resultadoFinal = computed<ResultadoPartidaApi | null>(() => {
-    if (!this.servicio.terminada()) {
-      return null;
-    }
-    return {
-      partidaId: 0,
-      ganador: 'propio',
-      motivo: 'Completaste la partida de práctica',
-      puntosPropio: this.servicio.barraPropia(),
-      puntosRival: this.servicio.barraRival(),
-      fechaFin: new Date().toISOString(),
-    };
-  });
 
   constructor() {
     // Al cambiar de paso se cierra cualquier detalle de carta abierto
@@ -99,6 +89,24 @@ export class Tutorial implements OnInit, OnDestroy {
     }
     this.servicio.prepararEscenarioTutorial(ESCENARIO_TUTORIAL);
     this.tutorial.iniciar();
+
+    // Consultar el backend para cargar las cartas reales del usuario si están disponibles
+    this.baraja
+      .obtenerCartasDisponibles()
+      .pipe(
+        catchError(() => of([])),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((cartasReales) => {
+        if (cartasReales && cartasReales.length >= 4) {
+          const cartasAjustadas = cartasReales.slice(0, 4).map((c, i) => ({
+            ...c,
+            atributoIzquierdo: i === 0 ? 1 : Math.min(c.atributoIzquierdo, 3),
+            jugable: true,
+          }));
+          this.servicio.actualizarManoTutorial(cartasAjustadas);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -138,16 +146,12 @@ export class Tutorial implements OnInit, OnDestroy {
       return;
     }
 
-    // Modo de juego continuado (rondas 5 y 6 hacia la victoria):
-    this.servicio.simularTurnoPracticaBot();
+    this.irAPartidaBot();
   }
 
-  protected alSeguirJugando(): void {
-    this.servicio.saltarARondasDecisivasTutorial();
-  }
-
-  protected reintentar(): void {
-    this.servicio.saltarARondasDecisivasTutorial();
+  protected irAPartidaBot(): void {
+    this.tablero()?.cerrarCarta();
+    this.router.navigate(['/juego/ia']);
   }
 
   protected volver(): void {
