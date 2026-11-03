@@ -52,6 +52,17 @@
     --color-legendaria-brillo: #7BF0A5;
     /* Verde brillante del acento de rareza legendaria */
 
+    /* --- Naranja / Ámbar de acento genérico --- */
+    --color-naranja: #F59E0B;
+    --color-naranja-hover: #D97706;
+    --color-naranja-fondo: rgba(245, 158, 11, 0.15);
+    --color-naranja-borde: rgba(245, 158, 11, 0.45);
+    --color-naranja-texto: #FBBF24;
+    --color-naranja-texto-brillante: #FCD34D;
+    --color-naranja-sobre: #04201C;
+    --gradiente-naranja: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    --sombra-naranja: 0 0.15em 0.35em rgba(0, 0, 0, 0.55), 0 0 0.4em rgba(245, 158, 11, 0.35);
+
     /* --- Botones de la pantalla de jugar --- */
     --color-juego-claro: #F9F9A8;
     /* Cara del paralelogramo de las opciones de juego */

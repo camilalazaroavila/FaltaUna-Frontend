@@ -31,21 +31,24 @@
           [value]="busqueda()" (input)="actualizarBusqueda($event)" />
       </div>
 
-      <div class="flex overflow-hidden rounded-pildora border border-borde-coleccion" role="group"
-        aria-label="Filtrar por estado de obtención">
-        <!--
-        @for (opcion of opcionesObtencion; track opcion.valor) {
-        <button type="button"
-          class="cursor-pointer px-3.5 py-2 text-xs font-semibold whitespace-nowrap transition-colors not-first:border-l not-first:border-borde-coleccion hover:bg-white/6"
-          [class.bg-marca-coleccion]="filtroObtencion() === opcion.valor"
-          [class.text-marca-coleccion-sobre]="filtroObtencion() === opcion.valor"
-          [class.bg-fondo-coleccion-superficie]="filtroObtencion() !== opcion.valor"
-          [class.text-texto-secundario]="filtroObtencion() !== opcion.valor"
-          [attr.aria-pressed]="filtroObtencion() === opcion.valor" (click)="cambiarFiltroObtencion(opcion.valor)">
-          {{ opcion.etiqueta }}
-        </button>
-        } -->
-      </div>
+      <button type="button"
+        class="cursor-pointer inline-flex items-center gap-1.5 rounded-pildora border px-3.5 py-2 text-xs font-semibold transition-colors"
+        [class.border-acento-repetida]="soloRepetidas()"
+        [class.bg-acento-repetida-fondo]="soloRepetidas()"
+        [class.text-acento-repetida-texto]="soloRepetidas()"
+        [class.border-borde-coleccion]="!soloRepetidas()"
+        [class.bg-fondo-coleccion-superficie]="!soloRepetidas()"
+        [class.text-texto-secundario]="!soloRepetidas()"
+        [attr.aria-pressed]="soloRepetidas()"
+        (click)="toggleSoloRepetidas()"
+        title="Filtrar solo cartas con 2 o más copias">
+        <span>Solo repetidas</span>
+        @if (resumen().repetidas > 0) {
+        <span class="rounded-full bg-acento-repetida-fondo px-1.5 py-0.2 text-[10px] font-bold text-acento-repetida-texto border border-acento-repetida-borde">
+          {{ resumen().repetidas }}
+        </span>
+        }
+      </button>
 
       <div>
         <label class="sr-only" for="orden-cartas">Ordenar cartas</label>
@@ -100,6 +103,12 @@
         <p class="mb-3.5 text-right text-xs text-texto-apagado" aria-live="polite">
           <strong class="text-marca-coleccion">{{ resumen().obtenidas }}</strong>
           de {{ resumen().total }} cartas obtenidas
+          @if (resumen().repetidas > 0) {
+          <span class="mx-1 text-white/30">·</span>
+          <span class="texto-acento-repetida">
+            {{ resumen().repetidas }} con repetidas ({{ resumen().copiasRepetidas }} extra)
+          </span>
+          }
         </p>
 
         @if (sinResultados()) {
@@ -122,10 +131,10 @@
           @for (carta of cartasFiltradas(); track carta.id) {
           <button type="button" class="coleccion__disparador" appPulsacionCarta [attr.aria-label]="
                   carta.obtenida
-                    ? 'Ver detalle de ' + carta.nombre
+                    ? 'Ver detalle de ' + carta.nombre + ((carta.cantidad ?? 1) > 1 ? ', ' + carta.cantidad + ' copias' : '')
                     : 'Ver detalle de carta no obtenida'
                 " (pulsacion)="abrirPopup(carta)">
-            <app-carta [carta]="carta" />
+            <app-carta [carta]="carta" [mostrarCantidad]="true" />
           </button>
           }
         </div>

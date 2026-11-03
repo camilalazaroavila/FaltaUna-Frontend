@@ -31,11 +31,6 @@ interface BotonCategoria {
   readonly urlIcono: string;
 }
 
-/* interface OpcionObtencion {
-  readonly valor: FiltroObtencion;
-  readonly etiqueta: string;
-} */
-
 const ORDEN_RAREZA: Record<RarezaCarta, number> = {
   comun: 0,
   rara: 1,
@@ -78,15 +73,9 @@ export class MisCartas implements OnInit {
   // Filtros (signals)
   protected readonly busqueda = signal('');
   protected readonly filtroObtencion = signal<FiltroObtencion>('todas');
+  protected readonly soloRepetidas = signal(false);
   protected readonly categoriaActiva = signal<CategoriaCarta | null>(null);
   protected readonly criterioOrden = signal<CriterioOrden>('nombre-asc');
-
-  /*
-  protected readonly opcionesObtencion: readonly OpcionObtencion[] = [
-    { valor: 'todas', etiqueta: 'Todas' },
-    { valor: 'obtenidas', etiqueta: 'Obtenidas' }
-    { valor: 'no-obtenidas', etiqueta: 'No obtenidas' }, 
-  ]; */
 
   // Botones de categoría
   protected readonly categoriasDisponibles: readonly BotonCategoria[] = [
@@ -125,6 +114,10 @@ export class MisCartas implements OnInit {
     const termino = this.busqueda().trim().toLowerCase();
     if (termino) {
       cartas = cartas.filter((c) => c.nombre.toLowerCase().includes(termino));
+    }
+
+    if (this.soloRepetidas()) {
+      cartas = cartas.filter((c) => (c.cantidad ?? 0) > 1);
     }
 
     const filtro = this.filtroObtencion();
@@ -189,7 +182,12 @@ export class MisCartas implements OnInit {
   protected readonly resumen = computed(() => {
     const total = this.coleccion().length;
     const obtenidas = this.coleccion().filter((c) => c.obtenida).length;
-    return { total, obtenidas };
+    const repetidas = this.coleccion().filter((c) => (c.cantidad ?? 0) > 1).length;
+    const copiasRepetidas = this.coleccion().reduce(
+      (acc, c) => acc + Math.max(0, (c.cantidad ?? 1) - 1),
+      0,
+    );
+    return { total, obtenidas, repetidas, copiasRepetidas };
   });
 
   actualizarBusqueda(evento: Event): void {
@@ -198,6 +196,10 @@ export class MisCartas implements OnInit {
 
   cambiarFiltroObtencion(filtro: FiltroObtencion): void {
     this.filtroObtencion.set(filtro);
+  }
+
+  toggleSoloRepetidas(): void {
+    this.soloRepetidas.update((v) => !v);
   }
 
   cambiarOrden(evento: Event): void {
@@ -211,6 +213,7 @@ export class MisCartas implements OnInit {
   limpiarFiltros(): void {
     this.busqueda.set('');
     this.filtroObtencion.set('todas');
+    this.soloRepetidas.set(false);
     this.categoriaActiva.set(null);
   }
 

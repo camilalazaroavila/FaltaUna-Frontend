@@ -418,6 +418,7 @@ export class IntercambioService {
       atributoDerecho: c.poder,
       atributoIzquierdo: c.costoCupon,
       obtenida: true,
+      cantidad: c.cantidad,
       descripcion: c.descripcion,
     };
   }

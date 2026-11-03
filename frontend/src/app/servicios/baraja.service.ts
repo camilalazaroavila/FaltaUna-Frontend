@@ -141,6 +141,8 @@ function mapearCartaInventario(carta: CartaInventarioApi): Carta {
     atributoDerecho: carta.poder,
     atributoIzquierdo: carta.costoCupon,
     obtenida: true,
+    cantidad: carta.cantidad,
+    descripcion: carta.descripcion,
   };
 }
 export function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {

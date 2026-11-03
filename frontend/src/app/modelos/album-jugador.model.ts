@@ -104,6 +104,7 @@ export function cartaAlbumACarta(carta: CartaAlbum): Carta {
     categoria: carta.categoria,
     atributoIzquierdo: carta.poder,
     atributoDerecho: carta.costoCupon,
+    cantidad: carta.cantidad,
     obtenida: carta.obtenida,
   };
 }
