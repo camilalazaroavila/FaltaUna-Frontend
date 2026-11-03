@@ -49,7 +49,20 @@
 
   @if (insignia() !== null) {
     <span
-      class="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-circulo bg-atencion px-1.5 font-interfaz text-[0.625rem] leading-[1.125rem] text-atencion-sobre"
+      class="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center rounded-full border border-white shadow-md select-none"
+      [class.bg-amber-400]="insignia() === '!'"
+      [class.text-[#072326]]="insignia() === '!'"
+      [class.animate-pulse]="insignia() === '!'"
+      [class.size-5]="insignia() === '!'"
+      [class.font-titulo]="insignia() === '!'"
+      [class.text-xs]="insignia() === '!'"
+      [class.font-black]="insignia() === '!'"
+      [class.bg-atencion]="insignia() !== '!'"
+      [class.text-atencion-sobre]="insignia() !== '!'"
+      [class.px-1.5]="insignia() !== '!'"
+      [class.font-interfaz]="insignia() !== '!'"
+      [class.text-[0.625rem]]="insignia() !== '!'"
+      [class.leading-[1.125rem]]="insignia() !== '!'"
       aria-hidden="true"
     >
       {{ insignia() }}

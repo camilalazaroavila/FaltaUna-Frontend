@@ -8,6 +8,7 @@ export interface Usuario {
   fechaRegistro: string;
   oro: number;
   monedasIntercambio: number;
+  avatarUrl?: string | null;
 }
 
 export interface UsuarioRespuesta {
@@ -18,6 +19,7 @@ export interface UsuarioRespuesta {
   fechaRegistro: string;
   oro: number;
   monedasIntercambio: number;
+  avatarUrl?: string | null;
 }
 
 export interface CrearUsuarioSolicitud {

@@ -1,0 +1,291 @@
+<div class="pantalla-ofrecer-carta relative flex min-h-dvh flex-col text-white lg:min-h-dvh lg:h-dvh lg:overflow-hidden">
+  <app-header [logueado]="true" class="shrink-0" />
+
+  <main class="mx-auto flex w-full max-w-[140rem] min-[1920px]:max-w-[180rem] min-h-0 flex-1 flex-col px-4 pt-2 pb-3 sm:px-6 sm:pb-4 lg:px-8 max-md:pb-nav-inferior-reserva">
+    <!-- Fila superior: Botón Volver a la izquierda y Cápsula de favoritas a la derecha (estilo Pokémon Pocket) -->
+    <div class="shrink-0 pb-2 sm:pb-2.5 flex flex-wrap items-center justify-between gap-3">
+      <a
+        [routerLink]="rutaVolver()"
+        class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] text-combate-titulo uppercase transition-colors hover:opacity-80"
+      >
+        <svg
+          class="h-4 w-6"
+          viewBox="0 0 28 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M27 8H2M9 1L2 8l7 7" />
+        </svg>
+        Volver
+      </a>
+
+      <!-- Cápsula compacta de cartas favoritas del otro usuario -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3.5">
+        <span class="font-titulo text-xs sm:text-sm font-bold uppercase tracking-wider text-white drop-shadow">
+          CARTAS FAVORITAS {{ coleccionista()?.nombreUsuario ? 'DE ' + coleccionista()!.nombreUsuario : '' }}
+        </span>
+
+        @if (cargandoFavoritas()) {
+          <div class="flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs text-[#082823] shadow">
+            <span class="size-3 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent"></span>
+            <span class="font-titulo text-[11px] font-bold uppercase">Cargando...</span>
+          </div>
+        } @else if (cartasFavoritas().length === 0) {
+          <div class="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70 border border-white/20">
+            Sin favoritas marcadas
+          </div>
+        } @else {
+          <!-- Cápsula blanca con las 5 mini-cartas + VER MÁS -->
+          <div class="capsula-favoritas flex items-center gap-1.5 rounded-full bg-white p-1 pl-1.5 shadow-lg border border-white/30">
+            <!-- 5 mini-cartas en fila horizontal -->
+            <div class="flex items-center gap-1">
+              @for (carta of cartasFavoritasVisibles(); track carta.id) {
+                <button
+                  type="button"
+                  (click)="abrirDetalleCarta(carta)"
+                  class="mini-carta aspect-[5/7] w-6 sm:w-7 md:w-8 shrink-0 overflow-hidden rounded transition-transform hover:scale-115 active:scale-95 focus:outline-none cursor-pointer"
+                  [title]="carta.nombre"
+                >
+                  <app-carta [carta]="carta" class="block pointer-events-none" />
+                </button>
+              }
+            </div>
+
+            <!-- Botón VER MÁS con cruz verde -->
+            <button
+              type="button"
+              (click)="abrirModalFavoritas()"
+              class="boton-ver-mas flex items-center gap-1 pl-1 pr-1.5 cursor-pointer transition-opacity hover:opacity-85 active:scale-95"
+              title="Ver todas las cartas deseadas"
+            >
+              <span class="font-titulo text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#082823] leading-none">
+                VER MÁS
+              </span>
+              <span class="flex size-4 sm:size-5 items-center justify-center rounded-full bg-[#22c55e] text-white font-black text-xs sm:text-sm leading-none shadow">
+                +
+              </span>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Layout principal: 2 columnas (Vista previa a la izquierda, Catálogo sin recuadro a la derecha) -->
+    <div class="layout-ofrecer-carta min-h-0 flex-1">
+      <!-- Columna izquierda: Ranura de carta / Vista previa y confirmación -->
+      <aside class="flex flex-col items-center justify-start md:justify-center pt-0.5 pb-2 min-h-0 overflow-y-auto custom-scrollbar">
+        <!-- Ranura o Carta seleccionada (adaptativa con la altura del viewport) -->
+        @if (cartaSeleccionada(); as carta) {
+          <div class="preview-carta-wrapper p-1 sm:p-1.5 drop-shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <app-carta [carta]="carta" class="block w-full pointer-events-none" />
+          </div>
+        } @else {
+          <div class="slot-vacio-preview" aria-hidden="true">
+            <svg class="slot-vacio-ondas" viewBox="0 0 100 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M -10 50 Q 25 80, 50 55 T 110 60 L 110 95 Q 75 90, 50 115 T -10 110 Z" fill="#fef08a" />
+            </svg>
+            <span class="slot-vacio-cruz">+</span>
+          </div>
+        }
+
+        <!-- Textos y botones inferiores con alta legibilidad sobre el fondo -->
+        <div class="mt-2 sm:mt-2.5 min-[1440px]:mt-6 flex w-full max-w-xs min-[1440px]:max-w-sm min-[1920px]:max-w-md flex-col items-center text-center">
+          @if (cartaSeleccionada()) {
+            <p class="titulo-sombreado font-titulo text-sm sm:text-base min-[1440px]:text-2xl font-bold uppercase tracking-wide text-marca-acento leading-snug">
+              ¿Estás seguro de que querés intercambiar esta carta?
+            </p>
+
+            @if (ofertaConfirmada()) {
+              <div class="mt-2 rounded-xl bg-emerald-500/25 border border-emerald-400/50 p-2 sm:p-2.5 text-center">
+                <p class="text-xs sm:text-sm min-[1440px]:text-base font-bold text-emerald-300">
+                  ¡Carta seleccionada para la oferta!
+                </p>
+                <p class="mt-0.5 text-[11px] sm:text-xs min-[1440px]:text-sm text-white/90">
+                  Listo para la siguiente etapa del intercambio.
+                </p>
+              </div>
+            } @else {
+              <!-- Botones de Confirmación: Sí / No -->
+              <div class="mt-2 sm:mt-2.5 flex w-full items-center justify-center gap-3">
+                <button
+                  type="button"
+                  (click)="confirmarSeleccion()"
+                  [disabled]="enviandoOferta()"
+                  class="flex-1 cursor-pointer rounded-full bg-[#22c55e] py-1.5 px-4 min-[1440px]:py-2.5 min-[1440px]:px-6 font-titulo text-xs sm:text-sm font-bold uppercase tracking-wider text-[#062420] shadow-md transition-all hover:bg-[#16a34a] hover:text-white active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {{ enviandoOferta() ? 'Enviando...' : 'Sí' }}
+                </button>
+                <button
+                  type="button"
+                  (click)="cancelarSeleccion()"
+                  [disabled]="enviandoOferta()"
+                  class="flex-1 cursor-pointer rounded-full border border-white/20 bg-black/40 py-1.5 px-4 min-[1440px]:py-2.5 min-[1440px]:px-6 font-titulo text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-sm transition-all hover:bg-black/60 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  No
+                </button>
+              </div>
+
+              @if (errorMensaje()) {
+                <div class="mt-2.5 w-full rounded-xl bg-red-950/80 border border-red-500/70 p-2 sm:p-2.5 text-center text-xs text-red-200 shadow-md">
+                  {{ errorMensaje() }}
+                </div>
+              }
+            }
+          } @else {
+            <p class="titulo-sombreado font-titulo text-base sm:text-lg min-[1440px]:text-2xl font-bold uppercase tracking-wide text-marca-acento leading-snug">
+              Elegí la carta que querés intercambiar
+            </p>
+            <p class="mt-1.5 text-xs min-[1440px]:text-sm text-white/85 font-medium">
+              Solo se muestran cartas de las cuales tenés 2 o más copias.
+            </p>
+          }
+        </div>
+      </aside>
+
+      <!-- Columna derecha: Catálogo de cartas repetidas SIN recuadro (directo sobre el fondo) -->
+      <!-- Las cartas que el otro usuario desea se muestran PRIMERAS con badge ★ Deseada -->
+      <section class="seccion-catalogo-cartas min-w-0 flex-1 flex flex-col min-h-0">
+        @if (cargando()) {
+          <div class="flex items-center justify-center py-20 text-center">
+            <p class="titulo-sombreado font-titulo text-lg uppercase tracking-wider text-marca-acento animate-pulse">
+              Cargando tus cartas repetidas...
+            </p>
+          </div>
+        } @else if (cartasRepetidas().length === 0) {
+          <div class="flex flex-col items-center justify-center py-20 text-center">
+            <p class="titulo-sombreado font-titulo text-xl uppercase tracking-wider text-marca-acento">
+              No tenés cartas repetidas
+            </p>
+            <p class="mt-2 text-sm text-white/80 max-w-md">
+              Para poder intercambiar, necesitás tener al menos 2 copias de una misma carta en tu colección.
+            </p>
+          </div>
+        } @else {
+          <!-- Grilla de cartas repetidas: 5 columnas en 1440-1919px y 6 columnas en 1920px+ con scroll interno -->
+          <div class="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 pr-3.5 sm:pr-4.5 custom-scrollbar">
+            <div class="grilla-cartas-repetidas pb-6">
+              @for (carta of cartasRepetidasOrdenadas(); track carta.id) {
+                <button
+                  type="button"
+                  (click)="seleccionarCarta(carta)"
+                  class="carta-item text-left w-full border-0 bg-transparent block relative"
+                  [class.carta-item--activa]="cartaSeleccionada()?.id === carta.id"
+                  [attr.aria-label]="'Seleccionar ' + carta.nombre"
+                  [attr.aria-pressed]="cartaSeleccionada()?.id === carta.id"
+                >
+                  @if (esFavoritaDelOtro(carta.id)) {
+                    <span class="absolute top-2.5 right-2.5 z-20 flex items-center gap-0.5 rounded-full bg-yellow-400 px-1.5 py-0.5 text-[9px] font-black uppercase text-[#062420] shadow-md border border-yellow-200 pointer-events-none">
+                      ★ Deseada
+                    </span>
+                  }
+                  <app-carta [carta]="carta" class="block w-full pointer-events-none" />
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal Popup: Cartas deseadas completas (estilo Pokémon Pocket) -->
+  @if (modalFavoritasAbierto()) {
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-modal-favoritas"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+      (click)="cerrarModalFavoritas()"
+    >
+      <div
+        class="relative flex w-full max-w-4xl max-h-[85vh] flex-col rounded-3xl border border-marca-acento/40 bg-[#072326] p-5 sm:p-6 shadow-2xl text-white overflow-hidden"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- Cabecera del modal -->
+        <div class="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex size-7 items-center justify-center rounded-full bg-yellow-400/20 text-yellow-300 font-bold text-sm" aria-hidden="true">★</span>
+            <div>
+              <h3 id="titulo-modal-favoritas" class="titulo-sombreado font-titulo text-lg sm:text-xl font-bold uppercase tracking-wider text-marca-acento">
+                Cartas deseadas de {{ coleccionista()?.nombreUsuario }}
+              </h3>
+              <p class="text-xs text-white/70">
+                Estas son las cartas que este usuario marcó como favoritas en sus álbumes.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            (click)="cerrarModalFavoritas()"
+            class="inline-flex size-8 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-colors cursor-pointer"
+            aria-label="Cerrar ventana"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Contenido: Grilla de cartas favoritas -->
+        <div class="flex-1 min-h-0 overflow-y-auto p-4 pr-3.5 custom-scrollbar">
+          <div class="grid grid-cols-2 gap-3 min-[480px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5">
+            @for (carta of cartasFavoritas(); track carta.id) {
+              <div class="flex flex-col rounded-xl border border-white/15 bg-white/5 p-2.5 transition-all hover:border-marca-acento/60 hover:bg-white/10">
+                <div
+                  role="button"
+                  tabindex="0"
+                  (click)="abrirDetalleCarta(carta)"
+                  (keydown.enter)="abrirDetalleCarta(carta)"
+                  class="w-full cursor-pointer transition-transform hover:scale-103"
+                  [title]="'Ver detalle de ' + carta.nombre"
+                >
+                  <app-carta [carta]="carta" class="block w-full pointer-events-none" />
+                </div>
+
+                <div class="mt-2 flex flex-col gap-1.5 text-center">
+                  <span class="truncate text-xs font-semibold text-white/95">{{ carta.nombre }}</span>
+
+                  @if (tengoRepetida(carta.id)) {
+                    <span class="inline-block rounded-full bg-emerald-400/90 px-2 py-0.5 text-[10px] font-bold uppercase text-[#072326]">
+                      ¡La tenés repetida!
+                    </span>
+                    <button
+                      type="button"
+                      (click)="ofrecerDesdeFavorita(carta)"
+                      class="mt-1 cursor-pointer rounded-full bg-marca-primaria py-1 px-2.5 font-titulo text-[11px] font-bold uppercase text-[#072326] transition-all hover:bg-marca-primaria-activa active:scale-95"
+                    >
+                      Ofrecer esta carta
+                    </button>
+                  } @else {
+                    <span class="text-[10px] text-white/50">
+                      No la tenés repetida
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Pie del modal -->
+        <div class="pt-3 border-t border-white/10 flex justify-end shrink-0">
+          <button
+            type="button"
+            (click)="cerrarModalFavoritas()"
+            class="cursor-pointer rounded-full bg-white/10 px-5 py-2 font-titulo text-xs uppercase tracking-wider text-white transition-colors hover:bg-white/20"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Popup individual de detalle de carta -->
+  @if (cartaDetallePopup(); as carta) {
+    <app-carta-popup [carta]="carta" (cerrar)="cerrarDetalleCarta()" />
+  }
+</div>

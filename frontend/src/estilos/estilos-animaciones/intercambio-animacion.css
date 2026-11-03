@@ -1,0 +1,142 @@
+/* ==========================================================================
+   Animaciones del Flujo de Intercambio (Fase Final)
+   ========================================================================== */
+
+/* 1. Temblor / Vibración de las cartas antes de cruzarse */
+@keyframes intercambio-temblor {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  15% {
+    transform: translate3d(-4px, -2px, 0) rotate(-2deg);
+  }
+  30% {
+    transform: translate3d(4px, 1px, 0) rotate(2deg);
+  }
+  45% {
+    transform: translate3d(-3px, 2px, 0) rotate(-1.5deg);
+  }
+  60% {
+    transform: translate3d(3px, -1px, 0) rotate(1.5deg);
+  }
+  75% {
+    transform: translate3d(-2px, 1px, 0) rotate(-1deg);
+  }
+  90% {
+    transform: translate3d(2px, 0, 0) rotate(1deg);
+  }
+}
+
+.animacion-temblor-carta {
+  animation: intercambio-temblor 600ms ease-in-out infinite;
+}
+
+/* 2. Entrada de personajes desde abajo */
+@keyframes personaje-entra-abajo {
+  0% {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+  70% {
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes personaje-sale-abajo {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+}
+
+.animacion-personaje-entra {
+  animation: personaje-entra-abajo 650ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animacion-personaje-sale {
+  animation: personaje-sale-abajo 500ms ease-in forwards;
+}
+
+/* 3. Cruce de cartas intercambiadas (se elevan y cruzan posiciones) */
+@keyframes cruce-a-derecha {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    z-index: 50;
+  }
+  40% {
+    transform: translate3d(calc(var(--swap-distancia, 150px) * 0.45), -45px, 0) scale(1.1);
+    z-index: 52;
+  }
+  100% {
+    transform: translate3d(var(--swap-distancia, 150px), 0, 0) scale(1);
+    z-index: 50;
+  }
+}
+
+@keyframes cruce-a-izquierda {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    z-index: 49;
+  }
+  40% {
+    transform: translate3d(calc(var(--swap-distancia, -150px) * 0.45), 35px, 0) scale(0.95);
+    z-index: 49;
+  }
+  100% {
+    transform: translate3d(var(--swap-distancia, -150px), 0, 0) scale(1);
+    z-index: 50;
+  }
+}
+
+.animacion-cruce-derecha {
+  animation: cruce-a-derecha 1100ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animacion-cruce-izquierda {
+  animation: cruce-a-izquierda 1100ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* 4. Destello y brillitos al aterrizar en el nuevo lugar */
+@keyframes destello-aterrizaje {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+    filter: drop-shadow(0 0 0 rgba(254, 240, 138, 0));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 25px rgba(254, 240, 138, 0.95));
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+    filter: drop-shadow(0 0 35px rgba(254, 240, 138, 0));
+  }
+}
+
+.animacion-destello {
+  animation: destello-aterrizaje 750ms ease-out forwards;
+}
+
+/* 5. Respeto por preferencias de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .animacion-temblor-carta,
+  .animacion-personaje-entra,
+  .animacion-personaje-sale,
+  .animacion-cruce-derecha,
+  .animacion-cruce-izquierda,
+  .animacion-destello {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
