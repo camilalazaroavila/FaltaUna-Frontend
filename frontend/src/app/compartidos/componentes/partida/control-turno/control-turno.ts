@@ -29,7 +29,7 @@ const CLASES_TIEMPO_BASE =
   templateUrl: './control-turno.html',
   styleUrl: './control-turno.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIcon, Boton],
+  imports: [NgIcon, Boton, TooltipPartidaDirective],
   viewProviders: [provideIcons({ phosphorWarningFill, phosphorHourglassMediumFill })],
   host: { class: 'block' },
 })

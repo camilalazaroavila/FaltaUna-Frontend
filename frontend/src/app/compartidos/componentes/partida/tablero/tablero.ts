@@ -79,6 +79,7 @@ interface SlotSobrevolado {
     CuponRecurso,
     ControlTurno,
     Mano,
+    TooltipPartidaDirective,
   ],
 })
 export class Tablero implements OnDestroy {
