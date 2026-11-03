@@ -12,6 +12,7 @@ import {
   phosphorHourglassMediumFill,
 } from '@ng-icons/phosphor-icons/fill';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import { TooltipPartidaDirective } from '@compartidos/directivas/tooltip-partida.directive';
 import type { EstadoBotonListo } from '@compartidos/componentes/partida/boton-listo/boton-listo';
 
 const SEGUNDOS_ADVERTENCIA = 10;

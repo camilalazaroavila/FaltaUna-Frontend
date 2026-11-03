@@ -15,6 +15,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { PuntajeZona } from '@compartidos/componentes/partida/puntaje-zona/puntaje-zona';
+import { TooltipPartidaDirective } from '@compartidos/directivas/tooltip-partida.directive';
 import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-carta';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { IndicadorCategoriasHabilidad } from '@compartidos/componentes/cartas/indicador-categorias-habilidad/indicador-categorias-habilidad';
@@ -85,7 +86,7 @@ export interface InfoModificadorPoder {
   templateUrl: './zona.html',
   styleUrl: './zona.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SlotCarta, PuntajeZona, CartaComponent, IndicadorCategoriasHabilidad],
+  imports: [SlotCarta, PuntajeZona, CartaComponent, IndicadorCategoriasHabilidad, TooltipPartidaDirective],
   host: { class: 'block w-full' },
 })
 export class Zona implements AfterViewInit {

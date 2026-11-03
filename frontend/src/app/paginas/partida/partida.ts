@@ -108,7 +108,7 @@ export class Partida implements OnInit, OnDestroy {
   protected readonly mazoSeleccionado = signal<number | null>(null);
   protected readonly cargandoMazos = signal(true);
   protected readonly errorMazos = signal<string | null>(null);
-  protected readonly mazosCompletos = computed(() => this.mazos().filter((mazo) => mazo.completo));
+  protected readonly mazosCompletos = computed(() => this.mazos().filter((mazo) => mazo.completo || mazo.cartas?.length === 12));
   protected readonly opcionesMazos = computed<OpcionSelect[]>(() =>
     this.mazosCompletos().map((mazo) => ({
       valor: String(mazo.id),

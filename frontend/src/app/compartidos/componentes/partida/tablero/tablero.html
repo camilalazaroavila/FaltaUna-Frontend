@@ -10,7 +10,7 @@
       />
 
       <div
-        class="rival-mano"
+        class="rival-mano" appTooltipPartida="Cartas en la mano del rival. Muestra cuántas cartas tiene listas para jugar."
         role="img"
         [attr.aria-label]="'El rival tiene ' + servicio.cartasManoRival() + ' cartas en la mano'"
       >
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Barra horizontal de puntos del rival -->
-    <div class="area-barra-rival">
+    <div class="area-barra-rival" appTooltipPartida="Barra de puntos del rival. El primero en llegar a 100 puntos gana la partida.">
       <app-barra-puntos
         [puntos]="puntosBarraRivalVisual()"
         [maximo]="servicio.puntosMaximos()"
@@ -75,7 +75,7 @@
     }
     <!-- Indicador central de rotación de zona con el gatito señalando -->
     <div
-      class="zona-aviso-cambio" data-tutorial="aviso-rotacion"
+      class="zona-aviso-cambio" data-tutorial="aviso-rotacion" appTooltipPartida="Aviso de rotación: Al comenzar la próxima ronda, esta zona cambiará por un nuevo local con nuevos efectos."
       [class.zona-aviso-cambio--derecha]="zonaQueCambia() === 'derecha'"
       [class.zona-aviso-cambio--izquierda]="zonaQueCambia() === 'izquierda'"
       aria-live="polite"
@@ -115,7 +115,7 @@
       </div>
 
       <!-- Barra horizontal de puntos propia -->
-      <div class="area-barra-propia" data-tutorial="barra-propia">
+      <div class="area-barra-propia" data-tutorial="barra-propia" appTooltipPartida="Tu barra de puntos acumulados. Sumás puntos al ganar zonas al final de cada ronda. Llegá a 100 puntos para ganar.">
         <app-barra-puntos
           [puntos]="puntosBarraPropiaVisual()"
           [maximo]="servicio.puntosMaximos()"

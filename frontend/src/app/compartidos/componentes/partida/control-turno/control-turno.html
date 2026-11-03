@@ -1,6 +1,6 @@
 <div class="control-bloque flex flex-col items-stretch gap-2">
   @if (!resolviendo()) {
-    <div class="flex flex-col gap-1">
+    <div class="flex flex-col gap-1" appTooltipPartida="Temporizador de la ronda. Jugá tus cartas antes de que se agote el tiempo.">
       <span
         class="control-tiempo"
         [class]="clasesTiempo()"
@@ -32,7 +32,7 @@
     app-boton
     variante="primario"
     tamanio="lg"
-    class="control-boton"
+    class="control-boton" appTooltipPartida="Finalizar turno: Confirma tus cartas jugadas, revela la jugada del rival y calcula los puntos de las zonas."
     [attr.aria-label]="nombreAccesible()"
     [disabled]="!activo() || terminada() || deshabilitado()"
     [cargando]="!activo() && !terminada() && !deshabilitado()"

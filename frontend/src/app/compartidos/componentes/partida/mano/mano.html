@@ -3,7 +3,7 @@
     <button
       type="button"
       [attr.data-tutorial]="i === 0 ? 'carta-mano' : null"
-      class="mano-carta hover:z-20 focus-visible:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed disabled:opacity-60"
+      appTooltipPartida="Carta en tu mano. Arrastrala a un casillero para jugarla. Izquierda: costo en cupones. Derecha: poder." [esCarta]="true" class="mano-carta hover:z-20 focus-visible:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco disabled:cursor-not-allowed disabled:opacity-60"
       [class.cursor-grab]="!bloquearArrastre()"
       [class.cursor-pointer]="bloquearArrastre()"
       [class.mano-carta--arrastrando]="!bloquearArrastre() && arrastrando()?.id === item.carta.id"
