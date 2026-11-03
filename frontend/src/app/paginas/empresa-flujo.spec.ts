@@ -27,6 +27,7 @@ import { AlbumesService } from '@servicios/albumes.service';
 import { AuthService } from '@servicios/auth.service';
 import { PagosService } from '@servicios/pagos.service';
 import { EstadoPago, PagoRespuesta } from '@modelos/pago.model';
+import { aIso } from '@compartidos/utilidades/fechas';
 
 /** Pago con el estado pedido: el resto de los datos no influye en el flujo. */
 const pagoDe = (estado: EstadoPago): PagoRespuesta => ({
@@ -157,8 +158,10 @@ describe('Flujo de alta de empresa (rutas reales, pasos 1 a 5)', () => {
     borrador.usuarioRedSocial.set('@acme');
     borrador.emailContacto.set('contacto@acme.com');
     borrador.categoria.set('1');
-    borrador.fechaInicio.set('2026-11-01');
-    borrador.fechaFin.set('2026-12-01');
+    const hoy = aIso(new Date());
+    const fin = aIso(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
+    borrador.fechaInicio.set(hoy);
+    borrador.fechaFin.set(fin);
   };
 
   it('mantiene el logo inerte durante todo el alta y lo habilita en el paso final', async () => {
