@@ -34,8 +34,8 @@
     tamanio="lg"
     class="control-boton"
     [attr.aria-label]="nombreAccesible()"
-    [disabled]="!activo() || terminada()"
-    [cargando]="!activo() && !terminada()"
+    [disabled]="!activo() || terminada() || deshabilitado()"
+    [cargando]="!activo() && !terminada() && !deshabilitado()"
     (click)="pulsarFinalizar()"
   >
     <span class="control-accion">

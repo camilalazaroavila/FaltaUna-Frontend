@@ -1,5 +1,15 @@
-/* El popup se compone de dos elementos fijos (fondo + diálogo) hermanos, como
+﻿/* El popup se compone de dos elementos fijos (fondo + diálogo) hermanos, como
    el modal de cupones. El host no debe crear una caja propia. */
 :host {
   display: contents;
+}
+
+:host-context([data-tutorial-activo='true']) .carta-popup__fondo,
+[data-tutorial-activo='true'] .carta-popup__fondo {
+  z-index: var(--z-tutorial-detalle, 71);
+}
+
+:host-context([data-tutorial-activo='true']) .carta-popup__dialogo,
+[data-tutorial-activo='true'] .carta-popup__dialogo {
+  z-index: var(--z-tutorial-detalle, 71);
 }

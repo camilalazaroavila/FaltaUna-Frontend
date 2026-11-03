@@ -18,6 +18,7 @@
    sombra y texto crema. Se sobrescriben los tokens del botón solo dentro de esta
    pantalla (clase pantalla-combate), así el componente no se toca. */
 .pantalla-combate {
+  background: linear-gradient(180deg, var(--combate-fondo-alto) 0%, var(--combate-fondo-bajo) 100%);
   --btn-juego-bg: var(--combate-fondo-bajo);
   --btn-juego-sombra: var(--combate-fondo-alto);
   --btn-juego-texto: var(--combate-fondo-alto);

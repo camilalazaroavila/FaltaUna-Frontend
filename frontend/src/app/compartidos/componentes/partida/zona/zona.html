@@ -181,7 +181,11 @@
     </div>
   </div>
 
-  <div class="zona-slots zona-slots--propio">
+  <!-- Lado propio (abajo) -->
+  <div
+    class="zona-slots zona-slots--propio"
+    [attr.data-tutorial]="lugar() === 'izquierda' ? 'slots-propios' : null"
+  >
     @for (slot of slotsPropios(); track slot.indice) {
       <div
         class="zona-celda relative min-w-0 hover:z-30 focus-within:z-30"

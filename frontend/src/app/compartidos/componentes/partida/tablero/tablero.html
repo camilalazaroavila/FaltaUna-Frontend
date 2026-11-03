@@ -44,13 +44,14 @@
   </header>
 
   <!-- Fila 2: Zonas de combate (ocupa todo el ancho central del tablero) -->
-  <main class="area-zonas">
+  <main class="area-zonas" data-tutorial="zonas">
     @for (lugar of lugares; track lugar) {
       @let datos = servicio.lugares()[lugar];
       @let puntaje = servicio.puntajes()[lugar];
       @let delta = servicio.deltas()[lugar];
 
       <app-zona
+        [attr.data-tutorial]="lugar === 'izquierda' ? 'zona-izquierda' : null"
         [lugar]="lugar"
         [zona]="zonasVisuales()[lugar]"
         [cartasRival]="datos.rival"
@@ -74,7 +75,7 @@
     }
     <!-- Indicador central de rotación de zona con el gatito señalando -->
     <div
-      class="zona-aviso-cambio"
+      class="zona-aviso-cambio" data-tutorial="aviso-rotacion"
       [class.zona-aviso-cambio--derecha]="zonaQueCambia() === 'derecha'"
       [class.zona-aviso-cambio--izquierda]="zonaQueCambia() === 'izquierda'"
       aria-live="polite"
@@ -94,6 +95,7 @@
     </div>
 
     <app-cupon-recurso
+      data-tutorial="cupones"
       [valor]="servicio.cuponesPropio()"
       [maximo]="servicio.cuponMaximo()"
       variante="completa"
@@ -113,7 +115,7 @@
       </div>
 
       <!-- Barra horizontal de puntos propia -->
-      <div class="area-barra-propia">
+      <div class="area-barra-propia" data-tutorial="barra-propia">
         <app-barra-puntos
           [puntos]="puntosBarraPropiaVisual()"
           [maximo]="servicio.puntosMaximos()"
@@ -126,9 +128,11 @@
 
     <div class="area-mano">
       <app-mano
+        data-tutorial="mano"
         [cartas]="servicio.manoPropia()"
         [referencia]="host"
-        (ver)="cartaAbierta.set($event)"
+        [bloquearArrastre]="bloquearArrastre()"
+        (ver)="alVerCarta($event)"
         (arrastreInicio)="alIniciarArrastre($event)"
         (arrastreFin)="alTerminarArrastre($event)"
         (seleccion)="alSeleccionar($event)"
@@ -137,13 +141,15 @@
 
     <div class="area-control">
       <app-control-turno
+        data-tutorial="control-turno"
         [turno]="servicio.turno()"
         [totalTurnos]="servicio.rondasTotales()"
         [segundosRestantes]="servicio.segundosRestantes()"
         [segundosTotales]="servicio.segundosTotales()"
         [estado]="enConteo() ? 'resolviendo' : servicio.estadoRonda()"
         [terminada]="servicio.terminada()"
-        (finalizar)="servicio.marcarListo()"
+        [deshabilitado]="bloquearTurno()"
+        (finalizar)="alFinalizarTurno()"
         (abandonar)="abandonar.emit()"
         (rendirse)="rendirse.emit()"
       />
@@ -181,7 +187,7 @@
     [carta]="carta"
     [esProvisional]="servicio.esCartaProvisional(carta)"
     (retirar)="alRetirarCarta(carta)"
-    (cerrar)="cartaAbierta.set(null)"
+    (cerrar)="alCerrarDetalleCarta()"
   />
 }
 

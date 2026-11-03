@@ -157,8 +157,11 @@ describe('Flujo de alta de empresa (rutas reales, pasos 1 a 5)', () => {
     borrador.usuarioRedSocial.set('@acme');
     borrador.emailContacto.set('contacto@acme.com');
     borrador.categoria.set('1');
-    borrador.fechaInicio.set('2026-11-01');
-    borrador.fechaFin.set('2026-12-01');
+    const hoy = new Date();
+    const inicio = new Date(hoy.getTime() + 86400000 * 2).toISOString().slice(0, 10);
+    const fin = new Date(hoy.getTime() + 86400000 * 32).toISOString().slice(0, 10);
+    borrador.fechaInicio.set(inicio);
+    borrador.fechaFin.set(fin);
   };
 
   it('mantiene el logo inerte durante todo el alta y lo habilita en el paso final', async () => {

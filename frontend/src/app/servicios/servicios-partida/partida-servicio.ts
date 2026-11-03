@@ -4,6 +4,7 @@ import { toast } from 'ngx-sonner';
 
 import { PartidaApiService } from '@servicios/servicios-partida/partida-api.service';
 import { PartidaEstadoService } from '@servicios/servicios-partida/partida-estado.service';
+import type { EscenarioPartidaTutorial } from '@servicios/servicios-partida/partida-estado.service';
 import { JUGADORES_MOCK } from '@servicios/servicios-partida/zonas-mock.service';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
 import { FOTOS_CARTAS_CATALOGO } from '@modelos/catalogo-cartas-imagenes';
@@ -285,9 +286,17 @@ export class PartidaServicio {
   /** `true` mientras se está cerrando la ronda o abandonando. */
   readonly confirmando = this.confirmandoSignal.asReadonly();
   /** La partida terminó (no se puede seguir jugando). */
-  readonly terminada = computed(() => this.estadoRealSignal()?.terminada ?? false);
+  readonly terminada = computed(() => {
+    if (this.modoRealSignal()) {
+      return this.estadoRealSignal()?.terminada ?? false;
+    }
+    return this.mock.terminada();
+  });
   /** El jugador ganó la partida (`null` si sigue en curso o terminó empatada). */
   readonly gane = computed(() => {
+    if (!this.modoRealSignal()) {
+      return this.mock.terminada() ? true : null;
+    }
     const fin = this.resultadoFinalSignal();
     if (fin && fin.ganador) {
       if (fin.ganador === 'empate') {
@@ -412,7 +421,7 @@ export class PartidaServicio {
 
   /** Máximo de cupones de la ronda, definido por el servidor. */
   readonly cuponMaximo = computed(() =>
-    this.modoRealSignal() ? (this.estadoRealSignal()?.cuponMaximo ?? 1) : this.mock.turno(),
+    this.modoRealSignal() ? (this.estadoRealSignal()?.cuponMaximo ?? 1) : this.mock.cuponMaximo(),
   );
 
   readonly barraPropia = computed(() =>
@@ -618,6 +627,60 @@ export class PartidaServicio {
     this.ultimaJugadaTimestamp = 0;
     this.secuenciaJugadas = 0;
     this.modoRealSignal.set(false);
+  }
+
+  /**
+   * Prepara la maqueta guionada del tutorial. Solo funciona en modo mock: no
+   * crea ni modifica partidas reales.
+   */
+  prepararEscenarioTutorial(escenario: EscenarioPartidaTutorial): void {
+    this.modoGaleria();
+    this.mock.prepararEscenarioTutorial(escenario);
+  }
+
+  /** Cierra la ronda guionada del tutorial (solo mock). */
+  cerrarRondaGuionadaTutorial(cartaRival: Carta, lugar: NombreLugar): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.cerrarRondaGuionadaTutorial(cartaRival, lugar);
+  }
+
+  /** Actualiza la mano del tutorial con cartas reales del inventario (solo mock). */
+  actualizarManoTutorial(cartas: readonly Carta[]): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.actualizarManoTutorial(cartas);
+  }
+
+  /** Restaura la maqueta original del tablero al salir del tutorial (solo mock). */
+  restaurarEscenarioMock(): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.restaurarEscenario();
+  }
+
+  /** Salta la partida a las rondas finales (5 y 6) con 5 cupones (solo mock). */
+  saltarARondasDecisivasTutorial(): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.saltarARondasDecisivasTutorial();
+  }
+
+  /** Simula el turno del bot en el juego libre contra la máquina (solo mock). */
+  simularTurnoPracticaBot(): void {
+    if (this.modoRealSignal()) {
+      return;
+    }
+
+    this.mock.simularTurnoPracticaBot();
   }
 
   /**

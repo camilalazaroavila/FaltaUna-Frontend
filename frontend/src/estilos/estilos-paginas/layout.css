@@ -55,3 +55,40 @@
         flex-direction: row;
     }
 }
+/* ==========================================================================
+   Contenedor de Partida y Tutorial (pantalla completa con fondo temático)
+   ========================================================================== */
+.partida-activa {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100dvh;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--fondo-app);
+    background-image:
+        linear-gradient(var(--overlay), var(--overlay)),
+        url('/imagenes/fondos/Fondo de juego con gato acuático.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.area-tablero {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+@media (max-height: 32rem) {
+    .partida-activa {
+        height: auto;
+        overflow: visible;
+    }
+
+    .area-tablero {
+        overflow: visible;
+        min-height: 24rem;
+    }
+}

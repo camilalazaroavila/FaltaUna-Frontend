@@ -1,4 +1,4 @@
-:host {
+﻿:host {
     --ancho-carta: clamp(6.75rem, 11cqw, 9rem);
     --ancho-disponible-mano: clamp(16rem, 62cqw, 52rem);
     --escala-arrastre: 1.06;
@@ -49,13 +49,13 @@
     z-index: 40 !important;
 }
 
-/* Si alguna carta se está arrastrando, anular el hover en todas las cartas para no tapar slots */
+/* Si alguna carta se estÃ¡ arrastrando, anular el hover en todas las cartas para no tapar slots */
 .mano:has(.mano-carta--arrastrando) .mano-carta:hover,
 .mano:has(.mano-carta--arrastrando) .mano-carta:focus-visible {
     transform: rotate(var(--angulo, 0deg)) translateY(var(--caida, 0rem));
 }
 
-/* La carta que se arrastra se atenúa en su lugar y no debe capturar puntero ni escalar */
+/* La carta que se arrastra se atenÃºa en su lugar y no debe capturar puntero ni escalar */
 .mano-carta.mano-carta--arrastrando,
 .mano-carta.mano-carta--arrastrando:hover,
 .mano-carta.mano-carta--arrastrando:focus-visible {
@@ -70,6 +70,11 @@
  * (por eso `aLocal` resta el rect del host). Se centra exactamente en el puntero
  * (-50%, -50%) para agarrar y soltar la carta desde su centro (estilo Marvel Snap).
  */
+:host-context([data-tutorial-activo='true']) .mano-fantasma,
+[data-tutorial-activo='true'] .mano-fantasma {
+    z-index: var(--z-tutorial-arrastre, 71);
+}
+
 .mano-fantasma {
     position: fixed;
     z-index: 60;
@@ -111,3 +116,4 @@
         transition: none;
     }
 }
+
