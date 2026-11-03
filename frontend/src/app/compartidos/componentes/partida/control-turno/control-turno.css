@@ -166,3 +166,13 @@
         font-size: var(--tipografia-menor);
     }
 }
+.control-boton-contenedor {
+    display: block;
+    width: 100%;
+    cursor: help;
+}
+
+.control-boton:disabled,
+.control-boton[disabled] {
+    pointer-events: none;
+}

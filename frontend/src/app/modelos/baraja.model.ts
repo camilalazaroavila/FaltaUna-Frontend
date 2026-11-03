@@ -13,7 +13,7 @@ export const LIMITES_BARAJA: Record<RarezaCarta, number> = {
   legendaria: 1,
 };
 /** Plural legible por rareza, para los mensajes de límite. */
-const PLURAL_RAREZA: Record<RarezaCarta, string> = {
+export const PLURAL_RAREZA: Record<RarezaCarta, string> = {
   comun: 'comunes',
   rara: 'raras',
   epicarta: 'epicartas',

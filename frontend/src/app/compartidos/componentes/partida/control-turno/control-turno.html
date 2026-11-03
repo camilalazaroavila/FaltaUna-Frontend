@@ -1,6 +1,6 @@
 <div class="control-bloque flex flex-col items-stretch gap-2">
   @if (!resolviendo()) {
-    <div class="flex flex-col gap-1">
+    <div class="flex flex-col gap-1" appTooltipPartida="Temporizador de la ronda. Jugá tus cartas antes de que se agote el tiempo.">
       <span
         class="control-tiempo"
         [class]="clasesTiempo()"
@@ -27,12 +27,13 @@
     </div>
   }
 
+  <div class="control-boton-contenedor" appTooltipPartida="Termina tu turno y la IA (o el jugador) dependiendo el caso va a ejecutar su turno.">
   <button
     type="button"
     app-boton
     variante="primario"
     tamanio="lg"
-    class="control-boton"
+    class="control-boton" 
     [attr.aria-label]="nombreAccesible()"
     [disabled]="!activo() || terminada() || deshabilitado()"
     [cargando]="!activo() && !terminada() && !deshabilitado()"
@@ -48,6 +49,7 @@
       </span>
     }
   </button>
+  </div>
 
   @if (!resolviendo() && !terminada()) {
     <div class="control-acciones-secundarias flex items-center justify-between gap-1.5 pt-1">

@@ -2,10 +2,13 @@
     display: block;
     margin-left: 1.5rem;
     width: 100%;
+    pointer-events: auto;
 }
 
 .barra-contenedor {
     width: 100%;
+    pointer-events: auto;
+    cursor: help;
 }
 
 .barra-contenedor--horizontal {

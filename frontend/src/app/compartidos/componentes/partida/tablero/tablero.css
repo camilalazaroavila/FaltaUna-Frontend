@@ -297,12 +297,14 @@
     flex-direction: column;
     align-items: center;
     gap: clamp(0.2rem, 0.6vh, 0.45rem);
-    pointer-events: none;
+    pointer-events: auto;
     user-select: none;
     text-align: center;
 }
 
 .aviso-burbuja-texto {
+    pointer-events: auto;
+    cursor: help;
     background-color: color-mix(in srgb, var(--color-teal-profundo) 90%, black);
     border: 2px solid var(--color-amarillo-logo);
     color: var(--texto-primario);
@@ -319,9 +321,13 @@
 .gatito-marco {
     display: grid;
     place-items: center;
+    pointer-events: auto;
+    cursor: help;
 }
 
 .gatito-senialando {
+    pointer-events: auto;
+    cursor: help;
     width: clamp(9rem, 12.5cqw, 10rem);
     height: auto;
     object-fit: contain;

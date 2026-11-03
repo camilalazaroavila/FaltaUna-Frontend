@@ -20,6 +20,7 @@ import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
 import type { MazoApi } from '@modelos/mazo.model';
 import { ETIQUETA_CATEGORIA, ETIQUETA_RAREZA } from '@modelos/carta.model';
 import {
+  PLURAL_RAREZA,
   RAREZAS_BARAJA,
   TAMANIO_BARAJA,
   calcularEstadoBaraja,
@@ -113,6 +114,32 @@ export class MiBaraja {
   ];
   /** Estado derivado de la selección (total, conteos por rareza, si se puede guardar). */
   protected readonly estado = computed(() => calcularEstadoBaraja(this.seleccion()));
+
+  /** Mensaje explicativo claro de qué cartas o rarezas faltan para completar la baraja. */
+  protected readonly mensajeFaltantes = computed(() => {
+    const est = this.estado();
+    if (est.completa) {
+      return null;
+    }
+    if (est.total < TAMANIO_BARAJA) {
+      const faltan = est.faltantes;
+      const rarezasFaltantes = est.conteos
+        .filter((c) => c.seleccionadas < c.maximo)
+        .map((c) => {
+          const diff = c.maximo - c.seleccionadas;
+          return `${diff} ${diff === 1 ? ETIQUETA_RAREZA[c.rareza] : PLURAL_RAREZA[c.rareza]}`;
+        })
+        .join(', ');
+
+      const palabra = faltan === 1 ? 'Falta 1 carta' : `Faltan ${faltan} cartas`;
+      return `${palabra} para poder guardar (requiere: ${rarezasFaltantes}).`;
+    }
+
+    const detalle = est.conteos
+      .map((c) => `${c.seleccionadas}/${c.maximo} ${ETIQUETA_RAREZA[c.rareza]}`)
+      .join(', ');
+    return `Tenés 12 cartas, pero la composición reglamentaria debe ser: 5 comunes, 4 raras, 2 épicas y 1 legendaria (actual: ${detalle}).`;
+  });
   protected readonly porcentaje = computed(() =>
     Math.round((this.estado().total / TAMANIO_BARAJA) * 100),
   );
