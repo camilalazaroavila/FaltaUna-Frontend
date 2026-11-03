@@ -66,5 +66,11 @@
         <app-estrella-rareza class="carta__estrella-slot"></app-estrella-rareza>
       }
     </div>
+
+    @if (mostrarCantidad() && tieneRepetidas()) {
+      <div class="carta__badge-cantidad" [attr.aria-label]="cantidad() + ' copias'">
+        <span class="carta__badge-multiplicador">×</span>{{ cantidad() }}
+      </div>
+    }
   </div>
-}
+}

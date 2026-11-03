@@ -29,6 +29,20 @@
     --color-marca-acento-suave: var(--marca-acento-suave);
     --color-marca-sobre-acento: var(--marca-sobre-acento);
 
+    --color-naranja: var(--color-naranja);
+    --color-naranja-hover: var(--color-naranja-hover);
+    --color-naranja-fondo: var(--color-naranja-fondo);
+    --color-naranja-borde: var(--color-naranja-borde);
+    --color-naranja-texto: var(--color-naranja-texto);
+    --color-naranja-sobre: var(--color-naranja-sobre);
+
+    --color-acento-repetida: var(--color-acento-repetida);
+    --color-acento-repetida-hover: var(--color-acento-repetida-hover);
+    --color-acento-repetida-fondo: var(--color-acento-repetida-fondo);
+    --color-acento-repetida-borde: var(--color-acento-repetida-borde);
+    --color-acento-repetida-texto: var(--color-acento-repetida-texto);
+    --color-acento-repetida-sobre: var(--color-acento-repetida-sobre);
+
     --color-marca-secundaria: var(--marca-secundaria);
     --color-marca-secundaria-hover: var(--marca-secundaria-hover);
     --color-marca-secundaria-activa: var(--marca-secundaria-activa);
