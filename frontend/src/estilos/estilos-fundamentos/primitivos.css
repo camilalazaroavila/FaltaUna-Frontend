@@ -1,4 +1,4 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    Falta Una - Primitivos (Capa 1)
    Paleta base de marca, superficies, neutros compartidos, radios y los tokens
    del sobre holografico (--sobre-holo-*). Solo colores crudos y medidas base:
@@ -7,8 +7,8 @@
    ========================================================================== */
 
 /* ==========================================================================
-   CAPA 1 — PRIMITIVOS
-   Paleta base extraída de la identidad visual de Falta Una.
+   CAPA 1 â€” PRIMITIVOS
+   Paleta base extraÃ­da de la identidad visual de Falta Una.
    ========================================================================== */
 :root {
     /* --- Paleta Modo Jugador / Usuario --- */
@@ -26,20 +26,20 @@
 
 
     --color-verde-jugador: #3BD972;
-    /* Verde cancha vibrante, acción principal */
+    /* Verde cancha vibrante, acciÃ³n principal */
     --color-verde-jugador-hover: #52E285;
     --color-verde-jugador-activa: #29BF5E;
 
     --color-amarillo-acento: #F2EEAE;
-    /* Acento cǭlido del logo / estrellas */
+    /* Acento cÇ­lido del logo / estrellas */
     --color-amarillo-hover: #F8F5C4;
     --color-amarillo-activo: #DDD78E;
     --color-amarillo-logo: #F9F9B2;
     /* Amarillo exacto del imagotipo (gradiente de la landing) */
     --color-amarillo-crema: #FFF3A0;
-    /* Amarillo crema del nombre, los números y las estrellas de carta */
+    /* Amarillo crema del nombre, los nÃºmeros y las estrellas de carta */
 
-    /* Negro de la marca "carta que quiero" (corazón marcado como favorita). */
+    /* Negro de la marca "carta que quiero" (corazÃ³n marcado como favorita). */
     --color-negro-favorito: #111111;
 
     /* --- Paleta de cartas coleccionables --- */
@@ -48,7 +48,7 @@
     --color-carta-superficie: #14383F;
     /* Superficies de la vista "Mis cartas" (toolbar, inputs) */
     --color-carta-cuadrado: #1E3B33;
-    /* Verde oscuro del CuadradoNumero (atributos e icono de categoría) */
+    /* Verde oscuro del CuadradoNumero (atributos e icono de categorÃ­a) */
     --color-legendaria-brillo: #7BF0A5;
     /* Verde brillante del acento de rareza legendaria */
 
@@ -69,11 +69,11 @@
     --color-violeta-activo: #433552;
     --color-violeta-suave: rgba(103, 86, 121, 0.12);
 
-    /* Fondo del header en pantallas de auth modo empresa (marrón cálido) */
+    /* Fondo del header en pantallas de auth modo empresa (marrÃ³n cÃ¡lido) */
     --color-marron-empresa: #413333;
 
     --color-crema-fondo: #FCEFE0;
-    /* Fondo crema cálido y acogedor */
+    /* Fondo crema cÃ¡lido y acogedor */
     --color-crema-superficie: #FFFFFF;
     /* Tarjetas blancas sobre crema */
     --color-crema-elevado: #F7E5D0;
@@ -110,7 +110,7 @@
     --color-gris-teal: #B8D3CF;
     /* Lectura secundaria sobre teal */
     --color-verde-lima: #E6EFCB;
-    /* Panel orgánico amarillo verdoso de la landing */
+    /* Panel orgÃ¡nico amarillo verdoso de la landing */
 
     /* --- Radios de Borde (Compartidos) --- */
     --radio-sm: 0.375rem;
@@ -126,4 +126,11 @@
     --sobre-holo-e: hsl(228 100% 74%);
     --sobre-reflejo: hsl(0 0% 100% / 0.55);
     --sobre-brillo-intensidad: 0.5;
+    /* --- Capas de apilamiento del tutorial guiado --- */
+    --z-tutorial-velo: 70;
+    --z-tutorial-detalle: 71;
+    --z-tutorial-arrastre: 71;
+    --z-tutorial-resaltado: 72;
+    --z-tutorial-globo: 73;
+    --z-tutorial-confirmacion: 74;
 }

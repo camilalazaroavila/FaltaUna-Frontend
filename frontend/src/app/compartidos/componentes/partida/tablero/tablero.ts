@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  HostListener,
   OnDestroy,
   computed,
   effect,
@@ -95,12 +94,23 @@ export class Tablero implements OnDestroy {
 
   /** `true` cuando el drag de la galería fuerza el resaltado (demo). */
   readonly cartaAgarrada = input(false);
+  readonly tutorialActivo = input(false);
+  readonly bloquearArrastre = input(false);
+  readonly bloquearTurno = input(false);
+  readonly bloquearJugada = input(false);
   readonly abandonar = output<void>();
   readonly rendirse = output<void>();
   /** Emite true cuando arranca el conteo secuencial y false al terminar o saltar. */
   readonly conteoCambio = output<boolean>();
   /** Emite el número de la ronda cuyo conteo secuencial acaba de finalizar por completo. */
   readonly conteoRondaTerminada = output<number>();
+  /** Emite la carta que el jugador abrió para ver su detalle. */
+  readonly cartaVista = output<Carta>();
+  /** Emite la carta que el jugador bajó al tablero. */
+  readonly cartaJugada = output<Carta>();
+  /** Emite cuando el jugador confirma el fin del turno. */
+  readonly turnoFinalizado = output<void>();
+  readonly cartaDetalleCerrado = output<void>();
 
   protected readonly lugares: readonly NombreLugar[] = ['izquierda', 'derecha'];
   protected readonly lugarAbierto = signal<NombreLugar | null>(null);
@@ -152,8 +162,21 @@ export class Tablero implements OnDestroy {
   /** Carta enfocada con teclado: alternativa accesible al arrastre. */
   private readonly cartaSeleccionada = signal<Carta | null>(null);
 
+  /** Zona que va a cambiar en el siguiente turno. */
+  protected readonly zonaQueCambia = computed<NombreLugar>(() =>
+    this.servicio.turno() % 2 === 1 ? 'derecha' : 'izquierda',
+  );
+  private rondaPreviaZona: NombreLugar | null = null;
+
   constructor() {
     this.sonido.precargarSonidosPartida();
+    effect(() => {
+      const zona = this.zonaQueCambia();
+      if (this.rondaPreviaZona !== null && this.rondaPreviaZona !== zona) {
+        this.sonido.reproducir(SONIDOS_PARTIDA.rotarZona);
+      }
+      this.rondaPreviaZona = zona;
+    });
 
     effect(() => {
       const propia = this.servicio.barraPropia();
@@ -185,13 +208,7 @@ export class Tablero implements OnDestroy {
     });
   }
 
-  @HostListener('keydown.escape', ['$event'])
-  alPresionarEscape(evento: Event): void {
-    if (this.enConteo()) {
-      evento.preventDefault();
-      this.saltarConteo();
-    }
-  }
+  
 
   /**
    * Inicia el conteo secuencial lento de la ronda: burbuja por carta (propias y rivales),
@@ -462,7 +479,7 @@ export class Tablero implements OnDestroy {
   }
 
   protected alTerminarArrastre(posicion: PosicionArrastre): void {
-    if (this.enConteo()) {
+    if (this.enConteo() || this.bloquearJugada()) {
       this.mano()?.cancelarArrastre();
       return;
     }
@@ -480,6 +497,7 @@ export class Tablero implements OnDestroy {
     if (slot && this.servicio.jugarCarta(carta, slot.lugar, slot.indice)) {
       this.mano()?.volarHacia(slot.elemento.getBoundingClientRect());
       this.sonido.reproducir(SONIDOS_PARTIDA.apoyarCarta);
+      this.cartaJugada.emit(carta);
       return;
     }
 
@@ -502,7 +520,7 @@ export class Tablero implements OnDestroy {
 
   /** Jugar con el botón de un slot disponible (alternativa accesible al drag). */
   protected alJugarEnSlot(lugar: NombreLugar, indice: number): void {
-    if (this.enConteo()) {
+    if (this.enConteo() || this.bloquearJugada()) {
       return;
     }
     const carta = this.cartaEnArrastre() ?? this.cartaSeleccionada();
@@ -510,7 +528,31 @@ export class Tablero implements OnDestroy {
     if (carta && this.servicio.jugarCarta(carta, lugar, indice)) {
       this.cartaSeleccionada.set(null);
       this.sonido.reproducir(SONIDOS_PARTIDA.apoyarCarta);
+      this.cartaJugada.emit(carta);
     }
+  }
+
+  /** Abre el detalle de una carta de la mano o de la mesa. */
+  protected alVerCarta(carta: Carta): void {
+    this.cartaAbierta.set(carta);
+    this.cartaVista.emit(carta);
+  }
+
+  /** Cierra el detalle de carta abierto (lo usa el tutorial al avanzar). */
+  cerrarCarta(): void {
+    this.cartaAbierta.set(null);
+    this.cartaDetalleCerrado.emit();
+  }
+
+  protected alCerrarDetalleCarta(): void {
+    this.cartaAbierta.set(null);
+    this.cartaDetalleCerrado.emit();
+  }
+
+  /** Confirma el fin del turno y avisa a quien escuche (tutorial, página). */
+  protected alFinalizarTurno(): void {
+    this.servicio.marcarListo();
+    this.turnoFinalizado.emit();
   }
 
   /**

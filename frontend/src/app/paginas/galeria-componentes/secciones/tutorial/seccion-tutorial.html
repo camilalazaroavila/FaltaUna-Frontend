@@ -1,0 +1,81 @@
+<div class="space-y-8">
+  <header class="space-y-2">
+    <h2 class="font-titulo text-subtitulo text-texto-primario">Tutorial</h2>
+    <p class="font-cuerpo text-sm text-texto-secundario">
+      Overlay del tutorial guiado de la partida. Resalta el elemento marcado con
+      <code class="font-interfaz text-texto-primario">data-tutorial</code>,
+      muestra el paso actual y no bloquea el tablero. En esta vista previa se
+      muestra el globo con el paso de cupones.
+    </p>
+  </header>
+
+  <app-tarjeta-muestra
+    titulo="app-tutorial-overlay"
+    descripcion="Globo con spotlight, contador de pasos, pista diferida y confirmación de salida."
+  >
+    <div
+      class="relative h-[30rem] overflow-hidden rounded-lg border border-borde-default bg-tablero-fondo"
+    >
+      <app-tutorial-overlay [vistaPrevia]="true" />
+    </div>
+
+    <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+      <p class="font-interfaz text-xs text-info-texto">
+        El overlay real se monta en <code>/usuario/tutorial</code> junto al
+        tablero en modo mock. El velo y el spotlight no capturan punteros para
+        que el jugador pueda arrastrar cartas mientras lee el paso.
+      </p>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="app-jaime"
+    descripcion="Mascota del tutorial en sus 3 poses (señalando, sí, no) y tamaños (sm, lg) con volteo según mirada."
+  >
+    <div class="space-y-6">
+      <div>
+        <h4 class="mb-2 font-interfaz text-xs uppercase tracking-wider text-texto-secundario">
+          Poses y orientación (tamaño sm)
+        </h4>
+        <div class="flex flex-wrap items-end gap-6 rounded-lg border border-borde-default bg-fondo-elevado p-4">
+          <div class="text-center">
+            <app-jaime pose="senalando" mirada="derecha" tamanio="sm" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Señalando (der)</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="senalando" mirada="izquierda" tamanio="sm" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Señalando (izq)</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="si" mirada="derecha" tamanio="sm" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Sí</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="no" mirada="derecha" tamanio="sm" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">No</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="mb-2 font-interfaz text-xs uppercase tracking-wider text-texto-secundario">
+          Tamaño grande (lg, centrado en presentación y cierre)
+        </h4>
+        <div class="flex flex-wrap items-end gap-8 rounded-lg border border-borde-default bg-fondo-elevado p-4">
+          <div class="text-center">
+            <app-jaime pose="si" tamanio="lg" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Sí (lg)</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="no" tamanio="lg" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">No (lg)</span>
+          </div>
+          <div class="text-center">
+            <app-jaime pose="senalando" tamanio="lg" />
+            <span class="block mt-1 font-interfaz text-xs text-texto-secundario">Señalando (lg)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </app-tarjeta-muestra>
+</div>

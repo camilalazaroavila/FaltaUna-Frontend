@@ -1,0 +1,6 @@
+<span class="jaime__giro" [class.jaime__giro--volteado]="volteado()">
+  <!-- Al cambiar de pose se recrea la imagen y se repite el "pop". -->
+  @for (p of [pose()]; track p) {
+    <img class="jaime__img" [src]="imagen()" alt="" draggable="false" />
+  }
+</span>

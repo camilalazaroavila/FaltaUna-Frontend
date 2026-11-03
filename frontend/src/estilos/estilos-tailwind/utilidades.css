@@ -96,9 +96,9 @@
     mask-repeat: no-repeat;
 }
 
+/*
 @utility marco-zona-irregular {
-    -webkit-mask-image: url('../../app/compartidos/SVGs/marco-zona-simetrico.svg');
-    mask-image: url('../../app/compartidos/SVGs/marco-zona-simetrico.svg');
+
     -webkit-mask-size: 100% 100%;
     mask-size: 100% 100%;
     -webkit-mask-position: center;
@@ -106,6 +106,7 @@
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
 }
+*/
 
 /* ==========================================================================
    UTILIDADES DE SCROLLBAR

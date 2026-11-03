@@ -1,4 +1,4 @@
-:host {
+﻿:host {
     --ancho-carta: clamp(6.75rem, 11cqw, 9rem);
     --ancho-disponible-mano: clamp(16rem, 62cqw, 52rem);
     --escala-arrastre: 1.06;
@@ -49,13 +49,13 @@
     z-index: 40 !important;
 }
 
-/* Si alguna carta se está arrastrando, anular el hover en todas las cartas para no tapar slots */
+/* Si alguna carta se estÃ¡ arrastrando, anular el hover en todas las cartas para no tapar slots */
 .mano:has(.mano-carta--arrastrando) .mano-carta:hover,
 .mano:has(.mano-carta--arrastrando) .mano-carta:focus-visible {
     transform: rotate(var(--angulo, 0deg)) translateY(var(--caida, 0rem));
 }
 
-/* La carta que se arrastra se atenúa en su lugar y no debe capturar puntero ni escalar */
+/* La carta que se arrastra se atenÃºa en su lugar y no debe capturar puntero ni escalar */
 .mano-carta.mano-carta--arrastrando,
 .mano-carta.mano-carta--arrastrando:hover,
 .mano-carta.mano-carta--arrastrando:focus-visible {
@@ -70,6 +70,11 @@
  * (por eso `aLocal` resta el rect del host). Se centra exactamente en el puntero
  * (-50%, -50%) para agarrar y soltar la carta desde su centro (estilo Marvel Snap).
  */
+:host-context([data-tutorial-activo='true']) .mano-fantasma,
+[data-tutorial-activo='true'] .mano-fantasma {
+    z-index: var(--z-tutorial-arrastre, 71);
+}
+
 .mano-fantasma {
     position: fixed;
     z-index: 60;
@@ -82,10 +87,10 @@
 
 @media (max-width: 1366px), (max-height: 820px) {
     :host {
-        --ancho-carta: clamp(4.5rem, 11cqw, 8rem);
-        --ancho-disponible-mano: clamp(14.5rem, 56cqw, 42rem);
-        min-height: calc(var(--ancho-carta) * 1.4 * 0.75);
-        padding: clamp(0.85rem, 2.2cqh, 1.5rem) clamp(0.5rem, 1.5cqw, 1.25rem) clamp(0.65rem, 1.8cqh, 1.25rem);
+        --ancho-carta: clamp(4.3rem, 7cqw, 6rem);
+        --ancho-disponible-mano: clamp(15rem, 54cqw, 42rem);
+        min-height: calc(var(--ancho-carta) * 1.4 * 0.72);
+        padding: 0.25rem clamp(0.35rem, 1.2cqw, 0.75rem) 0;
     }
 
     .mano {
@@ -111,3 +116,4 @@
         transition: none;
     }
 }
+

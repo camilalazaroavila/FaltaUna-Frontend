@@ -73,9 +73,9 @@
 
   <app-tarjeta-muestra
     titulo="app-barra-puntos"
-    descripcion="Barra vertical hacia los 100 de la partida: la propia se llena desde abajo y la del rival desde arriba. El relleno usa una transición CSS de altura y el delta flotante lo anima GSAP."
+    descripcion="Barra horizontal de puntos (0 a 100) hacia la meta de la partida: etiquetas fijas 'VOS' o 'RIVAL', número actual, meta / 100 y crecimiento de izquierda a derecha. El relleno usa una transición CSS de ancho y el delta flotante lo anima GSAP."
   >
-    <div class="flex h-64 max-w-md items-stretch gap-6">
+    <div class="flex flex-col gap-4 max-w-lg w-full">
       <app-barra-puntos [puntos]="0" lado="propio" />
       <app-barra-puntos [puntos]="50" [delta]="-5" lado="propio" />
       <app-barra-puntos [puntos]="42" lado="rival" />

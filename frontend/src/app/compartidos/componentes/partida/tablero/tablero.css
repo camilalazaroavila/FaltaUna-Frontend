@@ -7,90 +7,73 @@
     max-width: 160rem;
     margin-inline: auto;
     container-type: inline-size;
-    /* Alto de pantalla que NO ocupan los slots en pantallas grandes: cabecera,
-       fila del rival, mano, etiquetas y foto de la zona. */
-    --tablero-alto-fijo: 36rem;
-    /* Tope absoluto del ancho de un slot (pantallas grandes). */
-    --slot-ancho-max: 9rem;
+    /* AJUSTABLE: alto de pantalla que NO ocupan los slots (cabecera, foto, mano).
+       MÁS BAJO = slots más grandes, pero la mano tapa más. MÁS ALTO = slots más chicos. */
+    --tablero-alto-fijo: 7rem;
+    /* antes 24rem */
+    /* AJUSTABLE: tope del ancho de un TUYO slot en pantallas grandes (antes 10.5rem). */
+    --slot-ancho-max: 6.5rem;
+
 }
 
 .tablero {
     display: grid;
     width: 100%;
     height: 100%;
-    grid-template-columns:
-        minmax(3.5rem, clamp(4.5rem, 8cqw, 9rem)) minmax(0, 1fr) minmax(3.5rem, clamp(4.5rem, 8cqw, 9rem));
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    column-gap: clamp(0.5rem, 1.6cqw, 1.75rem);
-    row-gap: clamp(0.25rem, 1.2vh, 1rem);
-    padding: clamp(0.5rem, 1.6vh, 1.5rem) clamp(0.75rem, 2cqw, 2rem);
-    overflow-x: clip;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    row-gap: clamp(0.2rem, 0.8vh, 0.6rem);
+    padding: clamp(0.25rem, 0.8vh, 0.6rem) clamp(0.5rem, 1.2cqw, 1.25rem);
+    overflow-x: visible;
     /* Containing block determinístico del fantasma `fixed` de la mano. */
     contain: layout;
+    background: transparent;
 }
 
-/* ---- Rival: arriba a la derecha, chip y mano en una fila ---- */
-.area-rival {
-    grid-column: 1 / -1;
+/* ---- Fila 1: Cabecera rival (chip a la izquierda, barra horizontal de puntos a la derecha) ---- */
+.area-cabecera-rival {
     grid-row: 1;
-    justify-self: end;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: clamp(0.5rem, 1.5cqw, 1.25rem);
     position: relative;
     z-index: 25;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: clamp(0.5rem, 1.6cqw, 1.25rem);
-    min-width: 0;
 }
 
-.area-rival>* {
-    flex-shrink: 0;
+.area-rival {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.4rem, 1.2cqw, 1rem);
+    min-width: 0;
 }
 
 .rival-mano {
     display: flex;
     align-items: center;
-    gap: clamp(0.35rem, 1.2cqw, 0.75rem);
+    gap: clamp(0.25rem, 0.8cqw, 0.5rem);
 }
 
 .reverso-rival {
-    height: clamp(2.2rem, 6cqw, 3.4rem);
+    height: clamp(2rem, 4.5cqw, 3rem);
     transform: rotate(var(--angulo, 0deg));
     transform-origin: bottom center;
 }
 
 .reverso-rival+.reverso-rival {
-    margin-left: clamp(-0.7rem, -1.2cqw, -0.3rem);
+    margin-left: clamp(-0.6rem, -1cqw, -0.25rem);
 }
 
-/* ---- Barras: ocupan el alto de la fila central, con un mínimo de respaldo ---- */
-.area-barra-propia,
 .area-barra-rival {
-    grid-row: 2;
-    align-self: stretch;
     display: flex;
-    align-items: stretch;
-    justify-content: center;
-    min-height: clamp(9rem, 32vh, 22rem);
+    align-items: center;
+    width: clamp(10rem, 28cqw, 22rem);
     min-width: 0;
 }
 
-.area-barra-propia {
-    grid-column: 1;
-}
-
-.area-barra-rival {
-    grid-column: 3;
-}
-
-.area-barra-propia app-barra-puntos,
-.area-barra-rival app-barra-puntos {
-    width: 100%;
-}
-
-/* ---- Zonas: centradas en la fila del medio ---- */
+/* ---- Fila 2: Zonas de combate (centradas, aprovechan todo el ancho) ---- */
 .area-zonas {
-    grid-column: 2;
     grid-row: 2;
     justify-self: center;
     align-self: center;
@@ -99,48 +82,55 @@
     min-height: 0;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: clamp(0.75rem, 3cqw, 3rem);
-    row-gap: clamp(1.25rem, 3.5vh, 2.75rem);
+    column-gap: clamp(0.5rem, 1.5cqw, 1.5rem);
+    row-gap: clamp(0.5rem, 1.5vh, 1.25rem);
     min-width: 0;
+    position: relative;
+    z-index: 10;
 }
 
 .area-zonas app-zona {
     min-width: 0;
 }
 
+
 .area-zonas app-cupon-recurso {
-    margin-top: clamp(1.25rem, 3.5vh, 2.75rem);
-    justify-self: start;
-    align-self: start;
+    position: absolute;
+    bottom: 0.25rem;
+    left: 0.25rem;
+    z-index: 15;
 }
 
-/* ---- Fila de abajo ---- */
-.area-mano {
-    grid-column: 2;
+/* ---- Fila 3: Pie inferior (Vos + barra a la izquierda, Mano al centro, Control a la derecha) ---- */
+.area-inferior {
     grid-row: 3;
-    justify-self: center;
-    align-self: end;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(0.4rem, 1.2cqw, 1rem);
+    width: 100%;
     position: relative;
     z-index: 20;
-    width: 100%;
-    max-width: min(100%, 54rem);
-    min-width: 0;
-    margin-top: calc(-1 * clamp(1rem, 3vh, 2rem));
     pointer-events: none;
 }
 
-.area-propio {
-    grid-column: 1 / 3;
-    grid-row: 3;
-    justify-self: start;
-    align-self: end;
-    position: relative;
-    z-index: 15;
+.area-jugador-propio {
+    grid-column: 1;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: clamp(0.35rem, 1.2vh, 0.75rem);
-    padding-bottom: clamp(0.25rem, 0.8vh, 0.5rem);
+    align-items: center;
+    gap: clamp(0.4rem, 1.2cqw, 1rem);
+    min-width: 0;
+    pointer-events: auto;
+}
+
+.area-propio {
+    min-width: 0;
+}
+
+.area-barra-propia {
+    display: flex;
+    align-items: center;
+    width: clamp(7rem, 15cqw, 18rem);
     min-width: 0;
 }
 
@@ -149,17 +139,29 @@
     color: var(--color-teal-profundo);
 }
 
+.area-mano {
+    grid-column: 2;
+    justify-self: center;
+    align-self: end;
+    position: relative;
+    z-index: 30;
+    width: 100%;
+    max-width: min(100%, 54rem);
+    min-width: 0;
+    margin-top: 0;
+    pointer-events: none;
+}
+
 .area-control {
-    grid-column: 2 / 4;
-    grid-row: 3;
+    grid-column: 3;
     justify-self: end;
     align-self: end;
     position: relative;
-    z-index: 15;
+    z-index: 25;
     width: max-content;
     max-width: 100%;
     min-width: 0;
-    padding-bottom: clamp(0.25rem, 0.8vh, 0.5rem);
+    pointer-events: auto;
 }
 
 .area-control:has([role="dialog"]) {
@@ -171,76 +173,170 @@
     max-width: 100%;
 }
 
-/* ---- Pantallas medianas/bajas (1024x768, 1280x720, 1366x768, <= 820px de alto) ---- */
+
+/* ---- Pantallas de menor altura o notebooks (1366x768, pantallas <= 820px) ---- */
 @media (max-width: 1366px),
 (max-height: 820px) {
     :host {
-        --tablero-alto-fijo: clamp(22.5rem, 52cqh, 29rem);
-        --slot-ancho-max: clamp(3.75rem, 7.5cqw, 6.5rem);
+        --tablero-alto-fijo: clamp(14rem, 30cqh, 18rem);
+        --slot-ancho-max: 4.85rem;
     }
 
     .tablero {
-        grid-template-columns:
-            minmax(2.5rem, clamp(2.5rem, 5cqw, 5.5rem)) minmax(0, 1fr) minmax(2.5rem, clamp(2.5rem, 5cqw, 5.5rem));
-        column-gap: clamp(0.4rem, 1.4cqw, 1.5rem);
-        row-gap: clamp(0.45rem, 1.3cqh, 1rem);
-        padding: clamp(0.35rem, 1cqh, 1rem) clamp(0.5rem, 1.6cqw, 1.5rem);
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        row-gap: clamp(0.15rem, 0.5vh, 0.35rem);
+        padding: clamp(0.2rem, 0.5vh, 0.35rem) clamp(0.35rem, 1cqw, 0.75rem);
     }
 
-    .area-rival {
-        gap: clamp(0.4rem, 1.2cqw, 1rem);
+    .area-cabecera-rival {
+        gap: 0.5rem;
     }
 
-    .rival-mano {
-        gap: clamp(0.25rem, 0.9cqw, 0.6rem);
+    .area-barra-rival {
+        width: clamp(9rem, 20cqw, 15rem);
+        justify-content: flex-end;
+    }
+
+    .area-barra-propia {
+        width: clamp(7rem, 14cqw, 12rem);
     }
 
     .reverso-rival {
-        width: clamp(1.25rem, 2.2cqw, 1.75rem);
-        height: auto;
-    }
-
-    .reverso-rival+.reverso-rival {
-        margin-left: clamp(-0.55rem, -0.9cqw, -0.25rem);
-    }
-
-    .area-barra-propia,
-    .area-barra-rival {
-        align-self: center;
-        align-items: center;
-        height: 100%;
-        max-height: clamp(10rem, 48cqh, 22rem);
-        min-height: clamp(8rem, 28cqh, 10rem);
-    }
-
-    .area-barra-propia app-barra-puntos,
-    .area-barra-rival app-barra-puntos {
-        max-height: clamp(10rem, 48cqh, 22rem);
+        height: clamp(1.6rem, 3.2cqw, 2.2rem);
     }
 
     .area-zonas {
-        column-gap: clamp(0.75rem, 2.8cqw, 2.75rem);
-        row-gap: clamp(0.65rem, 1.8cqh, 1.35rem);
-
+        column-gap: clamp(0.35rem, 1cqw, 0.85rem);
+        row-gap: clamp(0.15rem, 0.6vh, 0.35rem);
     }
 
-    .area-zonas app-cupon-recurso {
-        margin-top: clamp(0.35rem, 1cqh, 0.85rem);
-        align-self: center;
+    .area-inferior {
+        gap: clamp(0.25rem, 0.8cqw, 0.6rem);
+        align-items: end;
+        /* AJUSTABLE: la columna derecha reserva el ancho del control (12.5rem)
+           y la mano usa lo que sobra. Antes era 1fr / auto / 1fr. */
+        grid-template-columns: minmax(0, 1fr) minmax(0, 40rem) minmax(12.5rem, 1fr);
     }
 
     .area-mano {
-        max-width: min(100%, 48rem);
-        margin-top: calc(-1 * clamp(0.2rem, 0.6cqh, 0.5rem));
+        max-width: 100%;
     }
 
     .area-control {
+        align-self: end;
+        justify-self: end;
+        /* Pegado al borde pero adentro, con un respiro. */
+        margin-right: 0.25rem;
+    }
+
+    .boton-saltar {
+        padding: 0.35rem 0.85rem !important;
+        font-size: 0.75rem !important;
+        border-width: 2px !important;
+    }
+
+    .boton-saltar svg {
+        width: 1rem !important;
+        height: 1rem !important;
+    }
+
+    .gatito-senialando {
+        width: clamp(2.5rem, 5.5cqw, 3.8rem);
+    }
+
+    .aviso-burbuja-texto {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.45rem;
+    }
+
+}
+
+/* ---- Pantallas medianas o estrechas (<= 1024px o pantallas móviles) ---- */
+@media (max-width: 1024px) {
+    :host {
+        --tablero-alto-fijo: clamp(16rem, 40cqh, 22rem);
+        --slot-ancho-max: clamp(3.5rem, 7.5cqw, 7rem);
+    }
+
+    .area-cabecera-rival {
+        gap: 0.4rem;
+    }
+
+    .area-inferior {
+        grid-template-columns: 1fr auto;
+        row-gap: 0.35rem;
+    }
+
+    .area-mano {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        margin-top: 0;
+    }
+
+    .area-jugador-propio {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .area-control {
+        grid-column: 2;
+        grid-row: 2;
         width: 100%;
         max-width: 11rem;
     }
+}
 
-    .area-control app-control-turno {
-        width: 100%;
-        max-width: 11rem;
+/* ---- Indicador central de rotación de zona con el gatito ---- */
+.zona-aviso-cambio {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.2rem, 0.6vh, 0.45rem);
+    pointer-events: none;
+    user-select: none;
+    text-align: center;
+}
+
+.aviso-burbuja-texto {
+    background-color: color-mix(in srgb, var(--color-teal-profundo) 90%, black);
+    border: 2px solid var(--color-amarillo-logo);
+    color: var(--texto-primario);
+    font-family: var(--fuente-titulo);
+    font-size: clamp(1.1rem, 1.1cqw, 1rem);
+    font-weight: 800;
+    line-height: 1.2;
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--radio-pildora, 9999px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65);
+    white-space: nowrap;
+}
+
+.gatito-marco {
+    display: grid;
+    place-items: center;
+}
+
+.gatito-senialando {
+    width: clamp(9rem, 12.5cqw, 10rem);
+    height: auto;
+    object-fit: contain;
+    border-radius: 1.25rem;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: scaleX(1);
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.65));
+}
+
+.gatito-senialando.flip-izquierda {
+    transform: scaleX(-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gatito-senialando {
+        transition: none;
     }
 }

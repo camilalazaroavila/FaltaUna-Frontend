@@ -39,6 +39,7 @@ export class ControlTurno {
   readonly segundosTotales = input<number | undefined>(undefined);
   readonly estado = input<EstadoBotonListo>('jugando');
   readonly terminada = input(false);
+  readonly deshabilitado = input(false);
 
   readonly finalizar = output<void>();
   readonly abandonar = output<void>();
@@ -46,7 +47,9 @@ export class ControlTurno {
 
   private procesandoAccion = false;
 
-  protected readonly activo = computed(() => !this.terminada() && this.estado() === 'jugando');
+  protected readonly activo = computed(
+    () => !this.terminada() && !this.deshabilitado() && this.estado() === 'jugando',
+  );
   protected readonly resolviendo = computed(() => !this.terminada() && this.estado() === 'resolviendo');
   protected readonly enAdvertencia = computed(
     () => !this.terminada() && this.segundosRestantes() <= SEGUNDOS_ADVERTENCIA,
@@ -65,10 +68,10 @@ export class ControlTurno {
       return 'Fin de la partida';
     }
     if (this.estado() === 'jugando') {
-      return this.turno() >= this.totalTurnos() ? 'Ronda final' : 'Realizar';
+      return this.turno() >= this.totalTurnos() ? 'Ronda final' : 'Terminar mi turno';
     }
     if (this.estado() === 'esperando') {
-      return 'Esperando';
+      return 'Esperando a mi rival';
     }
     return 'Realizando';
   });
