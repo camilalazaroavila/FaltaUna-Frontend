@@ -23,7 +23,6 @@ class ComponentePrueba {
 describe('TooltipPartidaDirective', () => {
   let fixture: ComponentFixture<ComponentePrueba>;
   let directiva: TooltipPartidaDirective;
-  let boton: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -32,7 +31,6 @@ describe('TooltipPartidaDirective', () => {
 
     fixture = TestBed.createComponent(ComponentePrueba);
     fixture.detectChanges();
-    boton = fixture.nativeElement.querySelector('#boton-test');
     directiva = fixture.debugElement
       .query(By.directive(TooltipPartidaDirective))
       .injector.get(TooltipPartidaDirective);
