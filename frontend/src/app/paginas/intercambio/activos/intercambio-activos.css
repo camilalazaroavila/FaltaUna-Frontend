@@ -1,0 +1,20 @@
+:host,
+.pantalla-activos {
+  min-height: 100dvh;
+  background-image: url('/imagenes/pantalla-intercambio/fondointercambio.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.panel-detalle-intercambio {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+@media (max-height: 680px) {
+  .pantalla-activos {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+}

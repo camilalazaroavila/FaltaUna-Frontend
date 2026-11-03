@@ -1,0 +1,17 @@
+/* Fondo de pantalla de Intercambio */
+:host,
+.pantalla-intercambio {
+  min-height: 100dvh;
+  background-image: url('/imagenes/pantalla-intercambio/fondointercambio.png');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* Botones del menú con los mismos colores que el menú de la partida (versión oscura):
+     cara azul petróleo (#0b2e36), sombra sólida crema (#f7f272) y texto crema (#f7f272) */
+  --btn-juego-bg: var(--combate-fondo-bajo, #0b2e36);
+  --btn-juego-sombra: var(--combate-fondo-alto, #f7f272);
+  --btn-juego-texto: var(--combate-fondo-alto, #f7f272);
+  --btn-juego-foco: var(--combate-fondo-alto, #f7f272);
+}

@@ -1,0 +1,118 @@
+<article
+  class="tarjeta-usuario relative border transition-all"
+  [class.tarjeta-usuario--compacta]="compacto()"
+  [class.p-2.5]="compacto()"
+  [class.sm:p-3]="compacto()"
+  [class.rounded-3xl]="compacto()"
+  [class.p-3.5]="!compacto()"
+  [class.sm:p-4]="!compacto()"
+  [class.rounded-2xl]="!compacto()"
+  [class.border-yellow-400/50]="destacado() && !seleccionado()"
+  [class.bg-[#0a332d]]="destacado() && !seleccionado()"
+  [class.border-white/10]="!destacado() && !seleccionado()"
+  [class.bg-[#082823]]="!destacado() && !seleccionado()"
+  [class.bg-[#fef9c3]]="seleccionado()"
+  [class.border-[#fef08a]]="seleccionado()"
+  [class.text-[#072326]]="seleccionado()"
+  [class.shadow-lg]="seleccionado()"
+  [class.shadow-md]="!seleccionado()"
+>
+  <!-- Indicador visual de alerta / actualización (!) -->
+  @if (tieneNotificacion()) {
+    <span
+      class="absolute -top-1.5 -left-1.5 sm:-top-2 sm:-left-2 z-20 flex size-5 sm:size-6 items-center justify-center rounded-full bg-amber-400 text-[#072326] font-black text-xs sm:text-sm font-titulo shadow-lg border-2 border-white animate-pulse select-none pointer-events-none"
+      title="Nueva actualización"
+      aria-label="Nueva actualización"
+    >
+      !
+    </span>
+  }
+
+  <!-- Slot para insignia superior derecha (ej: ★ 2 deseadas) -->
+  <div class="tarjeta-usuario__badge-slot absolute top-3 right-3 sm:top-3.5 sm:right-3.5 z-10">
+    <ng-content select="[badge], [slot=badge]" />
+  </div>
+
+  <!-- Avatar con distintivo opcional de lupa -->
+  <div
+    class="tarjeta-usuario__avatar relative shrink-0"
+    [class.size-12]="compacto()"
+    [class.sm:size-14]="compacto()"
+    [class.size-14]="!compacto()"
+    [class.sm:size-16]="!compacto()"
+  >
+    <div
+      class="flex size-full items-center justify-center overflow-hidden rounded-2xl transition-colors"
+      [class.bg-[#fef9c3]]="!seleccionado()"
+      [class.bg-[#082823]]="seleccionado()"
+    >
+      @if (avatarUrl()) {
+        <img
+          [src]="avatarUrl()"
+          [alt]="nombreUsuario()"
+          class="size-full object-cover"
+        />
+      } @else {
+        <svg
+          class="size-7 sm:size-8 transition-colors"
+          [class.text-[#082823]]="!seleccionado()"
+          [class.text-[#fef9c3]]="seleccionado()"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+          />
+        </svg>
+      }
+    </div>
+
+    @if (mostrarBadgeLupa()) {
+      <span
+        class="absolute -bottom-1 -right-1 flex size-4.5 sm:size-5 items-center justify-center rounded-full p-0.5 text-white shadow transition-colors"
+        [class.bg-[#082823]]="!seleccionado()"
+        [class.bg-[#0a332d]]="seleccionado()"
+        aria-hidden="true"
+      >
+        <svg
+          class="size-3 sm:size-3.5 text-emerald-300"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.35-4.35" />
+          <path d="M11 8v6M8 11h6" />
+        </svg>
+      </span>
+    }
+  </div>
+
+  <!-- Información del usuario -->
+  <div
+    class="tarjeta-usuario__cuerpo min-w-0"
+    [class.pr-14]="!compacto()"
+    [class.sm:pr-20]="!compacto()"
+  >
+    <h2
+      class="font-titulo text-sm sm:text-base font-bold truncate transition-colors leading-tight"
+      [class.text-white]="!seleccionado()"
+      [class.text-[#072326]]="seleccionado()"
+    >
+      {{ nombreUsuario() }}
+    </h2>
+    <!-- Slot para subtítulo o contenido personalizado -->
+    <div class="tarjeta-usuario__info mt-0.5" [class.hidden]="compacto()">
+      <ng-content select="[info], [slot=info]" />
+    </div>
+  </div>
+
+  <!-- Slot para acciones inferiores (ej: Botón Intercambiar o Días restantes) -->
+  <div class="tarjeta-usuario__acciones flex justify-end items-center">
+    <ng-content select="[acciones], [slot=acciones]" />
+  </div>
+</article>

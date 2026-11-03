@@ -1,0 +1,233 @@
+/* Fondo liso de intercambio */
+:host,
+.pantalla-ofrecer-carta {
+  min-height: 100dvh;
+  background-image: url('/imagenes/pantalla-intercambio/fondointercambioliso.png') !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Sombra de títulos compartida con Mis cartas */
+.titulo-sombreado {
+  color: var(--marca-acento, #fef08a);
+  text-shadow: 3px 3px 0 color-mix(in srgb, var(--color-verde-jugador, #22c55e) 55%, #072326);
+}
+
+/* Cápsula de favoritas en la cabecera superior derecha (estilo Pokémon Pocket) */
+.capsula-favoritas {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+}
+
+.mini-carta {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mini-carta:hover {
+  transform: translateY(-2px) scale(1.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 10;
+}
+
+/* Layout de 2 columnas para ofrecer carta */
+.layout-ofrecer-carta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+  min-height: 0;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .layout-ofrecer-carta {
+    grid-template-columns: 260px 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout-ofrecer-carta {
+    grid-template-columns: 290px 1fr;
+  }
+}
+
+@media (min-width: 1280px) {
+  .layout-ofrecer-carta {
+    grid-template-columns: 320px 1fr;
+  }
+}
+
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .layout-ofrecer-carta {
+    grid-template-columns: 380px 1fr !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .layout-ofrecer-carta {
+    grid-template-columns: 460px 1fr !important;
+  }
+}
+
+/* Sección de cartas repetidas: ocupa un tamaño amplio y scrollea si hay más */
+.seccion-catalogo-cartas {
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+}
+
+/* Grilla de cartas repetidas:
+   - Móvil: 2 columnas
+   - Tablet: 3 columnas
+   - Desktop < 1440px: 4 columnas
+   - 1440px a 1919px: 5 columnas
+   - 1920px en adelante: 6 columnas
+*/
+.grilla-cartas-repetidas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .grilla-cartas-repetidas {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grilla-cartas-repetidas {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .grilla-cartas-repetidas {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .grilla-cartas-repetidas {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Contenedor de la carta seleccionada en preview (fluido con la altura de pantalla) */
+.preview-carta-wrapper {
+  width: 100%;
+  max-width: clamp(105px, 17vh, 160px);
+}
+
+@media (min-width: 1440px) and (min-height: 800px) and (max-width: 1919px) {
+  .preview-carta-wrapper {
+    max-width: 230px !important;
+  }
+}
+
+@media (min-width: 1920px) and (min-height: 900px) {
+  .preview-carta-wrapper {
+    max-width: 300px !important;
+  }
+}
+
+/* Ranura vacía de vista previa */
+.slot-vacio-preview {
+  position: relative;
+  aspect-ratio: 5 / 7;
+  width: 100%;
+  max-width: clamp(105px, 17vh, 160px);
+  border-radius: 1rem;
+  background: rgba(7, 35, 38, 0.75);
+  border: 3px dashed rgba(254, 240, 138, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 0 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: max-width 0.2s ease;
+}
+
+@media (min-width: 1440px) and (min-height: 800px) and (max-width: 1919px) {
+  .slot-vacio-preview {
+    max-width: 230px !important;
+    border-radius: 1.25rem;
+  }
+
+  .slot-vacio-cruz {
+    font-size: 5.5rem;
+  }
+}
+
+@media (min-width: 1920px) and (min-height: 900px) {
+  .slot-vacio-preview {
+    max-width: 300px !important;
+    border-radius: 1.5rem;
+  }
+
+  .slot-vacio-cruz {
+    font-size: 6.5rem;
+  }
+}
+
+.slot-vacio-ondas {
+  position: absolute;
+  inset: 0;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.slot-vacio-cruz {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(2.5rem, 6vh, 4rem);
+  font-family: var(--fuente-titulo, sans-serif);
+  font-weight: 900;
+  color: rgba(254, 240, 138, 0.6);
+  line-height: 1;
+  user-select: none;
+}
+
+@media (max-height: 680px) {
+  .pantalla-ofrecer-carta {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+}
+
+/* Resplandor y aro de selección sobre la carta en la grilla */
+.carta-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 4px;
+  box-sizing: border-box;
+  border-radius: 1rem;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  cursor: pointer;
+  background: transparent;
+}
+
+.carta-item:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.06);
+}
+
+.carta-item--activa {
+  transform: translateY(-3px);
+  filter: drop-shadow(0 0 10px rgba(254, 240, 138, 0.7));
+}
+
+.carta-item--activa::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border: 3.5px solid #fef08a;
+  border-radius: 1rem;
+  box-shadow: inset 0 0 8px rgba(254, 240, 138, 0.4);
+  pointer-events: none;
+}

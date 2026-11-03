@@ -113,6 +113,65 @@ export const routes: Routes = [
   },
 
   {
+    path: 'usuario/intercambio',
+    title: 'Intercambio · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/intercambio/menu/intercambio-menu').then((m) => m.IntercambioMenu),
+  },
+  {
+    path: 'usuario/intercambio/coleccionistas',
+    title: 'Buscar coleccionistas · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/intercambio/coleccionistas/intercambio-coleccionistas').then(
+        (m) => m.IntercambioColeccionistas,
+      ),
+  },
+  {
+    path: 'usuario/intercambio/ofrecer/:coleccionistaId',
+    title: 'Elegir carta para intercambiar · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/intercambio/ofrecer-carta/intercambio-ofrecer-carta').then(
+        (m) => m.IntercambioOfrecerCarta,
+      ),
+  },
+  {
+    path: 'usuario/intercambio/responder/:intercambioId',
+    title: 'Responder intercambio · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/intercambio/ofrecer-carta/intercambio-ofrecer-carta').then(
+        (m) => m.IntercambioOfrecerCarta,
+      ),
+  },
+  {
+    path: 'usuario/intercambio/activos',
+    title: 'Intercambios activos · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/intercambio/activos/intercambio-activos').then(
+        (m) => m.IntercambioActivos,
+      ),
+  },
+  {
+    path: 'usuario/intercambio/pendiente/:id',
+    title: 'Solicitud pendiente · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('./paginas/intercambio/pendiente/intercambio-pendiente').then(
+        (m) => m.IntercambioPendiente,
+      ),
+  },
+
+  {
     path: 'juego/ia',
     title: 'Partida contra el bot · Falta Una',
     canActivate: [rolGuard],

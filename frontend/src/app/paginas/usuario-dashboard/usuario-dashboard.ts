@@ -30,6 +30,7 @@ import {
   resolverNombreMazoInicial,
 } from '@servicios/baraja.service';
 import { SonidoService, SONIDOS_PARTIDA } from '@servicios/sonido.service';
+import { IntercambioService } from '@servicios/intercambio.service';
 import type { MazoApi } from '@modelos/mazo.model';
 
 export interface DestinoNavegacion {
@@ -199,9 +200,12 @@ export class UsuarioDashboard implements OnInit {
   private readonly router = inject(Router);
   private readonly sobresService = inject(SobresService);
   private readonly authService = inject(AuthService);
+  private readonly intercambioService = inject(IntercambioService);
   private readonly barajaService = inject(BarajaService, { optional: true });
   private readonly sonidoService = inject(SonidoService, { optional: true });
   private readonly confeti = viewChild(Confeti);
+
+  protected readonly tieneNovedadIntercambios = this.intercambioService.tieneNovedadDashboardSignal;
 
   protected readonly juegoHabilitado = true;
   protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
@@ -221,7 +225,7 @@ export class UsuarioDashboard implements OnInit {
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
     { id: 'misiones', nombre: 'Misiones', ruta: '/usuario/misiones', icono: 'phosphorTrophyFill' },
     { id: 'album', nombre: 'Álbumes', ruta: '/usuario/albumes', urlIcono: urlIconoAlbum },
-    { id: 'intercambios', nombre: 'Intercambio', urlIcono: urlIconoIntercambios, deshabilitado: true },
+    { id: 'intercambios', nombre: 'Intercambio', ruta: '/usuario/intercambio', urlIcono: urlIconoIntercambios },
     { id: 'qr', nombre: 'Canje', urlIcono: urlIconoQr, deshabilitado: true },
     { id: 'cupones', nombre: 'Mis cupones', ruta: '/usuario/cupones', urlIcono: urlIconoDescuento },
   ];
@@ -265,6 +269,7 @@ export class UsuarioDashboard implements OnInit {
   });
 
   ngOnInit(): void {
+    this.intercambioService.verificarNovedades().subscribe();
     this.cargarSobres();
     this.cargarEstadoDiario();
     this.cargarInventarioSobres();
@@ -396,6 +401,9 @@ export class UsuarioDashboard implements OnInit {
     const destino = this.destinos.find((d) => d.id === id);
     if (destino?.deshabilitado) {
       return;
+    }
+    if (id === 'intercambios') {
+      this.intercambioService.marcarDashboardIntercambioVisto();
     }
     this.seccionActiva.set(id);
     if (destino?.ruta) {

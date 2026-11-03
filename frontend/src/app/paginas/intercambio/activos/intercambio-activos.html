@@ -1,0 +1,195 @@
+<div class="pantalla-activos relative flex min-h-dvh flex-col text-white lg:min-h-dvh lg:h-dvh lg:overflow-hidden">
+  <app-header [logueado]="true" class="shrink-0" />
+
+  <main class="mx-auto flex w-full max-w-[140rem] min-h-0 flex-1 flex-col px-4 pt-2 pb-3 sm:px-6 sm:pb-4 lg:px-8 max-md:pb-nav-inferior-reserva">
+    <!-- Botón Volver (lleva de nuevo al menú de intercambio) -->
+    <div class="shrink-0 pb-2">
+      <a
+        routerLink="/usuario/intercambio"
+        class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] text-combate-titulo uppercase transition-colors hover:opacity-80"
+      >
+        <svg
+          class="h-4 w-6"
+          viewBox="0 0 28 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M27 8H2M9 1L2 8l7 7" />
+        </svg>
+        Volver
+      </a>
+    </div>
+
+    <!-- Pestañas: Enviadas y Recibidas (estilo exacto a Img 2 y 3) -->
+    <div class="shrink-0 pb-2.5 sm:pb-3.5">
+      <div class="inline-flex items-center rounded-full bg-[#082823]/60 p-1 backdrop-blur-sm border border-white/10 shadow-inner">
+        <button
+          type="button"
+          (click)="cambiarPestana('enviadas')"
+          class="cursor-pointer rounded-full px-4 sm:px-5 py-1 sm:py-1.5 font-titulo text-sm sm:text-base min-[1440px]:text-lg font-black uppercase tracking-wider transition-all"
+          [class.bg-white]="pestanaActiva() === 'enviadas'"
+          [class.text-[#082823]]="pestanaActiva() === 'enviadas'"
+          [class.shadow-md]="pestanaActiva() === 'enviadas'"
+          [class.text-white/60]="pestanaActiva() !== 'enviadas'"
+          [class.hover:text-white]="pestanaActiva() !== 'enviadas'"
+        >
+          Enviadas
+        </button>
+        <button
+          type="button"
+          (click)="cambiarPestana('recibidas')"
+          class="cursor-pointer rounded-full px-4 sm:px-5 py-1 sm:py-1.5 font-titulo text-sm sm:text-base min-[1440px]:text-lg font-black uppercase tracking-wider transition-all"
+          [class.bg-white]="pestanaActiva() === 'recibidas'"
+          [class.text-[#082823]]="pestanaActiva() === 'recibidas'"
+          [class.shadow-md]="pestanaActiva() === 'recibidas'"
+          [class.text-white/60]="pestanaActiva() !== 'recibidas'"
+          [class.hover:text-white]="pestanaActiva() !== 'recibidas'"
+        >
+          Recibidas
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido principal: 2 columnas en Desktop, Acordeón expandible en Mobile -->
+    <div class="layout-activos flex-1 min-h-0 grid grid-cols-1 md:grid-cols-[46%_1fr] lg:grid-cols-[42%_1fr] xl:grid-cols-[38%_1fr] gap-4 sm:gap-6 items-stretch">
+      <!-- Columna izquierda: Lista de intercambios activos -->
+      <section class="flex flex-col min-h-0" aria-label="Lista de intercambios">
+        @if (cargando()) {
+          <div class="flex items-center justify-center py-20 text-center">
+            <p class="font-titulo text-lg uppercase tracking-wider text-marca-acento animate-pulse">
+              Cargando intercambios...
+            </p>
+          </div>
+        } @else if (listaVisible().length === 0) {
+          <div class="flex flex-col items-center justify-center py-16 text-center rounded-3xl border border-white/10 bg-[#082823]/60 p-6">
+            <p class="font-titulo text-xl font-bold uppercase tracking-wider text-marca-acento">
+              No tenés solicitudes {{ pestanaActiva() === 'enviadas' ? 'enviadas' : 'recibidas' }}
+            </p>
+            <p class="mt-2 text-sm text-white/80 max-w-sm">
+              @if (pestanaActiva() === 'enviadas') {
+                Buscá coleccionistas en el menú de intercambio para proponer una nueva oferta.
+              } @else {
+                Cuando otro jugador te envíe una oferta para intercambiar cartas, aparecerá aquí.
+              }
+            </p>
+            @if (pestanaActiva() === 'enviadas') {
+              <a
+                routerLink="/usuario/intercambio/coleccionistas"
+                class="mt-4 rounded-full bg-marca-primaria py-2 px-6 font-titulo text-xs font-bold uppercase tracking-wider text-[#082823] transition-transform hover:scale-105 active:scale-95"
+              >
+                Buscar coleccionistas
+              </a>
+            }
+          </div>
+        } @else {
+          <!-- Grilla vertical con scroll interno y padding perimetral amplio para evitar cortes de borde o hover -->
+          <div class="flex-1 min-h-0 overflow-y-auto px-3 py-2 pr-3.5 custom-scrollbar flex flex-col gap-2.5 sm:gap-3 pb-4">
+            @for (item of listaVisible(); track item.id) {
+              <div class="flex flex-col gap-2">
+                <div
+                  role="button"
+                  tabindex="0"
+                  (click)="seleccionarIntercambio(item.id)"
+                  (keydown.enter)="seleccionarIntercambio(item.id)"
+                  class="cursor-pointer active:scale-[0.99] focus:outline-none block w-full"
+                >
+                  <app-tarjeta-usuario
+                    [nombreUsuario]="nombreOtro(item)"
+                    [seleccionado]="intercambioDetalle()?.id === item.id"
+                    [mostrarBadgeLupa]="true"
+                    [tieneNotificacion]="esNovedad(item)"
+                    [compacto]="true"
+                  >
+                    <!-- Slot acciones: Días restantes SIEMPRE visibles en estados activos -->
+                    <div acciones slot="acciones">
+                      @if (item.estado === 'ACEPTADO') {
+                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-500/30">
+                          ★ ¡Aceptado!
+                        </span>
+                      } @else {
+                        <span
+                          class="text-xs sm:text-sm font-bold tracking-wide transition-colors whitespace-nowrap select-none"
+                          [class.text-[#082823]]="intercambioDetalle()?.id === item.id"
+                          [class.text-white/90]="intercambioDetalle()?.id !== item.id"
+                        >
+                          Restan: {{ calcularDias(item.fechaVencimiento) }} {{ calcularDias(item.fechaVencimiento) === 1 ? 'día' : 'días' }}
+                        </span>
+                      }
+                    </div>
+                  </app-tarjeta-usuario>
+                </div>
+
+                <!-- Expansión inline para pantallas pequeñas (mobile / tablet < md) -->
+                @if (intercambioSeleccionadoId() === item.id) {
+                  <div class="md:hidden animate-in fade-in zoom-in-95 duration-200">
+                    <ng-container *ngTemplateOutlet="detallePanelTpl" />
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Columna derecha: Panel de Detalle (visible en desktop >= md) -->
+      <aside class="hidden md:flex flex-col items-center justify-center min-h-0">
+        @if (intercambioDetalle()) {
+          <ng-container *ngTemplateOutlet="detallePanelTpl" />
+        }
+      </aside>
+    </div>
+  </main>
+</div>
+
+<!-- Template reutilizable del panel de detalle blanco (Imágenes 2 y 3) SIN barra de scroll -->
+<ng-template #detallePanelTpl>
+  <div class="panel-detalle-intercambio flex w-full max-w-sm min-[1440px]:max-w-md flex-col items-center justify-center rounded-3xl bg-white p-3 sm:p-4 min-[1440px]:p-7 text-[#082823] shadow-2xl border border-white/20 overflow-hidden">
+    <h3 class="font-titulo text-xs sm:text-sm min-[1440px]:text-xl font-black uppercase tracking-wider text-[#082823] text-center leading-tight">
+      INTERCAMBIO CON
+    </h3>
+    <p class="font-titulo text-sm sm:text-lg min-[1440px]:text-2xl font-black uppercase tracking-wider text-[#22c55e] text-center mt-0.5 truncate max-w-full">
+      {{ nombreOtroUsuarioDetalle() }}
+    </p>
+
+    <p class="font-titulo text-[11px] sm:text-xs min-[1440px]:text-sm font-bold uppercase tracking-wide text-[#082823]/80 mt-1 sm:mt-1.5 min-[1440px]:mt-3 text-center">
+      @if (pestanaActiva() === 'enviadas') {
+        @if (intercambioDetalle()?.estado === 'EN_REVISION' || intercambioDetalle()?.estado === 'ACEPTADO') {
+          Te propuso:
+        } @else {
+          Ofreciste:
+        }
+      } @else {
+        @if (intercambioDetalle()?.estado === 'ACEPTADO') {
+          ¡Aceptado! Recibís:
+        } @else {
+          Te ha ofrecido:
+        }
+      }
+    </p>
+
+    <!-- Vista previa de la carta ajustada proporcionalmente a la altura de pantalla -->
+    <div class="aspect-[5/7] w-24 sm:w-28 md:w-30 lg:w-[clamp(95px,17vh,135px)] min-[1440px]:w-44 my-1 sm:my-1.5 min-[1440px]:my-3 drop-shadow-xl flex items-center justify-center shrink-0">
+      @if (cartaDetalle(); as carta) {
+        <app-carta [carta]="carta" class="block w-full pointer-events-none" />
+      } @else {
+        <div class="size-full rounded-xl bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+          Sin imagen de carta
+        </div>
+      }
+    </div>
+
+    <!-- Botón verde VER -->
+    <button
+      type="button"
+      (click)="verDetalleIntercambio(intercambioDetalle()!)"
+      class="mt-1 cursor-pointer rounded-full bg-[#22c55e] py-1.5 px-6 sm:py-2 sm:px-8 min-[1440px]:py-2.5 min-[1440px]:px-10 font-titulo text-xs sm:text-sm min-[1440px]:text-base font-black uppercase tracking-wider text-white shadow-md transition-all hover:bg-[#16a34a] hover:shadow-lg active:scale-95"
+      title="Ver intercambio"
+    >
+      VER
+    </button>
+  </div>
+</ng-template>
