@@ -40,6 +40,7 @@ const ANCHO_MAXIMO_GLOBO = 380;
 const ALTO_ESTIMADO_GLOBO = 280;
 const MS_PISTA = 8000;
 
+
 const limitar = (valor: number, minimo: number, maximo: number): number =>
   Math.min(Math.max(valor, minimo), Math.max(minimo, maximo));
 
@@ -162,16 +163,6 @@ export class TutorialOverlay {
       if (!paso.espera) {
         queueMicrotask(() => this.globo()?.nativeElement.focus());
       }
-    });
-
-    effect(() => {
-      this.servicio.indice();
-
-      if (!this.activo() || this.vistaPrevia()) {
-        return;
-      }
-
-      untracked(() => this.sonar('pop'));
     });
 
     effect(() => {
@@ -304,8 +295,15 @@ export class TutorialOverlay {
       return;
     }
 
-    const caja = objetivo.getBoundingClientRect();
-    const extraX = ancla === 'slots-propios' ? 16 : 6;
+    const cajaPrincipal = objetivo.getBoundingClientRect();
+    const anclaExtra = this.paso().anclaExtra;
+    const extra = anclaExtra
+      ? document.querySelector<HTMLElement>(`[data-tutorial="${anclaExtra}"]`)
+      : null;
+
+    // Une las dos cajas en una sola que las contiene si hay elemento extra.
+    const caja = extra ? this.unir(cajaPrincipal, extra.getBoundingClientRect()) : cajaPrincipal;
+    const extraX = ancla === 'slots-propios' ? 26 : 12;
     const extraY = ancla === 'slots-propios' ? 10 : 6;
 
     this.rect.set({
@@ -316,6 +314,30 @@ export class TutorialOverlay {
     });
     this.posicionarGlobo(caja);
     this.mirarHacia(caja);
+  }
+
+  /** Devuelve la caja mínima que contiene a las dos. */
+  private unir(a: DOMRect, b: DOMRect): DOMRect {
+    const top = Math.min(a.top, b.top);
+    const left = Math.min(a.left, b.left);
+    const right = Math.max(a.right, b.right);
+    const bottom = Math.max(a.bottom, b.bottom);
+
+    if (typeof DOMRect !== 'undefined') {
+      return new DOMRect(left, top, right - left, bottom - top);
+    }
+
+    return {
+      top,
+      left,
+      right,
+      bottom,
+      width: right - left,
+      height: bottom - top,
+      x: left,
+      y: top,
+      toJSON: () => ({}),
+    } as DOMRect;
   }
 
   /** Jaime mira hacia el lado donde está el elemento resaltado. */

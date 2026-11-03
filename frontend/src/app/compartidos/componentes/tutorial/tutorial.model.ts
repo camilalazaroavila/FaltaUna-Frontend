@@ -1,4 +1,4 @@
-﻿import type { PoseJaime } from '@compartidos/componentes/tutorial/jaime/jaime';
+import type { PoseJaime } from '@compartidos/componentes/tutorial/jaime/jaime';
 
 /**
  * Eventos del tablero que pueden completar una espera del tutorial.
@@ -18,6 +18,7 @@ export type EventoTutorial =
  */
 export interface PasoTutorial {
   readonly ancla?: string;
+  readonly anclaExtra?: string;
   readonly anclaAlIniciarAccion?: string;
   readonly textoAlIniciarAccion?: string;
   readonly titulo: string;

@@ -53,12 +53,14 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
   {
     pose: 'no',
     ancla: 'slots-propios',
+    anclaExtra: 'mano',
     titulo: 'Dónde bajar cartas',
     texto:
       'En este lado se juegan tus cartas, en los casilleros libres. Eso sí: una carta jugada no se puede mover, así que pensalo bien.',
     pista: 'Los casilleros resaltados son los que están disponibles.',
   },
   {
+    
     ancla: 'slots-propios',
     titulo: 'Ahora te toca a vos',
     texto:

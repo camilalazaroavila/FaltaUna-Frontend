@@ -177,4 +177,17 @@ describe('TutorialOverlay', () => {
 
     expect(comp.anclaActual()).toBe('mano');
   });
+
+  it('unir() combina dos DOMRect en la caja envolvente mínima', () => {
+    const fixture = TestBed.createComponent(TutorialOverlay);
+    const comp = fixture.componentInstance as any;
+    const a = { top: 10, left: 20, right: 100, bottom: 80 } as DOMRect;
+    const b = { top: 5, left: 10, right: 150, bottom: 120 } as DOMRect;
+
+    const unida = comp.unir(a, b);
+    expect(unida.top).toBe(5);
+    expect(unida.left).toBe(10);
+    expect(unida.width).toBe(140);
+    expect(unida.height).toBe(115);
+  });
 });
