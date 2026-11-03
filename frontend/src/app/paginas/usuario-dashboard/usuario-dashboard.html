@@ -11,7 +11,9 @@
       @for (destino of destinos; track destino.id) {
       <app-boton-navegacion-circular [urlIcono]="destino.urlIcono ?? null" [icono]="destino.icono ?? null"
         [etiquetaAria]="destino.nombre" [activo]="seccionActiva() === destino.id" [expandible]="true"
-        [fondoBlanco]="true" [deshabilitado]="destino.deshabilitado ?? false" tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
+        [fondoBlanco]="true" [deshabilitado]="destino.deshabilitado ?? false"
+        [insignia]="destino.id === 'intercambios' && tieneNovedadIntercambios() ? '!' : null"
+        tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
       }
     </nav>
   </aside>

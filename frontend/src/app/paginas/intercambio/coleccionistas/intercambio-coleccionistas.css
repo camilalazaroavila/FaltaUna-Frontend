@@ -1,0 +1,61 @@
+/* ==========================================================================
+   Estilos específicos de Buscar Coleccionistas
+   ========================================================================== */
+
+/* Fondo de pantalla de Buscar Coleccionistas */
+:host,
+.pantalla-coleccionistas {
+  min-height: 100dvh;
+  background-image: url('/imagenes/pantalla-intercambio/fondointercambio.png') !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Sombra tipo "Mis cartas" reutilizable en el título */
+.titulo-sombreado {
+  color: var(--marca-acento, #fef08a);
+  text-shadow: 3px 3px 0 color-mix(in srgb, var(--color-verde-jugador, #22c55e) 55%, #072326);
+}
+
+/* Grilla de coleccionistas responsive:
+   - Móvil: 1 columna
+   - Tablet y Desktop < 1440px: 2 columnas
+   - 1440px a 1919px: 3 columnas
+   - 1920px en adelante: 4 columnas
+*/
+.grilla-coleccionistas {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .grilla-coleccionistas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .grilla-coleccionistas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .grilla-coleccionistas {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .grilla-coleccionistas {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+app-tarjeta-usuario {
+  display: block;
+  height: 100%;
+}

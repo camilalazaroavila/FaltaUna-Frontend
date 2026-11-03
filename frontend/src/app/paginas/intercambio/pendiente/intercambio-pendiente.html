@@ -1,0 +1,310 @@
+<div class="pantalla-pendiente relative flex min-h-dvh flex-col text-white lg:min-h-dvh lg:h-dvh lg:overflow-y-auto">
+  <app-header [logueado]="true" class="shrink-0" />
+
+  <main class="mx-auto flex w-full max-w-[140rem] min-h-0 flex-1 flex-col px-4 pt-3 pb-6 sm:px-6 lg:px-8 max-md:pb-nav-inferior-reserva">
+    <!-- Botón Volver -->
+    <div class="shrink-0 pb-4">
+      <a
+        [routerLink]="intercambio() ? '/usuario/intercambio/activos' : '/usuario/intercambio'"
+        class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] text-combate-titulo uppercase transition-colors hover:opacity-80"
+      >
+        <svg
+          class="h-4 w-6"
+          viewBox="0 0 28 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M27 8H2M9 1L2 8l7 7" />
+        </svg>
+        Volver
+      </a>
+    </div>
+
+    <!-- Contenido central: Cartas enfrentadas y estado -->
+    <section class="flex flex-1 flex-col items-center justify-center min-h-0 py-2">
+      <!-- Fila de cartas enfrentadas con divisor de destello -->
+      <div class="relative z-50 flex items-center justify-center gap-4 sm:gap-8 md:gap-12 w-full max-w-4xl px-4">
+        <!-- Columna Carta Ofertante (Izquierda) -->
+        <div class="flex flex-col items-center gap-2.5">
+          <div
+            class="rounded-full px-4 py-1 font-titulo text-xs sm:text-sm font-black uppercase tracking-wider shadow-md transition-all truncate max-w-[140px] sm:max-w-[200px]"
+            [class.bg-[#22c55e]]="etiquetaCartaIzquierda() === 'VOS'"
+            [class.text-white]="etiquetaCartaIzquierda() === 'VOS'"
+            [class.bg-[#082823]/80]="etiquetaCartaIzquierda() !== 'VOS'"
+            [class.text-[#fef08a]]="etiquetaCartaIzquierda() !== 'VOS'"
+            [class.border]="etiquetaCartaIzquierda() !== 'VOS'"
+            [class.border-[#fef08a]/30]="etiquetaCartaIzquierda() !== 'VOS'"
+          >
+            {{ etiquetaCartaIzquierda() }}
+          </div>
+
+          <div
+            #slotIzquierdo
+            class="slot-carta-wrapper aspect-[5/7] w-32 sm:w-44 md:w-52 lg:w-[clamp(130px,25vh,250px)] min-[1440px]:w-64 shrink-0 drop-shadow-2xl relative"
+            [style.--swap-distancia.px]="swapDistanciaPx()"
+            [class.animacion-temblor-carta]="faseAnimacion() === 'animando' && animacionPaso() === 'temblando'"
+            [class.animacion-cruce-derecha]="faseAnimacion() === 'animando' && (animacionPaso() === 'cruzando' || animacionPaso() === 'aterrizado')"
+          >
+            @if (cartaOfertante(); as carta) {
+              <app-carta [carta]="carta" class="block w-full pointer-events-none" />
+            } @else {
+              <div class="slot-vacio-pendiente size-full flex items-center justify-center rounded-2xl border-2 border-dashed border-white/30 bg-[#082823]/80">
+                <span class="text-xs uppercase text-white/60">Cargando...</span>
+              </div>
+            }
+
+            @if (faseAnimacion() === 'animando' && animacionPaso() === 'aterrizado') {
+              <div
+                class="animacion-destello absolute -bottom-6 inset-x-0 h-16 pointer-events-none z-50 flex items-center justify-center text-[#fef08a] text-3xl font-black select-none"
+                aria-hidden="true"
+              >
+                ✦ ✧ ✦
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Divisor vertical con destello / estrella central -->
+        <div class="divisor-destello flex flex-col items-center justify-center self-stretch py-6" aria-hidden="true">
+          <div class="w-0.5 flex-1 bg-white/40"></div>
+          <span class="my-2 text-xl sm:text-2xl text-white select-none drop-shadow">✦</span>
+          <div class="w-0.5 flex-1 bg-white/40"></div>
+        </div>
+
+        <!-- Columna Carta Receptor o Slot vacío de espera (Derecha) -->
+        <div class="flex flex-col items-center gap-2.5">
+          <div
+            class="rounded-full px-4 py-1 font-titulo text-xs sm:text-sm font-black uppercase tracking-wider shadow-md transition-all truncate max-w-[140px] sm:max-w-[200px]"
+            [class.bg-[#22c55e]]="etiquetaCartaDerecha() === 'VOS'"
+            [class.text-white]="etiquetaCartaDerecha() === 'VOS'"
+            [class.bg-[#082823]/80]="etiquetaCartaDerecha() !== 'VOS'"
+            [class.text-[#fef08a]]="etiquetaCartaDerecha() !== 'VOS'"
+            [class.border]="etiquetaCartaDerecha() !== 'VOS'"
+            [class.border-[#fef08a]/30]="etiquetaCartaDerecha() !== 'VOS'"
+          >
+            {{ etiquetaCartaDerecha() }}
+          </div>
+
+          <div
+            #slotDerecho
+            class="slot-carta-wrapper aspect-[5/7] w-32 sm:w-44 md:w-52 lg:w-[clamp(130px,25vh,250px)] min-[1440px]:w-64 shrink-0 drop-shadow-2xl relative"
+            [style.--swap-distancia.px]="-swapDistanciaPx()"
+            [class.animacion-temblor-carta]="faseAnimacion() === 'animando' && animacionPaso() === 'temblando'"
+            [class.animacion-cruce-izquierda]="faseAnimacion() === 'animando' && (animacionPaso() === 'cruzando' || animacionPaso() === 'aterrizado')"
+          >
+            @if (cartaReceptor(); as carta) {
+              <app-carta [carta]="carta" class="block w-full pointer-events-none" />
+            } @else {
+              <!-- Ranura vacía estilizada (esperando que el receptor ofrezca) -->
+              <div class="slot-vacio-pendiente size-full rounded-2xl relative overflow-hidden flex items-center justify-center border-3 border-dashed border-[#fef08a]/35 bg-[#082823]/60 shadow-inner">
+                <svg class="slot-vacio-ondas absolute inset-0 size-full pointer-events-none opacity-20" viewBox="0 0 100 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M -10 50 Q 25 80, 50 55 T 110 60 L 110 95 Q 75 90, 50 115 T -10 110 Z" fill="#fef08a" />
+                </svg>
+                <span class="slot-vacio-cruz relative z-10 font-titulo text-5xl sm:text-6xl md:text-7xl font-black text-[#fef08a]/60 select-none">
+                  +
+                </span>
+              </div>
+            }
+
+            @if (faseAnimacion() === 'animando' && animacionPaso() === 'aterrizado') {
+              <div
+                class="animacion-destello absolute -bottom-6 inset-x-0 h-16 pointer-events-none z-50 flex items-center justify-center text-[#fef08a] text-3xl font-black select-none"
+                aria-hidden="true"
+              >
+                ✦ ✧ ✦
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Textos informativos de estado y botones de acción -->
+      <div class="mt-6 sm:mt-8 max-w-2xl px-4 text-center">
+        @if (errorMensaje()) {
+          <div class="mb-4 rounded-xl bg-rose-500/20 border border-rose-500/40 p-3 text-rose-200 text-sm font-bold">
+            {{ errorMensaje() }}
+          </div>
+        }
+
+        @if (esPendiente() && !cartaReceptor()) {
+          <p class="font-titulo text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-wide text-white leading-snug drop-shadow">
+            {{ nombreOtroUsuario() }} aún no ha elegido una carta para intercambiar.
+          </p>
+          <p class="mt-2 text-sm sm:text-base md:text-lg font-bold text-white/90 drop-shadow">
+            El intercambio finalizará en {{ diasRestantes() }} {{ diasRestantes() === 1 ? 'día' : 'días' }} de no llegar a un acuerdo.
+          </p>
+        } @else if (esEnRevision()) {
+          @if (esOfertante()) {
+            <p class="font-titulo text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-wide text-white leading-snug drop-shadow">
+              {{ nombreOtroUsuario() }} ha seleccionado una carta a cambio de la tuya. ¿Deseas concretar el intercambio?
+            </p>
+            <p class="mt-2 text-sm sm:text-base md:text-lg font-bold text-white/90 drop-shadow">
+              El intercambio finalizará en {{ diasRestantes() }} {{ diasRestantes() === 1 ? 'día' : 'días' }} de no llegar a un acuerdo.
+            </p>
+
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-4">
+              <button
+                type="button"
+                (click)="confirmar()"
+                [disabled]="procesando()"
+                class="cursor-pointer rounded-full bg-[#22c55e] py-3 px-8 sm:px-10 font-titulo text-base sm:text-lg font-black uppercase tracking-wider text-white shadow-lg transition-all hover:bg-[#16a34a] hover:scale-105 active:scale-95 disabled:opacity-50"
+              >
+                @if (procesando()) {
+                  Procesando...
+                } @else {
+                  Aceptar
+                }
+              </button>
+
+              <button
+                type="button"
+                (click)="abrirModalRechazo()"
+                [disabled]="procesando()"
+                class="cursor-pointer rounded-full bg-[#082823]/85 border-2 border-rose-500/80 py-3 px-8 sm:px-10 font-titulo text-base sm:text-lg font-black uppercase tracking-wider text-rose-300 shadow-lg transition-all hover:bg-rose-950/80 hover:scale-105 active:scale-95 disabled:opacity-50"
+              >
+                Rechazar
+              </button>
+            </div>
+          } @else {
+            <p class="font-titulo text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-wide text-white leading-snug drop-shadow">
+              Ya enviaste tu propuesta. Esperando a que {{ nombreOtroUsuario() }} confirme el intercambio.
+            </p>
+            <p class="mt-2 text-sm sm:text-base md:text-lg font-bold text-white/90 drop-shadow">
+              El intercambio finalizará en {{ diasRestantes() }} {{ diasRestantes() === 1 ? 'día' : 'días' }} de no llegar a un acuerdo.
+            </p>
+          }
+        } @else if (esAceptado()) {
+          <p class="font-titulo text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-wide text-[#fef08a] leading-snug drop-shadow">
+            ¡Intercambio aceptado!
+          </p>
+        }
+      </div>
+    </section>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DE DOBLE CONFIRMACIÓN PARA RECHAZAR                                -->
+  <!-- ========================================================================= -->
+  @if (modalRechazoAbierto()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-modal-rechazar"
+    >
+      <div class="w-full max-w-md rounded-3xl bg-[#082823] p-6 text-center text-white shadow-2xl border border-white/20">
+        <h3 id="titulo-modal-rechazar" class="font-titulo text-2xl font-black uppercase tracking-wider text-white">
+          ¿Rechazar intercambio?
+        </h3>
+        <p class="mt-3 text-sm text-white/80 leading-relaxed">
+          Esta acción no se puede deshacer. Se cancelará la solicitud y las cartas serán devueltas a sus respectivos dueños.
+        </p>
+        <div class="mt-6 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            (click)="cerrarModalRechazo()"
+            [disabled]="procesando()"
+            class="cursor-pointer rounded-full bg-white/10 px-6 py-2.5 font-titulo text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-white/20 disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            (click)="confirmarRechazo()"
+            [disabled]="procesando()"
+            class="cursor-pointer rounded-full bg-rose-600 px-6 py-2.5 font-titulo text-sm font-black uppercase tracking-wider text-white shadow-md transition-all hover:bg-rose-700 active:scale-95 disabled:opacity-50"
+          >
+            @if (procesando()) {
+              Rechazando...
+            } @else {
+              Sí, rechazar
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- ESCENA DE ANIMACIÓN CINEMÁTICA CON JAIME Y FALTI                          -->
+  <!-- ========================================================================= -->
+  @if (faseAnimacion() === 'animando') {
+    <!-- Fondo oscuro desenfocado que resalta las 2 cartas del centro -->
+    <div
+      class="fixed inset-0 bg-black/75 backdrop-blur-xs z-40 transition-opacity duration-300 pointer-events-none"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Ilustraciones de Jaime y Falti entrando desde el borde inferior -->
+    <div class="fixed inset-x-0 bottom-0 pointer-events-none z-50 flex justify-between items-end px-2 sm:px-6">
+      <img
+        src="/imagenes/pantalla-intercambio/jaime.png"
+        alt="Jaime"
+        class="w-32 sm:w-48 md:w-60 lg:w-72 object-contain origin-bottom select-none drop-shadow-2xl"
+        [class.animacion-personaje-entra]="animacionPaso() !== 'aterrizado'"
+        [class.animacion-personaje-sale]="animacionPaso() === 'aterrizado'"
+      />
+      <img
+        src="/imagenes/pantalla-intercambio/falti.png"
+        alt="Falti"
+        class="w-32 sm:w-48 md:w-60 lg:w-72 object-contain origin-bottom select-none drop-shadow-2xl"
+        [class.animacion-personaje-entra]="animacionPaso() !== 'aterrizado'"
+        [class.animacion-personaje-sale]="animacionPaso() === 'aterrizado'"
+      />
+    </div>
+  }
+
+  <!-- ========================================================================= -->
+  <!-- FASE FINAL: REVELACIÓN "CONSEGUISTE" (IDÉNTICA A APERTURA DE SOBRES)      -->
+  <!-- ========================================================================= -->
+  @if (faseAnimacion() === 'conseguiste') {
+    <div
+      (click)="finalizarYSalir()"
+      class="pointer-events-auto fixed inset-0 z-50 flex flex-col items-center justify-center px-4 py-4 sm:py-6 select-none cursor-pointer bg-black/85 backdrop-blur-md animate-fade-in [--carta-h:clamp(14rem,52vh,48rem)]"
+    >
+      <!-- Título gigante CONSEGUISTE -->
+      <h1
+        class="font-titulo text-4xl sm:text-6xl md:text-7xl lg:text-8xl 2xl:text-9xl text-[#f9f9b2] tracking-wider uppercase drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] mb-3 sm:mb-6 text-center animate-in zoom-in-95 duration-300"
+      >
+        CONSEGUISTE
+      </h1>
+
+      <!-- Escena central: carta con estrellas y brillo -->
+      <div class="escena-revelacion animacion-revelacion relative flex items-center justify-center my-2">
+        <!-- Halo amarillo detrás de la carta -->
+        <div
+          class="halo-revelacion pointer-events-none absolute -inset-[35%] rounded-full bg-radial from-[#f9f9b2]/50 via-[#f9f9b2]/20 to-transparent blur-2xl"
+          aria-hidden="true"
+        ></div>
+
+        <!-- Estrellitas decorativas -->
+        <div class="brillo-estrella estrella-1 absolute -top-4 -left-6 sm:-left-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">★</div>
+        <div class="brillo-estrella estrella-2 absolute top-10 -left-8 sm:-left-12 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★</div>
+        <div class="brillo-estrella estrella-3 absolute -top-3 -right-6 sm:-right-10 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.11)]">★</div>
+        <div class="brillo-estrella estrella-4 absolute top-1/2 -right-8 sm:-right-12 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★</div>
+        <div class="brillo-estrella estrella-5 absolute -bottom-3 -left-5 sm:-left-8 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.07)]">★</div>
+        <div class="brillo-estrella estrella-6 absolute -bottom-5 -right-5 sm:-right-8 z-10 text-[#f9f9b2] text-[length:calc(var(--carta-h)*0.09)]">★</div>
+
+        <!-- Carta: ancho derivado de la altura (proporción 5/7) con rotación leve y resplandor -->
+        @if (cartaConseguida(); as carta) {
+          <div
+            class="carta-revelada relative w-[calc(var(--carta-h)*5/7)] max-w-[65vw] rotate-[4deg] drop-shadow-[0_0_35px_rgba(249,249,178,0.7)]"
+          >
+            <app-carta [carta]="carta" class="block w-full pointer-events-none" />
+          </div>
+        }
+      </div>
+
+      <!-- Mensaje para continuar -->
+      <p
+        class="mt-6 sm:mt-10 text-center font-interfaz text-xs sm:text-sm md:text-base text-white/85 tracking-widest uppercase font-bold animate-pulse"
+      >
+        Tocá en cualquier parte para continuar
+      </p>
+    </div>
+  }
+</div>
