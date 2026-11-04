@@ -130,7 +130,7 @@ export class PartidaEstadoService {
 
   // ── MOCK: valores fijos, sin cálculo de victoria por 100 (§10 pendiente) ──
   private readonly estadoTurno = signal(3);
-  private readonly estadoSegundos = signal(28);
+  private readonly estadoSegundos = signal(180);
   /** El máximo del cupón es el turno actual (A confirmar con §10). */
   private readonly estadoCupones = signal(3);
   private readonly estadoCuponMaximo = signal(3);
@@ -471,7 +471,7 @@ export class PartidaEstadoService {
     this.estadoLugares.set(crearLugaresIniciales());
     this.estadoManoPropia.set(crearManoInicial());
     this.estadoTurno.set(3);
-    this.estadoSegundos.set(28);
+    this.estadoSegundos.set(180);
     this.estadoCupones.set(3);
     this.estadoCuponMaximo.set(3);
     this.estadoBarraPropia.set(42);

@@ -411,7 +411,7 @@ export class PartidaServicio {
 
   /** Segundos totales asignados a la ronda por el servidor. */
   readonly segundosTotales = computed<number | undefined>(() =>
-    this.modoRealSignal() ? this.estadoRealSignal()?.segundosTotales : 60,
+    this.modoRealSignal() ? this.estadoRealSignal()?.segundosTotales : 180,
   );
 
   /** Cupones de recurso disponibles. */
