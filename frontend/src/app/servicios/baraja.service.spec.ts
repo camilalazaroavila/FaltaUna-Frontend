@@ -10,6 +10,7 @@ import {
   BarajaService,
   NOMBRES_MAZOS_BIENVENIDA,
   resolverNombreMazoInicial,
+  mapearCartaMazo,
 } from './baraja.service';
 describe('BarajaService', () => {
   let servicio: BarajaService;
@@ -226,5 +227,20 @@ describe('BarajaService', () => {
       cartas: [],
     });
     await expect(respuesta).resolves.toEqual([]);
+  });
+  it('mapea las cartas del mazo respetando su categoria cuando viene del backend', () => {
+    const cartaMazo = {
+      cartaId: 10,
+      nombre: 'Aura Aviator',
+      poder: 5,
+      costoCupon: 2,
+      rarezaId: 2,
+      rareza: 'Rara',
+      rarezaOrden: 2,
+      imagenUrl: null,
+      categoria: 'Indumentaria',
+    };
+    const carta = mapearCartaMazo(cartaMazo);
+    expect(carta.categoria).toBe('indumentaria');
   });
 });
