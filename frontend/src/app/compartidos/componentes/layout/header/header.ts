@@ -92,12 +92,12 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
         [class.bg-marca-acento]="fondoAmarillo()"
         [class.bg-header-auth-fondo]="enAuth()"
         [class.text-landing-oscuro-texto]="!fondoAmarillo() && !fondoVerde()"
-        [class.text-black]="fondoAmarillo()"
-        [class.text-white]="fondoVerde()"
+        [class.text-black]="fondoAmarillo() || fondoVerde()"
+
       >
         <a [routerLink]="destinoLogo()" class="shrink-0" aria-label="Falta Una, ir al inicio">
           <img
-            [src]="fondoVerde() ? urlLogoBlanco : (fondoAmarillo() ? urlLogoOscuro : urlLogo)"
+            [src]="(fondoVerde() || fondoAmarillo()) ? urlLogoOscuro : urlLogo"
             alt="Falta Una"
             class="w-auto lg:h-[75px]"
             [class.h-8]="!enAuth()"
@@ -116,12 +116,12 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
             [routerLinkActiveOptions]="{ exact: true }"
             queryParamsHandling="preserve"
             class="font-interfaz text-[10px] font-bold uppercase tracking-wide transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
-            [class.text-white]="fondoVerde()"
+    
             [class.text-landing-oscuro-texto]="!fondoAmarillo() && !fondoVerde()"
-            [class.text-black]="fondoAmarillo()"
-            [class.hover:text-landing-acento]="fondoVerde()"
+            [class.text-black]="fondoAmarillo() || fondoVerde()"
+
             [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo() && !fondoVerde()"
-            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo()"
+            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo() || fondoVerde()"
             [class.hover:text-marca-primaria]="enAuth() && modo() === 'jugador'"
             [class.hover:text-landing-acento]="enAuth() && modo() === 'empresa'"
           >
@@ -133,12 +133,12 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
             [routerLinkActiveOptions]="{ exact: true }"
             queryParamsHandling="preserve"
             class="font-interfaz text-[10px] font-bold uppercase tracking-wide transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
-            [class.text-white]="fondoVerde()"
+    
             [class.text-landing-oscuro-texto]="!fondoAmarillo() && !fondoVerde()"
-            [class.text-black]="fondoAmarillo()"
-            [class.hover:text-landing-acento]="fondoVerde()"
+            [class.text-black]="fondoAmarillo() || fondoVerde()"
+
             [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo() && !fondoVerde()"
-            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo()"
+            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo() || fondoVerde()"
             [class.hover:text-marca-primaria]="enAuth() && modo() === 'jugador'"
             [class.hover:text-landing-acento]="enAuth() && modo() === 'empresa'"
           >

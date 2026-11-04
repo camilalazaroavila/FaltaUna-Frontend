@@ -118,3 +118,13 @@
   border: none;
   background-color: transparent;
 }
+
+/* Ancho reducido para los expandibles de FAQ específicamente en pantallas de 1366px (rango 1280px-1535px) */
+@media (min-width: 1280px) and (max-width: 1535px) {
+  .faq-lista-acordeon {
+    width: 560px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin-inline: auto;
+  }
+}

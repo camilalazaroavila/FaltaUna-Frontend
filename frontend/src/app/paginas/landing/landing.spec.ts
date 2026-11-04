@@ -3,8 +3,7 @@ import { provideRouter } from '@angular/router';
 import { Landing } from './landing';
 
 /**
- * Verificación de arranque de la landing pública. El render de cada sección se
- * valida de forma visual; aquí solo se comprueba que el componente monte.
+ * Verificación de arranque de la landing pública.
  */
 describe('Landing', () => {
   beforeEach(async () => {
@@ -17,5 +16,25 @@ describe('Landing', () => {
   it('should create the page', () => {
     const fixture = TestBed.createComponent(Landing);
     expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('debe incluir las imágenes decorativas de Jaime y Falti y la clase de ancho en FAQ', () => {
+    const fixture = TestBed.createComponent(Landing);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const jaime = compiled.querySelector('img[src="/imagenes/landing-usuario/jaimeqa.png"]');
+    const falti = compiled.querySelector('img[src="/imagenes/landing-usuario/faltiqa.png"]');
+    const listaFaq = compiled.querySelector('.faq-lista-acordeon');
+
+    expect(jaime).toBeTruthy();
+    expect(jaime?.classList.contains('hidden')).toBe(true);
+    expect(jaime?.classList.contains('md:block')).toBe(true);
+
+    expect(falti).toBeTruthy();
+    expect(falti?.classList.contains('hidden')).toBe(true);
+    expect(falti?.classList.contains('md:block')).toBe(true);
+
+    expect(listaFaq).toBeTruthy();
   });
 });
