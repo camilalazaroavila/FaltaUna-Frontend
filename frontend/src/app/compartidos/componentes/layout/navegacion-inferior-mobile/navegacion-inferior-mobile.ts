@@ -135,7 +135,13 @@ export class NavegacionInferiorMobile {
   private readonly gsapService = inject(GsapService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly esNavegador = isPlatformBrowser(inject(PLATFORM_ID));
-  private readonly intercambioService = inject(IntercambioService, { optional: true });
+  private readonly intercambioService = (() => {
+    try {
+      return inject(IntercambioService, { optional: true });
+    } catch {
+      return null;
+    }
+  })();
 
   /** Cinco ítems de navegación repartidos a la derecha del botón de jugar. */
   readonly items = input<readonly ItemNavegacionInferior[]>(DESTINOS_NAVEGACION_INFERIOR_JUGADOR);
