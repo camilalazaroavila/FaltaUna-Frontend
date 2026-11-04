@@ -207,7 +207,16 @@ export class MiBaraja {
     this.barajaService
       .obtenerCartasDisponibles()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((cartas) => this.coleccion.set(cartas));
+      .subscribe((cartas) => {
+        this.coleccion.set(cartas);
+        const categoriasPorId = new Map(cartas.map((c) => [c.id, c.categoria]));
+        this.seleccion.update((sel) =>
+          sel.map((c) => {
+            const cat = categoriasPorId.get(c.id);
+            return cat ? { ...c, categoria: cat } : c;
+          }),
+        );
+      });
 
     this.cargarMazos();
   }
@@ -231,7 +240,14 @@ export class MiBaraja {
   protected seleccionarMazo(mazo: MazoApi): void {
     this.mazoSeleccionadoId.set(mazo.id);
     this.nombreBaraja.set(mazo.nombre);
-    this.seleccion.set(mazo.cartas.map(mapearCartaMazo));
+    const cartasColeccion = new Map(this.coleccion().map((c) => [c.id, c]));
+    this.seleccion.set(
+      mazo.cartas.map((cartaMazo) => {
+        const carta = mapearCartaMazo(cartaMazo);
+        const cartaCol = cartasColeccion.get(carta.id);
+        return cartaCol ? { ...carta, categoria: cartaCol.categoria } : carta;
+      }),
+    );
     this.aviso.set(null);
     this.guardado.set(false);
   }

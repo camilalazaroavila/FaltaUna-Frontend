@@ -151,7 +151,7 @@ export function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {
     nombre: carta.nombre,
     imagenUrl: resolverImagenCarta(carta.imagenUrl, carta.nombre),
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
-    categoria: categoriaCartaDesdeNombre(''),
+    categoria: categoriaCartaDesdeNombre(carta.categoria),
     atributoDerecho: carta.poder,
     atributoIzquierdo: carta.costoCupon,
     obtenida: true,
