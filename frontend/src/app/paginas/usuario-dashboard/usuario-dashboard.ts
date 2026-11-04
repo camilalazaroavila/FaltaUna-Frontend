@@ -202,6 +202,8 @@ export class UsuarioDashboard implements OnInit {
 
   readonly confeti = viewChild(Confeti);
 
+
+
   protected readonly juegoHabilitado = true;
   protected readonly sobresCatalogo = signal<readonly SobreRespuesta[]>([]);
   protected readonly sobresInventario = signal<readonly SobreInventarioUsuario[]>([]);
