@@ -3,6 +3,7 @@ import { Component, signal } from '@angular/core';
 import { Router, provideRouter } from '@angular/router';
 import { NavegacionInferiorMobile } from './navegacion-inferior-mobile';
 import { GsapService } from '@servicios/gsap.service';
+import { IntercambioService } from '@servicios/intercambio.service';
 
 @Component({ standalone: true, template: '' })
 class RutaDummy {}
@@ -12,11 +13,13 @@ describe('NavegacionInferiorMobile', () => {
   let component: NavegacionInferiorMobile;
   let router: Router;
   let movimientoReducidoSignal = signal(false);
+  let novedadIntercambiosSignal = signal(false);
   let crearContextoSpy: jest.Mock;
   let gsapFromToSpy: jest.Mock;
 
   beforeEach(async () => {
     movimientoReducidoSignal = signal(false);
+    novedadIntercambiosSignal = signal(false);
     gsapFromToSpy = jest.fn();
     crearContextoSpy = jest.fn((elemento: Element, configurar: (el: Element) => void) => {
       configurar(elemento);
@@ -34,6 +37,10 @@ describe('NavegacionInferiorMobile', () => {
       },
     };
 
+    const intercambioServiceMock = {
+      tieneNovedadDashboardSignal: novedadIntercambiosSignal.asReadonly(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [NavegacionInferiorMobile],
       providers: [
@@ -47,6 +54,7 @@ describe('NavegacionInferiorMobile', () => {
           { path: 'usuario/mis-cartas', component: RutaDummy },
           { path: 'usuario/mi-baraja', component: RutaDummy },
           { path: 'usuario/albumes', component: RutaDummy },
+          { path: 'usuario/intercambio', component: RutaDummy },
           { path: 'usuario/misiones', component: RutaDummy },
           { path: 'usuario/cupones', component: RutaDummy },
           { path: 'juego/ia', component: RutaDummy },
@@ -54,6 +62,7 @@ describe('NavegacionInferiorMobile', () => {
           { path: 'juego/tutorial', component: RutaDummy },
         ]),
         { provide: GsapService, useValue: gsapServiceMock },
+        { provide: IntercambioService, useValue: intercambioServiceMock },
       ],
     }).compileComponents();
 
@@ -87,6 +96,23 @@ describe('NavegacionInferiorMobile', () => {
     }
   });
 
+  it('en /usuario (dashboard) no debe seleccionar ningún botón automáticamente', async () => {
+    await router.navigateByUrl('/usuario');
+    fixture = TestBed.createComponent(NavegacionInferiorMobile);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const nav = host.querySelector<HTMLElement>('nav[aria-label="Navegación inferior del jugador"]');
+    expect(nav).not.toBeNull();
+
+    const fab = host.querySelector<HTMLAnchorElement>('.nav-inferior__fab');
+    expect(fab?.getAttribute('aria-current')).toBeNull();
+    expect(fab?.classList.contains('nav-inferior__fab--activo')).toBe(false);
+    expect(fab?.classList.contains('nav-inferior__boton--en-ola')).toBe(false);
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('-200px');
+  });
+
   it('debe renderizarse en las rutas del jugador, marcar el ítem activo con aria-current="page" y mover la ola hacia cada botón', async () => {
     await router.navigateByUrl('/usuario/misiones');
     fixture = TestBed.createComponent(NavegacionInferiorMobile);
@@ -98,7 +124,7 @@ describe('NavegacionInferiorMobile', () => {
     expect(nav).not.toBeNull();
 
     const enlaces = Array.from(host.querySelectorAll<HTMLAnchorElement>('.nav-inferior__enlace'));
-    expect(enlaces.length).toBe(4);
+    expect(enlaces.length).toBe(5);
 
     for (const enlace of enlaces) {
       expect(enlace.getAttribute('aria-label')).toBeTruthy();
@@ -109,9 +135,9 @@ describe('NavegacionInferiorMobile', () => {
     );
     expect(misionesEnlace?.getAttribute('aria-current')).toBe('page');
     expect(misionesEnlace?.classList.contains('nav-inferior__boton--en-ola')).toBe(true);
-    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('70%');
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('75%');
 
-    // Al navegar a /usuario/mi-baraja se activa "Mis cartas" y la ola viaja al 30%
+    // Al navegar a /usuario/mi-baraja se activa "Mis cartas" y la ola viaja al 25%
     await router.navigateByUrl('/usuario/mi-baraja');
     fixture.detectChanges();
 
@@ -120,9 +146,20 @@ describe('NavegacionInferiorMobile', () => {
     );
     expect(cartasEnlace?.getAttribute('aria-current')).toBe('page');
     expect(cartasEnlace?.classList.contains('nav-inferior__boton--en-ola')).toBe(true);
-    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('30%');
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('25%');
 
-    // Al hacer clic en "Mis cupones", la ola se desplaza inmediatamente al 90% y dispara el pulso de ola
+    // Al navegar a /usuario/intercambio se activa "Intercambio" y la ola viaja al 58.333333333333336%
+    await router.navigateByUrl('/usuario/intercambio');
+    fixture.detectChanges();
+
+    const intercambioEnlace = host.querySelector<HTMLAnchorElement>(
+      '.nav-inferior__enlace[aria-label="Intercambio"]',
+    );
+    expect(intercambioEnlace?.getAttribute('aria-current')).toBe('page');
+    expect(intercambioEnlace?.classList.contains('nav-inferior__boton--en-ola')).toBe(true);
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('58.333333333333336%');
+
+    // Al hacer clic en "Mis cupones", la ola se desplaza inmediatamente al 91.66666666666667% y dispara el pulso de ola
     const cuponesEnlace = host.querySelector<HTMLAnchorElement>(
       '.nav-inferior__enlace[aria-label="Mis cupones"]',
     );
@@ -130,10 +167,10 @@ describe('NavegacionInferiorMobile', () => {
     fixture.detectChanges();
 
     expect(cuponesEnlace?.classList.contains('nav-inferior__boton--en-ola')).toBe(true);
-    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('90%');
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('91.66666666666666%');
     expect(gsapFromToSpy).toHaveBeenCalled();
 
-    // Al navegar a /usuario/jugar se activa el botón principal ("Jugar") con el ícono de pelea en el 10%
+    // Al navegar a /usuario/jugar se activa el botón principal ("Jugar") con el ícono de pelea en el 8.333333333333334%
     await router.navigateByUrl('/usuario/jugar');
     fixture.detectChanges();
 
@@ -141,7 +178,22 @@ describe('NavegacionInferiorMobile', () => {
     expect(fab?.getAttribute('aria-current')).toBe('page');
     expect(fab?.classList.contains('nav-inferior__fab--activo')).toBe(true);
     expect(fab?.classList.contains('nav-inferior__boton--en-ola')).toBe(true);
-    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('10%');
+    expect(nav?.style.getPropertyValue('--ola-centro')).toBe('8.333333333333332%');
+  });
+
+  it('debe mostrar indicador de notificación en Intercambio cuando hay novedades', async () => {
+    novedadIntercambiosSignal.set(true);
+    await router.navigateByUrl('/usuario');
+    fixture = TestBed.createComponent(NavegacionInferiorMobile);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const intercambioEnlace = host.querySelector<HTMLAnchorElement>(
+      '.nav-inferior__enlace[aria-label="Intercambio"]',
+    );
+    const indicador = intercambioEnlace?.querySelector('.nav-inferior__notificacion');
+    expect(indicador).not.toBeNull();
   });
 
   it('debe pasar a estado ligeramente oculto al hacer scroll hacia abajo y volver al subir o tocar la franja', async () => {
