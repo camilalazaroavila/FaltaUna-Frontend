@@ -157,7 +157,7 @@
 
 .area-control {
     grid-column: 3;
-    justify-self: end;
+    justify-self: center;
     align-self: end;
     position: relative;
     z-index: 25;
@@ -184,7 +184,7 @@
     :host {
         /* AJUSTABLE: alto fijo descontado en pantallas <= 1366px o <= 820px */
         --tablero-alto-fijo: 12.5rem;
-        --slot-ancho-max: 4.85rem;
+        --slot-ancho-max: 5.35rem;
     }
 
     .tablero {
@@ -212,7 +212,7 @@
 
     .area-zonas {
         /* AJUSTABLE: separación entre las dos zonas para distribuir el ancho y no pegarlas al centro */
-        column-gap: clamp(2rem, 5cqw, 5.5rem);
+        column-gap: clamp(2.5rem, 6cqw, 6rem);
         row-gap: clamp(0.15rem, 0.6vh, 0.35rem);
     }
 
@@ -229,7 +229,7 @@
 
     .area-control {
         align-self: end;
-        justify-self: end;
+        justify-self: center;
         width: 100%;
     }
 
