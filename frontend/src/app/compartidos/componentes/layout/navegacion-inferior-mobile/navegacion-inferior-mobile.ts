@@ -28,10 +28,12 @@ import {
 } from '@ng-icons/phosphor-icons/regular';
 import { filter } from 'rxjs/operators';
 import { GsapService } from '@servicios/gsap.service';
+import { IntercambioService } from '@servicios/intercambio.service';
 
 import urlIconPelea from '@svgs/IconPelea.svg';
 import urlIconoMisCartas from '@svgs/Icon_misCartas.svg';
 import urlIconoAlbum from '@svgs/Icon_Album.svg';
+import urlIconoIntercambio from '@svgs/Icon_Intercambio.svg';
 import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 
 export interface ItemNavegacionInferior {
@@ -47,7 +49,7 @@ export interface ItemNavegacionInferior {
 }
 
 /**
- * Cuatro destinos principales del panel del jugador con los mismos íconos y rutas que desktop.
+ * Cinco destinos principales del panel del jugador con los mismos íconos y rutas que desktop.
  */
 export const DESTINOS_NAVEGACION_INFERIOR_JUGADOR: readonly ItemNavegacionInferior[] = [
   {
@@ -63,6 +65,13 @@ export const DESTINOS_NAVEGACION_INFERIOR_JUGADOR: readonly ItemNavegacionInferi
     ruta: '/usuario/albumes',
     rutasCoincidentes: ['/usuario/albumes'],
     urlIcono: urlIconoAlbum,
+  },
+  {
+    id: 'intercambios',
+    etiqueta: 'Intercambio',
+    ruta: '/usuario/intercambio',
+    rutasCoincidentes: ['/usuario/intercambio'],
+    urlIcono: urlIconoIntercambio,
   },
   {
     id: 'misiones',
@@ -96,7 +105,7 @@ export const ACCION_PRINCIPAL_JUGADOR: ItemNavegacionInferior = {
  * Barra de navegación inferior mobile para el modo jugador.
  *
  * - Superficie verde (`--nav-inferior-superficie`) con sombra/reborde amarillo de contraste.
- * - Incluye el botón de jugar (`IconPelea.svg`) y los 4 destinos con los mismos íconos de desktop.
+ * - Incluye el botón de jugar (`IconPelea.svg`) y los 5 destinos con los mismos íconos de desktop.
  * - Efecto de "ola": el recorte curvo cóncavo vectorial se desplaza horizontalmente hacia
  *   el botón activo/seleccionado y eleva ese botón en un círculo flotante abrazado por la ola.
  */
@@ -126,8 +135,9 @@ export class NavegacionInferiorMobile {
   private readonly gsapService = inject(GsapService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly esNavegador = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly intercambioService = inject(IntercambioService, { optional: true });
 
-  /** Cuatro ítems de navegación repartidos a la derecha del botón de jugar. */
+  /** Cinco ítems de navegación repartidos a la derecha del botón de jugar. */
   readonly items = input<readonly ItemNavegacionInferior[]>(DESTINOS_NAVEGACION_INFERIOR_JUGADOR);
 
   /** Acción principal de jugar (`IconPelea.svg`). */
@@ -164,16 +174,20 @@ export class NavegacionInferiorMobile {
     return manual !== null ? this.limpiarUrl(manual) : this.rutaActual();
   });
 
-  protected readonly todosLosBotones = computed<readonly ItemNavegacionInferior[]>(() => [
-    this.accionPrincipal(),
-    ...this.items(),
-  ]);
+  protected readonly todosLosBotones = computed<readonly ItemNavegacionInferior[]>(() => {
+    const tieneNovedad = this.intercambioService?.tieneNovedadDashboardSignal?.() ?? false;
+    const baseItems = this.items();
+    const itemsMapeados = baseItems.map((btn) =>
+      btn.id === 'intercambios' ? { ...btn, tieneIndicador: tieneNovedad } : btn,
+    );
+    return [this.accionPrincipal(), ...itemsMapeados];
+  });
 
   /**
    * Índice del botón que actualmente recibe el recorte cóncavo de la ola y se eleva.
-   * Si hay un ítem activo por ruta o clic lo sigue; en `/usuario` (home) descansa en el botón 0 ("Jugar").
+   * Si hay un ítem activo por ruta o clic lo sigue; en `/usuario` (home) no activa ninguno por defecto.
    */
-  protected readonly indiceOlaActivo = computed<number>(() => {
+  protected readonly indiceOlaActivo = computed<number | null>(() => {
     const lista = this.todosLosBotones();
     const idManual = this.idSeleccionadoOla();
     if (idManual) {
@@ -182,13 +196,16 @@ export class NavegacionInferiorMobile {
     }
 
     const idxRuta = lista.findIndex((b) => this.esItemActivo(b));
-    return idxRuta >= 0 ? idxRuta : 0;
+    return idxRuta >= 0 ? idxRuta : null;
   });
 
   /** Coordenada horizontal porcentual del centro de la ola para el botón activo. */
   protected readonly porcentajeCentroOla = computed<string>(() => {
-    const total = Math.max(1, this.todosLosBotones().length);
     const idx = this.indiceOlaActivo();
+    if (idx === null || idx < 0) {
+      return '-200px';
+    }
+    const total = Math.max(1, this.todosLosBotones().length);
     const pct = ((idx + 0.5) / total) * 100;
     return `${pct}%`;
   });

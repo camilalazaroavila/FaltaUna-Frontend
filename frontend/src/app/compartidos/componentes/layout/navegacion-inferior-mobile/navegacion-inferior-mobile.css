@@ -69,7 +69,7 @@
 .nav-inferior__ala {
   position: absolute;
   top: 0;
-  width: 120vw;
+  width: 250vw;
   height: var(--nav-inferior-alto);
   background-color: var(--nav-inferior-superficie);
 }
