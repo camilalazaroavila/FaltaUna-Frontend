@@ -4,8 +4,8 @@
    redefinen en [data-modo="empresa"]. */
 :root,
 [data-modo="jugador"] {
-  --combate-fondo-alto: #f7f272;
-  --combate-fondo-bajo: #0b2e36;
+  --combate-fondo-alto: #ebe8a5;
+  --combate-fondo-bajo: #0d3741;
   --combate-titulo: #12454f;
 
   --combate-fondo-carga: var(--combate-fondo-bajo);
@@ -18,7 +18,7 @@
    sombra y texto crema. Se sobrescriben los tokens del botón solo dentro de esta
    pantalla (clase pantalla-combate), así el componente no se toca. */
 .pantalla-combate {
-  background: linear-gradient(180deg, var(--combate-fondo-alto) 0%, var(--combate-fondo-bajo) 100%);
+  background: linear-gradient(180deg, var(--combate-fondo-alto) 0%, var(--combate-titulo) 100%);
   --btn-juego-bg: var(--combate-fondo-bajo);
   --btn-juego-sombra: var(--combate-fondo-alto);
   --btn-juego-texto: var(--combate-fondo-alto);

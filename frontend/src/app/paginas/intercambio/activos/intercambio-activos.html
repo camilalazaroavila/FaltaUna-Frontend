@@ -24,8 +24,8 @@
       </a>
     </div>
 
-    <!-- Pestañas: Enviadas y Recibidas (estilo exacto a Img 2 y 3) -->
-    <div class="shrink-0 pb-2.5 sm:pb-3.5">
+    <!-- Pestañas: Enviadas y Recibidas alineadas con las tarjetas -->
+    <div class="shrink-0 pb-2.5 sm:pb-3.5 px-3">
       <div class="inline-flex items-center rounded-full bg-[#082823]/60 p-1 backdrop-blur-sm border border-white/10 shadow-inner">
         <button
           type="button"
@@ -147,7 +147,7 @@
 
 <!-- Template reutilizable del panel de detalle blanco (Imágenes 2 y 3) SIN barra de scroll -->
 <ng-template #detallePanelTpl>
-  <div class="panel-detalle-intercambio flex w-full max-w-sm min-[1440px]:max-w-md flex-col items-center justify-center rounded-3xl bg-white p-3 sm:p-4 min-[1440px]:p-7 text-[#082823] shadow-2xl border border-white/20 overflow-hidden">
+  <div class="panel-detalle-intercambio flex w-full max-w-sm lg:max-w-md min-[1440px]:max-w-lg flex-col items-center justify-center rounded-3xl bg-white p-3.5 sm:p-5 min-[1440px]:p-7 text-[#082823] shadow-2xl border border-white/20 overflow-hidden">
     <h3 class="font-titulo text-xs sm:text-sm min-[1440px]:text-xl font-black uppercase tracking-wider text-[#082823] text-center leading-tight">
       INTERCAMBIO CON
     </h3>
@@ -172,7 +172,7 @@
     </p>
 
     <!-- Vista previa de la carta ajustada proporcionalmente a la altura de pantalla -->
-    <div class="aspect-[5/7] w-24 sm:w-28 md:w-30 lg:w-[clamp(95px,17vh,135px)] min-[1440px]:w-44 my-1 sm:my-1.5 min-[1440px]:my-3 drop-shadow-xl flex items-center justify-center shrink-0">
+    <div class="aspect-[5/7] w-28 sm:w-32 md:w-36 lg:w-[clamp(145px,23vh,185px)] min-[1440px]:w-48 my-1.5 sm:my-2 min-[1440px]:my-3 drop-shadow-xl flex items-center justify-center shrink-0">
       @if (cartaDetalle(); as carta) {
         <app-carta [carta]="carta" class="block w-full pointer-events-none" />
       } @else {

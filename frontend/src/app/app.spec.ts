@@ -1,13 +1,14 @@
-
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { App } from './app';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
   });
 
@@ -16,7 +17,7 @@ describe('App', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-it('should render the router outlet and the global toaster', () => {
+  it('should render the router outlet and the global toaster', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 

@@ -262,5 +262,27 @@ describe('CartaComponent · mapeo de assets por rareza y categoría', () => {
     expect(host.querySelector('.carta__imagen-fallback')).not.toBeNull();
     expect(host.querySelector('.carta__imagen')).toBeNull();
   });
+
+  it('no muestra el badge de cantidad si mostrarCantidad es false aunque tenga copias', () => {
+    conCarta({ ...cartaComun, cantidad: 3 });
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.carta__badge-cantidad')).toBeNull();
+  });
+
+  it('no muestra el badge de cantidad si mostrarCantidad es true pero tiene 1 sola copia', () => {
+    fixture.componentRef.setInput('mostrarCantidad', true);
+    conCarta({ ...cartaComun, cantidad: 1 });
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.carta__badge-cantidad')).toBeNull();
+  });
+
+  it('muestra el badge con la cantidad correcta si mostrarCantidad es true y tiene varias copias', () => {
+    fixture.componentRef.setInput('mostrarCantidad', true);
+    conCarta({ ...cartaComun, cantidad: 3 });
+    const host = fixture.nativeElement as HTMLElement;
+    const badge = host.querySelector('.carta__badge-cantidad');
+    expect(badge).not.toBeNull();
+    expect(badge?.textContent?.trim()).toBe('×3');
+  });
 });
 

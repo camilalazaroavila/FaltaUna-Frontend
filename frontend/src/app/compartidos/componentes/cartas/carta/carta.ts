@@ -45,6 +45,10 @@ const FONDO_POR_RAREZA: Record<RarezaCarta, string> = {
 })
 export class CartaComponent {
   readonly carta = input.required<Carta>();
+  readonly mostrarCantidad = input<boolean>(false);
+
+  protected readonly cantidad = computed(() => this.carta().cantidad ?? 1);
+  protected readonly tieneRepetidas = computed(() => this.cantidad() > 1);
 
   protected readonly efectosCategoria = computed(
     () => this.carta().efectosCategoria ?? [],
