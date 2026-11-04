@@ -1,16 +1,20 @@
 :host {
     display: block;
+    width: 100%;
+    max-width: var(--control-ancho-max, 12.5rem);
+    container-type: inline-size;
 }
 
 .control-boton {
-    width: max-content;
+    width: 100%;
     min-width: 9.5rem;
-    max-width: none;
+    max-width: var(--control-ancho-max, 12.5rem);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.625rem;
     height: clamp(2.75rem, 5vh, 3.25rem);
+    /* Necesario para anular el padding horizontal (.px-8) de app-boton en botones grandes */
     padding-inline: 1rem 0.625rem !important;
 }
 
@@ -21,7 +25,7 @@
     flex-shrink: 0;
 }
 
-/* Por defecto se ve la etiqueta completa, y bajo 12rem la versión corta. */
+/* Por defecto se ve la etiqueta completa, y bajo 12.5rem la versión corta. */
 .control-texto--corto {
     display: none;
 }
@@ -52,10 +56,9 @@
     padding-inline: clamp(0.5rem, 1.5vw, 1rem);
 }
 
-
-
-@container (max-width: 12rem) {
+@container (max-width: 12.5rem) {
     .control-boton {
+        /* Necesario para ajustar el padding de app-boton en columnas compactas */
         padding-inline: 0.6rem 0.4rem !important;
         gap: 0.3rem;
     }
@@ -75,6 +78,7 @@
 
 @media (max-width: 480px) {
     .control-boton {
+        /* Necesario para ajustar el padding de app-boton en mobile */
         padding-inline: 0.6rem 0.4rem !important;
         gap: 0.3rem;
     }
@@ -92,22 +96,20 @@
     }
 }
 
-@media (max-width: 1367px),
+@media (max-width: 1366px),
 (max-height: 820px) {
     :host {
-        /* AJUSTABLE: ancho máximo del control en pantallas medianas. */
-        --control-ancho-max: 12.5rem;
-        /* AJUSTABLE: alto del botón principal. */
+        /* Alto del botón principal en pantallas medianas o de menor altura */
         --control-alto-boton: 2.5rem;
 
         width: 100%;
-        max-width: var(--control-ancho-max);
+        max-width: var(--control-ancho-max, 12.5rem);
         container-type: inline-size;
     }
 
     .control-bloque {
         width: 100%;
-        max-width: var(--control-ancho-max);
+        max-width: var(--control-ancho-max, 12.5rem);
         gap: 0.3rem;
     }
 
@@ -118,26 +120,28 @@
     .control-boton {
         width: 100%;
         min-width: 0;
-        max-width: var(--control-ancho-max);
+        max-width: var(--control-ancho-max, 12.5rem);
         gap: 0.4rem;
+        /* Necesario para anular height de .h-[3.25rem] (tamanio lg) de app-boton */
         height: var(--control-alto-boton) !important;
+        /* Necesario para anular min-height heredado de app-boton */
         min-height: var(--control-alto-boton) !important;
         font-size: var(--tipografia-etiqueta);
+        /* Necesario para anular el padding horizontal (.px-8) de app-boton */
         padding-inline: 0.75rem 0.5rem !important;
     }
 
     .control-accion {
         font-size: var(--tipografia-etiqueta);
-        /* sin overflow hidden: antes cortaba el texto */
         white-space: nowrap;
     }
 
     .control-texto--largo {
-        display: none !important;
+        display: none;
     }
 
     .control-texto--corto {
-        display: inline !important;
+        display: inline;
     }
 
     .control-insignia-turno {
@@ -146,8 +150,8 @@
     }
 
     .control-tiempo {
-        height: 1.9rem !important;
-        min-height: 1.9rem !important;
+        height: 1.9rem;
+        min-height: 1.9rem;
         font-size: var(--tipografia-cuerpo);
         padding-block: 0;
         padding-inline: clamp(0.4rem, 1cqw, 0.7rem);
@@ -160,12 +164,16 @@
     }
 
     .control-secundario {
+        /* Necesario para anular height de .h-8 (tamanio sm) de app-boton */
         height: 2rem !important;
+        /* Necesario para anular min-height heredado de app-boton */
         min-height: 2rem !important;
+        /* Necesario para anular el padding horizontal (.px-3.5) de app-boton */
         padding-inline: clamp(0.4rem, 1cqw, 0.6rem) !important;
         font-size: var(--tipografia-menor);
     }
 }
+
 .control-boton-contenedor {
     display: block;
     width: 100%;

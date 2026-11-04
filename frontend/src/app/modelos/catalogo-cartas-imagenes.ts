@@ -1,3 +1,5 @@
+import type { CategoriaCarta } from '@modelos/carta.model';
+import { CATEGORIA_POR_DEFECTO, categoriaCartaDesdeNombre } from '@modelos/carta.model';
 /** Diccionario de URLs activas de Cloudinary por nombre normalizado de carta (fallback). */
 export const FOTOS_CARTAS_CATALOGO: Readonly<Record<string, string>> = {
   'aura aviator': 'https://res.cloudinary.com/w0uxy0vd/image/upload/v1792782661/AURA_Aviator_Anteojos_de_Sol.jpg',
@@ -364,4 +366,272 @@ export function esCartaSinMarca(carta: CartaValidableMarca | null | undefined): 
   }
 
   return false;
+}
+
+export const CATEGORIAS_CARTAS_CATALOGO: Readonly<Record<string, CategoriaCarta>> = {
+  'aura aviator': 'indumentaria',
+  'aura beats': 'indumentaria',
+  'aura cap': 'indumentaria',
+  'aura chrono stealth': 'indumentaria',
+  'aura gold bottle': 'indumentaria',
+  'aura gold varsity': 'indumentaria',
+  'aura leather jacket': 'indumentaria',
+  'aura parfum': 'indumentaria',
+  'aura premium wallet': 'indumentaria',
+  'aura urban pack': 'indumentaria',
+  'aura weekender': 'indumentaria',
+  'golden run': 'indumentaria',
+  'harmony sound headphones': 'musica',
+  'harmony sound studio monitors': 'musica',
+  'harmony sound audio interface': 'musica',
+  'harmony sound condenser mic': 'musica',
+  'harmony sound headphone amp': 'musica',
+  'harmony sound pro mic': 'musica',
+  'harmony sound electric guitar': 'musica',
+  'harmony sound synthesizer': 'musica',
+  'echoes of nova (album)': 'musica',
+  'harmony sound official tee': 'musica',
+  'harmony sound dj controller': 'musica',
+  'tarta blanca de rosas florales': 'gastronomia',
+  'eclair clasico de chocolate fino': 'gastronomia',
+  'milhojas de caramelo y chocolate': 'gastronomia',
+  'saint honore artesanal': 'gastronomia',
+  'domo glace de frambuesa': 'gastronomia',
+  'pavlova tropical de frutos rojos': 'gastronomia',
+  'paris-brest de avellanas': 'gastronomia',
+  'brioche suisse especial': 'gastronomia',
+  'profiterol supreme de cafe': 'gastronomia',
+  'royal de chocolate y rosa': 'gastronomia',
+  'tarta mousse frutos del bosque': 'gastronomia',
+  'croquembouche imperial de caramelo': 'gastronomia',
+  'lata coleccionable detras de camara': 'entretenimiento',
+  'taza de cafe': 'entretenimiento',
+  'steelbook blu-ray edicion coleccionista': 'entretenimiento',
+  'gorra de alta calidad': 'entretenimiento',
+  'libreta de cuero premium': 'entretenimiento',
+  'memoria usb-c': 'entretenimiento',
+  'set de pines esmaltados': 'entretenimiento',
+  'coleccion de relojes cine-time': 'entretenimiento',
+  'bolso tote estampado': 'entretenimiento',
+  'estatueta coleccionable con peso': 'entretenimiento',
+  'cuaderno edicion estudio': 'entretenimiento',
+  'trofeo premium de coleccionista': 'entretenimiento',
+  'vortex arcade': 'tecnologia',
+  'neon link': 'tecnologia',
+  'vortex pod': 'tecnologia',
+  'aether controller': 'tecnologia',
+  'cyber spectra': 'tecnologia',
+  'pulse charger': 'tecnologia',
+  'quantum quest': 'tecnologia',
+  'vortex prime': 'tecnologia',
+  'echo soundbar': 'tecnologia',
+  'luma mouse': 'tecnologia',
+  'vortex wear': 'tecnologia',
+  'chronos dial': 'tecnologia',
+  'axis pure': 'decoracion',
+  'axis core': 'decoracion',
+  'axis kinetic': 'decoracion',
+  'axis nova': 'decoracion',
+  'axis aura': 'decoracion',
+  'axis pulse': 'decoracion',
+  'axis sync': 'decoracion',
+  'axis tactic': 'decoracion',
+  'axis orbit': 'decoracion',
+  'axis rift': 'decoracion',
+  'axis beam': 'decoracion',
+  'axis align': 'decoracion',
+  'serum facial': 'cosmeticos',
+  'labial': 'cosmeticos',
+  'paleta de sombras': 'cosmeticos',
+  'mascara de pestanas': 'cosmeticos',
+  'crema hidratante': 'cosmeticos',
+  'esmalte de unas': 'cosmeticos',
+  'agua micelar': 'cosmeticos',
+  'brocha de maquillaje': 'cosmeticos',
+  'crema de manos': 'cosmeticos',
+  'exfoliante corporal': 'cosmeticos',
+  'polvo rubor & iluminador': 'cosmeticos',
+  'bruma facial': 'cosmeticos',
+  'jarron de ceramica': 'decoracion',
+  'almohadon bordado': 'decoracion',
+  'vela aromatica': 'decoracion',
+  'espejo de pared': 'decoracion',
+  'lampara de mesa': 'decoracion',
+  'manta de sofa': 'decoracion',
+  'maceta de ceramica': 'decoracion',
+  'cuadro decorativo': 'decoracion',
+  'reloj de pared': 'decoracion',
+  'bandeja de madera': 'decoracion',
+  'portarretratos': 'decoracion',
+  'canasto tejido': 'decoracion',
+  'gel limpiador facial': 'cosmeticos',
+  'oleo nutritivo para barba': 'cosmeticos',
+  'balsamo after-shave': 'cosmeticos',
+  'crema exfoliante facial': 'cosmeticos',
+  'cera mate para cabello': 'cosmeticos',
+  'suero contorno de ojos': 'cosmeticos',
+  'mascarilla negra detox': 'cosmeticos',
+  'protector solar matificante': 'cosmeticos',
+  'champu fortalecedor': 'cosmeticos',
+  'desodorante mineral': 'cosmeticos',
+  'tonico revitalizante': 'cosmeticos',
+  'balsamo labial reparador': 'cosmeticos',
+  'cafe en grano': 'gastronomia',
+  'frasco de mermelada': 'gastronomia',
+  'taza de ceramica': 'gastronomia',
+  'aceite de oliva': 'gastronomia',
+  'caja de tes en hebras': 'gastronomia',
+  'delantal de barista': 'gastronomia',
+  'frasco de miel organica': 'gastronomia',
+  'frasco de chocolate': 'gastronomia',
+  'tabla de madera': 'gastronomia',
+  'bolsa de granola': 'gastronomia',
+  'frasco de dulce de leche': 'gastronomia',
+  'prensa francesa': 'gastronomia',
+  'tuxedo azul oxford': 'indumentaria',
+  'camisa plisada': 'indumentaria',
+  'pantalon sastrero': 'indumentaria',
+  'zapatos oxford de gala': 'indumentaria',
+  'mono de seda jacquard': 'indumentaria',
+  'chaleco sastrero': 'indumentaria',
+  'abrigo de gala': 'indumentaria',
+  'cinturon de etiqueta': 'indumentaria',
+  'gemelos de gala': 'indumentaria',
+  'tiradores sastreros': 'indumentaria',
+  'panuelo de bolsillo': 'indumentaria',
+  'guantes de gala': 'indumentaria',
+  'juego de estrategia': 'entretenimiento',
+  'mazo de cartas tcg': 'entretenimiento',
+  'kit de magia': 'entretenimiento',
+  'lanzador de dardos': 'entretenimiento',
+  'juego de trivia': 'entretenimiento',
+  'rompecabezas 1000 piezas': 'entretenimiento',
+  'consola retro portatil': 'entretenimiento',
+  'proyector mini cine': 'entretenimiento',
+  'set de karaoke': 'entretenimiento',
+  'manual de rol y dados': 'entretenimiento',
+  'maletin de fichas': 'entretenimiento',
+  'set de malabares': 'entretenimiento',
+  'jarron de vidrio soplado': 'decoracion',
+  'almohadon de terciopelo': 'decoracion',
+  'portavelas cilindrico': 'decoracion',
+  'manta de lana tejida': 'decoracion',
+  'reloj de mesa moderno': 'decoracion',
+  'cuadro abstracto enmarcado': 'decoracion',
+  'alfombra geometrica': 'decoracion',
+  'plato mural ceramico': 'decoracion',
+  'bandeja con base de resina': 'decoracion',
+  'escultura colgante movil': 'decoracion',
+  'set de posavasos de cristal': 'decoracion',
+  'lampara de mesa esferica': 'decoracion',
+  'auriculares de estudio': 'musica',
+  'microfono de condensador': 'musica',
+  'interfaz de audio usb': 'musica',
+  'controlador midi pad': 'musica',
+  'amplificador de guitarra': 'musica',
+  'guitarra electrica solid body': 'musica',
+  'auriculares in-ear inalambricos': 'musica',
+  'funda de guitarra acolchada': 'musica',
+  'atril plegable para partituras': 'musica',
+  'pedal de efectos overdrive': 'musica',
+  'afinador y metronomo digital': 'musica',
+  'baquetas de bateria 5a': 'musica',
+  'remera dry-fit': 'indumentaria',
+  'short running 2 en 1': 'indumentaria',
+  'zapatillas pro carbon': 'indumentaria',
+  'rompevientos ultra pack': 'indumentaria',
+  'calza de compresion': 'indumentaria',
+  'gorra tecnica laser': 'indumentaria',
+  'musculosa marathon': 'indumentaria',
+  'medias de compresion': 'indumentaria',
+  'munequera termica': 'indumentaria',
+  'rinonera elastica slim': 'indumentaria',
+  'buzo termico midlayer': 'indumentaria',
+  'chaleco trail hidratacion': 'indumentaria',
+  'cyberfall': 'entretenimiento',
+  'sombras mansion': 'entretenimiento',
+  'ultimo reino': 'entretenimiento',
+  'codigo omega': 'entretenimiento',
+  'ultima orbita': 'entretenimiento',
+  'amores primavera': 'entretenimiento',
+  'vuelo nocturno': 'entretenimiento',
+  'enigma ancestros': 'entretenimiento',
+  'bajo presion': 'entretenimiento',
+  'la revuelta': 'entretenimiento',
+  'pequenos gigantes': 'entretenimiento',
+  'detras de la verdad': 'entretenimiento',
+  'consola kronos nexus': 'tecnologia',
+  'smart tv oled 4k': 'tecnologia',
+  'auriculares anc silent': 'tecnologia',
+  'camara mirrorless alpha-k': 'tecnologia',
+  'barra de sonido atmos': 'tecnologia',
+  'proyector compacto laser': 'tecnologia',
+  'reproductor hi-res walk': 'tecnologia',
+  'parlante party boost': 'tecnologia',
+  'joystick inalambrico pro': 'tecnologia',
+  'microfono stream-k': 'tecnologia',
+  'smartphone kronos vision': 'tecnologia',
+  'notebook kronos blade': 'tecnologia',
+  'the big bust burger': 'gastronomia',
+  'bust fries': 'gastronomia',
+  'bust nuggets': 'gastronomia',
+  'the mega bust combo': 'gastronomia',
+  'bust cheese & bacon': 'gastronomia',
+  'bust sundae chocolate': 'gastronomia',
+  'crispy chicken burger': 'gastronomia',
+  'aros de cebolla': 'gastronomia',
+  'bust kids box': 'gastronomia',
+  'bust shake frutilla': 'gastronomia',
+  'doble cuarto bust': 'gastronomia',
+  'bust apple pie': 'gastronomia',
+};
+
+
+/**
+ * Resuelve la categoría de una carta garantizando que nunca quede erróneamente
+ * como 'gastronomía' si pertenece a indumentaria, música, tecnología, etc.
+ */
+export function resolverCategoriaCarta(
+  nombreCarta: string | null | undefined,
+  categoriaBackend?: string | null | undefined,
+): CategoriaCarta {
+  if (categoriaBackend && typeof categoriaBackend === 'string' && categoriaBackend.trim()) {
+    const mapeada = categoriaCartaDesdeNombre(categoriaBackend);
+    const limpio = categoriaBackend.trim().toLowerCase();
+    if (mapeada !== CATEGORIA_POR_DEFECTO || limpio.includes('gastro') || limpio.includes('comida')) {
+      return mapeada;
+    }
+  }
+
+  if (nombreCarta && typeof nombreCarta === 'string') {
+    const clave = normalizarTextoCatalogo(nombreCarta);
+    const cat = CATEGORIAS_CARTAS_CATALOGO[clave];
+    if (cat) {
+      return cat;
+    }
+
+    if (clave.startsWith('aura') || clave.includes('golden run') || clave.startsWith('kronos')) {
+      return 'indumentaria';
+    }
+    if (clave.startsWith('harmony sound') || clave.includes('album') || clave.includes('audio') || clave.includes('sound')) {
+      return 'musica';
+    }
+    if (clave.startsWith('vortex') || clave.startsWith('aerox') || clave.includes('cyber') || clave.includes('smart') || clave.includes('phone') || clave.includes('laptop')) {
+      return 'tecnologia';
+    }
+    if (clave.startsWith('axis') || clave.startsWith('tierra warm') || clave.includes('deco')) {
+      return 'decoracion';
+    }
+    if (clave.startsWith('cineverse') || clave.startsWith('streamia') || clave.includes('cinema') || clave.includes('film')) {
+      return 'entretenimiento';
+    }
+    if (clave.includes('serum') || clave.includes('labial') || clave.includes('sombras') || clave.includes('pestanas') || clave.includes('crema') || clave.includes('maquillaje')) {
+      return 'cosmeticos';
+    }
+    if (clave.includes('tarta') || clave.includes('chocolate') || clave.includes('eclair') || clave.includes('milhojas') || clave.includes('croquembouche') || clave.includes('paris-brest') || clave.includes('vino') || clave.includes('queso') || clave.includes('pan ')) {
+      return 'gastronomia';
+    }
+  }
+
+  return categoriaCartaDesdeNombre(categoriaBackend);
 }

@@ -88,7 +88,7 @@
 @media (max-width: 1366px), (max-height: 820px) {
     :host {
         --ancho-carta: clamp(4.3rem, 7cqw, 6rem);
-        --ancho-disponible-mano: clamp(15rem, 54cqw, 42rem);
+        --ancho-disponible-mano: clamp(15rem, 40cqw, 34rem);
         min-height: calc(var(--ancho-carta) * 1.4 * 0.72);
         padding: 0.25rem clamp(0.35rem, 1.2cqw, 0.75rem) 0;
     }

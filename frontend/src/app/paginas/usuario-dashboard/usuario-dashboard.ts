@@ -19,8 +19,6 @@ import urlIconoIntercambios from '@svgs/Icon_Intercambio.svg';
 import urlIconoQr from '@svgs/Icon_Qr.svg';
 import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 
-import { ExpoPopout } from '@compartidos/componentes/layout/expo-popout/expo-popout';
-import { PopoutSesionService } from '@servicios/popout-sesion.service';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { Confeti } from '@compartidos/componentes/confeti/confeti';
 import {
@@ -155,27 +153,27 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         ),
       },
       {
-        cartaId: 22,
-        nombre: 'Harmony Sound Official Tee',
-        poder: 6,
-        costoCupon: 4,
-        rarezaId: 3,
-        rareza: 'Épica',
-        rarezaOrden: 3,
-        imagenUrl: resolverImagenCarta(
-          '/cartas/harmony_sound_official_tee.png',
-          'Harmony Sound Official Tee',
-        ),
-      },
-      {
-        cartaId: 46,
-        nombre: 'Estatueta Coleccionable con Peso',
+        cartaId: 25,
+        nombre: 'Harmony Sound Retro Mic',
         poder: 7,
         costoCupon: 4,
         rarezaId: 3,
         rareza: 'Épica',
         rarezaOrden: 3,
-        imagenUrl: resolverImagenCarta('/cartas/cineverse_estatueta.png', 'Estatueta Coleccionable con Peso'),
+        imagenUrl: resolverImagenCarta(
+          '/cartas/harmony_sound_retro_mic.png',
+          'Harmony Sound Retro Mic',
+        ),
+      },
+      {
+        cartaId: 15,
+        nombre: 'Aura High-Top Blanco',
+        poder: 5,
+        costoCupon: 3,
+        rarezaId: 2,
+        rareza: 'Rara',
+        rarezaOrden: 2,
+        imagenUrl: resolverImagenCarta('/cartas/aura_high_top_blanco.png', 'Aura High-Top Blanco'),
       },
     ],
   },
@@ -183,7 +181,6 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
 
 @Component({
   selector: 'app-usuario-dashboard',
-  standalone: true,
   imports: [
     Header,
     BotonNavegacionCircular,
@@ -191,7 +188,6 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
     SobreMarca,
     Boton,
     Confeti,
-    ExpoPopout,
   ],
   templateUrl: './usuario-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -203,23 +199,18 @@ export class UsuarioDashboard implements OnInit {
   private readonly intercambioService = inject(IntercambioService);
   private readonly barajaService = inject(BarajaService, { optional: true });
   private readonly sonidoService = inject(SonidoService, { optional: true });
-  private readonly confeti = viewChild(Confeti);
 
-  protected readonly tieneNovedadIntercambios = this.intercambioService.tieneNovedadDashboardSignal;
+  readonly confeti = viewChild(Confeti);
 
   protected readonly juegoHabilitado = true;
-  protected readonly sobresCatalogo = signal<SobreRespuesta[]>([]);
+
+  protected readonly sobresCatalogo = signal<readonly SobreRespuesta[]>([]);
   protected readonly sobresInventario = signal<readonly SobreInventarioUsuario[]>([]);
+  protected readonly tieneNovedadIntercambios = this.intercambioService.tieneNovedadDashboardSignal;
   protected readonly modalBienvenidaMazosVisible = signal<boolean>(false);
   protected readonly mazosBienvenida = signal<readonly MazoApi[]>([]);
-  protected readonly urlSobreIzquierda = urlSobreIzquierda;
-  protected readonly urlSobreCentro = urlSobreCentro;
-  protected readonly urlSobreDerecha = urlSobreDerecha;
-  protected readonly urlIconPelea = urlIconPelea;
 
-  private readonly popoutSesion = inject(PopoutSesionService);
-  protected readonly urlImagenExpo = 'imagenes/ExpoPopout.png';
-  protected readonly expoPopoutAbierto = signal<boolean>(false);
+  protected readonly urlIconPelea = urlIconPelea;
 
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
@@ -274,9 +265,6 @@ export class UsuarioDashboard implements OnInit {
     this.cargarEstadoDiario();
     this.cargarInventarioSobres();
     this.verificarBienvenidaMazos();
-    if (this.popoutSesion.consumirPendiente()) {
-      this.expoPopoutAbierto.set(true);
-    }
   }
 
   /**
@@ -428,9 +416,5 @@ export class UsuarioDashboard implements OnInit {
   abrirSobre(opcion: SobreOpcion): void {
     if (!opcion.disponible) return;
     this.cerrarSelectorSobres();
-  }
-
-  cerrarExpoPopout(): void {
-    this.expoPopoutAbierto.set(false);
   }
 }
