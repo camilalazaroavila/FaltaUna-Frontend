@@ -25,6 +25,8 @@ export interface MazoCartaApi {
     readonly rareza: string;
     readonly rarezaOrden: number;
     readonly imagenUrl: string | null;
+    readonly categoriaId?: number;
+    readonly categoria?: string;
 }
 export interface MazoApi {
     readonly id: number;
