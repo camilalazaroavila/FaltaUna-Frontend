@@ -14,6 +14,7 @@ import { Header } from '@compartidos/componentes/layout/header/header';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { IntercambioService } from '@servicios/intercambio.service';
 import { AuthService } from '@servicios/auth.service';
+import { SonidoService, SONIDOS_PARTIDA } from '@servicios/sonido.service';
 import type { Carta } from '@modelos/carta.model';
 import type { IntercambioActivoApi } from '@modelos/intercambio.model';
 import { categoriaCartaDesdeNombre } from '@modelos/carta.model';
@@ -35,6 +36,7 @@ export class IntercambioPendiente implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly intercambioService = inject(IntercambioService);
   private readonly authService = inject(AuthService);
+  private readonly sonidoService = inject(SonidoService);
 
   @ViewChild('slotIzquierdo') private readonly slotIzquierdoRef?: ElementRef<HTMLElement>;
   @ViewChild('slotDerecho') private readonly slotDerechoRef?: ElementRef<HTMLElement>;
@@ -269,6 +271,7 @@ export class IntercambioPendiente implements OnInit, OnDestroy {
 
     this.faseAnimacion.set('animando');
     this.animacionPaso.set('temblando');
+    this.sonidoService.reproducir(SONIDOS_PARTIDA.cartaSumaPoder, 0.6);
 
     // Paso 2: Jaime y Falti entran y las cartas tiemblan. A los 750ms inician el cruce
     const t1 = setTimeout(() => {
@@ -279,6 +282,7 @@ export class IntercambioPendiente implements OnInit, OnDestroy {
     // Paso 3: Aterrizan en lugares opuestos, brillos y salida de personajes
     const t2 = setTimeout(() => {
       this.animacionPaso.set('aterrizado');
+      this.sonidoService.reproducir(SONIDOS_PARTIDA.sumarPuntos, 0.6);
     }, 1900);
     this.timeouts.push(t2);
 
@@ -286,8 +290,23 @@ export class IntercambioPendiente implements OnInit, OnDestroy {
     const t3 = setTimeout(() => {
       this.animacionPaso.set('inicial');
       this.faseAnimacion.set('conseguiste');
+      this.reproducirSonidosCartaConseguida();
     }, 2800);
     this.timeouts.push(t3);
+  }
+
+  private reproducirSonidosCartaConseguida(): void {
+    const carta = this.cartaConseguida();
+    if (carta?.rareza === 'legendaria') {
+      this.sonidoService.reproducir(SONIDOS_PARTIDA.cartaLegendariaEncontrada, 0.5);
+    } else {
+      this.sonidoService.reproducir(SONIDOS_PARTIDA.darVueltaCartas, 0.4);
+    }
+
+    const t = setTimeout(() => {
+      this.sonidoService.reproducir(SONIDOS_PARTIDA.estrellitas, 0.35);
+    }, 140);
+    this.timeouts.push(t);
   }
 
   finalizarYSalir(): void {

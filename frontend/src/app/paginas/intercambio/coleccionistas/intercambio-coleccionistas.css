@@ -2,15 +2,28 @@
    Estilos específicos de Buscar Coleccionistas
    ========================================================================== */
 
-/* Fondo de pantalla de Buscar Coleccionistas */
-:host,
-.pantalla-coleccionistas {
+:host {
+  display: block;
   min-height: 100dvh;
-  background-image: url('/imagenes/pantalla-intercambio/fondointercambio.png') !important;
-  background-attachment: fixed !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
+}
+
+.pantalla-coleccionistas {
+  position: relative;
+  min-height: 100dvh;
+}
+
+/* Fondo fijo: anclado al viewport absoluto con fixed.
+   Permite scrollear toda la página sin que el fondo se mueva, se corte
+   ni deje espacios/franjas verdes abajo. */
+.fondo-fijo-intercambio {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: url('/imagenes/pantalla-intercambio/fondointercambio.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 /* Sombra tipo "Mis cartas" reutilizable en el título */

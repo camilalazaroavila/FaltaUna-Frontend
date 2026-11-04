@@ -22,3 +22,9 @@
 .divisor-destello {
   min-height: 180px;
 }
+
+@media (max-height: 800px) {
+  .divisor-destello {
+    min-height: 120px;
+  }
+}

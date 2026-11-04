@@ -49,19 +49,19 @@
 
 @media (min-width: 1024px) {
   .layout-ofrecer-carta {
-    grid-template-columns: 290px 1fr;
+    grid-template-columns: 370px 1fr;
   }
 }
 
 @media (min-width: 1280px) {
   .layout-ofrecer-carta {
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 410px 1fr;
   }
 }
 
 @media (min-width: 1440px) and (max-width: 1919px) {
   .layout-ofrecer-carta {
-    grid-template-columns: 380px 1fr !important;
+    grid-template-columns: 440px 1fr !important;
   }
 }
 
@@ -119,18 +119,18 @@
 /* Contenedor de la carta seleccionada en preview (fluido con la altura de pantalla) */
 .preview-carta-wrapper {
   width: 100%;
-  max-width: clamp(105px, 17vh, 160px);
+  max-width: clamp(210px, 34vh, 280px);
 }
 
 @media (min-width: 1440px) and (min-height: 800px) and (max-width: 1919px) {
   .preview-carta-wrapper {
-    max-width: 230px !important;
+    max-width: 290px !important;
   }
 }
 
 @media (min-width: 1920px) and (min-height: 900px) {
   .preview-carta-wrapper {
-    max-width: 300px !important;
+    max-width: 340px !important;
   }
 }
 
@@ -139,8 +139,8 @@
   position: relative;
   aspect-ratio: 5 / 7;
   width: 100%;
-  max-width: clamp(105px, 17vh, 160px);
-  border-radius: 1rem;
+  max-width: clamp(210px, 34vh, 280px);
+  border-radius: 1.25rem;
   background: rgba(7, 35, 38, 0.75);
   border: 3px dashed rgba(254, 240, 138, 0.45);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 0 30px rgba(0, 0, 0, 0.4);
@@ -153,7 +153,7 @@
 
 @media (min-width: 1440px) and (min-height: 800px) and (max-width: 1919px) {
   .slot-vacio-preview {
-    max-width: 230px !important;
+    max-width: 290px !important;
     border-radius: 1.25rem;
   }
 
@@ -164,7 +164,7 @@
 
 @media (min-width: 1920px) and (min-height: 900px) {
   .slot-vacio-preview {
-    max-width: 300px !important;
+    max-width: 340px !important;
     border-radius: 1.5rem;
   }
 
@@ -203,6 +203,8 @@
   position: relative;
   display: block;
   width: 100%;
+  max-width: 155px;
+  margin: 0 auto;
   padding: 4px;
   box-sizing: border-box;
   border-radius: 1rem;

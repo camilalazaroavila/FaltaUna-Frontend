@@ -48,6 +48,9 @@ export const SONIDOS_PARTIDA = {
   /** Música ambiental en loop durante la partida con volumen bajo. */
   musicaFondo: '/sonidos/partida-sonidos/Fondo para la partida con volumen bajo.mp3',
 
+  /** Se dispara al sumar puntos tras intercambiar o resolver conteo. */
+  sumarPuntos: '/sonidos/partida-sonidos/efecto de sonido de sumar puntos.mp3',
+
   /** Se dispara al completar o reclamar una misión. */
   misionCompletada: '/sonidos/partida-sonidos/cuando completaste una mision.mp3',
 } as const;
