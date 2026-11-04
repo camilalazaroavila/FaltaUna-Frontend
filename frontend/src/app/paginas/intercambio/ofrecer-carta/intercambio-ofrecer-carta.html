@@ -76,8 +76,8 @@
 
     <!-- Layout principal: 2 columnas (Vista previa a la izquierda, Catálogo sin recuadro a la derecha) -->
     <div class="layout-ofrecer-carta min-h-0 flex-1">
-      <!-- Columna izquierda: Ranura de carta / Vista previa y confirmación -->
-      <aside class="flex flex-col items-center justify-start md:justify-center pt-0.5 pb-2 min-h-0 overflow-y-auto custom-scrollbar">
+      <!-- Columna izquierda: Ranura de carta / Vista previa y confirmación posicionada arriba -->
+      <aside class="flex flex-col items-center justify-start pt-2 sm:pt-4 pb-2 min-h-0 overflow-y-auto custom-scrollbar">
         <!-- Ranura o Carta seleccionada (adaptativa con la altura del viewport) -->
         @if (cartaSeleccionada(); as carta) {
           <div class="preview-carta-wrapper p-1 sm:p-1.5 drop-shadow-2xl animate-in fade-in zoom-in-95 duration-200">

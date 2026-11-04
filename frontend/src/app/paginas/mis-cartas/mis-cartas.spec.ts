@@ -286,33 +286,33 @@ describe('MisCartas', () => {
     expect(fixture.nativeElement.querySelector('app-carta-popup')).toBeNull();
   });
 
-  it("debe filtrar cartas repetidas cuando se activa soloRepetidas", () => {
+  it('debe filtrar cartas repetidas cuando se activa soloRepetidas', () => {
     const cartasConRepetidas: Carta[] = [
-      { ...CARTAS_MOCK[0], id: "rep-1", cantidad: 3 },
-      { ...CARTAS_MOCK[1], id: "rep-2", cantidad: 1 },
+      { ...CARTAS_MOCK[0], id: 'rep-1', cantidad: 3 },
+      { ...CARTAS_MOCK[1], id: 'rep-2', cantidad: 1 },
     ];
-    componente["coleccion"].set(cartasConRepetidas);
+    componente['coleccion'].set(cartasConRepetidas);
     fixture.detectChanges();
 
-    expect(componente["cartasFiltradas"]().length).toBe(2);
+    expect(componente['cartasFiltradas']().length).toBe(2);
 
     componente.toggleSoloRepetidas();
     fixture.detectChanges();
 
-    expect(componente["cartasFiltradas"]().length).toBe(1);
-    expect(componente["cartasFiltradas"]()[0].id).toBe("rep-1");
+    expect(componente['cartasFiltradas']().length).toBe(1);
+    expect(componente['cartasFiltradas']()[0].id).toBe('rep-1');
   });
 
-  it("debe calcular el resumen de cartas repetidas y copias extra", () => {
+  it('debe calcular el resumen de cartas repetidas y copias extra', () => {
     const cartasConRepetidas: Carta[] = [
-      { ...CARTAS_MOCK[0], id: "rep-1", cantidad: 3, obtenida: true },
-      { ...CARTAS_MOCK[1], id: "rep-2", cantidad: 2, obtenida: true },
-      { ...CARTAS_MOCK[2], id: "rep-3", cantidad: 1, obtenida: true },
+      { ...CARTAS_MOCK[0], id: 'rep-1', cantidad: 3, obtenida: true },
+      { ...CARTAS_MOCK[1], id: 'rep-2', cantidad: 2, obtenida: true },
+      { ...CARTAS_MOCK[2], id: 'rep-3', cantidad: 1, obtenida: true },
     ];
-    componente["coleccion"].set(cartasConRepetidas);
+    componente['coleccion'].set(cartasConRepetidas);
     fixture.detectChanges();
 
-    expect(componente["resumen"]().repetidas).toBe(2);
-    expect(componente["resumen"]().copiasRepetidas).toBe(3);
+    expect(componente['resumen']().repetidas).toBe(2);
+    expect(componente['resumen']().copiasRepetidas).toBe(3);
   });
 });

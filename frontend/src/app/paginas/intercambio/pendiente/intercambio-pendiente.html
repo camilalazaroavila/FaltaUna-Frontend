@@ -1,4 +1,4 @@
-<div class="pantalla-pendiente relative flex min-h-dvh flex-col text-white lg:min-h-dvh lg:h-dvh lg:overflow-y-auto">
+<div class="pantalla-pendiente relative flex min-h-dvh flex-col text-white lg:min-h-dvh lg:h-dvh lg:overflow-hidden">
   <app-header [logueado]="true" class="shrink-0" />
 
   <main class="mx-auto flex w-full max-w-[140rem] min-h-0 flex-1 flex-col px-4 pt-3 pb-6 sm:px-6 lg:px-8 max-md:pb-nav-inferior-reserva">
@@ -44,7 +44,7 @@
 
           <div
             #slotIzquierdo
-            class="slot-carta-wrapper aspect-[5/7] w-32 sm:w-44 md:w-52 lg:w-[clamp(130px,25vh,250px)] min-[1440px]:w-64 shrink-0 drop-shadow-2xl relative"
+            class="slot-carta-wrapper aspect-[5/7] w-32 sm:w-44 md:w-52 lg:w-[clamp(120px,21vh,195px)] min-[1440px]:w-60 shrink-0 drop-shadow-2xl relative"
             [style.--swap-distancia.px]="swapDistanciaPx()"
             [class.animacion-temblor-carta]="faseAnimacion() === 'animando' && animacionPaso() === 'temblando'"
             [class.animacion-cruce-derecha]="faseAnimacion() === 'animando' && (animacionPaso() === 'cruzando' || animacionPaso() === 'aterrizado')"
@@ -91,7 +91,7 @@
 
           <div
             #slotDerecho
-            class="slot-carta-wrapper aspect-[5/7] w-32 sm:w-44 md:w-52 lg:w-[clamp(130px,25vh,250px)] min-[1440px]:w-64 shrink-0 drop-shadow-2xl relative"
+            class="slot-carta-wrapper aspect-[5/7] w-32 sm:w-44 md:w-52 lg:w-[clamp(120px,21vh,195px)] min-[1440px]:w-60 shrink-0 drop-shadow-2xl relative"
             [style.--swap-distancia.px]="-swapDistanciaPx()"
             [class.animacion-temblor-carta]="faseAnimacion() === 'animando' && animacionPaso() === 'temblando'"
             [class.animacion-cruce-izquierda]="faseAnimacion() === 'animando' && (animacionPaso() === 'cruzando' || animacionPaso() === 'aterrizado')"
@@ -123,7 +123,7 @@
       </div>
 
       <!-- Textos informativos de estado y botones de acción -->
-      <div class="mt-6 sm:mt-8 max-w-2xl px-4 text-center">
+      <div class="mt-3 sm:mt-4 min-[1440px]:mt-6 max-w-2xl px-4 text-center">
         @if (errorMensaje()) {
           <div class="mb-4 rounded-xl bg-rose-500/20 border border-rose-500/40 p-3 text-rose-200 text-sm font-bold">
             {{ errorMensaje() }}
@@ -131,27 +131,27 @@
         }
 
         @if (esPendiente() && !cartaReceptor()) {
-          <p class="font-titulo text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-wide text-white leading-snug drop-shadow">
+          <p class="font-titulo text-sm sm:text-base md:text-lg min-[1440px]:text-2xl font-bold uppercase tracking-wide text-white leading-snug drop-shadow">
             {{ nombreOtroUsuario() }} aún no ha elegido una carta para intercambiar.
           </p>
-          <p class="mt-2 text-sm sm:text-base md:text-lg font-bold text-white/90 drop-shadow">
+          <p class="mt-1 text-xs sm:text-sm min-[1440px]:text-base font-medium text-white/90 drop-shadow">
             El intercambio finalizará en {{ diasRestantes() }} {{ diasRestantes() === 1 ? 'día' : 'días' }} de no llegar a un acuerdo.
           </p>
         } @else if (esEnRevision()) {
           @if (esOfertante()) {
-            <p class="font-titulo text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-wide text-white leading-snug drop-shadow">
+            <p class="font-titulo text-sm sm:text-base md:text-lg min-[1440px]:text-2xl font-bold uppercase tracking-wide text-white leading-snug drop-shadow">
               {{ nombreOtroUsuario() }} ha seleccionado una carta a cambio de la tuya. ¿Deseas concretar el intercambio?
             </p>
-            <p class="mt-2 text-sm sm:text-base md:text-lg font-bold text-white/90 drop-shadow">
+            <p class="mt-1 text-xs sm:text-sm min-[1440px]:text-base font-medium text-white/90 drop-shadow">
               El intercambio finalizará en {{ diasRestantes() }} {{ diasRestantes() === 1 ? 'día' : 'días' }} de no llegar a un acuerdo.
             </p>
 
-            <div class="mt-6 flex flex-wrap items-center justify-center gap-4">
+            <div class="mt-3 sm:mt-4 min-[1440px]:mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <button
                 type="button"
                 (click)="confirmar()"
                 [disabled]="procesando()"
-                class="cursor-pointer rounded-full bg-[#22c55e] py-3 px-8 sm:px-10 font-titulo text-base sm:text-lg font-black uppercase tracking-wider text-white shadow-lg transition-all hover:bg-[#16a34a] hover:scale-105 active:scale-95 disabled:opacity-50"
+                class="cursor-pointer rounded-full bg-[#22c55e] py-2 px-6 sm:py-2.5 sm:px-8 font-titulo text-sm sm:text-base min-[1440px]:text-lg font-black uppercase tracking-wider text-white shadow-lg transition-all hover:bg-[#16a34a] hover:scale-105 active:scale-95 disabled:opacity-50"
               >
                 @if (procesando()) {
                   Procesando...
@@ -164,16 +164,16 @@
                 type="button"
                 (click)="abrirModalRechazo()"
                 [disabled]="procesando()"
-                class="cursor-pointer rounded-full bg-[#082823]/85 border-2 border-rose-500/80 py-3 px-8 sm:px-10 font-titulo text-base sm:text-lg font-black uppercase tracking-wider text-rose-300 shadow-lg transition-all hover:bg-rose-950/80 hover:scale-105 active:scale-95 disabled:opacity-50"
+                class="cursor-pointer rounded-full bg-[#082823]/85 border-2 border-rose-500/80 py-2 px-6 sm:py-2.5 sm:px-8 font-titulo text-sm sm:text-base min-[1440px]:text-lg font-black uppercase tracking-wider text-rose-300 shadow-lg transition-all hover:bg-rose-950/80 hover:scale-105 active:scale-95 disabled:opacity-50"
               >
                 Rechazar
               </button>
             </div>
           } @else {
-            <p class="font-titulo text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-wide text-white leading-snug drop-shadow">
+            <p class="font-titulo text-sm sm:text-base md:text-lg min-[1440px]:text-2xl font-bold uppercase tracking-wide text-white leading-snug drop-shadow">
               Ya enviaste tu propuesta. Esperando a que {{ nombreOtroUsuario() }} confirme el intercambio.
             </p>
-            <p class="mt-2 text-sm sm:text-base md:text-lg font-bold text-white/90 drop-shadow">
+            <p class="mt-1 text-xs sm:text-sm min-[1440px]:text-base font-medium text-white/90 drop-shadow">
               El intercambio finalizará en {{ diasRestantes() }} {{ diasRestantes() === 1 ? 'día' : 'días' }} de no llegar a un acuerdo.
             </p>
           }
