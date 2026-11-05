@@ -3,25 +3,26 @@
 
   <app-header [logueado]="true" />
 
-  <!-- MENÚ LATERAL DESKTOP (solo desde md hacia arriba; con efecto de ola y retraído/deslizable desde la izquierda) -->
+  <!-- MENÚ LATERAL DESKTOP (abierto permanentemente, más grande, con forma de ola y animación de oleaje) -->
   <aside aria-label="Navegación principal"
     class="sidebar-desktop hidden md:flex"
-    [class.sidebar-desktop--expandida]="sidebarExpandida()"
     [style.--ola-posicion-y]="posicionOlaY()">
     <div class="sidebar-desktop__cuerpo">
-      <!-- Pista con recorte de ola vertical que sigue al botón activo -->
+      <!-- Pista con recorte de ola vertical y animación continua de oleaje -->
       <div class="sidebar-desktop__ola-pista" aria-hidden="true">
-        <svg
-          class="sidebar-desktop__ola-svg"
-          viewBox="0 0 25 96"
-          preserveAspectRatio="none"
-          focusable="false"
-        >
-          <path
-            class="sidebar-desktop__ola-relleno"
-            d="M 0,0 C 0,16 6,24 16,32 C 24,38 24,58 16,64 C 6,72 0,80 0,96 Z"
-          />
-        </svg>
+        <div class="sidebar-desktop__ola-animada">
+          <svg
+            class="sidebar-desktop__ola-svg"
+            viewBox="0 0 36 136"
+            preserveAspectRatio="none"
+            focusable="false"
+          >
+            <path
+              class="sidebar-desktop__ola-relleno"
+              d="M 0,0 C 0,22 10,34 26,44 C 36,52 36,84 26,92 C 10,102 0,114 0,136 Z"
+            />
+          </svg>
+        </div>
       </div>
 
       <nav class="sidebar-desktop__nav">
@@ -32,22 +33,11 @@
               [etiquetaAria]="destino.nombre" [activo]="activo" [expandible]="true"
               [fondoBlanco]="true" [deshabilitado]="destino.deshabilitado ?? false"
               [insignia]="destino.id === 'intercambios' && tieneNovedadIntercambios() ? '!' : null"
-              tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
+              tamanio="lg" (accion)="seleccionarSeccion(destino.id)" />
           </div>
         }
       </nav>
     </div>
-
-    <!-- Pestaña para abrir/cerrar o asomar desde el borde izquierdo -->
-    <button
-      type="button"
-      class="sidebar-desktop__pestana"
-      (click)="alternarSidebar()"
-      [attr.aria-expanded]="sidebarExpandida()"
-      aria-label="Abrir o cerrar barra lateral de navegación"
-    >
-      <span class="sidebar-desktop__pestana-indicador" aria-hidden="true"></span>
-    </button>
   </aside>
 
   <!-- ZONA CENTRAL -->

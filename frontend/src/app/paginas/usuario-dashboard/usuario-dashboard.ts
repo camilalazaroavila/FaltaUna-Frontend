@@ -255,7 +255,6 @@ export class UsuarioDashboard implements OnInit {
 
   /** Ninguna sección está activa por defecto: el dashboard no es ninguno de los destinos del dock. */
   protected readonly seccionActiva = signal<string | null>(null);
-  protected readonly sidebarExpandida = signal<boolean>(false);
   protected readonly indiceOlaActivo = computed<number | null>(() => {
     const activa = this.seccionActiva();
     if (!activa) return null;
@@ -264,8 +263,8 @@ export class UsuarioDashboard implements OnInit {
   });
   protected readonly posicionOlaY = computed<string>(() => {
     const idx = this.indiceOlaActivo();
-    if (idx === null || idx < 0) return '-300px';
-    return (34 + idx * 56) + 'px';
+    if (idx === null || idx < 0) return '-400px';
+    return (46 + idx * 72) + 'px';
   });
   protected readonly selectorSobresAbierto = signal<boolean>(false);
   protected readonly sobresDisponibles = this.sobresService.sobresDisponibles ?? signal<{ actuales: number; maximo: number }>({
@@ -421,10 +420,6 @@ export class UsuarioDashboard implements OnInit {
     this.cargarInventarioSobres();
     this.cargarEstadoDiario();
     this.selectorSobresAbierto.set(true);
-  }
-
-  alternarSidebar(): void {
-    this.sidebarExpandida.update((v) => !v);
   }
 
   cerrarSelectorSobres(): void {
