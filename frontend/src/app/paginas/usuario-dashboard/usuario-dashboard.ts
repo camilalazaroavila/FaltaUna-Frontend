@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
@@ -190,6 +190,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
     Confeti,
   ],
   templateUrl: './usuario-dashboard.html',
+  styleUrl: './usuario-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuarioDashboard implements OnInit {
@@ -254,6 +255,18 @@ export class UsuarioDashboard implements OnInit {
 
   /** Ninguna sección está activa por defecto: el dashboard no es ninguno de los destinos del dock. */
   protected readonly seccionActiva = signal<string | null>(null);
+  protected readonly sidebarExpandida = signal<boolean>(false);
+  protected readonly indiceOlaActivo = computed<number | null>(() => {
+    const activa = this.seccionActiva();
+    if (!activa) return null;
+    const idx = this.destinos.findIndex((d) => d.id === activa);
+    return idx >= 0 ? idx : null;
+  });
+  protected readonly posicionOlaY = computed<string>(() => {
+    const idx = this.indiceOlaActivo();
+    if (idx === null || idx < 0) return '-300px';
+    return (34 + idx * 56) + 'px';
+  });
   protected readonly selectorSobresAbierto = signal<boolean>(false);
   protected readonly sobresDisponibles = this.sobresService.sobresDisponibles ?? signal<{ actuales: number; maximo: number }>({
     actuales: 2,
@@ -408,6 +421,10 @@ export class UsuarioDashboard implements OnInit {
     this.cargarInventarioSobres();
     this.cargarEstadoDiario();
     this.selectorSobresAbierto.set(true);
+  }
+
+  alternarSidebar(): void {
+    this.sidebarExpandida.update((v) => !v);
   }
 
   cerrarSelectorSobres(): void {

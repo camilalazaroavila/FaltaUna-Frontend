@@ -1,21 +1,53 @@
 <div
-  class="relative flex min-h-dvh flex-col justify-between overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white">
+  class="dashboard-contenedor relative flex min-h-dvh flex-col justify-between overflow-x-hidden text-white">
 
   <app-header [logueado]="true" />
 
-  <!-- MENÚ LATERAL (solo desde md hacia arriba; en mobile lo reemplaza app-navegacion-inferior-mobile) -->
+  <!-- MENÚ LATERAL DESKTOP (solo desde md hacia arriba; con efecto de ola y retraído/deslizable desde la izquierda) -->
   <aside aria-label="Navegación principal"
-    class="hidden md:flex md:pointer-events-auto md:fixed md:z-30 md:justify-start md:p-0 md:left-5 lg:left-7 xl:left-8 2xl:left-12 md:top-[calc(50%+24px)] md:-translate-y-1/2 md:max-h-[calc(100dvh-130px)]">
-    <nav
-      class="pointer-events-auto flex flex-row md:flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-[#072428]/95 p-1.5 shadow-alta backdrop-blur-md sm:gap-2.5 sm:p-2 md:rounded-3xl md:p-2.5 lg:gap-3 lg:p-3 xl:gap-3.5 xl:p-3.5 overflow-visible origin-bottom md:origin-left transition-transform lg:scale-105 2xl:scale-125 min-[2200px]:scale-150">
-      @for (destino of destinos; track destino.id) {
-      <app-boton-navegacion-circular [urlIcono]="destino.urlIcono ?? null" [icono]="destino.icono ?? null"
-        [etiquetaAria]="destino.nombre" [activo]="seccionActiva() === destino.id" [expandible]="true"
-        [fondoBlanco]="true" [deshabilitado]="destino.deshabilitado ?? false"
-        [insignia]="destino.id === 'intercambios' && tieneNovedadIntercambios() ? '!' : null"
-        tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
-      }
-    </nav>
+    class="sidebar-desktop hidden md:flex"
+    [class.sidebar-desktop--expandida]="sidebarExpandida()"
+    [style.--ola-posicion-y]="posicionOlaY()">
+    <div class="sidebar-desktop__cuerpo">
+      <!-- Pista con recorte de ola vertical que sigue al botón activo -->
+      <div class="sidebar-desktop__ola-pista" aria-hidden="true">
+        <svg
+          class="sidebar-desktop__ola-svg"
+          viewBox="0 0 25 96"
+          preserveAspectRatio="none"
+          focusable="false"
+        >
+          <path
+            class="sidebar-desktop__ola-relleno"
+            d="M 0,0 C 0,16 6,24 16,32 C 24,38 24,58 16,64 C 6,72 0,80 0,96 Z"
+          />
+        </svg>
+      </div>
+
+      <nav class="sidebar-desktop__nav">
+        @for (destino of destinos; track destino.id) {
+          @let activo = seccionActiva() === destino.id;
+          <div class="sidebar-desktop__item" [class.sidebar-desktop__item--activo]="activo">
+            <app-boton-navegacion-circular [urlIcono]="destino.urlIcono ?? null" [icono]="destino.icono ?? null"
+              [etiquetaAria]="destino.nombre" [activo]="activo" [expandible]="true"
+              [fondoBlanco]="true" [deshabilitado]="destino.deshabilitado ?? false"
+              [insignia]="destino.id === 'intercambios' && tieneNovedadIntercambios() ? '!' : null"
+              tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
+          </div>
+        }
+      </nav>
+    </div>
+
+    <!-- Pestaña para abrir/cerrar o asomar desde el borde izquierdo -->
+    <button
+      type="button"
+      class="sidebar-desktop__pestana"
+      (click)="alternarSidebar()"
+      [attr.aria-expanded]="sidebarExpandida()"
+      aria-label="Abrir o cerrar barra lateral de navegación"
+    >
+      <span class="sidebar-desktop__pestana-indicador" aria-hidden="true"></span>
+    </button>
   </aside>
 
   <!-- ZONA CENTRAL -->

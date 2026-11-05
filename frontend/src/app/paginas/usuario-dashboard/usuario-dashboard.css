@@ -1,0 +1,144 @@
+/* ==========================================================================
+   Falta Una - Usuario Dashboard
+   Fondo con ondas, barra lateral desktop con efecto de ola y comportamiento
+   deslizable ("salir desde la izquierda").
+   ========================================================================== */
+
+/* Fondo general con ondas ilustradas (fondito.jpeg) y gradiente atmosférico */
+.dashboard-contenedor {
+  background-color: var(--color-fondo-app, #0c2e2e);
+  background-image:
+    linear-gradient(180deg, rgba(7, 36, 40, 0.76) 0%, rgba(5, 23, 26, 0.88) 100%),
+    url('/imagenes/fondos/fondito.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* ==========================================================================
+   Barra lateral izquierda desktop (oculta en mobile < 768px)
+   ========================================================================== */
+.sidebar-desktop {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+  /* En reposo queda escondida contra el borde izquierdo, asomando solo la pestaña interactiva */
+  transform: translate3d(calc(-100% + 1.25rem), -50%, 0);
+  transition: transform 340ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  will-change: transform;
+}
+
+/* Sale suavemente desde la izquierda al pasar el cursor, recibir foco o si está fijada */
+.sidebar-desktop:hover,
+.sidebar-desktop:focus-within,
+.sidebar-desktop--expandida {
+  transform: translate3d(0, -50%, 0);
+}
+
+/* Pestaña / franja interactiva que asoma desde el borde izquierdo */
+.sidebar-desktop__pestana {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 4.5rem;
+  background-color: #072428;
+  border-top-right-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 0;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.6);
+  transition: background-color 200ms ease, color 200ms ease, width 200ms ease;
+}
+
+.sidebar-desktop:hover .sidebar-desktop__pestana,
+.sidebar-desktop:focus-within .sidebar-desktop__pestana {
+  color: var(--marca-primaria, #34d17b);
+  background-color: #0a3136;
+}
+
+.sidebar-desktop__pestana-indicador {
+  width: 3px;
+  height: 2rem;
+  border-radius: 9999px;
+  background-color: currentColor;
+  opacity: 0.8;
+}
+
+/* Contenedor principal de la navegación lateral */
+.sidebar-desktop__cuerpo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: #072428;
+  border-top-right-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 0;
+  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.4);
+  padding: 0.75rem 0.625rem;
+}
+
+/* Pista de la ola vertical: se desplaza a lo largo de Y acompañando al ítem activo */
+.sidebar-desktop__ola-pista {
+  position: absolute;
+  top: var(--ola-posicion-y, -300px);
+  right: -24px;
+  width: 25px;
+  height: 96px;
+  transform: translate3d(0, -50%, 0);
+  transition: top 380ms cubic-bezier(0.34, 1.32, 0.64, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sidebar-desktop__ola-svg {
+  width: 25px;
+  height: 96px;
+  display: block;
+}
+
+.sidebar-desktop__ola-relleno {
+  fill: #072428;
+}
+
+/* Nav flex vertical con los botones de destino */
+.sidebar-desktop__nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Botón individual con transición de elevación en la ola */
+.sidebar-desktop__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 340ms cubic-bezier(0.34, 1.45, 0.64, 1);
+}
+
+/* Al estar activo, la ola lo rodea y el botón se proyecta hacia la derecha */
+.sidebar-desktop__item--activo {
+  transform: translate3d(0.65rem, 0, 0) scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-desktop,
+  .sidebar-desktop__ola-pista,
+  .sidebar-desktop__item {
+    transition: none !important;
+  }
+}
+
