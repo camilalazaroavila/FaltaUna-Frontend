@@ -147,7 +147,7 @@ describe('EmpresaPagoResultado', () => {
     expect(el.textContent).not.toContain('Crear mi álbum');
   });
 
-  it('no navega solo al paso 3 tras un pago aprobado', async () => {
+  it('no navega solo al paso 2 tras un pago aprobado', async () => {
     jest.useFakeTimers();
     const { fixture } = await configurarModulo('exito', {
       payment_id: '999888',

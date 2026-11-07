@@ -1,7 +1,10 @@
 import { OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
+import type { RarezaCarta } from '@modelos/carta.model';
 
 /** Casillas de imagen que se muestran en el álbum de marca (máximo permitido). */
 export const CARTAS_POR_ALBUM = 12;
+/** Tope visual de casillas en la grilla (el plan Premium llega a 30 cartas). */
+export const TOPE_CARTAS_ALBUM = 30;
 /** Mínimo de imágenes que hay que cargar para poder continuar. Debe coincidir con el backend (CrearColeccion). */
 export const MINIMO_IMAGENES = 2;
 /** Peso máximo por imagen, en kb. */
@@ -30,13 +33,24 @@ export interface CategoriaApi {
   descripcion?: string | null;
 }
 
-/** Datos que se envían al backend para crear el álbum (paso 3 + paso 4). */
+/** Cupón de descuento que la marca crea en el paso 4 del alta. */
+export interface CuponAlbumSolicitud {
+  nombre: string;
+  descripcion: string;
+  porcentajeDescuento: number;
+}
+
+/** Datos que se envían al backend para crear el álbum (pasos 2 a 5 del alta). */
 export interface CrearAlbumSolicitud {
   referenciaPago: string;
   nombreMarca: string;
   nombreColeccion?: string;
   logo: File;
+  fotoLocal: File;
   imagenes: File[];
+  /** Rareza elegida para cada imagen, en el mismo orden que `imagenes`. */
+  rarezas: RarezaCarta[];
+  cupon: CuponAlbumSolicitud;
   descripcion: string;
   redSocial: string;
   usuarioRedSocial: string;

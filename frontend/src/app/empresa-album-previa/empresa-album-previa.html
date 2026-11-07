@@ -1,0 +1,88 @@
+<main class="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-8">
+  <app-encabezado-paso
+    titulo="Visualización previa"
+    [paso]="5"
+    rutaVolver="/empresa/album/crear/cupon"
+    [tituloAngosto]="false"
+  />
+
+  <p class="mt-4 max-w-xl font-interfaz text-sm font-semibold text-texto-secundario">
+    Así van a ver tu álbum los jugadores. Podés editar el tipo de cada carta.
+  </p>
+
+  <section class="mt-8 flex flex-wrap items-center gap-5" aria-label="Tu marca">
+    @if (logoUrl(); as url) {
+      <img
+        [src]="url"
+        alt=""
+        class="size-20 rounded-md border-2 border-texto-primario bg-fondo-superficie object-cover"
+      />
+    }
+    <div class="min-w-0">
+      <h2 class="font-titulo text-3xl uppercase leading-none text-marca-primaria">
+        {{ borrador.nombreMarca() }}
+      </h2>
+      <p class="mt-1 font-interfaz text-xs font-bold uppercase text-texto-secundario">
+        {{ borrador.categoriaNombre() }}
+      </p>
+      <p class="mt-2 max-w-xl font-interfaz text-sm text-texto-primario">
+        {{ borrador.descripcion() }}
+      </p>
+    </div>
+  </section>
+
+  <section class="mt-10" aria-labelledby="titulo-cartas-previa">
+    <h2 id="titulo-cartas-previa" class="font-interfaz text-xs font-bold uppercase text-texto-primario">
+      Tus cartas
+      <span class="text-error">{{ cartas().length }}</span>
+    </h2>
+
+    <ul class="mt-4 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      @for (item of cartas(); track item.indice) {
+        <li class="flex flex-col gap-2">
+          <app-carta [carta]="item.carta" />
+          <label class="sr-only" [attr.for]="'rareza-' + item.indice">
+            Tipo de la carta {{ item.carta.nombre }}
+          </label>
+          <select
+            [id]="'rareza-' + item.indice"
+            class="w-full cursor-pointer rounded-pildora border-2 border-texto-primario bg-transparent px-3 py-1.5 font-interfaz text-xs font-bold uppercase text-texto-primario focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+            [value]="item.carta.rareza"
+            (change)="cambiarRareza(item.indice, $any($event.target).value)"
+          >
+            @for (rareza of rarezas; track rareza.valor) {
+              <option [value]="rareza.valor" [selected]="rareza.valor === item.carta.rareza">
+                {{ rareza.etiqueta }}
+              </option>
+            }
+          </select>
+        </li>
+      }
+    </ul>
+
+    <p class="mt-4 font-interfaz text-xs text-texto-apagado">
+      El costo y el poder de cada carta los define el equipo de Falta Una.
+    </p>
+  </section>
+
+  <section class="mt-10" aria-label="Tu cupón">
+    <p class="mb-2 font-interfaz text-xs font-bold uppercase text-texto-primario">Tu cupón</p>
+    <div class="pointer-events-none w-56" aria-hidden="true">
+      <app-tarjeta-cupon [cupon]="cupon()" />
+    </div>
+  </section>
+
+  <div class="mt-12 flex justify-end">
+    <button
+      app-boton
+      type="button"
+      variante="secundario"
+      tamanio="lg"
+      [cargando]="enviando()"
+      (click)="crearAlbum()"
+    >
+      Crear álbum
+      <ng-icon name="phosphorArrowRightFill" aria-hidden="true" />
+    </button>
+  </div>
+</main>

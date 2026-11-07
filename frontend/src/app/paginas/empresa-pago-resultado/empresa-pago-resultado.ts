@@ -89,7 +89,7 @@ export class EmpresaPagoResultado implements OnInit {
     if (externalRef) this.estado.recordarReferencia(externalRef);
 
     // La URL sola no alcanza para dar el pago por acreditado: siempre se valida
-    // contra el backend antes de mostrar el éxito y habilitar el paso 3.
+    // contra el backend antes de mostrar el éxito y habilitar el paso 2.
     if (externalRef && paymentId) {
       this.confirmarConBackend(externalRef, paymentId);
     } else if (externalRef) {
@@ -179,7 +179,7 @@ export class EmpresaPagoResultado implements OnInit {
     this.verificarPago(referencia);
   }
 
-  /** Pago aprobado: sigue el alta en el paso 3 (nombre e imágenes de la marca). */
+  /** Pago aprobado: sigue el alta en el paso 2 (nombre e imágenes de la marca). */
   protected irACrearAlbum(): void {
     if (this.temporizador) clearTimeout(this.temporizador);
     this.router.navigate(['/empresa/album/crear/marca']);

@@ -50,7 +50,7 @@ const pagoDe = (estado: EstadoPago): PagoRespuesta => ({
   fechaAprobacion: estado === 'Aprobado' ? '2026-10-05T12:05:00Z' : null,
 });
 
-describe('Flujo de alta de empresa (rutas reales, pasos 1 a 5)', () => {
+describe('Flujo de alta de empresa (rutas reales, pasos 1 a 6)', () => {
   let pagosMock: {
     iniciarPago: jest.Mock;
     confirmarPago: jest.Mock;
@@ -150,6 +150,11 @@ describe('Flujo de alta de empresa (rutas reales, pasos 1 a 5)', () => {
     const borrador = TestBed.inject(AlbumBorrador);
     borrador.nombreMarca.set('ACME');
     borrador.logo.set(new File(['logo'], 'logo.png', { type: 'image/png' }));
+    borrador.fotoLocal.set(new File(['local'], 'local.png', { type: 'image/png' }));
+    borrador.imagenes.set([
+      new File(['a'], 'a.png', { type: 'image/png' }),
+      new File(['b'], 'b.png', { type: 'image/png' }),
+    ]);
   };
 
   const cargarIdentidadCompleta = (): void => {
@@ -158,6 +163,14 @@ describe('Flujo de alta de empresa (rutas reales, pasos 1 a 5)', () => {
     borrador.usuarioRedSocial.set('@acme');
     borrador.emailContacto.set('contacto@acme.com');
     borrador.categoria.set('1');
+    borrador.categoriaNombre.set('Comida');
+  };
+
+  const cargarCuponCompleto = (): void => {
+    const borrador = TestBed.inject(AlbumBorrador);
+    borrador.cuponNombre.set('20% en tu próxima compra');
+    borrador.cuponDescripcion.set('Válido en todo el local.');
+    borrador.cuponDescuento.set('20');
     const hoy = aIso(new Date());
     const fin = aIso(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
     borrador.fechaInicio.set(hoy);
@@ -187,7 +200,7 @@ describe('Flujo de alta de empresa (rutas reales, pasos 1 a 5)', () => {
     expect(logoEsEnlace(harness)).toBe(true);
   });
 
-  it('lleva del pago verificado al paso 3 (no vuelve a elegir plan)', async () => {
+  it('lleva del pago verificado al paso 2 (no vuelve a elegir plan)', async () => {
     const harness = await RouterTestingHarness.create(
       '/empresa/album/pago/exito?payment_id=999&external_reference=REF-1',
     );
@@ -224,7 +237,7 @@ describe('Flujo de alta de empresa (rutas reales, pasos 1 a 5)', () => {
     expect(texto).not.toContain('Crear mi álbum');
   });
 
-  it('llega al paso 5 al crear el álbum aunque falle la revalidación del pago', async () => {
+  it('avanza de identidad al cupón y del cupón a la vista previa', async () => {
     const harness = await RouterTestingHarness.create(
       '/empresa/album/pago/exito?payment_id=999&external_reference=REF-1',
     );
@@ -235,16 +248,64 @@ describe('Flujo de alta de empresa (rutas reales, pasos 1 a 5)', () => {
     await harness.navigateByUrl('/empresa/album/crear/identidad');
     harness.detectChanges();
 
+    await clickYEsperar(harness, 'Siguiente paso');
+    expect(TestBed.inject(Router).url).toBe('/empresa/album/crear/cupon');
+
+    cargarCuponCompleto();
+    await clickYEsperar(harness, 'Siguiente');
+    expect(TestBed.inject(Router).url).toBe('/empresa/album/crear/vista-previa');
+  });
+
+  it('no deja pasar del cupón si faltan datos', async () => {
+    const harness = await RouterTestingHarness.create(
+      '/empresa/album/pago/exito?payment_id=999&external_reference=REF-1',
+    );
+    harness.detectChanges();
+
+    cargarMarcaCompleta();
+    await harness.navigateByUrl('/empresa/album/crear/cupon');
+    harness.detectChanges();
+
+    await clickYEsperar(harness, 'Siguiente');
+
+    expect(TestBed.inject(Router).url).toBe('/empresa/album/crear/cupon');
+  });
+
+  it('vuelve al paso 2 si se pierde la marca (recarga de la página)', async () => {
+    const harness = await RouterTestingHarness.create(
+      '/empresa/album/pago/exito?payment_id=999&external_reference=REF-1',
+    );
+    harness.detectChanges();
+
+    await harness.navigateByUrl('/empresa/album/crear/vista-previa');
+    harness.detectChanges();
+
+    expect(TestBed.inject(Router).url).toBe('/empresa/album/crear/marca');
+  });
+
+  it('llega al paso 6 al crear el álbum aunque falle la revalidación del pago', async () => {
+    const harness = await RouterTestingHarness.create(
+      '/empresa/album/pago/exito?payment_id=999&external_reference=REF-1',
+    );
+    harness.detectChanges();
+
+    cargarMarcaCompleta();
+    cargarIdentidadCompleta();
+    cargarCuponCompleto();
+    TestBed.inject(AlbumBorrador).cambiarRareza(1, 'rara');
+    await harness.navigateByUrl('/empresa/album/crear/vista-previa');
+    harness.detectChanges();
+
     // El backend deja de responder la revalidación justo al crear el álbum.
     pagosMock.obtenerPago.mockReturnValue(throwError(() => new Error('caído')));
 
-    const formulario = elemento(harness).querySelector('form');
-    expect(formulario).toBeTruthy();
-    formulario!.dispatchEvent(new Event('submit'));
-    harness.detectChanges();
-    await Promise.resolve();
-    harness.detectChanges();
+    await clickYEsperar(harness, 'Crear álbum');
 
+    expect(albumesMock.crear).toHaveBeenCalledTimes(1);
+    const enviado = albumesMock.crear.mock.calls[0][0];
+    expect(enviado.rarezas).toEqual(['comun', 'rara']);
+    expect(enviado.cupon.porcentajeDescuento).toBe(20);
+    expect(enviado.fotoLocal).toBeInstanceOf(File);
     expect(TestBed.inject(Router).url).toBe('/empresa/album/crear/listo');
   });
 });

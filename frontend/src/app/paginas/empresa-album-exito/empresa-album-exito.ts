@@ -4,7 +4,7 @@ import { NgIcon } from '@ng-icons/core';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { EncabezadoPaso } from '@compartidos/componentes/controles/encabezado-paso/encabezado-paso';
 
-/** Paso 5 del alta: confirmación de álbum creado. */
+/** Paso 6 del alta: confirmación de álbum creado. */
 @Component({
   selector: 'app-empresa-album-exito',
   standalone: true,
@@ -12,7 +12,7 @@ import { EncabezadoPaso } from '@compartidos/componentes/controles/encabezado-pa
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <main class="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-8">
-      <app-encabezado-paso titulo="¡Lo lograste!" [paso]="5" rutaVolver="/empresa/panel" etiquetaVolver="Ir al panel" [tituloAngosto]="false" />
+      <app-encabezado-paso titulo="¡Lo lograste!" [paso]="6" rutaVolver="/empresa/panel" etiquetaVolver="Ir al panel" [tituloAngosto]="false" />
 
       <section class="mt-16 flex flex-col items-center gap-6 text-center" aria-live="polite">
         <div class="flex size-16 items-center justify-center rounded-circulo bg-marca-primaria text-texto-sobre-oscuro">

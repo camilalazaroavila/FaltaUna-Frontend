@@ -55,7 +55,7 @@ export class AlbumesService {
   }
 
   /**
-   * Categorías de marca para el desplegable del paso 4.
+   * Categorías de marca para el desplegable del paso 3.
    * Esta ruta NO está en ColeccionesController: confirmá en el controller
    * de categorías cuál es (probablemente `${environment.apiUrl}/Categorias`).
    */
@@ -82,6 +82,15 @@ export class AlbumesService {
     form.append('FechaFin', solicitud.fechaFin);
     form.append('Logo', solicitud.logo);
     solicitud.imagenes.forEach((imagen) => form.append('ImagenesCartas', imagen));
+
+    // TODO(backend): los campos de abajo son del flujo nuevo (foto del local, rareza por
+    // carta y cupón de la marca). Confirmar nombres y tipos con `CrearColeccionSolicitud`;
+    // hasta que existan, ASP.NET los ignora y el álbum se crea igual.
+    form.append('FotoLocal', solicitud.fotoLocal);
+    solicitud.rarezas.forEach((rareza) => form.append('RarezasCartas', rareza));
+    form.append('CuponNombre', solicitud.cupon.nombre);
+    form.append('CuponDescripcion', solicitud.cupon.descripcion);
+    form.append('CuponPorcentajeDescuento', String(solicitud.cupon.porcentajeDescuento));
 
     return this.http.post<AlbumRespuesta>(this.apiUrl, form);
   }

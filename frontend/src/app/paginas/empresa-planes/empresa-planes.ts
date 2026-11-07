@@ -10,14 +10,14 @@ import { Plan, PLANES } from '@modelos/plan.model';
 import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
 import { PagosService } from '@servicios/pagos.service';
 import { AuthService } from '@servicios/auth.service';
-import { StepperSuscripcion } from '@compartidos/componentes/empresa/stepper-suscripcion/stepper-suscripcion';
+import { EncabezadoPaso } from '@compartidos/componentes/controles/encabezado-paso/encabezado-paso';
 import { TarjetaPlan } from '@compartidos/componentes/empresa/tarjeta-plan/tarjeta-plan';
 
 /** Paso 1 del alta de campaña: elegir el plan mensual e iniciar el pago en Mercado Pago. */
 @Component({
   selector: 'app-empresa-planes',
   standalone: true,
-  imports: [StepperSuscripcion, TarjetaPlan],
+  imports: [EncabezadoPaso, TarjetaPlan],
   templateUrl: './empresa-planes.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

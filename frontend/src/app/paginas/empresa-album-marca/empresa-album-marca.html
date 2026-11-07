@@ -1,7 +1,7 @@
 <main class="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-8">
   <app-encabezado-paso
     titulo="¿Cómo te llamamos?"
-    [paso]="3"
+    [paso]="2"
     rutaVolver="/empresa/album/pago/exito"
     etiquetaVolver="Volver"
   />
@@ -19,29 +19,45 @@
         name="nombreMarca"
       />
 
-      <div>
-        <app-etiqueta-campo
-          texto="Subí el logo de tu marca"
-          [contador]="(borrador.logo() ? 1 : 0) + '/1'"
-          [ayuda]="'La imagen no puede pesar más de ' + maxKb + 'kb.'"
-        />
-        <app-subida-imagen
-          etiquetaAccesible="logo de la marca"
-          [maxKb]="maxKb"
-          [(archivo)]="borrador.logo"
-          (rechazado)="avisarRechazo($event)"
-        />
+      <div class="grid gap-8 sm:grid-cols-2">
+        <div>
+          <app-etiqueta-campo
+            texto="Subí el logo de tu marca"
+            [contador]="(borrador.logo() ? 1 : 0) + '/1'"
+            [ayuda]="'La imagen no puede pesar más de ' + maxKb + 'kb.'"
+          />
+          <app-subida-imagen
+            etiquetaAccesible="logo de la marca"
+            [maxKb]="maxKb"
+            [(archivo)]="borrador.logo"
+            (rechazado)="avisarRechazo($event)"
+          />
+        </div>
+
+        <div>
+          <app-etiqueta-campo
+            texto="Subí foto del local"
+            [contador]="(borrador.fotoLocal() ? 1 : 0) + '/1'"
+            [ayuda]="'La imagen no puede pesar más de ' + maxKb + 'kb.'"
+          />
+          <app-subida-imagen
+            etiquetaAccesible="foto del local"
+            [maxKb]="maxKb"
+            [(archivo)]="borrador.fotoLocal"
+            (rechazado)="avisarRechazo($event)"
+          />
+        </div>
       </div>
     </div>
 
     <div>
       <app-etiqueta-campo
         texto="Subí las imágenes que van a formar parte de tu álbum de marca"
-        [contador]="borrador.cantidadImagenes() + '/' + cantidad"
-        [ayuda]="'Subí entre ' + minimo + ' y ' + cantidad + ' imágenes. Cada una puede pesar hasta ' + maxKb + 'kb.'"
+        [contador]="borrador.cantidadImagenes() + '/' + cantidad()"
+        [ayuda]="'La imagen no puede pesar más de ' + maxKb + 'kb. Subí entre ' + minimo + ' y ' + cantidad() + ' imágenes.'"
       />
       <app-grilla-imagenes
-        [cantidad]="cantidad"
+        [cantidad]="cantidad()"
         [maxKb]="maxKb"
         etiquetaAccesible="Imágenes del álbum"
         [(archivos)]="borrador.imagenes"

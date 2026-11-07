@@ -226,7 +226,7 @@ export const routes: Routes = [
         redirectTo: 'album/pago/pendiente',
       },
       {
-        // Pasos 3 a 5: solo con pago aprobado (pagoAprobadoGuard).
+        // Pasos 2 a 6: solo con pago aprobado (pagoAprobadoGuard).
         path: 'album/crear',
         canActivate: [pagoAprobadoGuard],
         children: [
@@ -245,6 +245,22 @@ export const routes: Routes = [
             loadComponent: () =>
               import('@paginas/empresa-album-identidad/empresa-album-identidad').then(
                 (m) => m.EmpresaAlbumIdentidad,
+              ),
+          },
+          {
+            path: 'cupon',
+            title: 'Crear cupón · Falta Una',
+            loadComponent: () =>
+              import('@paginas/empresa-album-cupon/empresa-album-cupon').then(
+                (m) => m.EmpresaAlbumCupon,
+              ),
+          },
+          {
+            path: 'vista-previa',
+            title: 'Visualización previa · Falta Una',
+            loadComponent: () =>
+              import('@paginas/empresa-album-previa/empresa-album-previa').then(
+                (m) => m.EmpresaAlbumPrevia,
               ),
           },
           {

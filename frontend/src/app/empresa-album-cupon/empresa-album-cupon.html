@@ -1,0 +1,103 @@
+<main class="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-8">
+  <app-encabezado-paso
+    titulo="Crear cupón"
+    [paso]="4"
+    rutaVolver="/empresa/album/crear/identidad"
+    [tituloAngosto]="false"
+  />
+
+  <form class="mt-10 grid gap-x-16 gap-y-10 lg:grid-cols-2" (ngSubmit)="siguiente()" novalidate>
+    <div class="space-y-6">
+      <app-campo-texto
+        etiqueta="Nombre del cupón"
+        [requerido]="true"
+        ayuda="Es el título que ven los jugadores. Ej: 20% en tu próxima compra."
+        [maxLength]="60"
+        [error]="errores().nombre ?? null"
+        [ngModel]="borrador.cuponNombre()"
+        (ngModelChange)="borrador.cuponNombre.set($event)"
+        name="cuponNombre"
+      />
+
+      <app-campo-texto
+        etiqueta="Descripción del cupón"
+        [requerido]="true"
+        ayuda="Contá qué incluye el descuento y si tiene condiciones."
+        [multilinea]="true"
+        [maxLength]="200"
+        [error]="errores().descripcion ?? null"
+        [ngModel]="borrador.cuponDescripcion()"
+        (ngModelChange)="borrador.cuponDescripcion.set($event)"
+        name="cuponDescripcion"
+      />
+
+      <app-campo-texto
+        etiqueta="Porcentaje de descuento"
+        [requerido]="true"
+        ayuda="Un número entre 1 y 100."
+        placeholder="20"
+        [maxLength]="3"
+        [error]="errores().descuento ?? null"
+        [ngModel]="borrador.cuponDescuento()"
+        (ngModelChange)="borrador.cuponDescuento.set($event)"
+        name="cuponDescuento"
+      />
+    </div>
+
+    <div class="space-y-8">
+      <fieldset>
+        <legend class="sr-only">Fechas del álbum</legend>
+        <app-etiqueta-campo
+          texto="Fecha de inicio/fin de tu álbum"
+          [requerido]="true"
+          ayuda="Elegí desde cuándo hasta cuándo está disponible tu álbum y su cupón."
+        />
+        <div class="flex flex-wrap gap-4">
+          <div>
+            <p class="mb-1 font-interfaz text-xs font-bold uppercase text-texto-secundario">Inicio</p>
+            <app-calendario-mensual
+              etiquetaAccesible="Fecha de inicio"
+              [min]="hoy"
+              [(valor)]="borrador.fechaInicio"
+            />
+            @if (errores().fechaInicio) {
+              <p class="mt-1 max-w-56 font-interfaz text-xs font-bold text-error" role="alert">
+                {{ errores().fechaInicio }}
+              </p>
+            }
+          </div>
+          <div>
+            <p class="mb-1 font-interfaz text-xs font-bold uppercase text-texto-secundario">Fin</p>
+            <app-calendario-mensual
+              etiquetaAccesible="Fecha de fin"
+              [min]="borrador.fechaInicio() || hoy"
+              [(valor)]="borrador.fechaFin"
+            />
+            @if (errores().fechaFin) {
+              <p class="mt-1 max-w-56 font-interfaz text-xs font-bold text-error" role="alert">
+                {{ errores().fechaFin }}
+              </p>
+            }
+          </div>
+        </div>
+      </fieldset>
+
+      <section aria-label="Así se ve tu cupón">
+        <p class="mb-2 font-interfaz text-xs font-bold uppercase text-texto-primario">
+          Así se ve tu cupón
+        </p>
+        <!-- Solo de muestra: el sello es un botón y no tiene que reaccionar acá. -->
+        <div class="pointer-events-none w-56" aria-hidden="true">
+          <app-tarjeta-cupon [cupon]="cuponPrevia()" />
+        </div>
+      </section>
+    </div>
+
+    <div class="flex justify-end lg:col-span-2">
+      <button app-boton type="submit" variante="secundario" tamanio="lg">
+        Siguiente
+        <ng-icon name="phosphorArrowRightFill" aria-hidden="true" />
+      </button>
+    </div>
+  </form>
+</main>
