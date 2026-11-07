@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-/** Indicador de pasos 1 a 5 del alta de campaña: completados en violeta, actual en amarillo, pendientes en oscuro. */
+/** Indicador de pasos 1 a 6 del alta de campaña: el actual en amarillo, el resto en violeta. */
 @Component({
   selector: 'app-stepper-suscripcion',
   standalone: true,
@@ -14,9 +14,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
             [class]="
               i + 1 === pasoActual()
                 ? 'border-texto-primario bg-[var(--color-amarillo-acento)] text-texto-primario'
-                : i + 1 < pasoActual()
-                  ? 'border-marca-primaria bg-marca-primaria text-marca-sobre-primaria'
-                  : 'border-texto-primario bg-texto-primario text-texto-sobre-oscuro'
+                : 'border-marca-primaria bg-marca-primaria text-marca-sobre-primaria'
             "
           >
             {{ i + 1 }}
@@ -32,5 +30,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 })
 export class StepperSuscripcion {
   readonly pasoActual = input(1);
-  readonly etiquetas = input<string[]>(['Plan', 'Pago', 'Marca', 'Identidad', 'Listo']);
+  readonly etiquetas = input<string[]>(['Plan', 'Marca', 'Identidad', 'Cupón', 'Vista previa', 'Listo']);
 }
