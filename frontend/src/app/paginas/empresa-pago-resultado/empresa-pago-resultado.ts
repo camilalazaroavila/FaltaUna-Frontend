@@ -39,12 +39,9 @@ export class EmpresaPagoResultado implements OnInit {
   private readonly albumes = inject(AlbumesService);
   private readonly estado = inject(SuscripcionEstado);
   private temporizador: ReturnType<typeof setTimeout> | null = null;
-  private redireccion: ReturnType<typeof setTimeout> | null = null;
 
   private static readonly MAX_REINTENTOS = 3;
   private static readonly ESPERA_REINTENTO_MS = 2500;
-  /** Cuánto se muestra el éxito antes de llevar a la empresa a su panel. */
-  private static readonly ESPERA_REDIRECCION_MS = 4000;
 
   protected readonly resultadoRuta = signal<ResultadoUrlPago>('pendiente');
   protected readonly paymentId = signal<string | null>(null);
@@ -76,7 +73,6 @@ export class EmpresaPagoResultado implements OnInit {
   constructor() {
     inject(DestroyRef).onDestroy(() => {
       if (this.temporizador) clearTimeout(this.temporizador);
-      if (this.redireccion) clearTimeout(this.redireccion);
     });
   }
 
@@ -194,24 +190,21 @@ export class EmpresaPagoResultado implements OnInit {
   }
 
   /**
-   * Pago aprobado: el álbum ya quedó publicado en el back. Se marca el alta como completa y,
-   * pasados unos segundos, se lleva a la empresa a su panel (también hay un botón para ir ya).
+   * Pago aprobado: el álbum ya quedó publicado en el back. Se marca el alta como completa y se
+   * lleva a la empresa directo a "Álbumes" del panel, donde ve su álbum recién creado.
    */
   private alAprobarse(): void {
     this.estado.marcarAltaCompletada();
     this.estado.olvidarAlbumBorrador();
-    if (this.redireccion) return;
-
-    this.redireccion = setTimeout(
-      () => this.irAlPanel(),
-      EmpresaPagoResultado.ESPERA_REDIRECCION_MS,
-    );
+    toast.success('¡Pago aprobado! Tu álbum ya está publicado.');
+    this.irAlPanel();
   }
 
+  /** Dashboard de la empresa, en la sección con la lista de sus álbumes. */
   protected irAlPanel(): void {
     if (this.temporizador) clearTimeout(this.temporizador);
-    if (this.redireccion) clearTimeout(this.redireccion);
-    this.router.navigate(['/empresa/panel']);
+    // replaceUrl: el botón "atrás" no vuelve a esta pantalla de resultado del pago.
+    this.router.navigate(['/empresa/panel/albumes'], { replaceUrl: true });
   }
 
   /**

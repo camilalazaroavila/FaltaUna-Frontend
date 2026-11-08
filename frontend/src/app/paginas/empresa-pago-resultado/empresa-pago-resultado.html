@@ -59,13 +59,15 @@
           </h2>
           <p class="max-w-xl font-cuerpo text-sm text-texto-primario sm:text-base">
             Tu suscripción para el plan <strong>{{ planNombre() }}</strong> ya está activa y tu
-            álbum quedó publicado. Te llevamos a tu panel en unos segundos.
+            álbum quedó publicado. Te estamos llevando a tus álbumes.
           </p>
         </header>
 
         <div class="space-y-6 p-6 sm:p-10">
           <div class="rounded-md border border-borde-default bg-fondo-elevado p-4 sm:p-6">
-            <h3 class="mb-4 font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario">
+            <h3
+              class="mb-4 font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario"
+            >
               Resumen de la transacción
             </h3>
             <dl class="grid grid-cols-1 gap-4 font-interfaz text-sm sm:grid-cols-2">
@@ -129,14 +131,16 @@
             Pago pendiente de confirmación
           </h2>
           <p class="max-w-xl font-cuerpo text-sm text-texto-primario sm:text-base">
-            Mercado Pago está procesando el cobro. Si elegiste pagar en efectivo (Pago Fácil / Rapipago),
-            se acreditará de forma automática ni bien se registre el pago.
+            Mercado Pago está procesando el cobro. Si elegiste pagar en efectivo (Pago Fácil /
+            Rapipago), se acreditará de forma automática ni bien se registre el pago.
           </p>
         </header>
 
         <div class="space-y-6 p-6 sm:p-10">
           <div class="rounded-md border border-borde-default bg-fondo-elevado p-4 sm:p-6">
-            <h3 class="mb-4 font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario">
+            <h3
+              class="mb-4 font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario"
+            >
               Detalles registrados
             </h3>
             <dl class="grid grid-cols-1 gap-4 font-interfaz text-sm sm:grid-cols-2">
@@ -160,12 +164,7 @@
           </div>
 
           <footer class="flex flex-col items-center justify-end gap-3 sm:flex-row">
-            <a
-              app-boton
-              routerLink="/empresa"
-              variante="claro"
-              class="w-full sm:w-auto"
-            >
+            <a app-boton routerLink="/empresa" variante="claro" class="w-full sm:w-auto">
               Volver a los planes
             </a>
             @if (referenciaVerificacion()) {
@@ -202,20 +201,24 @@
             No se pudo procesar el pago
           </h2>
           <p class="max-w-xl font-cuerpo text-sm text-texto-primario sm:text-base">
-            El pago fue rechazado o cancelado por Mercado Pago. No se ha realizado ningún cobro en tu cuenta.
-            Podés reintentar seleccionando otro medio de pago o tarjeta.
+            El pago fue rechazado o cancelado por Mercado Pago. No se ha realizado ningún cobro en
+            tu cuenta. Podés reintentar seleccionando otro medio de pago o tarjeta.
           </p>
         </header>
 
         <div class="space-y-6 p-6 sm:p-10">
           <div class="rounded-md border border-borde-default bg-fondo-elevado p-4 sm:p-6">
-            <h3 class="mb-4 font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario">
+            <h3
+              class="mb-4 font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario"
+            >
               ¿Qué podés hacer?
             </h3>
             <ul class="list-disc space-y-1 pl-5 font-interfaz text-sm text-texto-primario">
               <li>Verificar que la tarjeta tenga fondos suficientes o límite habilitado.</li>
               <li>Revisar los datos de vencimiento y código de seguridad.</li>
-              <li>Intentar con otra tarjeta de crédito, débito o dinero en cuenta de Mercado Pago.</li>
+              <li>
+                Intentar con otra tarjeta de crédito, débito o dinero en cuenta de Mercado Pago.
+              </li>
             </ul>
           </div>
 
