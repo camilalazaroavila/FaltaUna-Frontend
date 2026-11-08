@@ -189,6 +189,8 @@ describe('Albumes', () => {
 
     fixture.componentInstance['cargarAlbumes']();
     fixture.detectChanges();
+    (raiz().querySelector('app-filtros-categoria-album button') as HTMLButtonElement)?.click();
+    fixture.detectChanges();
 
     expect(fixture.componentInstance['albumes']()).toHaveLength(1);
     const cartasDetalle = fixture.componentInstance['detalle']()?.cartas ?? [];
@@ -198,6 +200,8 @@ describe('Albumes', () => {
   it('deriva las categorías del filtro a partir de los álbumes cargados', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
     fixture.componentInstance['cargarAlbumes']();
+    fixture.detectChanges();
+    (raiz().querySelector('app-filtros-categoria-album button') as HTMLButtonElement)?.click();
     fixture.detectChanges();
 
     const botones = [
@@ -239,6 +243,8 @@ describe('Albumes', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
     fixture.componentInstance['cargarAlbumes']();
     fixture.detectChanges();
+    (raiz().querySelector('app-filtros-categoria-album button') as HTMLButtonElement)?.click();
+    fixture.detectChanges();
     const llamadasPrevias = servicio.listarAlbumes.mock.calls.length;
 
     fixture.componentInstance['cambiarCategoria'](5);
@@ -275,6 +281,8 @@ describe('Albumes', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
     fixture.componentInstance['cargarAlbumes']();
     fixture.detectChanges();
+    (raiz().querySelector('app-filtros-categoria-album button') as HTMLButtonElement)?.click();
+    fixture.detectChanges();
 
     buscar('ZARA');
 
@@ -286,6 +294,8 @@ describe('Albumes', () => {
   it('filtra en el cliente sobre lo ya cargado, sin volver a pedir los álbumes', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
     fixture.componentInstance['cargarAlbumes']();
+    fixture.detectChanges();
+    (raiz().querySelector('app-filtros-categoria-album button') as HTMLButtonElement)?.click();
     fixture.detectChanges();
     const llamadasPrevias = servicio.listarAlbumes.mock.calls.length;
 
@@ -308,6 +318,8 @@ describe('Albumes', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
     fixture.componentInstance['cargarAlbumes']();
     fixture.detectChanges();
+    (raiz().querySelector('app-filtros-categoria-album button') as HTMLButtonElement)?.click();
+    fixture.detectChanges();
 
     // Al entrar se selecciona Grido (primero); al filtrar por Zara, cambia.
     expect(servicio.obtenerDetalleAlbum).toHaveBeenLastCalledWith(4);
@@ -324,6 +336,8 @@ describe('Albumes', () => {
 
     fixture.componentInstance['cargarAlbumes']();
     fixture.detectChanges();
+    (raiz().querySelector('app-filtros-categoria-album button') as HTMLButtonElement)?.click();
+    fixture.detectChanges();
 
     expect(raiz().textContent).toContain('No pudimos cargar los álbumes.');
 
@@ -336,5 +350,19 @@ describe('Albumes', () => {
     fixture.detectChanges();
 
     expect(servicio.listarAlbumes).toHaveBeenCalledTimes(3);
+  });
+
+  it('debe contener el botón Volver y el título dentro del área con reserva de nav', () => {
+    fixture.detectChanges();
+    const contenedorReserva = raiz().querySelector('.area-contenido-con-nav');
+    expect(contenedorReserva).toBeTruthy();
+
+    const volver = contenedorReserva.querySelector('a[routerLink="/usuario"]');
+    const titulo = contenedorReserva.querySelector('h1');
+
+    expect(volver).toBeTruthy();
+    expect(volver.textContent).toContain('Volver');
+    expect(titulo).toBeTruthy();
+    expect(titulo.textContent).toContain('ÁLBUMES');
   });
 });

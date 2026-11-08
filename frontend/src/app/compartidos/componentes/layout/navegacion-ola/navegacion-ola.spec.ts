@@ -70,7 +70,7 @@ describe('NavegacionOla (Unificado: Mobile con 5 columnas y Desktop vertical izq
     expect(component).toBeTruthy();
   });
 
-  it('no debe renderizarse en rutas restringidas (login, registro, landing, partida, tutorial)', async () => {
+  it('no debe renderizarse en rutas restringidas (login, registro, landing, partida, tutorial, jugar e intercambio)', async () => {
     await router.navigateByUrl('/login');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('nav')).toBeNull();
@@ -84,6 +84,14 @@ describe('NavegacionOla (Unificado: Mobile con 5 columnas y Desktop vertical izq
     expect(fixture.nativeElement.querySelector('nav')).toBeNull();
 
     await router.navigateByUrl('/juego/tutorial');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('nav')).toBeNull();
+
+    await router.navigateByUrl('/usuario/jugar');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('nav')).toBeNull();
+
+    await router.navigateByUrl('/usuario/intercambio');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('nav')).toBeNull();
   });
@@ -105,17 +113,14 @@ describe('NavegacionOla (Unificado: Mobile con 5 columnas y Desktop vertical izq
       expect(btnJugar).toBeTruthy();
     });
 
-    it('en ruta Jugar, la ola NO tiene hueco ni círculo activo (borde recto)', async () => {
+    it('no renderiza la barra mobile en ruta Jugar ni en Intercambio', async () => {
       await router.navigateByUrl('/usuario/jugar');
       fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.nav-ola__barra-mobile')).toBeNull();
 
-      expect(component.destinoActivoMobile()).toBeNull();
-      expect(component.columnaActivaMobile()).toBeNull();
-      expect(component['olaMobileVisible']()).toBe(false);
-
-      const d = component['rutaSvgMobile']();
-      expect(d).toContain('M 14,0'); // inicio con radio esquina
-      expect(d).not.toContain('C '); // sin curvas bezier cóncavas de ola
+      await router.navigateByUrl('/usuario/intercambio');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.nav-ola__barra-mobile')).toBeNull();
     });
 
     it('posiciona el hueco y círculo en Col 0 en Mis cartas y en Col 3 en Álbumes', async () => {
@@ -259,6 +264,19 @@ describe('NavegacionOla (Unificado: Mobile con 5 columnas y Desktop vertical izq
 
       // Centro común X = 40 (en ancho 80px)
       expect(component['transformCirculoDesktop']()).toContain('17px'); // 40 - 23 = 17
+    });
+
+    it('incluye sangrado izquierdo en el SVG desktop para que la sombra inferior cubra hasta x=0', async () => {
+      await router.navigateByUrl('/usuario/mis-cartas');
+      fixture.detectChanges();
+
+      const svgDesktop = fixture.nativeElement.querySelector('.nav-ola__svg-desktop');
+      expect(svgDesktop).toBeTruthy();
+      expect(svgDesktop.getAttribute('viewBox')).toMatch(/^-14 0 94 /);
+
+      const pathDesktop = svgDesktop.querySelector('path');
+      expect(pathDesktop).toBeTruthy();
+      expect(pathDesktop.getAttribute('d')).toContain('M -14,0');
     });
   });
 });

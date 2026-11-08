@@ -1,7 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { signal } from '@angular/core';
+import { of } from 'rxjs';
 
 import type { Mision } from '@modelos/misiones.model';
 import { TarjetaMision } from '@compartidos/componentes/usuario/tarjeta-mision/tarjeta-mision';
+import { Misiones } from './misiones';
+import { MisionesService } from '@servicios/mision.services';
+import { SobresService } from '@servicios/sobres.service';
+import { AuthService } from '@servicios/auth.service';
+import { SonidoService } from '@servicios/sonido.service';
 
 const crearMision = (parcial: Partial<Mision> = {}): Mision => ({
   id: 1,
@@ -128,5 +136,68 @@ describe('TarjetaMision', () => {
         'var(--misiones-medida-indicador-icono)',
       );
     });
+  });
+});
+
+describe('Misiones (página)', () => {
+  let fixture: ComponentFixture<Misiones>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Misiones],
+      providers: [
+        provideRouter([]),
+        {
+          provide: MisionesService,
+          useValue: {
+            cargarMisiones: jest.fn().mockReturnValue(of([])),
+            cargando: signal(false),
+            error: signal(null),
+            misiones: signal([]),
+            pity: signal([]),
+            pityPorCercania: signal([]),
+            misionesDe: jest.fn().mockReturnValue([]),
+          },
+        },
+        {
+          provide: SobresService,
+          useValue: {
+            obtenerSobres: jest.fn().mockReturnValue(of([])),
+            obtenerInventario: jest.fn().mockReturnValue(of([])),
+            sincronizarEstadoDiario: jest.fn().mockReturnValue(of({ actuales: 0, maximo: 3 })),
+            sobresDisponibles: signal({ actuales: 0, maximo: 3 }),
+          },
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            usuarioActual: signal(null),
+          },
+        },
+        {
+          provide: SonidoService,
+          useValue: {
+            reproducir: jest.fn(),
+            precargar: jest.fn(),
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Misiones);
+    fixture.detectChanges();
+  });
+
+  it('debe contener el botón Volver y el título dentro del área con reserva de nav', () => {
+    const contenedorReserva = fixture.nativeElement.querySelector('.area-contenido-con-nav');
+    expect(contenedorReserva).toBeTruthy();
+
+    const volver = contenedorReserva.querySelector('a[routerLink="/usuario"]');
+    const titulo = contenedorReserva.querySelector('h1');
+
+    expect(volver).toBeTruthy();
+    expect(volver.textContent).toContain('Volver');
+    expect(titulo).toBeTruthy();
+    expect(titulo.textContent).toContain('MISIONES');
   });
 });

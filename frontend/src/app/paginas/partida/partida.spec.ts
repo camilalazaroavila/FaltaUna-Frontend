@@ -117,14 +117,15 @@ describe('Partida', () => {
       fixture.detectChanges();
     });
 
-    it('muestra el enlace de volver y la mascota con texto alternativo accesible', () => {
+    it('muestra el enlace de volver y la ilustración del gatito y robot', () => {
       const enlaceVolver = fixture.nativeElement.querySelector('a[routerLink="/usuario/jugar"]');
       expect(enlaceVolver).toBeTruthy();
       expect(enlaceVolver.textContent).toContain('Volver');
 
       const mascota = fixture.nativeElement.querySelector('img.mascota-imagen') as HTMLImageElement;
       expect(mascota).toBeTruthy();
-      expect(mascota.getAttribute('alt')).toContain('Elegí tu mazo, lo voy a poner');
+      expect(mascota.getAttribute('src')).toContain('gatito y robot.png');
+      expect(mascota.getAttribute('alt')).toBe('');
     });
 
     it('muestra estado de carga mientras cargandoMazos es true', () => {

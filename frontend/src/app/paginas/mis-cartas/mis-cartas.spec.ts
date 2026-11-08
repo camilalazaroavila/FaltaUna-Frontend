@@ -232,19 +232,22 @@ describe('MisCartas', () => {
   });
 
   it('debe marcar visualmente la categoría activa', () => {
-    const botones = fixture.nativeElement.querySelectorAll(
-      'aside[aria-label="Filtrar por categoría"] button',
+    componente.toggleMenuCategorias();
+    fixture.detectChanges();
+
+    const opciones = fixture.nativeElement.querySelectorAll(
+      'ul[aria-label="Categorías de cartas"] button',
     ) as NodeListOf<HTMLButtonElement>;
 
-    expect(botones.length).toBe(7);
-    botones[0].click();
+    expect(opciones.length).toBe(8); // 'Todas' + 7 categorías
+    opciones[1].click(); // Gastronomía
     fixture.detectChanges();
 
     expect(componente['categoriaActiva']()).toBe('gastronomia');
-    expect(botones[0].classList.contains('bg-marca-coleccion-fondo')).toBe(true);
-    expect(botones[0].classList.contains('text-marca-coleccion')).toBe(true);
-    expect(botones[0].getAttribute('aria-pressed')).toBe('true');
-    expect(botones[1].getAttribute('aria-pressed')).toBe('false');
+    const botonDisparador = fixture.nativeElement.querySelector(
+      'button[aria-label="Filtrar por categoría"]',
+    );
+    expect(botonDisparador?.textContent).toContain('Gastronomía');
   });
 
   it('debe marcar el filtro de obtención activo', () => {
@@ -314,5 +317,19 @@ describe('MisCartas', () => {
 
     expect(componente['resumen']().repetidas).toBe(2);
     expect(componente['resumen']().copiasRepetidas).toBe(3);
+  });
+
+  it('debe contener el botón Volver y el título dentro del área con reserva de nav', () => {
+    fixture.detectChanges();
+    const contenedorReserva = fixture.nativeElement.querySelector('.area-contenido-con-nav');
+    expect(contenedorReserva).toBeTruthy();
+
+    const botonVolver = contenedorReserva.querySelector('a[routerLink="/usuario"]');
+    const titulo = contenedorReserva.querySelector('h1');
+
+    expect(botonVolver).toBeTruthy();
+    expect(botonVolver.textContent).toContain('Volver');
+    expect(titulo).toBeTruthy();
+    expect(titulo.textContent).toContain('MIS CARTAS');
   });
 });

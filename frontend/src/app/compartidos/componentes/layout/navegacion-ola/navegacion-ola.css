@@ -271,8 +271,10 @@
 }
 
 .nav-ola__svg-desktop {
-  display: block;
-  width: 100%;
+  position: absolute;
+  top: 0;
+  left: calc(-1 * var(--ola-sangrado-desktop, 14px));
+  width: calc(100% + var(--ola-sangrado-desktop, 14px));
   height: 100%;
 }
 

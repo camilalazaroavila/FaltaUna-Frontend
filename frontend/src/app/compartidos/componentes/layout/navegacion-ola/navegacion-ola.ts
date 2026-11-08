@@ -29,6 +29,7 @@ import {
   DESTINOS_NAVEGACION_OLA,
   type DestinoNavegacionOla,
 } from './navegacion-ola.model';
+import { limpiarUrlNavegacion, tieneNavUsuario } from './navegacion-ola.rutas';
 
 /** Geometría de la ola (px). Única fuente: la usan el trazo SVG y el CSS (variables inline). */
 const OLA = {
@@ -45,6 +46,7 @@ const OLA = {
   pasoDesktop: 62,          // alto de cada ítem
   margenDesktop: 46,        // aire arriba y abajo
   radioEsquinaDesktop: 20,  // lado que da al contenido
+  sangradoIzquierdoDesktop: 14, // sangrado hacia la izquierda para que la sombra cartoon inferior cubra hasta x=0 sin corte
 } as const;
 
 const n = (v: number): number => Math.round(v * 100) / 100;
@@ -86,9 +88,10 @@ function geometriaMobile(W: number, xc: number | null): { trazo: string; circulo
 /** Trazo de la barra lateral IZQUIERDA: borde izquierdo recto, la ola se interna abrazando el círculo. */
 function trazoDesktop(A: number, H: number, yc: number, k: number): string {
   const rE = OLA.radioEsquinaDesktop;
+  const sangrado = OLA.sangradoIzquierdoDesktop;
   const s = Math.min(Math.max(k, 0), 1.05);
-  const arriba = `M 0,0 H ${n(A - rE)} A ${rE},${rE} 0 0 1 ${A},${rE}`;
-  const abajo = `V ${n(H - rE)} A ${rE},${rE} 0 0 1 ${n(A - rE)},${H} H 0 Z`;
+  const arriba = `M -${sangrado},0 H ${n(A - rE)} A ${rE},${rE} 0 0 1 ${A},${rE}`;
+  const abajo = `V ${n(H - rE)} A ${rE},${rE} 0 0 1 ${n(A - rE)},${H} H -${sangrado} Z`;
 
   if (s < 0.01) {
     return `${arriba} ${abajo}`;
@@ -195,6 +198,7 @@ export class NavegacionOla {
 
   // ── Desktop (geometría fija: no se mide nada del DOM) ──
   protected readonly anchoDesktop = OLA.anchoDesktop;
+  protected readonly sangradoDesktop = OLA.sangradoIzquierdoDesktop;
   protected readonly pasoDesktop = OLA.pasoDesktop;
   protected readonly margenDesktop = OLA.margenDesktop;
   protected readonly circuloDesktop = OLA.circulo;
@@ -576,21 +580,7 @@ export class NavegacionOla {
   }
 
   esRutaJugadorPermitida(url: string): boolean {
-    const limpia = this.limpiarUrl(url);
-    if (
-      limpia === '' ||
-      limpia === '/' ||
-      limpia === '/empresa/landing' ||
-      limpia.startsWith('/login') ||
-      limpia.startsWith('/registro') ||
-      limpia.startsWith('/empresa') ||
-      limpia.startsWith('/juego') ||
-      limpia.startsWith('/empleado') ||
-      limpia.startsWith('/componentes')
-    ) {
-      return false;
-    }
-    return limpia === '/usuario' || limpia.startsWith('/usuario/');
+    return tieneNavUsuario(url);
   }
 
   private coincideRuta(actual: string, candidata: string): boolean {
@@ -599,8 +589,6 @@ export class NavegacionOla {
   }
 
   private limpiarUrl(url: string): string {
-    const sinParametros = url.split('?')[0] || '';
-    const limpia = sinParametros.split('#')[0] || '';
-    return limpia.endsWith('/') && limpia.length > 1 ? limpia.slice(0, -1) : limpia;
+    return limpiarUrlNavegacion(url);
   }
 }

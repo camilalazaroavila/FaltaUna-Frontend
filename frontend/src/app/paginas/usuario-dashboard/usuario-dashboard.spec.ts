@@ -258,4 +258,10 @@ describe('UsuarioDashboard Component', () => {
     expect(localStorage.getItem('faltauna_bienvenida_mazos_v2_usuario_2')).toBe('true');
     expect(navigateSpy).toHaveBeenCalledWith('/usuario/mi-baraja');
   });
+
+  it('debe contener el contenido principal dentro del contenedor con reserva de nav', () => {
+    const contenedorReserva = fixture.nativeElement.querySelector('main.area-contenido-con-nav');
+    expect(contenedorReserva).toBeTruthy();
+    expect(contenedorReserva.querySelector('.abanico-sobres')).toBeTruthy();
+  });
 });

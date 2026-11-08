@@ -197,6 +197,7 @@
     [class.nav-ola--desktop-oculta]="vistaForzada() === 'mobile'"
     [style.--ola-ancho-desktop]="anchoDesktop + 'px'"
     [style.--ola-alto-desktop]="altoDesktop() + 'px'"
+    [style.--ola-sangrado-desktop]="sangradoDesktop + 'px'"
     [style.--ola-paso-desktop]="pasoDesktop + 'px'"
     [style.--ola-margen-desktop]="margenDesktop + 'px'"
     [style.--ola-circulo]="circuloDesktop + 'px'"
@@ -204,7 +205,7 @@
   >
     <div class="nav-ola__cuerpo-desktop">
       <svg class="nav-ola__svg-desktop"
-        [attr.viewBox]="'0 0 ' + anchoDesktop + ' ' + altoDesktop()"
+        [attr.viewBox]="'-' + sangradoDesktop + ' 0 ' + (anchoDesktop + sangradoDesktop) + ' ' + altoDesktop()"
         focusable="false" aria-hidden="true">
         <path class="nav-ola__svg-relleno" [attr.d]="rutaSvgDesktop()" />
       </svg>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
@@ -60,6 +60,7 @@ export class MisCartas implements OnInit {
   private readonly barajaService = inject(BarajaService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly elementoRef = inject(ElementRef<HTMLElement>);
 
   protected readonly urlLogo = urlLogo;
 
@@ -76,6 +77,13 @@ export class MisCartas implements OnInit {
   protected readonly soloRepetidas = signal(false);
   protected readonly categoriaActiva = signal<CategoriaCarta | null>(null);
   protected readonly criterioOrden = signal<CriterioOrden>('nombre-asc');
+  protected readonly menuCategoriasAbierto = signal(false);
+
+  protected readonly categoriaActivaObjeto = computed(() => {
+    const activa = this.categoriaActiva();
+    if (!activa) return null;
+    return this.categoriasDisponibles.find((c) => c.categoria === activa) ?? null;
+  });
 
   // Botones de categoría
   protected readonly categoriasDisponibles: readonly BotonCategoria[] = [
@@ -204,6 +212,27 @@ export class MisCartas implements OnInit {
 
   cambiarOrden(evento: Event): void {
     this.criterioOrden.set((evento.target as HTMLSelectElement).value as CriterioOrden);
+  }
+
+  @HostListener('document:click', ['$event'])
+  alHacerClicFuera(evento: MouseEvent): void {
+    if (!this.elementoRef.nativeElement.contains(evento.target as Node)) {
+      this.menuCategoriasAbierto.set(false);
+    }
+  }
+
+  @HostListener('keydown.escape')
+  alPresionarEscape(): void {
+    this.menuCategoriasAbierto.set(false);
+  }
+
+  toggleMenuCategorias(): void {
+    this.menuCategoriasAbierto.update((v) => !v);
+  }
+
+  seleccionarCategoria(cat: CategoriaCarta | null): void {
+    this.categoriaActiva.set(cat);
+    this.menuCategoriasAbierto.set(false);
   }
 
   toggleCategoria(categoria: CategoriaCarta): void {
