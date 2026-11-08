@@ -185,4 +185,18 @@ describe('MiBaraja', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('app-carta-popup')).toBeNull();
   });
+
+  it('debe contener el enlace de volver y el título dentro del área con reserva de nav', () => {
+    fixture.detectChanges();
+    const contenedorReserva = fixture.nativeElement.querySelector('.area-contenido-con-nav');
+    expect(contenedorReserva).toBeTruthy();
+
+    const volver = contenedorReserva.querySelector('a[routerLink="/usuario/mis-cartas"]');
+    const titulo = contenedorReserva.querySelector('h1');
+
+    expect(volver).toBeTruthy();
+    expect(volver.textContent).toContain('Mis cartas');
+    expect(titulo).toBeTruthy();
+    expect(titulo.textContent).toContain('Gestión de barajas');
+  });
 });

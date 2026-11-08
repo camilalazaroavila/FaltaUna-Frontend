@@ -1,0 +1,356 @@
+@if (esVisible()) {
+  <!-- ======================================================================
+       1. ORIENTACIÓN MOBILE (< 768px): Barra inferior con ola y 5 columnas
+       ====================================================================== -->
+  <div
+    class="nav-ola--mobile"
+    [class.nav-ola--mobile-forzada]="vistaForzada() === 'mobile'"
+    [class.nav-ola--mobile-oculta]="vistaForzada() === 'desktop'"
+  >
+    <!-- Franja asomada para restaurar cuando la barra está parcialmente oculta por scroll -->
+    @if (barraMobileOculta()) {
+      <button
+        type="button"
+        class="nav-ola__franja-asomada"
+        aria-label="Restaurar barra de navegación completa"
+        (click)="restaurarBarraMobile()"
+      >
+        <span class="nav-ola__franja-indicador" aria-hidden="true"></span>
+      </button>
+    }
+
+    <nav
+      #barraMobileElement
+      aria-label="Navegación inferior del jugador"
+      class="nav-ola__barra-mobile"
+      [class.nav-ola__barra-mobile--reducida]="barraMobileOculta()"
+      [style.--ola-padding-lateral]="paddingLateralMobile + 'px'"
+    >
+      <!-- Silueta continua única en vector SVG (sin costuras ni deformación) -->
+      <div class="nav-ola__cuerpo-mobile">
+        <svg
+          class="nav-ola__svg-mobile"
+          [attr.viewBox]="'0 0 ' + anchoBarraMobile() + ' 72'"
+          focusable="false"
+          aria-hidden="true"
+        >
+          <path class="nav-ola__svg-relleno" [attr.d]="rutaSvgMobile()" />
+        </svg>
+
+        <!-- Reserva para el área segura del celular -->
+        <div class="nav-ola__area-segura-mobile" aria-hidden="true"></div>
+      </div>
+
+      <!-- Círculo activo elevado verde con ícono oscuro, centrado en el hueco -->
+      @let activoM = destinoActivoMobile();
+      <div
+        #circuloActivo
+        class="nav-ola__circulo-mobile"
+        [class.nav-ola__circulo-mobile--visible]="olaMobileVisible() && activoM !== null"
+        [style.width.px]="geoMobile().circulo"
+        [style.height.px]="geoMobile().circulo"
+        [style.transform]="'translate3d(calc(' + posicionOlaMobileX() + 'px - 50%), -50%, 0)'"
+        aria-hidden="true"
+      >
+        @if (activoM?.urlIcono) {
+          <span
+            class="nav-ola__icono-mascara nav-ola__icono-mascara--activo"
+            [style.-webkit-mask-image]="urlMascara(activoM!.urlIcono)"
+            [style.mask-image]="urlMascara(activoM!.urlIcono)"
+          ></span>
+        } @else if (activoM?.icono) {
+          <ng-icon
+            [name]="activoM!.icono!"
+            [size]="activoM!.icono === 'phosphorTrophyFill' ? '2.25rem' : '1.45rem'"
+            [class.nav-ola__icono-trofeo]="activoM!.icono === 'phosphorTrophyFill'"
+          />
+        }
+      </div>
+
+      <!-- Botón central JUGAR: fijado con precisión matemática al 50% horizontal -->
+      <div class="nav-ola__slot-jugar-mobile">
+        <a
+          [routerLink]="accionJugar().ruta"
+          class="nav-ola__boton-jugar-mobile"
+          [attr.aria-label]="accionJugar().etiqueta"
+          [attr.aria-current]="esRutaActiva(accionJugar()) ? 'page' : null"
+          (click)="alSeleccionar(accionJugar(), $event)"
+        >
+          <img [src]="urlIconoJugar()" alt="" class="nav-ola__img-jugar" />
+        </a>
+      </div>
+
+      <!-- Grilla interactiva de 5 columnas iguales: [Cartas] [Misiones] [Jugar] [Álbumes] [Más] -->
+      <ul class="nav-ola__grilla-mobile" role="list">
+        <!-- Col 0: Cartas -->
+        @let dCartas = destinosMobile()[0];
+        @let cartasActivo = destinoActivoMobile()?.id === dCartas.id;
+        <li #colItemMobile class="nav-ola__col-mobile">
+          <a
+            [routerLink]="dCartas.ruta"
+            class="nav-ola__enlace-mobile"
+            [class.nav-ola__enlace-mobile--oculto-por-ola]="cartasActivo"
+            [attr.aria-label]="dCartas.etiqueta"
+            [attr.aria-current]="esRutaActiva(dCartas) ? 'page' : null"
+            (click)="alSeleccionar(dCartas, $event)"
+          >
+            @if (dCartas.urlIcono) {
+              <span
+                class="nav-ola__icono-mascara"
+                [style.-webkit-mask-image]="urlMascara(dCartas.urlIcono)"
+                [style.mask-image]="urlMascara(dCartas.urlIcono)"
+                aria-hidden="true"
+              ></span>
+            } @else if (dCartas.icono) {
+              <ng-icon [name]="dCartas.icono" size="1.4rem" aria-hidden="true" />
+            }
+          </a>
+        </li>
+
+        <!-- Col 1: Misiones -->
+        @let dMisiones = destinosMobile()[1];
+        @let misionesActivo = destinoActivoMobile()?.id === dMisiones.id;
+        <li #colItemMobile class="nav-ola__col-mobile">
+          <a
+            [routerLink]="dMisiones.ruta"
+            class="nav-ola__enlace-mobile"
+            [class.nav-ola__enlace-mobile--oculto-por-ola]="misionesActivo"
+            [attr.aria-label]="dMisiones.etiqueta"
+            [attr.aria-current]="esRutaActiva(dMisiones) ? 'page' : null"
+            (click)="alSeleccionar(dMisiones, $event)"
+          >
+            @if (dMisiones.urlIcono) {
+              <span
+                class="nav-ola__icono-mascara"
+                [style.-webkit-mask-image]="urlMascara(dMisiones.urlIcono)"
+                [style.mask-image]="urlMascara(dMisiones.urlIcono)"
+                aria-hidden="true"
+              ></span>
+            } @else if (dMisiones.icono) {
+              <ng-icon
+                [name]="dMisiones.icono"
+                [size]="dMisiones.icono === 'phosphorTrophyFill' ? '2.15rem' : '1.4rem'"
+                [class.nav-ola__icono-trofeo]="dMisiones.icono === 'phosphorTrophyFill'"
+                aria-hidden="true"
+              />
+            }
+          </a>
+        </li>
+
+        <!-- Col 2: Slot reservado para JUGAR -->
+        <li class="nav-ola__col-mobile nav-ola__col-mobile--espaciador-jugar" aria-hidden="true"></li>
+
+        <!-- Col 3: Álbumes -->
+        @let dAlbumes = destinosMobile()[2];
+        @let albumesActivo = destinoActivoMobile()?.id === dAlbumes.id;
+        <li #colItemMobile class="nav-ola__col-mobile">
+          <a
+            [routerLink]="dAlbumes.ruta"
+            class="nav-ola__enlace-mobile"
+            [class.nav-ola__enlace-mobile--oculto-por-ola]="albumesActivo"
+            [attr.aria-label]="dAlbumes.etiqueta"
+            [attr.aria-current]="esRutaActiva(dAlbumes) ? 'page' : null"
+            (click)="alSeleccionar(dAlbumes, $event)"
+          >
+            @if (dAlbumes.urlIcono) {
+              <span
+                class="nav-ola__icono-mascara"
+                [style.-webkit-mask-image]="urlMascara(dAlbumes.urlIcono)"
+                [style.mask-image]="urlMascara(dAlbumes.urlIcono)"
+                aria-hidden="true"
+              ></span>
+            } @else if (dAlbumes.icono) {
+              <ng-icon [name]="dAlbumes.icono" size="1.4rem" aria-hidden="true" />
+            }
+          </a>
+        </li>
+
+        <!-- Col 4: Botón 'Más' (abre modal) -->
+        <li class="nav-ola__col-mobile">
+          <button
+            #botonMasElement
+            type="button"
+            class="nav-ola__enlace-mobile"
+            aria-label="Más secciones de navegación"
+            aria-haspopup="dialog"
+            [attr.aria-expanded]="panelMasAbierto()"
+            (click)="abrirPanelMas()"
+          >
+            <ng-icon name="phosphorDotsThree" size="1.75rem" aria-hidden="true" />
+            @if (destinosMapeados()[3]?.tieneIndicador) {
+              <span class="nav-ola__notificacion" aria-hidden="true"></span>
+            }
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- ======================================================================
+       2. ORIENTACIÓN DESKTOP (>= 768px): Barra lateral vertical IZQUIERDA
+       ====================================================================== -->
+  <aside
+    #barraDesktopElement
+    aria-label="Navegación principal desktop"
+    class="nav-ola--desktop"
+    [class.nav-ola--desktop-forzada]="vistaForzada() === 'desktop'"
+    [class.nav-ola--desktop-oculta]="vistaForzada() === 'mobile'"
+    [style.--ola-ancho-desktop]="anchoDesktop + 'px'"
+    [style.--ola-alto-desktop]="altoDesktop() + 'px'"
+    [style.--ola-sangrado-desktop]="sangradoDesktop + 'px'"
+    [style.--ola-paso-desktop]="pasoDesktop + 'px'"
+    [style.--ola-margen-desktop]="margenDesktop + 'px'"
+    [style.--ola-circulo]="circuloDesktop + 'px'"
+    (mouseleave)="alSalirMouseDesktop()"
+  >
+    <div class="nav-ola__cuerpo-desktop">
+      <svg class="nav-ola__svg-desktop"
+        [attr.viewBox]="'-' + sangradoDesktop + ' 0 ' + (anchoDesktop + sangradoDesktop) + ' ' + altoDesktop()"
+        focusable="false" aria-hidden="true">
+        <path class="nav-ola__svg-relleno" [attr.d]="rutaSvgDesktop()" />
+      </svg>
+
+      <nav class="nav-ola__nav-desktop" aria-label="Destinos principales">
+        @for (destino of destinosMapeados(); track destino.id; let i = $index) {
+          @let enOla = indiceEfectivoDesktop() === i && aparicionDesktop() > 0.5;
+          @let esActivo = esRutaActiva(destino);
+          <div class="nav-ola__item-desktop"
+            (mouseenter)="destino.deshabilitado ? null : alPasarMouseDesktop(i)"
+            (focusin)="destino.deshabilitado ? null : alPasarMouseDesktop(i)">
+            <a
+              [routerLink]="destino.deshabilitado ? null : destino.ruta"
+              class="nav-ola__enlace-desktop"
+              [class.nav-ola__enlace-desktop--deshabilitado]="destino.deshabilitado"
+              [class.nav-ola__enlace-desktop--oculto-por-ola]="enOla"
+              [attr.aria-label]="destino.etiqueta"
+              [attr.aria-current]="esActivo ? 'page' : null"
+              [attr.aria-disabled]="destino.deshabilitado ? 'true' : null"
+              [attr.tabindex]="destino.deshabilitado ? -1 : null"
+              (click)="alSeleccionar(destino, $event)"
+            >
+              @if (destino.urlIcono) {
+                <span class="nav-ola__icono-mascara nav-ola__icono-mascara--desktop"
+                  [style.-webkit-mask-image]="urlMascara(destino.urlIcono)"
+                  [style.mask-image]="urlMascara(destino.urlIcono)" aria-hidden="true"></span>
+              } @else if (destino.icono) {
+                <ng-icon
+                  [name]="destino.icono"
+                  [size]="destino.icono === 'phosphorTrophyFill' ? '2.15rem' : '1.45rem'"
+                  [class.nav-ola__icono-trofeo]="destino.icono === 'phosphorTrophyFill'"
+                  aria-hidden="true"
+                />
+              }
+              @if (destino.tieneIndicador) {
+                <span class="nav-ola__notificacion" aria-hidden="true"></span>
+              }
+            </a>
+            <span class="nav-ola__tooltip" role="tooltip">
+              {{ destino.etiqueta }}{{ destino.deshabilitado ? ' (Próximamente)' : '' }}
+            </span>
+          </div>
+        }
+      </nav>
+    </div>
+
+    <!-- Círculo fuera del bloque con filtro, para no duplicar la sombra -->
+    @let destinoO = destinoOlaDesktop();
+    <button
+      type="button"
+      class="nav-ola__circulo-desktop"
+      [class.nav-ola__circulo-desktop--interactivo]="destinoO && !destinoO.deshabilitado"
+      [style.width.px]="circuloDesktop"
+      [style.height.px]="circuloDesktop"
+      [style.opacity]="aparicionDesktop() > 0.02 ? 1 : 0"
+      [style.transform]="transformCirculoDesktop()"
+      [attr.aria-label]="destinoO ? destinoO.etiqueta : null"
+      [attr.tabindex]="-1"
+      (click)="alClickCirculoDesktop($event)">
+      @if (destinoO?.urlIcono) {
+        <span class="nav-ola__icono-mascara nav-ola__icono-mascara--desktop"
+          [style.-webkit-mask-image]="urlMascara(destinoO!.urlIcono)"
+          [style.mask-image]="urlMascara(destinoO!.urlIcono)"></span>
+      } @else if (destinoO?.icono) {
+        <ng-icon
+          [name]="destinoO!.icono!"
+          [size]="destinoO!.icono === 'phosphorTrophyFill' ? '2.35rem' : '1.55rem'"
+          [class.nav-ola__icono-trofeo]="destinoO!.icono === 'phosphorTrophyFill'"
+        />
+      }
+    </button>
+  </aside>
+
+  <!-- ======================================================================
+       3. PANEL 'MÁS' ACCESIBLE (Mobile bottom sheet dialog)
+       ====================================================================== -->
+  @if (panelMasAbierto()) {
+    <div
+      class="nav-ola__dialogo-overlay"
+      (click)="cerrarPanelMas()"
+      (keydown)="manejarTecladoDialogo($event)"
+    >
+      <div
+        #dialogoSheet
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-panel-mas"
+        class="nav-ola__dialogo-sheet"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="nav-ola__dialogo-cabecera">
+          <h2 id="titulo-panel-mas" class="nav-ola__dialogo-titulo">Más opciones</h2>
+          <button
+            #botonCerrarDialogo
+            type="button"
+            class="nav-ola__dialogo-cerrar"
+            aria-label="Cerrar panel de opciones"
+            (click)="cerrarPanelMas()"
+          >
+            <ng-icon name="phosphorX" size="1.25rem" aria-hidden="true" />
+          </button>
+        </div>
+
+        <ul class="nav-ola__dialogo-lista" role="list">
+          @for (item of destinosSecundarios(); track item.id) {
+            <li>
+              <a
+                [routerLink]="item.deshabilitado ? null : item.ruta"
+                class="nav-ola__dialogo-item"
+                [class.nav-ola__dialogo-item--activo]="esRutaActiva(item)"
+                [class.nav-ola__dialogo-item--deshabilitado]="item.deshabilitado"
+                [attr.aria-disabled]="item.deshabilitado ? 'true' : null"
+                [attr.tabindex]="item.deshabilitado ? -1 : null"
+                (click)="seleccionarDesdePanel(item)"
+              >
+                <div class="nav-ola__dialogo-icono-wrapper">
+                  @if (item.urlIcono) {
+                    <span
+                      class="nav-ola__icono-mascara"
+                      [style.-webkit-mask-image]="urlMascara(item.urlIcono)"
+                      [style.mask-image]="urlMascara(item.urlIcono)"
+                      aria-hidden="true"
+                    ></span>
+                  } @else if (item.icono) {
+                    <ng-icon
+                      [name]="item.icono"
+                      [size]="item.icono === 'phosphorTrophyFill' ? '2.15rem' : '1.45rem'"
+                      [class.nav-ola__icono-trofeo]="item.icono === 'phosphorTrophyFill'"
+                      aria-hidden="true"
+                    />
+                  }
+
+                  @if (item.tieneIndicador) {
+                    <span class="nav-ola__notificacion" aria-hidden="true"></span>
+                  }
+                </div>
+                <span class="nav-ola__dialogo-texto">{{ item.etiqueta }}</span>
+                @if (item.deshabilitado) {
+                  <span class="nav-ola__dialogo-badge">Próximamente</span>
+                }
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+}

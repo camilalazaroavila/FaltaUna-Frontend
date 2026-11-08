@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
-import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
 import { FlujoAperturaSobres } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
@@ -183,13 +182,13 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
   selector: 'app-usuario-dashboard',
   imports: [
     Header,
-    BotonNavegacionCircular,
     FlujoAperturaSobres,
     SobreMarca,
     Boton,
     Confeti,
   ],
   templateUrl: './usuario-dashboard.html',
+  styleUrl: './usuario-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuarioDashboard implements OnInit {
@@ -254,6 +253,17 @@ export class UsuarioDashboard implements OnInit {
 
   /** Ninguna sección está activa por defecto: el dashboard no es ninguno de los destinos del dock. */
   protected readonly seccionActiva = signal<string | null>(null);
+  protected readonly indiceOlaActivo = computed<number | null>(() => {
+    const activa = this.seccionActiva();
+    if (!activa) return null;
+    const idx = this.destinos.findIndex((d) => d.id === activa);
+    return idx >= 0 ? idx : null;
+  });
+  protected readonly posicionOlaY = computed<string>(() => {
+    const idx = this.indiceOlaActivo();
+    if (idx === null || idx < 0) return '-400px';
+    return (46 + idx * 72) + 'px';
+  });
   protected readonly selectorSobresAbierto = signal<boolean>(false);
   protected readonly sobresDisponibles = this.sobresService.sobresDisponibles ?? signal<{ actuales: number; maximo: number }>({
     actuales: 2,

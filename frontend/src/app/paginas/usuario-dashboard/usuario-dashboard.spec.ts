@@ -120,20 +120,10 @@ describe('UsuarioDashboard Component', () => {
   });*/
 
 
-  it('debe renderizar el dock de navegación con los 6 destinos', () => {
-    const aside = fixture.nativeElement.querySelector('aside[aria-label="Navegación principal"]');
-    expect(aside).toBeTruthy();
-
-    const botonesNav = aside.querySelectorAll('app-boton-navegacion-circular');
-    expect(botonesNav.length).toBe(6);
-
-    const botonMisiones = Array.from(
-      botonesNav as NodeListOf<HTMLElement>
-    ).find(
-      (b) =>
-        b.querySelector('button')?.getAttribute('aria-label') === 'Misiones'
-    );
-    expect(botonMisiones).toBeTruthy();
+  it('debe definir los 6 destinos de navegación', () => {
+    expect(component['destinos'].length).toBe(6);
+    const destinoMisiones = component['destinos'].find((d) => d.id === 'misiones');
+    expect(destinoMisiones).toBeTruthy();
   });
 
   it('debe permitir cambiar la sección activa al interactuar con el dock', () => {
@@ -222,18 +212,12 @@ describe('UsuarioDashboard Component', () => {
     expect(navigateSpy).toHaveBeenCalledWith('/usuario/intercambio');
   });
 
-  it('debe mostrar la insignia ! en el botón de intercambio si hay novedades pendientes', () => {
+  it('debe reflejar si hay novedades pendientes en intercambios', () => {
     const mockIntercambioService = TestBed.inject(IntercambioService);
     (mockIntercambioService.tieneNovedadDashboardSignal as any).set(true);
     fixture.detectChanges();
 
-    const botonesNavegacion = fixture.nativeElement.querySelectorAll('app-boton-navegacion-circular');
-    const botonIntercambios = Array.from(botonesNavegacion).find((b: any) =>
-      b.textContent?.includes('Intercambio')
-    ) as HTMLElement;
-
-    expect(botonIntercambios).toBeTruthy();
-    expect(botonIntercambios.textContent).toContain('!');
+    expect(component['tieneNovedadIntercambios']()).toBe(true);
   });
 
   it('permite cerrar la bienvenida de mazos y guarda el flag por usuario en localStorage', () => {
@@ -273,5 +257,11 @@ describe('UsuarioDashboard Component', () => {
     expect(nuevoComp['modalBienvenidaMazosVisible']()).toBe(false);
     expect(localStorage.getItem('faltauna_bienvenida_mazos_v2_usuario_2')).toBe('true');
     expect(navigateSpy).toHaveBeenCalledWith('/usuario/mi-baraja');
+  });
+
+  it('debe contener el contenido principal dentro del contenedor con reserva de nav', () => {
+    const contenedorReserva = fixture.nativeElement.querySelector('main.area-contenido-con-nav');
+    expect(contenedorReserva).toBeTruthy();
+    expect(contenedorReserva.querySelector('.abanico-sobres')).toBeTruthy();
   });
 });

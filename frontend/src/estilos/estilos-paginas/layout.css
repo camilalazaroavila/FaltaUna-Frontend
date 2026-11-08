@@ -92,3 +92,141 @@
         min-height: 24rem;
     }
 }
+
+
+/* ==========================================================================
+   Panel 'Más' Dialog Bottom Sheet (Navegación con Ola)
+   ========================================================================== */
+.nav-ola__dialogo-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--overlay);
+  backdrop-filter: blur(4px);
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.nav-ola__dialogo-sheet {
+  width: 100%;
+  max-width: 32rem;
+  background-color: var(--fondo-superficie);
+  border-radius: 1.5rem 1.5rem 0 0;
+  border: 1px solid var(--borde-default);
+  border-bottom: 0;
+  padding: 1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--sombra-elevada);
+  animation: nav-ola-sheet-slide 240ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes nav-ola-sheet-slide {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.nav-ola__dialogo-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--borde-default);
+}
+
+.nav-ola__dialogo-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--nav-ola-superficie);
+  margin: 0;
+}
+
+.nav-ola__dialogo-cerrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radio-circulo);
+  background: color-mix(in srgb, var(--texto-primario) 10%, transparent);
+  color: var(--texto-primario);
+  border: 0;
+  cursor: pointer;
+  transition: background-color var(--duracion-micro, 180ms) ease;
+}
+
+.nav-ola__dialogo-cerrar:focus-visible {
+  outline: 2px solid var(--marca-primaria);
+  outline-offset: 2px;
+}
+
+.nav-ola__dialogo-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-ola__dialogo-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radio-lg);
+  text-decoration: none;
+  color: var(--texto-primario);
+  background: color-mix(in srgb, var(--texto-primario) 4%, transparent);
+  border: 1px solid transparent;
+  min-height: 3rem;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.nav-ola__dialogo-item:hover {
+  background: color-mix(in srgb, var(--texto-primario) 8%, transparent);
+  border-color: var(--borde-default);
+}
+
+.nav-ola__dialogo-item--activo {
+  background: color-mix(in srgb, var(--marca-primaria) 16%, transparent);
+  border-color: var(--marca-primaria);
+  color: var(--marca-primaria);
+}
+
+.nav-ola__dialogo-item--deshabilitado {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.nav-ola__dialogo-icono-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-ola__dialogo-texto {
+  font-family: var(--fuente-interfaz);
+  font-size: 0.95rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.nav-ola__dialogo-badge {
+  font-family: var(--fuente-interfaz);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radio-pildora);
+  background: color-mix(in srgb, var(--texto-primario) 10%, transparent);
+  color: var(--texto-secundario);
+}

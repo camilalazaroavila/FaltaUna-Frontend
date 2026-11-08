@@ -96,4 +96,34 @@
     --nav-inferior-fab-texto: var(--marca-sobre-primaria);
     --nav-inferior-fab-anillo: var(--color-crema-fondo);
     --nav-inferior-sombra: 0 -3px 0 var(--color-crema-borde);
+
+    /* Sombras cartoon gruesas (sólidas, sin difuminar) */
+    --sombra-cartoon: 4px 4px 0 var(--color-teal-profundo);
+    --sombra-cartoon-gruesa: 7px 7px 0 var(--color-teal-profundo);
+    --sombra-cartoon-clara: 7px 7px 0 var(--color-amarillo-logo);
+
+    /* --- Navegación con Efecto de Ola (Capa 2: Empresa) --- */
+    --nav-ola-superficie: var(--fondo-superficie);
+    --nav-ola-icono: var(--texto-primario);
+    --nav-ola-icono-hover: var(--texto-primario);
+    --nav-ola-activo-circulo: var(--marca-primaria);
+    --nav-ola-activo-icono: var(--marca-sobre-primaria);
+    --nav-ola-jugar-fondo: var(--color-teal-profundo);
+    --nav-ola-jugar-borde: var(--marca-primaria);
+    --nav-ola-jugar-brillo: 0 0 16px color-mix(in srgb, var(--marca-primaria) 45%, transparent);
+    --nav-ola-jugar-brillo-hover: 0 0 22px color-mix(in srgb, var(--marca-primaria) 65%, transparent);
+    --nav-ola-jugar-sombra: 0 4px 14px color-mix(in srgb, var(--color-teal-profundo) 40%, transparent);
+    --nav-ola-sombra: 0 -4px 20px color-mix(in srgb, var(--color-teal-profundo) 22%, transparent);
+    --nav-ola-sombra-desktop: var(--sombra-cartoon-clara);
+    --nav-ola-sombra-circulo: var(--sombra-media);
+    --nav-ola-indicador: var(--atencion);
+    --nav-ola-alto: 4.5rem;
+    --nav-ola-ancho-desktop: 5rem;
+    --nav-ola-radio-desktop: 1.75rem;
+    --nav-ola-reserva-desktop: 6rem;
+    --nav-ola-hueco-ancho: 3.375rem;
+    --nav-ola-circulo-tamano: 2.25rem;
+    --nav-ola-circulo-desktop: 2.5rem;
+    --nav-ola-jugar-tamano: 3.125rem;
+    --nav-ola-franja-asomada: 1.25rem;
 }

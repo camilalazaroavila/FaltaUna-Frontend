@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgxSonnerToaster } from 'ngx-sonner';
 import { Body } from '@compartidos/componentes/layout/body/body';
-import { NavegacionInferiorMobile } from '@compartidos/componentes/layout/navegacion-inferior-mobile/navegacion-inferior-mobile';
+import { NavegacionOla } from '@compartidos/componentes/layout/navegacion-ola/navegacion-ola';
 
 /**
  * Cáscara de la aplicación: el `Body` define el marco visual global, y dentro
@@ -11,7 +11,7 @@ import { NavegacionInferiorMobile } from '@compartidos/componentes/layout/navega
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgxSonnerToaster, Body, NavegacionInferiorMobile],
+  imports: [RouterOutlet, NgxSonnerToaster, Body, NavegacionOla],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

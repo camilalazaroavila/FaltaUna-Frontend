@@ -15,70 +15,87 @@ const CATEGORIAS: readonly CategoriaAlbum[] = [
 describe('FiltrosCategoriaAlbum', () => {
   let fixture: ComponentFixture<FiltrosCategoriaAlbum>;
 
-  const botones = (): HTMLButtonElement[] =>
-    Array.from(fixture.nativeElement.querySelectorAll('button'));
+  const botonDisparador = (): HTMLButtonElement =>
+    fixture.nativeElement.querySelector('button[aria-haspopup="listbox"]')!;
 
-  const montar = (categoriaActiva: number | null = null): void => {
+  const opcionesBotones = (): HTMLButtonElement[] =>
+    Array.from(fixture.nativeElement.querySelectorAll('ul[role="listbox"] button'));
+
+  const montar = (categoriaActiva: number | null = null, abrirMenu = true): void => {
     fixture.componentRef.setInput('categorias', CATEGORIAS);
     fixture.componentRef.setInput('categoriaActiva', categoriaActiva);
+    if (abrirMenu) {
+      fixture.componentInstance.abrir();
+    }
     fixture.detectChanges();
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [FiltrosCategoriaAlbum],
-      providers: [provideIcons({ phosphorStackFill: ICONO })],
+      providers: [
+        provideIcons({
+          phosphorStackFill: ICONO,
+          phosphorCaretDownFill: ICONO,
+        }),
+      ],
     });
 
     fixture = TestBed.createComponent(FiltrosCategoriaAlbum);
   });
 
-  it('muestra "Todas" y solo las categorías que tienen icono', () => {
+  it('muestra el disparador cerrado inicialmente con texto Categorías', () => {
+    montar(null, false);
+
+    expect(botonDisparador().textContent?.trim()).toContain('Categorías');
+    expect(opcionesBotones()).toHaveLength(0);
+  });
+
+  it('muestra "Todas" y solo las categorías que tienen icono al abrir', () => {
     montar();
 
-    const textos = botones().map((boton) => boton.textContent?.trim());
+    const textos = opcionesBotones().map((boton) => boton.textContent?.trim());
     expect(textos[0]).toBe('Todas');
     expect(textos).toContain('Gastronomía');
     expect(textos).toContain('Cosméticos');
     expect(textos).not.toContain('Desconocida');
-    expect(botones()).toHaveLength(3);
-  });
-
-  it('el icono de "Todas" tiene su propio ajuste de tamaño, igual que las categorías', () => {
-    montar();
-
-    const iconoTodas = botones()[0].querySelector('ng-icon')!;
-    const iconoCategoria = botones()[1].querySelector('app-icono-categoria')!;
-    const cajaCategoria = iconoCategoria.parentElement!;
-
-    expect(iconoTodas.className).toContain('icono-todas');
-    expect(cajaCategoria.className).toContain('size-6');
+    expect(opcionesBotones()).toHaveLength(3);
   });
 
   it('marca "Todas" como activa cuando no hay categoría elegida', () => {
     montar(null);
 
-    expect(botones()[0].getAttribute('aria-pressed')).toBe('true');
+    expect(opcionesBotones()[0].getAttribute('aria-pressed')).toBe('true');
   });
 
-  it('emite el id de la categoría al elegirla', () => {
+  it('muestra la categoría activa en el botón disparador', () => {
+    montar(4, false);
+
+    expect(botonDisparador().textContent?.trim()).toContain('Categoría: Gastronomía');
+  });
+
+  it('emite el id de la categoría al elegirla y cierra el menú', () => {
     const emitidos: (number | null)[] = [];
     fixture.componentInstance.cambiar.subscribe((id) => emitidos.push(id));
     montar();
 
-    botones()[1].click();
+    opcionesBotones()[1].click();
+    fixture.detectChanges();
 
     expect(emitidos).toEqual([4]);
+    expect(opcionesBotones()).toHaveLength(0);
   });
 
-  it('emite null al elegir "Todas"', () => {
+  it('emite null al elegir "Todas" y cierra el menú', () => {
     const emitidos: (number | null)[] = [];
     fixture.componentInstance.cambiar.subscribe((id) => emitidos.push(id));
     montar(4);
 
-    botones()[0].click();
+    opcionesBotones()[0].click();
+    fixture.detectChanges();
 
     expect(emitidos).toEqual([null]);
+    expect(opcionesBotones()).toHaveLength(0);
   });
 
   it('desactiva la categoría activa al volver a tocarla', () => {
@@ -86,8 +103,8 @@ describe('FiltrosCategoriaAlbum', () => {
     fixture.componentInstance.cambiar.subscribe((id) => emitidos.push(id));
     montar(4);
 
-    expect(botones()[1].getAttribute('aria-pressed')).toBe('true');
-    botones()[1].click();
+    expect(opcionesBotones()[1].getAttribute('aria-pressed')).toBe('true');
+    opcionesBotones()[1].click();
 
     expect(emitidos).toEqual([null]);
   });

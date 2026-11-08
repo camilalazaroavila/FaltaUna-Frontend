@@ -237,11 +237,15 @@ describe('UsuarioCupones', () => {
 
     expect(sonido.reproducir).toHaveBeenCalledWith('sonidos/canje.mp3');
   });
-  it('muestra las 7 categorías en el menú lateral y marca solo la elegida', async () => {
+  it('muestra las 7 categorías en el menú desplegable y marca solo la elegida', async () => {
     await montar('indumentaria');
+    const componente = fixture.componentInstance as any;
+    componente.alternarMenuCategorias();
+    fixture.detectChanges();
+
     const raiz: HTMLElement = fixture.nativeElement;
     const botones = Array.from(
-      raiz.querySelectorAll<HTMLButtonElement>('aside button'),
+      raiz.querySelectorAll<HTMLButtonElement>('#menu-categorias-cupones button'),
     );
 
     expect(botones).toHaveLength(7);
@@ -249,26 +253,42 @@ describe('UsuarioCupones', () => {
       botones.filter((b) => b.getAttribute('aria-pressed') === 'true'),
     ).toHaveLength(1);
     expect(
-      raiz.querySelector('aside button[aria-pressed="true"]')?.getAttribute('aria-label'),
+      raiz.querySelector('#menu-categorias-cupones button[aria-pressed="true"]')?.getAttribute('aria-label'),
     ).toBe('Indumentaria');
   });
 
-  it('cambia la categoría activa al hacer click en el menú lateral', async () => {
+  it('cambia la categoría activa al hacer click en el menú desplegable', async () => {
     await montar(null);
+    const componente = fixture.componentInstance as any;
+    componente.alternarMenuCategorias();
+    fixture.detectChanges();
+
     const raiz: HTMLElement = fixture.nativeElement;
 
     expect(activa()).toBe('gastronomia');
 
     (
       raiz.querySelector(
-        'aside button[aria-label="Música"]',
+        '#menu-categorias-cupones button[aria-label="Música"]',
       ) as HTMLButtonElement
     ).click();
     fixture.detectChanges();
 
     expect(activa()).toBe('musica');
-    expect(
-      raiz.querySelector('aside button[aria-pressed="true"]')?.getAttribute('aria-label'),
-    ).toBe('Música');
+  });
+
+  it('debe contener el botón Volver y el título dentro del área con reserva de nav', async () => {
+    await montar(null);
+    fixture.detectChanges();
+    const contenedorReserva = fixture.nativeElement.querySelector('.area-contenido-con-nav');
+    expect(contenedorReserva).toBeTruthy();
+
+    const volver = contenedorReserva.querySelector('a[routerLink="/usuario"]');
+    const titulo = contenedorReserva.querySelector('h1');
+
+    expect(volver).toBeTruthy();
+    expect(volver.textContent).toContain('Volver');
+    expect(titulo).toBeTruthy();
+    expect(titulo.textContent).toContain('Tus cupones');
   });
 });

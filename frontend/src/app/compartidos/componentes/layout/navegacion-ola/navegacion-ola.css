@@ -1,0 +1,393 @@
+:host {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.nav-ola--mobile {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 45;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .nav-ola--mobile {
+    display: none;
+  }
+}
+
+.nav-ola--mobile-forzada,
+.nav-ola--desktop-forzada {
+  display: block !important;
+  position: relative !important;
+  inset-inline: auto !important;
+  bottom: auto !important;
+  right: auto !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  margin: 1.5rem auto !important;
+}
+
+.nav-ola--mobile-oculta,
+.nav-ola--desktop-oculta {
+  display: none !important;
+}
+
+.nav-ola__barra-mobile {
+  position: relative;
+  width: 100%;
+  pointer-events: auto;
+  transform: none;
+  transition: transform var(--duracion-micro, 200ms) cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.nav-ola__barra-mobile--reducida {
+  transform: translateY(calc(100% - var(--nav-ola-franja-asomada)));
+}
+
+.nav-ola__franja-asomada {
+  position: absolute;
+  top: -1.25rem;
+  inset-inline: 0;
+  height: 1.25rem;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  z-index: 48;
+}
+
+.nav-ola__franja-indicador {
+  width: 2.5rem;
+  height: 0.25rem;
+  border-radius: var(--radio-pildora);
+  background-color: var(--nav-ola-icono);
+  opacity: 0.45;
+}
+
+.nav-ola__cuerpo-mobile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  filter: drop-shadow(var(--nav-ola-sombra));
+}
+
+.nav-ola__svg-mobile {
+  display: block;
+  width: 100%;
+  height: 4.5rem;
+}
+
+.nav-ola__svg-relleno {
+  fill: var(--nav-ola-superficie);
+}
+
+.nav-ola__area-segura-mobile {
+  width: 100%;
+  height: max(0.5rem, env(safe-area-inset-bottom, 0px));
+  background-color: var(--nav-ola-superficie);
+}
+
+.nav-ola__circulo-mobile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: var(--radio-circulo);
+  background-color: var(--nav-ola-activo-circulo);
+  color: var(--nav-ola-activo-icono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--nav-ola-sombra-circulo);
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--duracion-micro, 180ms) ease;
+}
+
+.nav-ola__circulo-mobile--visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.nav-ola__slot-jugar-mobile {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 4.5rem;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.nav-ola__boton-jugar-mobile {
+  pointer-events: auto;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--nav-ola-jugar-tamano);
+  height: var(--nav-ola-jugar-tamano);
+  border-radius: var(--radio-circulo);
+  background-color: var(--nav-ola-jugar-fondo);
+  border: 2px solid var(--nav-ola-jugar-borde);
+  box-shadow: var(--nav-ola-jugar-brillo), var(--nav-ola-jugar-sombra);
+  transform: translateY(-0.75rem);
+  cursor: pointer;
+  transition: transform var(--duracion-micro, 200ms) ease, box-shadow var(--duracion-micro, 200ms) ease;
+}
+
+.nav-ola__boton-jugar-mobile:hover {
+  transform: translateY(-0.95rem) scale(1.04);
+  box-shadow: var(--nav-ola-jugar-brillo-hover), var(--nav-ola-jugar-sombra);
+}
+
+.nav-ola__boton-jugar-mobile:focus-visible {
+  outline: 3px solid var(--marca-primaria);
+  outline-offset: 3px;
+}
+
+.nav-ola__img-jugar {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
+.nav-ola__grilla-mobile {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 4.5rem;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  padding-inline: var(--ola-padding-lateral);
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+}
+
+.nav-ola__col-mobile {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-ola__col-mobile--espaciador-jugar {
+  pointer-events: none;
+}
+
+.nav-ola__enlace-mobile,
+.nav-ola__enlace-desktop {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-circulo);
+  color: var(--nav-ola-icono);
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  transition: opacity var(--duracion-micro, 180ms) ease, transform var(--duracion-micro, 180ms) ease;
+}
+
+.nav-ola__enlace-mobile {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.nav-ola__enlace-desktop {
+  width: 3rem;
+  height: 3rem;
+}
+
+.nav-ola__enlace-mobile:focus-visible,
+.nav-ola__enlace-desktop:focus-visible {
+  outline: 2px solid var(--nav-ola-icono);
+  outline-offset: 2px;
+}
+
+.nav-ola__enlace-desktop:hover {
+  transform: scale(1.08);
+}
+
+.nav-ola__enlace-desktop--deshabilitado {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.nav-ola__enlace-mobile--oculto-por-ola,
+.nav-ola__enlace-desktop--oculto-por-ola {
+  opacity: 0;
+}
+
+/* ==========================================================================
+   Desktop (>= 768px): Barra lateral IZQUIERDA
+   ========================================================================== */
+.nav-ola--desktop {
+  position: fixed;
+  left: env(safe-area-inset-left, 0px);
+  top: 0;
+  bottom: 0;
+  margin-block: auto;
+  /* centra sin transform, así GSAP puede animar x */
+  width: var(--ola-ancho-desktop);
+  height: var(--ola-alto-desktop);
+  z-index: 40;
+}
+
+@media (max-width: 767px) {
+  .nav-ola--desktop {
+    display: none;
+  }
+}
+
+.nav-ola__cuerpo-desktop {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(var(--nav-ola-sombra-desktop));
+}
+
+.nav-ola__svg-desktop {
+  position: absolute;
+  top: 0;
+  left: calc(-1 * var(--ola-sangrado-desktop, 14px));
+  width: calc(100% + var(--ola-sangrado-desktop, 14px));
+  height: 100%;
+}
+
+.nav-ola__nav-desktop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--ola-margen-desktop);
+  z-index: 5;
+}
+
+.nav-ola__item-desktop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  height: var(--ola-paso-desktop);
+}
+
+.nav-ola__circulo-desktop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  border-radius: var(--radio-circulo);
+  background-color: var(--nav-ola-activo-circulo);
+  color: var(--nav-ola-activo-icono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--nav-ola-sombra-circulo);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform;
+}
+
+.nav-ola__icono-trofeo,
+ng-icon[name="phosphorTrophyFill"] {
+  font-size: 2.15rem !important;
+  width: 2.15rem !important;
+  height: 2.15rem !important;
+}
+
+.nav-ola__circulo-desktop ng-icon[name="phosphorTrophyFill"],
+.nav-ola__circulo-mobile ng-icon[name="phosphorTrophyFill"] {
+  font-size: 2.35rem !important;
+  width: 2.35rem !important;
+  height: 2.35rem !important;
+}
+
+/* Tooltip a la derecha de la barra y del círculo */
+.nav-ola__tooltip {
+  pointer-events: none;
+  position: absolute;
+  left: calc(100% + var(--ola-circulo) / 2 + 0.75rem);
+  white-space: nowrap;
+  border-radius: var(--radio-md);
+  padding: 0.35rem 0.75rem;
+  font-family: var(--fuente-interfaz);
+  font-size: var(--tipografia-etiqueta);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background-color: var(--fondo-elevado);
+  color: var(--texto-primario);
+  border: 1px solid var(--borde-default);
+  box-shadow: var(--sombra-media);
+  opacity: 0;
+  transform: scale(0.92) translateX(-6px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  z-index: 50;
+}
+
+.nav-ola__item-desktop:hover .nav-ola__tooltip,
+.nav-ola__enlace-desktop:focus-visible+.nav-ola__tooltip {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+}
+
+.nav-ola__icono-mascara {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  background-color: currentColor;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.nav-ola__icono-mascara--activo {
+  width: 2rem;
+  height: 2rem;
+}
+
+.nav-ola__icono-mascara--desktop {
+  width: 2rem;
+  height: 2rem;
+}
+
+.nav-ola__notificacion {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radio-circulo);
+  background-color: var(--nav-ola-indicador);
+  border: 1.5px solid var(--nav-ola-superficie);
+}

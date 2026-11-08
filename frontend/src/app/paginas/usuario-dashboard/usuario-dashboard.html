@@ -1,26 +1,14 @@
 <div
-  class="relative flex min-h-dvh flex-col justify-between overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white">
+  class="dashboard-contenedor relative flex min-h-dvh flex-col justify-between overflow-x-hidden text-white">
 
   <app-header [logueado]="true" />
 
-  <!-- MENÚ LATERAL (solo desde md hacia arriba; en mobile lo reemplaza app-navegacion-inferior-mobile) -->
-  <aside aria-label="Navegación principal"
-    class="hidden md:flex md:pointer-events-auto md:fixed md:z-30 md:justify-start md:p-0 md:left-5 lg:left-7 xl:left-8 2xl:left-12 md:top-[calc(50%+24px)] md:-translate-y-1/2 md:max-h-[calc(100dvh-130px)]">
-    <nav
-      class="pointer-events-auto flex flex-row md:flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-[#072428]/95 p-1.5 shadow-alta backdrop-blur-md sm:gap-2.5 sm:p-2 md:rounded-3xl md:p-2.5 lg:gap-3 lg:p-3 xl:gap-3.5 xl:p-3.5 overflow-visible origin-bottom md:origin-left transition-transform lg:scale-105 2xl:scale-125 min-[2200px]:scale-150">
-      @for (destino of destinos; track destino.id) {
-      <app-boton-navegacion-circular [urlIcono]="destino.urlIcono ?? null" [icono]="destino.icono ?? null"
-        [etiquetaAria]="destino.nombre" [activo]="seccionActiva() === destino.id" [expandible]="true"
-        [fondoBlanco]="true" [deshabilitado]="destino.deshabilitado ?? false"
-        [insignia]="destino.id === 'intercambios' && tieneNovedadIntercambios() ? '!' : null"
-        tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
-      }
-    </nav>
-  </aside>
+  <!-- MENÚ LATERAL DESKTOP (abierto permanentemente, más grande, con forma de ola y animación de oleaje) -->
+  <!-- ZONA CENTRAL (reserva espacio para barra lateral derecha) -->
 
   <!-- ZONA CENTRAL -->
   <main
-    class="relative z-10 mx-auto flex w-full max-w-[120rem] min-h-0 flex-1 flex-col items-center justify-center px-4 pt-3 pb-nav-inferior-reserva sm:px-6 sm:pt-4 md:px-24 md:py-8 lg:px-32 xl:px-40 2xl:px-52 2xl:py-12 min-[2200px]:px-64 [--alto-abanico:min(clamp(9.5rem,46vh,46rem),64vw)] md:[--alto-abanico:min(clamp(9.5rem,46vh,46rem),52vw)]">
+    class="area-contenido-con-nav relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-4 pt-3 sm:px-6 sm:pt-4 md:py-8 2xl:py-12 [--alto-abanico:min(clamp(9.5rem,46vh,46rem),64vw)] md:[--alto-abanico:min(clamp(9.5rem,46vh,46rem),52vw)]">
 
     <!-- Contador de sobres disponibles -->
     <div
