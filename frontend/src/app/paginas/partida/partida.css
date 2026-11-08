@@ -1,7 +1,7 @@
 /* Pantalla de selección de mazo: fondo decorativo de ondas con fallback sólido */
 .pantalla-seleccion-fondo {
     background-color: var(--color-fondo-app, #0c2e2e);
-    background-image: url('/imagenes/fondos/fondito.jpeg');
+    background-image: url('/imagenes/fondos/fondo home page.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

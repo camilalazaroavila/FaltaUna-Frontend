@@ -1,24 +1,15 @@
 <div class="space-y-8">
   <app-tarjeta-muestra
-    titulo="app-navegacion-inferior-mobile"
-    descripcion="Barra inferior mobile con botón flotante izquierdo abrazado por recorte cóncavo vectorial (SVG) y cuatro íconos de línea fina. Comparativa en modo jugador y modo empresa, estado desplegado y estado ligeramente oculto."
+    titulo="app-navegacion-ola (Mobile y Desktop)"
+    descripcion="Componente unificado de navegación con efecto ola: barra inferior mobile (5 columnas, botón central Jugar al 50%, ola continua y panel 'Más') y barra lateral vertical derecha en desktop (radios redondeados hacia contenido y ola interactiva con hover)."
   >
     <div class="mb-4 flex flex-wrap items-center gap-4">
-      <label class="inline-flex cursor-pointer items-center gap-2 font-interfaz text-xs text-texto-secundario">
-        <input
-          type="checkbox"
-          class="size-4 accent-marca-primaria"
-          [checked]="mostrarEtiquetas()"
-          (change)="mostrarEtiquetas.set(!mostrarEtiquetas())"
-        />
-        Mostrar etiquetas de texto (Open Decision)
-      </label>
       <span class="font-interfaz text-xs text-texto-apagado">
         Ruta simulada activa: <code class="text-texto-primario">{{ rutaActiva() }}</code>
       </span>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
       @for (modo of modos; track modo) {
         <div
           [attr.data-modo]="modo"
@@ -28,34 +19,35 @@
             <span class="font-titulo text-sm uppercase tracking-wider text-marca-primaria">
               data-modo=&quot;{{ modo }}&quot;
             </span>
-            <span class="font-interfaz text-xs text-texto-secundario">Viewport 393 px</span>
+            <span class="font-interfaz text-xs text-texto-secundario">Orientaciones Mobile & Desktop</span>
           </div>
 
-          <!-- Estado visible completo -->
-          <div class="mx-auto w-full max-w-[24.5625rem] overflow-hidden rounded-lg border border-borde-default bg-fondo-hundido pt-10">
-            <p class="mb-4 px-4 font-interfaz text-xs text-texto-secundario">
-              Estado visible completo (tocá cualquier ícono o el botón flotante)
+          <!-- Muestra Mobile (Viewport 393 px) -->
+          <div class="mx-auto w-full max-w-[24.5625rem] overflow-hidden rounded-lg border border-borde-default bg-fondo-hundido pt-6">
+            <p class="mb-3 px-4 font-interfaz text-xs text-texto-secundario">
+              1. Orientación Mobile (5 columnas, Jugar al 50%, ola continua)
             </p>
-            <app-navegacion-inferior-mobile
+            <app-navegacion-ola
               [modoVistaPrevia]="true"
+              [vistaForzada]="'mobile'"
               [rutaActivaManual]="rutaActiva()"
-              [mostrarEtiquetas]="mostrarEtiquetas()"
-              (seleccionarItem)="seleccionar($event, modo)"
+              (seleccionarDestino)="seleccionar($event, modo)"
             />
           </div>
 
-          <!-- Estado ligeramente oculto (scroll hacia abajo) -->
-          <div class="mx-auto w-full max-w-[24.5625rem] overflow-hidden rounded-lg border border-borde-default bg-fondo-hundido pt-10">
-            <p class="mb-4 px-4 font-interfaz text-xs text-texto-secundario">
-              Estado ligeramente oculto al bajar (tocá la franja para desplegar)
+          <!-- Muestra Desktop (Barra lateral derecha con hover) -->
+          <div class="mx-auto w-full max-w-[24.5625rem] overflow-hidden rounded-lg border border-borde-default bg-fondo-hundido p-6">
+            <p class="mb-3 font-interfaz text-xs text-texto-secundario">
+              2. Orientación Desktop (Barra lateral vertical derecha con hover)
             </p>
-            <app-navegacion-inferior-mobile
-              [modoVistaPrevia]="true"
-              [rutaActivaManual]="rutaActiva()"
-              [mostrarEtiquetas]="mostrarEtiquetas()"
-              [ocultoInicial]="true"
-              (seleccionarItem)="seleccionar($event, modo)"
-            />
+            <div class="relative flex min-h-[30rem] w-full items-center justify-center rounded-lg border border-dashed border-borde-default p-4">
+              <app-navegacion-ola
+                [modoVistaPrevia]="true"
+                [vistaForzada]="'desktop'"
+                [rutaActivaManual]="rutaActiva()"
+                (seleccionarDestino)="seleccionar($event, modo)"
+              />
+            </div>
           </div>
         </div>
       }
@@ -64,4 +56,3 @@
     <app-registro-eventos slot="eventos" [registros]="registros()" />
   </app-tarjeta-muestra>
 </div>
-

@@ -4,45 +4,11 @@
   <app-header [logueado]="true" />
 
   <!-- MENÚ LATERAL DESKTOP (abierto permanentemente, más grande, con forma de ola y animación de oleaje) -->
-  <aside aria-label="Navegación principal"
-    class="sidebar-desktop hidden md:flex"
-    [style.--ola-posicion-y]="posicionOlaY()">
-    <div class="sidebar-desktop__cuerpo">
-      <!-- Pista con recorte de ola vertical y animación continua de oleaje -->
-      <div class="sidebar-desktop__ola-pista" aria-hidden="true">
-        <div class="sidebar-desktop__ola-animada">
-          <svg
-            class="sidebar-desktop__ola-svg"
-            viewBox="0 0 36 136"
-            preserveAspectRatio="none"
-            focusable="false"
-          >
-            <path
-              class="sidebar-desktop__ola-relleno"
-              d="M 0,0 C 0,22 10,34 26,44 C 36,52 36,84 26,92 C 10,102 0,114 0,136 Z"
-            />
-          </svg>
-        </div>
-      </div>
-
-      <nav class="sidebar-desktop__nav">
-        @for (destino of destinos; track destino.id) {
-          @let activo = seccionActiva() === destino.id;
-          <div class="sidebar-desktop__item" [class.sidebar-desktop__item--activo]="activo">
-            <app-boton-navegacion-circular [urlIcono]="destino.urlIcono ?? null" [icono]="destino.icono ?? null"
-              [etiquetaAria]="destino.nombre" [activo]="activo" [expandible]="true"
-              [fondoBlanco]="true" [deshabilitado]="destino.deshabilitado ?? false"
-              [insignia]="destino.id === 'intercambios' && tieneNovedadIntercambios() ? '!' : null"
-              tamanio="lg" (accion)="seleccionarSeccion(destino.id)" />
-          </div>
-        }
-      </nav>
-    </div>
-  </aside>
+  <!-- ZONA CENTRAL (reserva espacio para barra lateral derecha) -->
 
   <!-- ZONA CENTRAL -->
   <main
-    class="relative z-10 mx-auto flex w-full max-w-[120rem] min-h-0 flex-1 flex-col items-center justify-center px-4 pt-3 pb-nav-inferior-reserva sm:px-6 sm:pt-4 md:px-24 md:py-8 lg:px-32 xl:px-40 2xl:px-52 2xl:py-12 min-[2200px]:px-64 [--alto-abanico:min(clamp(9.5rem,46vh,46rem),64vw)] md:[--alto-abanico:min(clamp(9.5rem,46vh,46rem),52vw)]">
+    class="relative z-10 mx-auto flex w-full max-w-[120rem] min-h-0 flex-1 flex-col items-center justify-center px-4 pt-3 pb-nav-inferior-reserva sm:px-6 sm:pt-4 md:pl-[calc(var(--nav-ola-reserva-desktop,6rem)+1rem)] md:pr-12 md:py-8 lg:pl-[calc(var(--nav-ola-reserva-desktop,6rem)+2rem)] lg:pr-16 2xl:py-12 [--alto-abanico:min(clamp(9.5rem,46vh,46rem),64vw)] md:[--alto-abanico:min(clamp(9.5rem,46vh,46rem),52vw)]">
 
     <!-- Contador de sobres disponibles -->
     <div

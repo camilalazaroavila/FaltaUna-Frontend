@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, v
 import { Router } from '@angular/router';
 import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
-import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
 import { FlujoAperturaSobres } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
@@ -183,7 +182,6 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
   selector: 'app-usuario-dashboard',
   imports: [
     Header,
-    BotonNavegacionCircular,
     FlujoAperturaSobres,
     SobreMarca,
     Boton,

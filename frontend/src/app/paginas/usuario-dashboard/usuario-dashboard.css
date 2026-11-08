@@ -9,7 +9,7 @@
   background-color: var(--color-fondo-app, #0c2e2e);
   background-image:
     linear-gradient(180deg, rgba(7, 36, 40, 0.76) 0%, rgba(5, 23, 26, 0.88) 100%),
-    url('/imagenes/fondos/fondito.jpeg');
+    url('/imagenes/fondos/fondo home page.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -107,15 +107,18 @@
   0% {
     transform: scaleX(1) scaleY(1);
   }
+
   50% {
     transform: scaleX(1.12) scaleY(1.03) translate3d(2px, 0, 0);
   }
+
   100% {
     transform: scaleX(1) scaleY(1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .sidebar-desktop__ola-pista,
   .sidebar-desktop__item {
     transition: none !important;

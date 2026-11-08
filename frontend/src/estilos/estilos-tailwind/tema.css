@@ -369,4 +369,22 @@
     --spacing-nav-inferior-fab: var(--nav-inferior-fab-tamano);
     --spacing-nav-inferior-reserva: var(--nav-inferior-reserva);
     --shadow-nav-inferior: var(--nav-inferior-sombra);
+
+    --color-nav-ola-superficie: var(--nav-ola-superficie);
+    --color-nav-ola-icono: var(--nav-ola-icono);
+    --color-nav-ola-activo-circulo: var(--nav-ola-activo-circulo);
+    --color-nav-ola-activo-icono: var(--nav-ola-activo-icono);
+    --color-nav-ola-jugar-fondo: var(--nav-ola-jugar-fondo);
+    --color-nav-ola-jugar-borde: var(--nav-ola-jugar-borde);
+    --color-nav-ola-indicador: var(--nav-ola-indicador);
+    --shadow-nav-ola: var(--nav-ola-sombra);
+    --shadow-nav-ola-desktop: var(--nav-ola-sombra-desktop);
+    --shadow-nav-ola-circulo: var(--nav-ola-sombra-circulo);
+    --shadow-nav-ola-jugar: var(--nav-ola-jugar-brillo);
+    --radius-nav-ola: var(--nav-ola-radio-desktop);
+    --spacing-nav-ola-alto: var(--nav-ola-alto);
+    --spacing-nav-ola-ancho: var(--nav-ola-ancho-desktop);
+    --spacing-nav-ola-circulo: var(--nav-ola-circulo-tamano);
+    --spacing-nav-ola-jugar: var(--nav-ola-jugar-tamano);
+    --spacing-nav-ola-reserva: var(--nav-ola-reserva-desktop);
 }

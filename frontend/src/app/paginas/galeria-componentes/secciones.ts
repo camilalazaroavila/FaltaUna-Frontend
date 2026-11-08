@@ -113,8 +113,8 @@ export const SECCIONES: readonly SeccionGaleria[] = [
   },
   {
     id: 'navegacion-inferior-mobile',
-    titulo: 'app-navegacion-inferior-mobile',
+    titulo: 'app-navegacion-ola (Mobile y Desktop)',
     descripcion:
-      'Barra de navegación inferior mobile con botón flotante izquierdo abrazado por recorte cóncavo vectorial, en modo jugador y empresa.',
+      'Navegación con efecto ola en dos orientaciones: barra inferior mobile de 5 columnas con botón central JUGAR, y barra vertical derecha para desktop con hover.',
   },
 ] as const;
