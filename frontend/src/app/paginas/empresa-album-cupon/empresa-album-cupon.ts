@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
 import { AlbumBorrador } from '@servicios/album-borrador.service';
+import { AlbumFlujo } from '@servicios/album-flujo.service';
 import { categoriaCartaDesdeNombre } from '@modelos/carta.model';
 import { categoriaCuponDesdeCarta, type CuponDescuento } from '@modelos/cupon.model';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
@@ -24,6 +25,7 @@ const SOLO_NUMEROS = /^\d{1,3}$/;
 /**
  * Paso 4 del alta: el cupón que gana el jugador al completar el álbum y las
  * fechas en que el álbum está disponible. Muestra el cupón en vivo mientras se escribe.
+ * Al continuar se guarda el borrador del álbum (y su cupón) en el back, todavía sin pagar.
  */
 @Component({
   selector: 'app-empresa-album-cupon',
@@ -43,8 +45,10 @@ const SOLO_NUMEROS = /^\d{1,3}$/;
 })
 export class EmpresaAlbumCupon {
   protected readonly borrador = inject(AlbumBorrador);
+  private readonly flujo = inject(AlbumFlujo);
   private readonly router = inject(Router);
 
+  protected readonly enviando = signal(false);
   protected readonly hoy = aIso(new Date());
   protected readonly intentado = signal(false);
 
@@ -101,6 +105,34 @@ export class EmpresaAlbumCupon {
       toast.error('Revisá los campos marcados.');
       return;
     }
-    this.router.navigate(['/empresa/album/crear/vista-previa']);
+    if (this.enviando()) return;
+    this.enviando.set(true);
+    this.flujo.guardarBorradorYCupon().subscribe({
+      next: () => {
+        this.enviando.set(false);
+        this.router.navigate(['/empresa/album/crear/vista-previa']);
+      },
+      error: (err) => {
+        this.enviando.set(false);
+        toast.error(this.motivoDelError(err));
+      },
+    });
+  }
+
+  /**
+   * Arma el mensaje a partir de lo que devuelve el backend:
+   *  - errores de negocio: `{ mensaje }` (ManejadorErroresMiddleware)
+   *  - errores de validación del modelo (400): `{ errors: { Campo: ["texto"] } }`
+   */
+  private motivoDelError(err: unknown): string {
+    const cuerpo = (err as { error?: { mensaje?: string; message?: string; errors?: Record<string, string[]> } })?.error;
+    if (cuerpo?.mensaje) return cuerpo.mensaje;
+    if (cuerpo?.message) return cuerpo.message;
+    if (cuerpo?.errors) {
+      const textos = Object.values(cuerpo.errors).flat();
+      if (textos.length > 0) return textos.slice(0, 3).join(' ');
+    }
+    if (err instanceof Error && err.message) return err.message;
+    return 'No se pudo guardar tu álbum. Intentá de nuevo.';
   }
 }

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { rolGuard } from '@app/guardias/rol.guard';
-import { pagoAprobadoGuard } from '@app/guardias/pago-aprobado.guard';
+import { planElegidoGuard } from '@app/guardias/plan-elegido.guard';
 import { empresaRegistradaGuard } from '@app/guardias/empresa-registrada.guard';
 
 /**
@@ -226,9 +226,10 @@ export const routes: Routes = [
         redirectTo: 'album/pago/pendiente',
       },
       {
-        // Pasos 2 a 6: solo con pago aprobado (pagoAprobadoGuard).
+        // Pasos 2 a 5 (marca, identidad, cupón y vista previa): solo con un plan elegido (planElegidoGuard).
+        // El pago es el paso 6: sale del botón "Siguiente" de la vista previa y vuelve a album/pago/:resultado.
         path: 'album/crear',
-        canActivate: [pagoAprobadoGuard],
+        canActivate: [planElegidoGuard],
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'marca' },
           {

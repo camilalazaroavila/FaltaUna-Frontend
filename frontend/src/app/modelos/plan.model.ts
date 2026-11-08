@@ -7,6 +7,8 @@ export interface Plan {
   beneficios: string[];
   nivelPrecio: number;
   precio: number;
+  /** Cantidad máxima de cartas (imágenes) del álbum según el plan. Coincide con `Plan.MaxCartas` del back. */
+  maxCartas: number;
 }
 
 export const PLANES: Plan[] = [
@@ -17,6 +19,7 @@ export const PLANES: Plan[] = [
     beneficios: ['Creación de campaña.', 'Más publicidad', '12 cartas máximo'],
     nivelPrecio: 1,
     precio: 15000,
+    maxCartas: 12,
   },
   {
     id: 'standard',
@@ -25,6 +28,7 @@ export const PLANES: Plan[] = [
     beneficios: ['Creación de campaña.', 'Estadísticas', 'Más publicidad', '20 cartas máximo'],
     nivelPrecio: 2,
     precio: 35000,
+    maxCartas: 20,
   },
   {
     id: 'premium',
@@ -33,5 +37,6 @@ export const PLANES: Plan[] = [
     beneficios: ['Creación de campaña.', 'Estadísticas avanzadas', 'Publicidad prioritaria', 'Cartas ilimitadas'],
     nivelPrecio: 3,
     precio: 60000,
+    maxCartas: 30,
   },
 ];

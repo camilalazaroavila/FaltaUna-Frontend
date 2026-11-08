@@ -12,7 +12,6 @@
     @for (plan of planes; track plan.id) {
       <app-tarjeta-plan
         [plan]="plan"
-        [cargando]="cargandoPlanId() === plan.backendId"
         (elegir)="elegirPlan($event)"
       />
     }

@@ -31,9 +31,9 @@ export class EmpresaAlbumMarca {
   private readonly estado = inject(SuscripcionEstado);
   private readonly router = inject(Router);
 
-  /** Casillas de imagen según el plan pagado (12 / 20 / 30), con un tope visual. */
+  /** Casillas de imagen según el plan elegido en el paso 1 (12 / 20 / 30), con un tope visual. */
   protected readonly cantidad = computed(() => {
-    const delPlan = this.estado.ultimoPago()?.plan?.maxCartas;
+    const delPlan = this.estado.planElegido()?.maxCartas;
     return delPlan && delPlan > 0 ? Math.min(delPlan, TOPE_CARTAS_ALBUM) : CARTAS_POR_ALBUM;
   });
   protected readonly minimo = MINIMO_IMAGENES;

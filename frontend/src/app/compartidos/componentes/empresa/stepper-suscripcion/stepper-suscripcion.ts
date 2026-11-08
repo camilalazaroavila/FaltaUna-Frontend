@@ -30,5 +30,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 })
 export class StepperSuscripcion {
   readonly pasoActual = input(1);
-  readonly etiquetas = input<string[]>(['Plan', 'Marca', 'Identidad', 'Cupón', 'Vista previa', 'Listo']);
+  readonly etiquetas = input<string[]>(['Plan', 'Marca', 'Identidad', 'Cupón', 'Vista previa', 'Pago']);
 }

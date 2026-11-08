@@ -94,7 +94,7 @@
     </div>
 
     <div class="flex justify-end lg:col-span-2">
-      <button app-boton type="submit" variante="secundario" tamanio="lg">
+      <button app-boton type="submit" variante="secundario" tamanio="lg" [cargando]="enviando()">
         Siguiente
         <ng-icon name="phosphorArrowRightFill" aria-hidden="true" />
       </button>

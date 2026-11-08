@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { toast } from 'ngx-sonner';
 import { AlbumBorrador } from '@servicios/album-borrador.service';
-import { AlbumesService } from '@servicios/albumes.service';
+import { AlbumFlujo } from '@servicios/album-flujo.service';
+import { PagosService } from '@servicios/pagos.service';
 import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
 import {
   categoriaCartaDesdeNombre,
@@ -28,7 +29,8 @@ interface CartaPrevia {
 /**
  * Paso 5 del alta: vista previa del álbum tal como lo van a ver los jugadores.
  * Cada imagen se muestra como carta y la empresa puede cambiar su tipo (rareza).
- * Al confirmar se crea el álbum.
+ * Al tocar "Siguiente" se guardan los cambios y se redirige a Mercado Pago (paso 6): el álbum
+ * se publica recién cuando el pago queda aprobado.
  */
 @Component({
   selector: 'app-empresa-album-previa',
@@ -39,12 +41,14 @@ interface CartaPrevia {
 })
 export class EmpresaAlbumPrevia {
   protected readonly borrador = inject(AlbumBorrador);
-  private readonly albumes = inject(AlbumesService);
+  private readonly flujo = inject(AlbumFlujo);
+  private readonly pagos = inject(PagosService);
   private readonly estado = inject(SuscripcionEstado);
   private readonly router = inject(Router);
 
   protected readonly rarezas = RAREZAS.map((valor) => ({ valor, etiqueta: ETIQUETA_RAREZA[valor] }));
   protected readonly enviando = signal(false);
+  protected readonly planNombre = computed(() => this.estado.planElegido()?.nombre ?? '');
 
   /** URLs locales de las imágenes subidas (una por casilla; null si está vacía). */
   private readonly urls = signal<(string | null)[]>([]);
@@ -98,6 +102,9 @@ export class EmpresaAlbumPrevia {
     // Si recargó la página se pierden los archivos del paso 2: volver a empezar ahí.
     if (!this.borrador.marcaCompleta()) {
       this.router.navigate(['/empresa/album/crear/marca']);
+    } else if (this.borrador.albumId() === null) {
+      // El borrador se guarda en el back al terminar el cupón: sin eso no hay nada que pagar.
+      this.router.navigate(['/empresa/album/crear/cupon']);
     }
 
     effect((alLimpiar) => {
@@ -118,57 +125,21 @@ export class EmpresaAlbumPrevia {
     this.borrador.cambiarRareza(indice, valor as RarezaCarta);
   }
 
-  protected crearAlbum(): void {
-    const b = this.borrador;
-    const referencia = this.estado.ultimoPago()?.referenciaExterna ?? this.estado.referenciaGuardada();
-    const logo = b.logo();
-    const fotoLocal = b.fotoLocal();
-
-    if (!logo || !fotoLocal || !referencia) {
-      toast.error('Faltan datos de los pasos anteriores. Volvé a completarlos.');
-      this.router.navigate(['/empresa/album/crear/marca']);
-      return;
-    }
-
-    // Las rarezas viajan en el mismo orden que las imágenes que se envían.
-    const subidas = b.imagenes().flatMap((archivo, indice) => (archivo ? [{ archivo, indice }] : []));
+  /** Paso 5 → 6: guarda las rarezas editadas y redirige a Mercado Pago para pagar el plan. */
+  protected irAPagar(): void {
+    if (this.enviando()) return;
 
     this.enviando.set(true);
-    this.albumes
-      .crear({
-        referenciaPago: referencia,
-        nombreMarca: b.nombreMarca().trim(),
-        logo,
-        fotoLocal,
-        imagenes: subidas.map((s) => s.archivo),
-        rarezas: subidas.map((s) => b.rarezaDe(s.indice)),
-        cupon: {
-          nombre: b.cuponNombre().trim(),
-          descripcion: b.cuponDescripcion().trim(),
-          porcentajeDescuento: Number(b.cuponDescuento()),
-        },
-        descripcion: b.descripcion().trim(),
-        redSocial: b.redSocial(),
-        usuarioRedSocial: b.usuarioRedSocial().trim(),
-        emailContacto: b.emailContacto().trim(),
-        categoriaId: Number(b.categoria()),
-        fechaInicio: b.fechaInicio(),
-        fechaFin: b.fechaFin(),
-      })
-      .subscribe({
-        next: () => {
-          b.limpiar();
-          // El alta quedó completa (álbum creado): el panel ya es accesible.
-          this.estado.marcarAltaCompletada();
-          // El pago quedó consumido (un pago = un álbum): se descarta para no volver a usarlo.
-          this.estado.ultimoPago.set(null);
-          this.router.navigate(['/empresa/album/crear/listo']);
-        },
-        error: (err) => {
-          this.enviando.set(false);
-          toast.error(this.motivoDelError(err));
-        },
-      });
+    this.flujo.iniciarPago().subscribe({
+      next: (respuesta) => {
+        // El SPA se va a Mercado Pago; al volver cae en /empresa/album/pago/:resultado.
+        this.pagos.redirigirACheckout(respuesta.urlPago);
+      },
+      error: (err) => {
+        this.enviando.set(false);
+        toast.error(this.motivoDelError(err));
+      },
+    });
   }
 
   /**
@@ -184,6 +155,7 @@ export class EmpresaAlbumPrevia {
       const textos = Object.values(cuerpo.errors).flat();
       if (textos.length > 0) return textos.slice(0, 3).join(' ');
     }
-    return 'No se pudo crear el álbum. Intentá de nuevo.';
+    if (err instanceof Error && err.message) return err.message;
+    return 'No se pudo conectar con Mercado Pago. Intentá de nuevo.';
   }
 }

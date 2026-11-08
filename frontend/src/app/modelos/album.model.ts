@@ -1,5 +1,4 @@
 import { OpcionSelect } from '@compartidos/componentes/controles/campo-select/campo-select';
-import type { RarezaCarta } from '@modelos/carta.model';
 
 /** Casillas de imagen que se muestran en el álbum de marca (máximo permitido). */
 export const CARTAS_POR_ALBUM = 12;
@@ -33,31 +32,89 @@ export interface CategoriaApi {
   descripcion?: string | null;
 }
 
-/** Cupón de descuento que la marca crea en el paso 4 del alta. */
-export interface CuponAlbumSolicitud {
+/** Rareza tal como la devuelve `GET /api/empresa/albumes/rarezas`. */
+export interface RarezaApi {
+  id: number;
+  nombre: string;
+  descripcion: string | null;
+  orden: number;
+  colorFrame: string | null;
+}
+
+/** Cupón de la marca (paso 4). Va a `PUT /api/empresa/albumes/{id}/cupon`. */
+export interface CuponBorradorSolicitud {
   nombre: string;
   descripcion: string;
   porcentajeDescuento: number;
+  /** ISO con hora, ej. `2026-12-01T00:00:00`. */
+  fechaInicio: string;
+  /** ISO con hora, ej. `2026-12-31T23:59:59`. */
+  fechaVencimiento: string;
 }
 
-/** Datos que se envían al backend para crear el álbum (pasos 2 a 5 del alta). */
-export interface CrearAlbumSolicitud {
-  referenciaPago: string;
+/** Datos comunes del borrador (pasos 2 a 4). Los nombres coinciden con `CrearBorradorAlbumSolicitud` del back. */
+export interface DatosBorradorAlbum {
   nombreMarca: string;
-  nombreColeccion?: string;
-  logo: File;
-  fotoLocal: File;
-  imagenes: File[];
-  /** Rareza elegida para cada imagen, en el mismo orden que `imagenes`. */
-  rarezas: RarezaCarta[];
-  cupon: CuponAlbumSolicitud;
   descripcion: string;
+  emailContacto: string;
   redSocial: string;
   usuarioRedSocial: string;
-  emailContacto: string;
   categoriaId: number;
+  /** `YYYY-MM-DD` */
   fechaInicio: string;
+  /** `YYYY-MM-DD` */
   fechaFin: string;
+  logo: File;
+  fotoLocal: File;
+}
+
+/** `POST /api/empresa/albumes/borrador`: el plan viaja acá (paso 1) y el pago recién se hace al final. */
+export interface CrearBorradorSolicitud extends DatosBorradorAlbum {
+  planId: number;
+  imagenes: File[];
+  /** Id de rareza (del back) de cada imagen, en el mismo orden que `imagenes`. */
+  rarezaIds: number[];
+}
+
+export interface ImagenBorradorRespuesta {
+  id: number;
+  imagenUrl: string;
+  descripcion: string | null;
+  rarezaId: number | null;
+  rarezaNombre: string | null;
+  rarezaColorFrame: string | null;
+}
+
+export interface CuponBorradorRespuesta {
+  id: number;
+  nombre: string;
+  descripcion: string | null;
+  codigo: string;
+  porcentajeDescuento: number;
+  fechaInicio: string;
+  fechaVencimiento: string;
+}
+
+/** Álbum de la empresa en el flujo nuevo (`AlbumEmpresaRespuesta` del back). Estado: Borrador | Publicado. */
+export interface AlbumBorradorRespuesta {
+  id: number;
+  estado: 'Borrador' | 'Publicado';
+  puedeEditarContenido: boolean;
+  listoParaPagar: boolean;
+  nombre: string;
+  descripcion: string | null;
+  marcaId: number;
+  marcaNombre: string;
+  marcaEmailContacto: string;
+  marcaRedesSociales: string | null;
+  categoriaId: number;
+  categoriaNombre: string | null;
+  logoUrl: string | null;
+  fotoLocalUrl: string | null;
+  fechaInicio: string | null;
+  fechaFin: string | null;
+  imagenes: ImagenBorradorRespuesta[];
+  cupon: CuponBorradorRespuesta | null;
 }
 
 /** Imagen individual de la colección/álbum devuelta por la API. */
@@ -68,7 +125,7 @@ export interface ImagenAlbumRespuesta {
 }
 
 /**
- * Álbum devuelto por la API (`POST /api/Colecciones` o `GET /api/Colecciones/mis-colecciones`).
+ * Álbum devuelto por la API (`GET /api/Colecciones/mis-colecciones`).
  * Mantiene el nombre 'AlbumRespuesta' en el frontend pero mapea con la estructura del backend.
  */
 export interface AlbumRespuesta {

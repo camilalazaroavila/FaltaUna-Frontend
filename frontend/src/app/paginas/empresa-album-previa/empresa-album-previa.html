@@ -7,7 +7,7 @@
   />
 
   <p class="mt-4 max-w-xl font-interfaz text-sm font-semibold text-texto-secundario">
-    Así van a ver tu álbum los jugadores. Podés editar el tipo de cada carta.
+    Así van a ver tu álbum los jugadores. Podés editar el tipo de cada carta antes de pagar.
   </p>
 
   <section class="mt-8 flex flex-wrap items-center gap-5" aria-label="Tu marca">
@@ -72,16 +72,20 @@
     </div>
   </section>
 
-  <div class="mt-12 flex justify-end">
+  <div class="mt-12 flex flex-col items-end gap-3">
+    <p class="max-w-sm text-right font-interfaz text-xs font-semibold text-texto-secundario">
+      Al continuar te llevamos a Mercado Pago para abonar el plan {{ planNombre() }}.
+      Tu álbum se publica cuando el pago se acredite.
+    </p>
     <button
       app-boton
       type="button"
       variante="secundario"
       tamanio="lg"
       [cargando]="enviando()"
-      (click)="crearAlbum()"
+      (click)="irAPagar()"
     >
-      Crear álbum
+      Siguiente
       <ng-icon name="phosphorArrowRightFill" aria-hidden="true" />
     </button>
   </div>

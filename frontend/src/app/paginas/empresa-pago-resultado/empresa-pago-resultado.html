@@ -16,7 +16,7 @@
       Estado de tu pago
     </h1>
 
-    <app-stepper-suscripcion [pasoActual]="1" />
+    <app-stepper-suscripcion [pasoActual]="6" />
 
     <span class="hidden md:block" aria-hidden="true"></span>
   </div>
@@ -58,8 +58,8 @@
             ¡Pago acreditado con éxito!
           </h2>
           <p class="max-w-xl font-cuerpo text-sm text-texto-primario sm:text-base">
-            Tu suscripción para el plan <strong>{{ planNombre() }}</strong> ya está activa.
-            Ahora podés crear el álbum de tu marca.
+            Tu suscripción para el plan <strong>{{ planNombre() }}</strong> ya está activa y tu
+            álbum quedó publicado. Te llevamos a tu panel en unos segundos.
           </p>
         </header>
 
@@ -102,9 +102,9 @@
               type="button"
               variante="primario"
               class="w-full sm:w-auto"
-              (click)="irACrearAlbum()"
+              (click)="irAlPanel()"
             >
-              Crear mi álbum
+              Ir a mi panel
               <i class="fa-solid fa-arrow-right ml-1" aria-hidden="true"></i>
             </button>
           </footer>
@@ -225,9 +225,10 @@
               type="button"
               variante="primario"
               class="w-full sm:w-auto"
+              [cargando]="reintentandoPago()"
               (click)="reintentar()"
             >
-              Volver a elegir plan
+              {{ hayBorradorPendiente ? 'Reintentar pago' : 'Volver a elegir plan' }}
               <i class="fa-solid fa-arrow-rotate-right ml-1" aria-hidden="true"></i>
             </button>
           </footer>
