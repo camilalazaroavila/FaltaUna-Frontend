@@ -271,6 +271,8 @@ export interface EstadoPartidaApi {
   readonly segundosTotales?: number;
   readonly duracionRonda?: number;
   readonly tiempoTotalRonda?: number;
+  readonly turnoActivoUsuarioId?: number | null;
+  readonly esMiTurno?: boolean;
 }
 
 /** Respuesta liviana del heartbeat. */

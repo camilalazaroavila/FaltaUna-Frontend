@@ -165,7 +165,12 @@ export class Partida implements OnInit, OnDestroy {
       return 'La partida terminó empatada';
     }
 
-    return resultado.gane ? '¡Ganaste la partida!' : 'La partida la ganó el bot';
+    if (resultado.gane) {
+      return '¡Ganaste la partida!';
+    }
+
+    const rival = this.servicio.jugadores().rival;
+    return rival.esBot ? 'La partida la ganó el bot' : `La partida la ganó ${rival.nombre}`;
   });
 
   /** Motivo del fin de partida, con un texto legible para el jugador. */
