@@ -7,7 +7,7 @@ import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarj
 import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
-import { ETIQUETA_RAREZA } from '@modelos/carta.model';
+import { ETIQUETA_RAREZA, categoriaCartaDesdeNombre, rarezaDesdeNombre } from '@modelos/carta.model';
 
 import { AlbumesService } from '@servicios/albumes.service';
 import { AlbumRespuesta } from '@modelos/album.model';
@@ -105,7 +105,7 @@ export class EmpresaAlbumes implements OnInit {
       };
 
       const reparto = RAREZAS_ORDENADAS.map((rareza) => {
-        const cantidad = rareza === 'comun' ? totalCartas : 0;
+        const cantidad = imagenes.filter((img) => this.rarezaDeImagen(img) === rareza).length;
         return {
           rareza,
           etiqueta: ETIQUETA_RAREZA[rareza],
@@ -153,17 +153,35 @@ export class EmpresaAlbumes implements OnInit {
     const coleccionBackend = this.coleccionesBackend().find((c) => String(c.id) === album.id);
     if (!coleccionBackend) return [];
 
+    const categoria = categoriaCartaDesdeNombre(coleccionBackend.categoriaNombre);
+
     return (coleccionBackend.imagenesAlbum || []).map((img, idx) => ({
       id: String(img.id),
       nombre: img.descripcion || `${coleccionBackend.nombre} #${idx + 1}`,
       imagenUrl: img.imagenUrl,
-      rareza: 'comun',
-      categoria: 'gastronomia',
+      rareza: this.rarezaDeImagen(img),
+      categoria,
       atributoIzquierdo: 10,
       atributoDerecho: 10,
       obtenida: true,
     }));
   });
+
+  private rarezaDeImagen(img: { rarezaNombre?: string | null; rarezaId?: number | null }): RarezaCarta {
+    if (img.rarezaNombre) {
+      return rarezaDesdeNombre(img.rarezaNombre);
+    }
+    switch (img.rarezaId) {
+      case 2:
+        return 'rara';
+      case 3:
+        return 'epicarta';
+      case 4:
+        return 'legendaria';
+      default:
+        return 'comun';
+    }
+  }
 
   protected readonly kpisAlbum = computed<readonly KpiAlbum[]>(() => {
     const album = this.albumActual();

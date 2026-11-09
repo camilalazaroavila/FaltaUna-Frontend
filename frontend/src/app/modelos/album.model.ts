@@ -122,6 +122,8 @@ export interface ImagenAlbumRespuesta {
   id: number;
   imagenUrl: string;
   descripcion: string | null;
+  rarezaId?: number | null;
+  rarezaNombre?: string | null;
 }
 
 /**
@@ -139,4 +141,5 @@ export interface AlbumRespuesta {
   fechaFin: string;
   activa: boolean;
   imagenesAlbum: ImagenAlbumRespuesta[];
+  categoriaNombre?: string | null;
 }

@@ -60,6 +60,18 @@ export class Login implements OnInit {
 
   ngOnInit(): void {
     this.recienRegistrado = this.ruta.snapshot.queryParamMap.get('registrado') === '1';
+
+    const qp = this.ruta.snapshot.queryParamMap;
+    const paymentId = qp.get('payment_id') || qp.get('collection_id');
+    const externalRef = qp.get('external_reference');
+
+    if (paymentId && externalRef && this.authService.estaAutenticado() && this.authService.obtenerRol() === 'Empresa') {
+      const status = qp.get('status') || qp.get('collection_status');
+      const resultado = status === 'approved' ? 'exito' : status === 'pending' ? 'pendiente' : 'error';
+      this.router.navigate([`/empresa/album/pago/${resultado}`], {
+        queryParams: this.ruta.snapshot.queryParams,
+      });
+    }
   }
 
   iniciarSesion(): void {
@@ -78,6 +90,20 @@ export class Login implements OnInit {
       next: (respuesta) => {
         this.cargando.set(false);
         this.cdr.markForCheck();
+
+        const qp = this.ruta.snapshot.queryParamMap;
+        const paymentId = qp.get('payment_id') || qp.get('collection_id');
+        const externalRef = qp.get('external_reference');
+
+        if (paymentId && externalRef && respuesta.usuario.rol === 'Empresa') {
+          const status = qp.get('status') || qp.get('collection_status');
+          const resultado = status === 'approved' ? 'exito' : status === 'pending' ? 'pendiente' : 'error';
+          this.router.navigate([`/empresa/album/pago/${resultado}`], {
+            queryParams: this.ruta.snapshot.queryParams,
+          });
+          return;
+        }
+
         this.router.navigate([this.authService.rutaSegunRol(respuesta.usuario.rol)]);
       },
       error: (error) => {

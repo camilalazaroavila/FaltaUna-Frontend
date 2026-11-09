@@ -27,6 +27,7 @@ interface ColeccionBackend {
   activa: boolean;
   imagenesAlbum?: AlbumRespuesta['imagenesAlbum'];
   imagenes?: AlbumRespuesta['imagenesAlbum'];
+  categoriaNombre?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -60,6 +61,7 @@ export class AlbumesService {
               fechaFin: c.fechaFin,
               activa: c.activa,
               imagenesAlbum: c.imagenesAlbum || c.imagenes || [],
+              categoriaNombre: c.categoriaNombre ?? null,
             }) as AlbumRespuesta,
         ),
       ),
