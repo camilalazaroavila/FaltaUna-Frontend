@@ -211,11 +211,7 @@ export const routes: Routes = [
   },
 
   {
-    // Rol Empresa: el layout aporta header y tema claro. Al entrar (/empresa)
-    // se ve la elección de plan; el panel actual queda en /empresa/panel.
     path: 'empresa',
-    canActivate: [rolGuard],
-    data: { rolesPermitidos: ['Empresa'] },
     loadComponent: () =>
       import('@paginas/empresa-layout/empresa-layout').then((m) => m.EmpresaLayout),
     children: [
