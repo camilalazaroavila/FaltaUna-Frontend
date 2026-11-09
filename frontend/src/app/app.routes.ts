@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { rolGuard } from '@app/guardias/rol.guard';
 import { pagoAprobadoGuard } from '@app/guardias/pago-aprobado.guard';
 import { empresaRegistradaGuard } from '@app/guardias/empresa-registrada.guard';
+import { isDevMode } from '@angular/core';
 
 /**
  * Rutas de la aplicación.
@@ -15,6 +16,19 @@ import { empresaRegistradaGuard } from '@app/guardias/empresa-registrada.guard';
  */
 const cargaJuego = () =>
   import('./paginas/pantalla-carga-juego/pantalla-carga-juego').then((m) => m.PantallaCargaJuego);
+
+const rutasDev: Routes = isDevMode()
+  ? [
+      {
+        path: 'componentes',
+        title: 'Galería de componentes · Falta Una',
+        loadComponent: () =>
+          import('@paginas/galeria-componentes/galeria-componentes').then(
+            (m) => m.GaleriaComponentes,
+          ),
+      },
+    ]
+  : [];
 
 export const routes: Routes = [
   {
@@ -295,6 +309,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@paginas/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
   },
+
+  ... rutasDev,
+  { path: '**', redirectTo: 'login' },
 
   {
     path: 'componentes',
