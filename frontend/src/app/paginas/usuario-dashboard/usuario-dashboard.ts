@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
 import { FlujoAperturaSobres } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
@@ -10,7 +12,6 @@ import { SobreRespuesta } from '@modelos/sobre.model';
 import urlSobreIzquierda from '@svgs/PaqueteHuhDosColores.svg';
 import urlSobreCentro from '@svgs/Paquete1.svg';
 import urlSobreDerecha from '@svgs/Paquete2.svg';
-import urlIconPelea from '@svgs/IconPelea.svg';
 
 import urlIconoMisCartas from '@svgs/Icon_misCartas.svg';
 import urlIconoAlbum from '@svgs/Icon_Album.svg';
@@ -19,6 +20,7 @@ import urlIconoQr from '@svgs/Icon_Qr.svg';
 import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import { BotonJugar } from '@compartidos/componentes/controles/boton-jugar/boton-jugar';
 import { Confeti } from '@compartidos/componentes/confeti/confeti';
 import {
   BarajaService,
@@ -186,6 +188,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
     SobreMarca,
     Boton,
     Confeti,
+    BotonJugar,
   ],
   templateUrl: './usuario-dashboard.html',
   styleUrl: './usuario-dashboard.css',
@@ -193,6 +196,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
 })
 export class UsuarioDashboard implements OnInit {
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly sobresService = inject(SobresService);
   private readonly authService = inject(AuthService);
   private readonly intercambioService = inject(IntercambioService);
@@ -201,7 +205,11 @@ export class UsuarioDashboard implements OnInit {
 
   readonly confeti = viewChild(Confeti);
 
-
+  protected readonly rutaActual = signal(this.router.url);
+  protected readonly esVistaPrincipal = computed(() => {
+    const ruta = (this.rutaActual() || '').split('?')[0].split('#')[0];
+    return ruta === '/usuario' || ruta === '/' || ruta === '';
+  });
 
   protected readonly juegoHabilitado = true;
   protected readonly sobresCatalogo = signal<readonly SobreRespuesta[]>([]);
@@ -210,7 +218,16 @@ export class UsuarioDashboard implements OnInit {
   protected readonly modalBienvenidaMazosVisible = signal<boolean>(false);
   protected readonly mazosBienvenida = signal<readonly MazoApi[]>([]);
 
-  protected readonly urlIconPelea = urlIconPelea;
+  constructor() {
+    this.router.events
+      .pipe(
+        filter((ev): ev is NavigationEnd => ev instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((ev) => {
+        this.rutaActual.set(ev.urlAfterRedirects || ev.url);
+      });
+  }
 
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },

@@ -168,10 +168,9 @@ describe('UsuarioDashboard Component', () => {
     expect(component['sobresDisponibles']().actuales).toBe(1);
   });
 
-  it('no debe mostrar el icono de jugar mientras el juego esté deshabilitado (MVP)', () => {
-    // El botón de jugar está habilitado a propósito
+  it('debe mantener habilitado el acceso a jugar con el botón de Jaime', () => {
     expect(component['juegoHabilitado']).toBe(true);
-    expect(fixture.nativeElement.querySelector('img[alt="Abrir sobre"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('app-boton-jugar')).toBeTruthy();
   });
 
   it('debe desplegar el menú de usuario del header y permitir cerrar sesión', () => {
@@ -263,5 +262,28 @@ describe('UsuarioDashboard Component', () => {
     const contenedorReserva = fixture.nativeElement.querySelector('main.area-contenido-con-nav');
     expect(contenedorReserva).toBeTruthy();
     expect(contenedorReserva.querySelector('.abanico-sobres')).toBeTruthy();
+  });
+
+  it('debe mostrar el botón ilustrado de jugar en la vista principal y navegar a /usuario/jugar al activarlo', () => {
+    const router = TestBed.inject(Router);
+    const navigateSpy = jest.spyOn(router, 'navigateByUrl');
+
+    expect(component['esVistaPrincipal']()).toBe(true);
+    fixture.detectChanges();
+
+    const botonJugar = fixture.nativeElement.querySelector('app-boton-jugar');
+    expect(botonJugar).toBeTruthy();
+
+    component.irAJugar();
+    expect(navigateSpy).toHaveBeenCalledWith('/usuario/jugar');
+  });
+
+  it('no debe renderizar el botón ilustrado cuando la ruta activa no es la vista principal', () => {
+    component['rutaActual'].set('/usuario/jugar');
+    fixture.detectChanges();
+
+    expect(component['esVistaPrincipal']()).toBe(false);
+    const botonJugar = fixture.nativeElement.querySelector('app-boton-jugar');
+    expect(botonJugar).toBeNull();
   });
 });

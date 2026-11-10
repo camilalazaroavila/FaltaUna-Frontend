@@ -1,133 +1,57 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
-  ElementRef,
   booleanAttribute,
   computed,
-  inject,
   input,
   output,
-  viewChild,
+  signal,
 } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
-import { GsapService } from '@servicios/gsap.service';
+
+export const URL_JAIME_REPOSO = '/imagenes/gatito/Gato%20astuto%20con%20cartas%20%20para%20jugar.png';
+export const URL_JAIME_HOVER = '/imagenes/gatito/Gato%20tramposo%20invita%20a%20jugar.png';
 
 /**
- * CTA hero: la accion de mayor peso visual de la aplicacion.
+ * Botón ilustrado de Jaime para acceder a jugar.
  *
- * A diferencia de `app-boton`, que se mantiene liviano para uso masivo, este
- * control encapsula su microinteraccion: respiracion del halo verde al pasar
- * el cursor y rebote elastico al presionar. Ambas se desactivan por completo
- * cuando el usuario pidio reducir el movimiento.
+ * En reposo muestra a Jaime con las cartas coleccionables, y en hover, foco
+ * por teclado o toque activo cambia a la variante "¿jugamos?".
  *
- * El host solo aporta su participacion en el layout; toda la capa visual vive
- * en el `<button>` interno para conservar la semantica nativa de `disabled`.
+ * Conserva semántica nativa de `<button>`, soporte de deshabilitado, anillo de foco,
+ * compatibilidad con movimiento reducido y respaldo visual si falla la carga.
  */
 @Component({
   selector: 'app-boton-jugar',
   imports: [NgIcon],
   templateUrl: './boton-jugar.html',
+  styleUrl: './boton-jugar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'inline-flex',
   },
 })
-export class BotonJugar implements AfterViewInit {
-  private readonly gsapServicio = inject(GsapService);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly elementoRef = inject<ElementRef<HTMLElement>>(ElementRef);
-
-  private readonly referenciaBoton = viewChild.required<ElementRef<HTMLButtonElement>>('boton');
-  private readonly referenciaHalo = viewChild<ElementRef<HTMLElement>>('halo');
-
-  /** Opacidad de reposo del halo cuando el usuario no interactua con el control. */
-  private readonly opacidadReposo = 0.4;
-
+export class BotonJugar {
   readonly texto = input('JUGAR');
   readonly subtexto = input<string>();
   readonly deshabilitado = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly ariaLabel = input<string>('Jugar');
 
   readonly accion = output<void>();
 
+  protected readonly urlReposo = URL_JAIME_REPOSO;
+  protected readonly urlHover = URL_JAIME_HOVER;
+  protected readonly jaimeImagenError = signal(false);
+
   protected readonly haySubtexto = computed(() => !!this.subtexto()?.trim());
-  protected readonly movimientoPermitido = this.gsapServicio.movimientoReducido;
 
-  ngAfterViewInit(): void {
-    const ambito = this.elementoRef.nativeElement;
-    const boton = this.referenciaBoton().nativeElement;
-    const halo = this.referenciaHalo()?.nativeElement;
-
-    // Sin halo no hay nada que animar: el control sigue siendo utilizable.
-    if (!halo) {
-      return;
+  alHacerClic(): void {
+    if (!this.deshabilitado()) {
+      this.accion.emit();
     }
+  }
 
-    const { gsap } = this.gsapServicio;
-    let haloRespirando = false;
-
-    // El ambito del contexto es el host, de modo que la reversion tambien
-    // retira los listeners de puntero registrados dentro del callback.
-    this.gsapServicio.crearContexto(ambito, () => {
-      const animado = () => this.movimientoPermitido() && !this.deshabilitado();
-
-      const respirar = () => {
-        if (!animado() || haloRespirando) {
-          return;
-        }
-
-        haloRespirando = true;
-        gsap.fromTo(
-          halo,
-          { opacity: this.opacidadReposo },
-          {
-            opacity: 1,
-            duration: 0.9,
-            ease: 'sine.inOut',
-            repeat: -1,
-            yoyo: true,
-            overwrite: true,
-            onInterrupt: () => (haloRespirando = false),
-          }
-        );
-      };
-
-      gsap.set(halo, { opacity: this.opacidadReposo });
-
-      boton.addEventListener('pointerenter', () => {
-        if (!animado()) {
-          return;
-        }
-
-        respirar();
-        gsap.to(boton, { y: -3, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
-      });
-
-      boton.addEventListener('pointerleave', () => {
-        gsap.killTweensOf(halo);
-        gsap.to(halo, { opacity: this.opacidadReposo, duration: 0.3, overwrite: true });
-        gsap.to(boton, { y: 0, duration: 0.25, ease: 'power2.out', overwrite: 'auto' });
-      });
-
-      boton.addEventListener('pointerdown', () => {
-        if (!animado()) {
-          return;
-        }
-
-        gsap.fromTo(
-          boton,
-          { scale: 1 },
-          {
-            scale: 0.94,
-            duration: 0.09,
-            yoyo: true,
-            repeat: 1,
-            ease: 'power2.out',
-            overwrite: true,
-          }
-        );
-      });
-    }, this.destroyRef);
+  alFallarCarga(): void {
+    this.jaimeImagenError.set(true);
   }
 }

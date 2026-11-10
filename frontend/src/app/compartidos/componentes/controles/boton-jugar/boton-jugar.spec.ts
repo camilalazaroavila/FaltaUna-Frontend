@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideIcons } from '@ng-icons/core';
-import { NgIcon } from '@ng-icons/core';
-import { BotonJugar } from './boton-jugar';
+import { BotonJugar, URL_JAIME_REPOSO, URL_JAIME_HOVER } from './boton-jugar';
 
 const ICONO_PRUEBA = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
 
@@ -13,12 +12,13 @@ const ICONO_PRUEBA = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
   template: `
     <app-boton-jugar id="jugar-default" (accion)="registrar()" />
     <app-boton-jugar
-      id="jugar-subtexto"
+      id="jugar-custom-label"
+      ariaLabel="Entrar a jugar"
       texto="Abrir sobre"
       subtexto="2 gratis hoy"
       (accion)="registrar()"
     />
-    <app-boton-jugar id="jugar-bloqueado" texto="Partido" [deshabilitado]="true" />
+    <app-boton-jugar id="jugar-bloqueado" [deshabilitado]="true" />
   `,
 })
 class TestHostComponent {
@@ -45,32 +45,32 @@ describe('BotonJugar Component', () => {
     fixture.detectChanges();
   });
 
-  it('debe renderizar el CTA hero con tipografía display y marca primaria', () => {
+  it('debe renderizar el botón con aria-label "Jugar" por defecto y estructura accesible', () => {
     const btnEl = boton('jugar-default');
 
     expect(btnEl.type).toBe('button');
-    expect(btnEl.classList.contains('bg-marca-primaria')).toBe(true);
-    expect(btnEl.classList.contains('text-marca-sobre-primaria')).toBe(true);
-    expect(btnEl.classList.contains('font-titulo')).toBe(true);
-    expect(btnEl.classList.contains('shadow-alta')).toBe(true);
-    expect(btnEl.textContent).toContain('JUGAR');
+    expect(btnEl.getAttribute('aria-label')).toBe('Jugar');
 
-    const icono = fixture.debugElement.query(By.css('#jugar-default ng-icon'))
-      .componentInstance as NgIcon;
-    expect(icono.name()).toBe('phosphorPlayFill');
+    const imagenes = btnEl.querySelectorAll('img');
+    expect(imagenes.length).toBe(2);
+
+    const imgReposo = imagenes[0];
+    const imgHover = imagenes[1];
+
+    expect(imgReposo.getAttribute('src')).toBe(URL_JAIME_REPOSO);
+    expect(imgReposo.getAttribute('alt')).toBe('');
+    expect(imgReposo.getAttribute('aria-hidden')).toBe('true');
+    expect(imgReposo.classList.contains('boton-jugar__img--reposo')).toBe(true);
+
+    expect(imgHover.getAttribute('src')).toBe(URL_JAIME_HOVER);
+    expect(imgHover.getAttribute('alt')).toBe('');
+    expect(imgHover.getAttribute('aria-hidden')).toBe('true');
+    expect(imgHover.classList.contains('boton-jugar__img--hover')).toBe(true);
   });
 
-  it('debe usar el texto y subtexto proporcionados', () => {
-    const btnEl = boton('jugar-subtexto');
-
-    expect(btnEl.textContent).toContain('Abrir sobre');
-    expect(btnEl.textContent).toContain('2 gratis hoy');
-
-    expect(boton('jugar-default').textContent).not.toContain('undefined');
-  });
-
-  it('debe montar el halo animable solo cuando se permite el movimiento', () => {
-    expect(boton('jugar-default').querySelector('[aria-hidden="true"]')).not.toBeNull();
+  it('debe permitir un aria-label personalizado', () => {
+    const btnEl = boton('jugar-custom-label');
+    expect(btnEl.getAttribute('aria-label')).toBe('Entrar a jugar');
   });
 
   it('debe bloquear el control de forma nativa cuando está deshabilitado', () => {
@@ -82,9 +82,23 @@ describe('BotonJugar Component', () => {
 
   it('debe emitir accion al hacer clic y no hacerlo cuando está deshabilitado', () => {
     boton('jugar-default').click();
-    boton('jugar-subtexto').click();
+    boton('jugar-custom-label').click();
     boton('jugar-bloqueado').click();
 
     expect(fixture.componentInstance.eventos).toEqual(['accion', 'accion']);
+  });
+
+  it('debe mostrar el respaldo visual con texto si ocurre un error de carga de imagen', () => {
+    const componente = fixture.debugElement.query(By.css('#jugar-default'))
+      .componentInstance as BotonJugar;
+
+    componente.alFallarCarga();
+    fixture.detectChanges();
+
+    const btnEl = boton('jugar-default');
+    const respaldo = btnEl.querySelector('.boton-jugar__respaldo');
+
+    expect(respaldo).toBeTruthy();
+    expect(respaldo?.textContent).toContain('JUGAR');
   });
 });
