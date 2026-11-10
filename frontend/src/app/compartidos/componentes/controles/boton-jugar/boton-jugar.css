@@ -2,7 +2,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(4.5rem, 18vw, 7rem);
+  /* Ancho fluido con clamp, mucho más grande para mobile y desktop */
+  width: clamp(7.5rem, 30vw, 11rem);
   min-width: 44px;
   min-height: 44px;
   aspect-ratio: 1 / 1;
@@ -10,13 +11,13 @@
 
 @media (min-width: 768px) {
   :host {
-    width: clamp(8.5rem, 14vw, 15rem);
+    width: clamp(12.5rem, 18vw, 19rem);
   }
 }
 
 @media (min-width: 1536px) {
   :host {
-    width: clamp(12rem, 15vw, 18rem);
+    width: clamp(16rem, 20vw, 24rem);
   }
 }
 
@@ -30,20 +31,24 @@
 .boton-jugar__caja {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
 .boton-jugar__img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center;
+  object-position: right center;
   will-change: opacity, transform;
 }
 
-/* Reposo por defecto: cartas visible, jugamos oculto */
+/* Reposo por defecto: cartas visible, compensando el margen transparente derecho
+   para que Jaime quede pegado al borde de la pared y con tamaño visual equivalente */
 .boton-jugar__img--reposo {
   opacity: 1;
-  transition: opacity 0.2s ease-out;
+  transform: translateX(14%) scale(1.18);
+  transform-origin: right center;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 }
 
 .boton-jugar__img--hover {
@@ -59,6 +64,7 @@
 
   .boton-jugar:hover:not(:disabled) .boton-jugar__img--reposo {
     opacity: 0;
+    transform: translateX(14%) scale(1.22);
   }
 
   .boton-jugar:hover:not(:disabled) .boton-jugar__img--hover {
@@ -107,8 +113,11 @@
 /* Reducción de movimiento */
 @media (prefers-reduced-motion: reduce) {
   .boton-jugar,
-  .boton-jugar__img {
+  .boton-jugar__img,
+  .boton-jugar__img--reposo {
     transition: none !important;
+  }
+  .boton-jugar {
     transform: none !important;
   }
 }
