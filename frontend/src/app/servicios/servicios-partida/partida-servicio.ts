@@ -190,6 +190,9 @@ interface EstadoReal {
   readonly puntosPropio: number;
   readonly puntosRival: number;
   readonly listo: boolean;
+  readonly rivalListo: boolean;
+  readonly esBotRival: boolean;
+  readonly esMiTurno: boolean;
   readonly nombrePropio: string;
   readonly avatarPropio: string | null;
   readonly nombreRival: string;
@@ -261,6 +264,7 @@ export class PartidaServicio {
   private ultimaJugadaTimestamp = 0;
   private pendienteFinalizar = false;
   private secuenciaJugadas = 0;
+  private ultimoPollingTimestamp = 0;
   /**
    * Registro inmutable del lugar físico ('izquierda' | 'derecha') y slot (0..5)
    * de cada carta en la mesa durante la partida (solución transitoria de estabilidad).
@@ -381,7 +385,7 @@ export class PartidaServicio {
       return 'resolviendo';
     }
 
-    if (estado.listo || estado.fase === 'esperando') {
+    if (estado.listo) {
       return 'esperando';
     }
 
@@ -453,9 +457,16 @@ export class PartidaServicio {
 
     return {
       propio: { nombre: estado.nombrePropio, avatarUrl: estado.avatarPropio },
-      rival: { nombre: estado.nombreRival, avatarUrl: estado.avatarRival, esBot: true },
+      rival: { nombre: estado.nombreRival, avatarUrl: estado.avatarRival, esBot: estado.esBotRival },
     };
   });
+
+  readonly rivalListo = computed(() => this.estadoRealSignal()?.rivalListo ?? false);
+  readonly rivalEsBot = computed(() => this.estadoRealSignal()?.esBotRival ?? true);
+  readonly propioListo = computed(() => this.estadoRealSignal()?.listo ?? false);
+  readonly esMiTurno = computed(() =>
+    this.modoRealSignal() ? (this.estadoRealSignal()?.esMiTurno ?? true) : true,
+  );
 
   readonly manoPropia = computed<readonly Carta[]>(() =>
     this.modoRealSignal() ? (this.estadoRealSignal()?.mano ?? []) : this.mock.manoPropia(),
@@ -502,6 +513,14 @@ export class PartidaServicio {
           return;
         }
 
+        this.estadoRealSignal.set(null);
+        this.resultadoSignal.set(null);
+        this.resultadoFinalSignal.set(null);
+        this.historialRondasSignal.set([]);
+        this.deltasSignal.set(DELTAS_VACIOS);
+        this.rondaCerradaSignal.set(false);
+        this.ubicacionFijaCartas.clear();
+        this.cartasConfirmadasRonda.clear();
         this.modoRealSignal.set(true);
         this.aplicarEstado(estado);
         this.guardarPartidaId(estado.partidaId);
@@ -564,6 +583,14 @@ export class PartidaServicio {
           return of(false);
         }
 
+        this.estadoRealSignal.set(null);
+        this.resultadoSignal.set(null);
+        this.resultadoFinalSignal.set(null);
+        this.historialRondasSignal.set([]);
+        this.deltasSignal.set(DELTAS_VACIOS);
+        this.rondaCerradaSignal.set(false);
+        this.ubicacionFijaCartas.clear();
+        this.cartasConfirmadasRonda.clear();
         this.modoRealSignal.set(true);
         this.aplicarEstado(estado);
         this.guardarPartidaId(estado.partidaId);
@@ -1658,9 +1685,10 @@ export class PartidaServicio {
       return;
     }
 
-    const anterior = this.estadoRealSignal();
+    const estadoPrevio = this.estadoRealSignal();
+    const anterior = estadoPrevio && estadoPrevio.partidaId === estado.partidaId ? estadoPrevio : null;
 
-    // Blindado contra respuestas antiguas
+    // Blindado contra respuestas antiguas de la misma partida
     if (anterior && estado.ronda < anterior.ronda) {
       console.warn('[PartidaServicio] Se descartó respuesta con ronda menor', {
         recibido: estado.ronda,
@@ -1925,6 +1953,9 @@ export class PartidaServicio {
       puntosPropio: estado.jugadorPropio.puntosTotales,
       puntosRival: estado.rival.puntosTotales,
       listo: estado.jugadorPropio.listo,
+      rivalListo: estado.rival.listo,
+      esBotRival: estado.rival.esBot,
+      esMiTurno: estado.esMiTurno ?? true,
       nombrePropio: estado.jugadorPropio.nombre,
       avatarPropio: estado.jugadorPropio.avatarUrl,
       nombreRival: estado.rival.nombre,
@@ -2838,7 +2869,16 @@ export class PartidaServicio {
 
     const estado = this.estadoRealSignal();
 
-    if (!estado || estado.terminada || estado.listo) {
+    if (!estado || estado.terminada) {
+      return;
+    }
+
+    if (estado.listo) {
+      // Si el jugador ya confirmó y está esperando al rival, aceleramos la consulta
+      // para que cuando el rival confirme la resolución sea inmediata (cada 2 segundos).
+      if (!this.sincronizando && Date.now() - this.ultimoPollingTimestamp >= 2000) {
+        this.consultarEstado();
+      }
       return;
     }
 
@@ -2908,6 +2948,7 @@ export class PartidaServicio {
     const secuenciaConsulta = this.secuenciaJugadas;
 
     this.sincronizando = true;
+    this.ultimoPollingTimestamp = Date.now();
 
     this.partidaApi
       .obtenerEstado(partidaId)

@@ -211,17 +211,69 @@
           </svg>
         </button>
 
-        <div class="flex items-center gap-1.5">
-          <button
-            #botonReintentar
-            type="button"
-            app-boton
-            variante="primario"
-            tamanio="sm"
-            (click)="jugarOtraVez.emit()"
-          >
-            Jugar otra vez
-          </button>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          @if (esRivalBot()) {
+            <button
+              #botonReintentar
+              type="button"
+              app-boton
+              variante="primario"
+              tamanio="sm"
+              (click)="jugarOtraVez.emit()"
+            >
+              Jugar otra vez
+            </button>
+          } @else if (revanchaCancelada()) {
+            <span class="text-etiqueta font-bold text-error px-2 py-1 rounded-lg bg-error/15 border border-error-borde">
+              Revancha rechazada
+            </span>
+          } @else if (esperandoRivalRevancha()) {
+            <span class="text-etiqueta font-bold text-marca-primaria px-2 py-1">
+              Esperando al rival...
+            </span>
+            <button
+              type="button"
+              app-boton
+              variante="secundario"
+              tamanio="sm"
+              (click)="cancelarRevancha.emit()"
+            >
+              Cancelar
+            </button>
+          } @else if (revanchaSolicitada()) {
+            <span class="text-etiqueta font-bold text-exito px-2 py-1">
+              ¡Tu rival pide revancha!
+            </span>
+            <button
+              type="button"
+              app-boton
+              variante="primario"
+              tamanio="sm"
+              (click)="jugarOtraVez.emit()"
+            >
+              Aceptar revancha
+            </button>
+            <button
+              type="button"
+              app-boton
+              variante="secundario"
+              tamanio="sm"
+              (click)="cancelarRevancha.emit()"
+            >
+              Rechazar
+            </button>
+          } @else {
+            <button
+              #botonReintentar
+              type="button"
+              app-boton
+              variante="primario"
+              tamanio="sm"
+              (click)="jugarOtraVez.emit()"
+            >
+              Pedir revancha
+            </button>
+          }
           <button
             type="button"
             app-boton

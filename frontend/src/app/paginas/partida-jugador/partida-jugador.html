@@ -1,20 +1,117 @@
 <div class="flex min-h-dvh flex-col overflow-x-hidden bg-fondo-combate font-interfaz text-texto-primario">
   <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario/jugar" />
 
-  <main class="flex flex-1 items-center justify-center px-4 py-8 sm:px-8 bg-fondo-combate">
-    <app-caja variante="elevada" sombra="media" padding="lg" radio="lg" class="max-w-2xl">
-      <h1 app-titulo tamano="lg">Partida contra otro jugador</h1>
-
-      <p app-texto variante="secundario">
-        Todavía no está disponible. El backend sólo expone el flujo de partida contra el bot: para
-        jugar contra otra persona falta el endpoint que confirma el fin de ronda y la espera de la
-        confirmación del rival.
-      </p>
-
-      <div class="flex flex-wrap items-center gap-3">
-        <a app-boton variante="primario" routerLink="/juego/ia">Jugar contra el bot</a>
-        <a app-boton variante="fantasma" routerLink="/usuario/jugar">Volver al menú</a>
+  <main class="flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-8">
+    <div class="w-full max-w-2xl">
+      <!-- Botón Volver -->
+      <div class="mb-4">
+        <a
+          routerLink="/usuario/jugar"
+          class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] uppercase text-texto-secundario transition-colors hover:text-marca-primaria"
+        >
+          <svg
+            class="h-4 w-6"
+            viewBox="0 0 28 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M27 8H2M9 1L2 8l7 7" />
+          </svg>
+          Volver a modos de juego
+        </a>
       </div>
-    </app-caja>
+
+      <app-caja variante="elevada" sombra="media" padding="lg" radio="lg">
+        <h1 app-titulo tamano="lg" class="text-center mb-2">⚔️ Partida 1 vs 1 Online</h1>
+        <p app-texto variante="secundario" class="text-center mb-6">
+          Buscá un oponente en tiempo real para enfrentarte con tu mazo.
+        </p>
+
+        <!-- Selección de Mazo -->
+        <div class="mb-6 rounded-lg bg-fondo-app/60 p-4 border border-borde-suave">
+          <label class="block text-sm font-semibold mb-2 text-texto-primario">
+            🃏 Mazo seleccionado:
+          </label>
+
+          @if (cargandoMazos()) {
+            <p app-texto variante="secundario">Cargando tus barajas...</p>
+          } @else if (mazosValidos().length === 0) {
+            <div class="rounded-md bg-alerta-fondo p-3 text-alerta-texto text-sm">
+              ⚠️ No tenés ningún mazo completo con 12 cartas. Andá a 
+              <a routerLink="/usuario/baraja" class="underline font-bold">Mis Mazos</a> para armar uno antes de jugar.
+            </div>
+          } @else {
+            <select
+              [ngModel]="mazoSeleccionado()"
+              (ngModelChange)="mazoSeleccionado.set(+$event)"
+              [disabled]="salaService.buscandoRival()"
+              class="w-full rounded-md border border-borde-control bg-fondo-control px-3 py-2.5 text-texto-primario focus:border-marca-primaria focus:outline-none disabled:opacity-50"
+            >
+              @for (mazo of mazosValidos(); track mazo.id) {
+                <option [ngValue]="mazo.id">{{ mazo.nombre }} (12 cartas)</option>
+              }
+            </select>
+          }
+        </div>
+
+        <!-- Alerta de Error -->
+        @if (salaService.error()) {
+          <div class="mb-6 rounded-md bg-error-fondo/20 border border-error-borde p-3 text-error-texto text-sm">
+            ❌ {{ salaService.error() }}
+          </div>
+        }
+
+        <!-- ESTADO 1: BUSCANDO OPONENTE (EMPAREJAMIENTO AUTOMÁTICO) -->
+        @if (salaService.buscandoRival()) {
+          <div class="flex flex-col items-center justify-center text-center py-8 px-4 rounded-xl bg-fondo-app/90 border-2 border-marca-primaria">
+            <div class="relative flex items-center justify-center mb-4">
+              <span class="absolute size-20 rounded-full bg-marca-primaria/30 animate-ping"></span>
+              <span class="relative text-5xl">🔍</span>
+            </div>
+
+            <h2 class="text-2xl font-bold mb-2 text-marca-primaria">Buscando oponente...</h2>
+            <p app-texto variante="secundario" class="text-sm max-w-md mb-6">
+              Te emparejaremos automáticamente con el próximo jugador que busque partida con su mazo.
+            </p>
+
+            <button
+              type="button"
+              app-boton
+              variante="secundario"
+              (click)="cancelarBusqueda()"
+            >
+              Cancelar búsqueda
+            </button>
+          </div>
+        }
+
+        <!-- ESTADO 2: MENÚ DE ACCIONES (POR DEFECTO) -->
+        @else {
+          <!-- Acción Principal: Buscar Partida Automática -->
+          <div class="flex flex-col items-center rounded-xl bg-fondo-app/50 p-6 border border-marca-primaria/40 text-center">
+            <h3 class="text-xl font-bold mb-1 text-texto-primario">Partida Rápida (1 vs 1)</h3>
+            <p app-texto variante="secundario" class="text-sm mb-5">
+              Emparejate automáticamente con cualquier otro jugador conectado.
+            </p>
+
+            <button
+              type="button"
+              app-boton
+              variante="primario"
+              tamanio="lg"
+              [disabled]="!puedeAccionar()"
+              (click)="buscarPartida()"
+              class="w-full sm:w-auto sm:min-w-[280px] text-lg font-bold py-3.5"
+            >
+              {{ salaService.cargando() ? 'Conectando...' : '🎮 Buscar Partida' }}
+            </button>
+          </div>
+        }
+      </app-caja>
+    </div>
   </main>
 </div>

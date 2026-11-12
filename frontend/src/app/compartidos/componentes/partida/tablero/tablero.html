@@ -9,6 +9,12 @@
         tamanio="lg"
       />
 
+      @if (servicio.rivalListo() && !servicio.terminada() && !enConteo()) {
+        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-0.5 font-titulo text-xs font-bold text-emerald-400 animate-pulse shadow-sm">
+          ✅ Listo
+        </span>
+      }
+
       <div
         class="rival-mano" appTooltipPartida="Cartas en la mano del rival. Muestra cuántas cartas tiene listas para jugar."
         role="img"
@@ -134,7 +140,7 @@
         data-tutorial="mano"
         [cartas]="servicio.manoPropia()"
         [referencia]="host"
-        [bloquearArrastre]="bloquearArrastre()"
+        [bloquearArrastre]="bloquearArrastre() || servicio.propioListo()"
         (ver)="alVerCarta($event)"
         (arrastreInicio)="alIniciarArrastre($event)"
         (arrastreFin)="alTerminarArrastre($event)"
@@ -142,7 +148,12 @@
       />
     </div>
 
-    <div class="area-control">
+    <div class="area-control flex flex-col items-end">
+      @if (servicio.rivalListo() && !servicio.propioListo() && !servicio.terminada() && !enConteo()) {
+        <span class="mb-1 text-[0.7rem] sm:text-xs font-bold text-marca-primaria bg-marca-primaria/10 px-2 py-0.5 rounded border border-marca-primaria/30 animate-pulse text-right">
+          ⚡ Tu rival ya terminó su turno
+        </span>
+      }
       <app-control-turno
         data-tutorial="control-turno"
         [turno]="servicio.turno()"
