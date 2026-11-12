@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PlanEmpresa } from '@modelos/landing-empresa.model';
-import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { PlanCard } from '@compartidos/componentes/empresa/plan-card/plan-card';
 
 @Component({
   selector: 'app-plans-section',
   standalone: true,
-  imports: [RouterLink, Boton, PlanCard],
+  imports: [RouterLink, PlanCard],
   host: { class: 'block' },
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './plans-section.html',

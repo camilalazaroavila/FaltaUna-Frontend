@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { ModoAuth } from '@compartidos/componentes/layout/auth-layout/auth-modo';
 import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
-import urlLogoOscuro from '@svgs/Imagotipo_Alt.svg';
+import urlLogoEmpresa from '@svgs/Imagotipo_Empresa.svg';
 
 /** TODO: reemplazar por la URL real del Instagram de Falta Una. */
 const URL_INSTAGRAM = 'https://www.instagram.com/falta__una/';
@@ -19,15 +19,8 @@ interface EnlaceFooter {
  *
  * Se organiza en bloques (marca, navegación y cuenta) más una franja inferior
  * con el copyright y el descargo. Toma el `modo` del contexto para elegir el
- * logo (claro sobre superficie oscura de jugador, oscuro sobre superficie clara
- * de empresa) y para arrastrar ese mismo modo al login/registro.
- *
- * Los colores usan exclusivamente tokens semánticos de landing (superficies
- * oscuras y claras ya definidas para la landing, independientes de data-modo):
- * el componente selecciona el juego de tokens que corresponde a su `modo`.
- *
- * Los enlaces legales/de ayuda se omiten a propósito: todavía no existen
- * rutas reales (Open Decision).
+ * logo (claro sobre superficie oscura de jugador, Imagotipo_Empresa sobre superficie
+ * crema clara de empresa) y para arrastrar ese mismo modo al login/registro.
  */
 @Component({
   selector: 'app-footer',
@@ -44,28 +37,28 @@ export class Footer {
   private readonly esEmpresa = computed(() => this.modo() === 'empresa');
 
   protected readonly urlLogo = computed(() =>
-    this.esEmpresa() ? urlLogoOscuro : urlLogoClaro,
+    this.esEmpresa() ? urlLogoEmpresa : urlLogoClaro,
   );
 
   protected readonly urlInstagram = URL_INSTAGRAM;
 
   protected readonly anio = new Date().getFullYear();
 
-  /** Superficie, texto y borde superior del pie según la landing. */
+  /** Superficie y texto del pie según la landing (sin borde superior por tener ondas decorativas). */
   protected readonly clasesPie = computed(() =>
     this.esEmpresa()
-      ? 'border-t border-landing-claro-borde bg-landing-claro-superficie text-landing-claro-texto'
-      : 'border-t border-landing-oscuro-borde bg-landing-oscuro-fondo text-landing-oscuro-texto',
+      ? 'bg-[#FCEFE0] text-[#0A2E36]'
+      : 'bg-landing-oscuro-fondo text-landing-oscuro-texto',
   );
 
   /** Color de los textos secundarios (descripción, títulos y textos legales). */
   protected readonly clasesTextoTenue = computed(() =>
-    this.esEmpresa() ? 'text-landing-claro-texto/75' : 'text-landing-oscuro-tenue',
+    this.esEmpresa() ? 'text-[#3D555A]' : 'text-landing-oscuro-tenue',
   );
 
-  /** Color del divisor de la franja inferior. */
+  /** Color del divisor de la franja inferior (mantiene únicamente la línea divisoria del copyright). */
   protected readonly claseBorde = computed(() =>
-    this.esEmpresa() ? 'border-landing-claro-borde' : 'border-landing-oscuro-borde',
+    this.esEmpresa() ? 'border-[#E3CEB5]' : 'border-landing-oscuro-borde',
   );
 
   protected readonly descripcion =

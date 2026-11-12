@@ -56,7 +56,7 @@
     class="bg-landing-oscuro-fondo py-14 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40 text-landing-oscuro-texto">
     <div class="contenedor-landing flex flex-col items-center">
       <h2
-        class="font-titulo font-bold text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl min-[1920px]:text-7xl text-landing-acento text-center tracking-tight text-balance">
+        class="font-titulo font-black text-3xl min-[400px]:text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl min-[1440px]:text-7xl 2xl:text-7xl text-landing-acento text-center tracking-tight uppercase">
         ¿CÓMO FUNCIONA?
       </h2>
 
@@ -96,7 +96,7 @@
   <section class="bg-landing-claro-fondo py-14 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40 text-landing-claro-texto">
     <div class="contenedor-landing flex flex-col items-center">
       <h2
-        class="font-titulo font-bold text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl min-[1920px]:text-7xl text-landing-claro-texto text-center tracking-tight text-balance">
+        class="font-titulo font-black text-3xl min-[400px]:text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl min-[1440px]:text-7xl 2xl:text-7xl text-landing-claro-texto text-center tracking-tight uppercase">
         ¿Y SI SOY UN NEGOCIO?
       </h2>
 
@@ -166,22 +166,21 @@
       class="pointer-events-none absolute right-0 bottom-6 sm:bottom-8 md:bottom-10 lg:bottom-12 xl:bottom-14 hidden md:block w-28 md:w-36 lg:w-44 xl:w-52 2xl:w-60 max-w-[18vw] z-10 select-none"
     />
     <div class="contenedor-landing flex flex-col items-center">
-      <!-- Este bloque mide lo mismo que el título (más su padding lateral).
-           La lista usa w-0 min-w-full: no ensancha el bloque, pero lo ocupa completo. -->
-      <div class="w-fit max-w-full">
-        <h2 id="faq-titulo"
-          class="px-3 sm:px-8 lg:px-12 xl:px-16 font-titulo font-bold text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl min-[1920px]:text-7xl text-landing-acento text-center tracking-tight text-balance">
+
+
+
+      <h2 id="faq-titulo"
+          class="font-titulo font-black text-3xl min-[400px]:text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl min-[1440px]:text-7xl 2xl:text-7xl text-landing-acento text-center tracking-tight uppercase sm:whitespace-nowrap">
           PREGUNTAS FRECUENTES
         </h2>
 
-        <div class="faq-lista-acordeon mt-8 sm:mt-10 md:mt-14 flex flex-col gap-3 sm:gap-4 w-0 min-w-full">
+        <div class="faq-lista-acordeon mt-8 sm:mt-12 md:mt-16 flex flex-col gap-4 sm:gap-5 w-full max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto">
           @for (item of preguntas; track item.pregunta) {
           <app-acordeon-pregunta [pregunta]="item.pregunta" [pildora]="true">
             {{ item.respuesta }}
           </app-acordeon-pregunta>
           }
         </div>
-      </div>
     </div>
   </section>
 
