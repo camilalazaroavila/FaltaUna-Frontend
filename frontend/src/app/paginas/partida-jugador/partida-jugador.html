@@ -28,7 +28,7 @@
       <app-caja variante="elevada" sombra="media" padding="lg" radio="lg">
         <h1 app-titulo tamano="lg" class="text-center mb-2">⚔️ Partida 1 vs 1 Online</h1>
         <p app-texto variante="secundario" class="text-center mb-6">
-          Buscá un oponente en tiempo real o desafiá a un amigo con código privado.
+          Buscá un oponente en tiempo real para enfrentarte con tu mazo.
         </p>
 
         <!-- Selección de Mazo -->
@@ -48,7 +48,7 @@
             <select
               [ngModel]="mazoSeleccionado()"
               (ngModelChange)="mazoSeleccionado.set(+$event)"
-              [disabled]="salaService.buscandoRival() || !!salaService.codigoSala()"
+              [disabled]="salaService.buscandoRival()"
               class="w-full rounded-md border border-borde-control bg-fondo-control px-3 py-2.5 text-texto-primario focus:border-marca-primaria focus:outline-none disabled:opacity-50"
             >
               @for (mazo of mazosValidos(); track mazo.id) {
@@ -89,45 +89,10 @@
           </div>
         }
 
-        <!-- ESTADO 2: ESPERANDO RIVAL CON CÓDIGO PRIVADO -->
-        @else if (salaService.codigoSala(); as codigo) {
-          <div class="flex flex-col items-center justify-center text-center py-6 px-4 rounded-xl bg-fondo-app/80 border-2 border-marca-primaria/40">
-            <span class="inline-block animate-pulse text-4xl mb-3">📡</span>
-            <h2 class="text-xl font-bold mb-1">¡Sala privada lista!</h2>
-            <p app-texto variante="secundario" class="mb-4">
-              Pasale este código a tu amigo para que entre a tu sala:
-            </p>
-
-            <div class="flex items-center gap-3 bg-fondo-control px-6 py-3 rounded-lg border border-marca-primaria mb-4">
-              <span class="font-mono text-3xl font-extrabold tracking-widest text-marca-primaria">
-                {{ codigo }}
-              </span>
-              <button
-                type="button"
-                app-boton
-                variante="secundario"
-                (click)="copiarCodigo()"
-                class="text-xs"
-              >
-                {{ copiado() ? '¡Copiado!' : 'Copiar' }}
-              </button>
-            </div>
-
-            <button
-              type="button"
-              app-boton
-              variante="fantasma"
-              (click)="cancelarSala()"
-            >
-              Cancelar sala
-            </button>
-          </div>
-        }
-
-        <!-- ESTADO 3: MENÚ DE ACCIONES (POR DEFECTO) -->
+        <!-- ESTADO 2: MENÚ DE ACCIONES (POR DEFECTO) -->
         @else {
           <!-- Acción Principal: Buscar Partida Automática -->
-          <div class="mb-6 flex flex-col items-center rounded-xl bg-fondo-app/50 p-6 border border-marca-primaria/40 text-center">
+          <div class="flex flex-col items-center rounded-xl bg-fondo-app/50 p-6 border border-marca-primaria/40 text-center">
             <h3 class="text-xl font-bold mb-1 text-texto-primario">Partida Rápida (1 vs 1)</h3>
             <p app-texto variante="secundario" class="text-sm mb-5">
               Emparejate automáticamente con cualquier otro jugador conectado.
@@ -144,67 +109,6 @@
             >
               {{ salaService.cargando() ? 'Conectando...' : '🎮 Buscar Partida' }}
             </button>
-          </div>
-
-          <!-- Opción Secundaria: Salas Privadas con Código -->
-          <div class="border-t border-borde-suave pt-4">
-            <button
-              type="button"
-              (click)="alternarSalasPrivadas()"
-              class="flex w-full items-center justify-between py-2 text-sm text-texto-secundario transition-colors hover:text-texto-primario"
-            >
-              <span class="font-semibold">O jugar partida privada con código</span>
-              <span>{{ verSalasPrivadas() ? '▲' : '▼' }}</span>
-            </button>
-
-            @if (verSalasPrivadas()) {
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <!-- Crear con Código -->
-                <div class="rounded-lg bg-fondo-app/30 p-4 border border-borde-suave flex flex-col justify-between">
-                  <div>
-                    <h4 class="font-bold text-sm mb-1 text-marca-primaria">Crear sala privada</h4>
-                    <p app-texto variante="secundario" class="text-xs mb-4">
-                      Genera un código para compartir.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    app-boton
-                    variante="secundario"
-                    [disabled]="!puedeAccionar()"
-                    (click)="crearSala()"
-                    class="w-full text-xs"
-                  >
-                    Crear Sala
-                  </button>
-                </div>
-
-                <!-- Unirse con Código -->
-                <div class="rounded-lg bg-fondo-app/30 p-4 border border-borde-suave flex flex-col justify-between">
-                  <div>
-                    <h4 class="font-bold text-sm mb-1 text-marca-primaria">Unirse con código</h4>
-                    <input
-                      type="text"
-                      placeholder="Código (ej: A9X2B)"
-                      maxlength="6"
-                      [ngModel]="codigoParaUnirse()"
-                      (ngModelChange)="codigoParaUnirse.set($event)"
-                      class="w-full rounded-md border border-borde-control bg-fondo-control px-2.5 py-1.5 text-center font-mono text-sm font-bold uppercase tracking-wider text-texto-primario focus:border-marca-primaria focus:outline-none mb-3"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    app-boton
-                    variante="secundario"
-                    [disabled]="!puedeAccionar() || !codigoParaUnirse().trim()"
-                    (click)="unirseASala()"
-                    class="w-full text-xs"
-                  >
-                    Unirse
-                  </button>
-                </div>
-              </div>
-            }
           </div>
         }
       </app-caja>

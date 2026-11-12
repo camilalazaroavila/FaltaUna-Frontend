@@ -49,8 +49,13 @@ export class PantallaResultado implements AfterViewInit, OnDestroy {
   readonly ultimoResultado = input<ResultadoRonda | null>(null);
   readonly modoIncrustado = input<boolean>(false);
   readonly expandidoInicial = input<boolean>(false);
+  readonly esRivalBot = input<boolean>(true);
+  readonly esperandoRivalRevancha = input<boolean>(false);
+  readonly revanchaSolicitada = input<boolean>(false);
+  readonly revanchaCancelada = input<boolean>(false);
 
   readonly jugarOtraVez = output<void>();
+  readonly cancelarRevancha = output<void>();
   readonly volverAlMenu = output<void>();
 
   private readonly panelRef = viewChild<ElementRef<HTMLElement>>('panelRef');

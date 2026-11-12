@@ -24,7 +24,7 @@ Permite que dos usuarios reales puedan enfrentarse en línea de punta a punta, y
   - Expone señales reactivas (`codigoSala`, `buscandoRival`, `partidaIniciada`, `cargando`, `error`) y los métodos `buscarPartida`, `cancelarBusqueda`, `crearSala`, `unirseASala` y `desconectar`.
 - **[Modificación]** `frontend/src/app/paginas/partida-jugador/partida-jugador.ts` y `partida-jugador.html`:
   - Carga los mazos del usuario (`BarajaService.obtenerMazos`), filtra los mazos completos de 12 cartas (`mazosValidos`) y preselecciona el primero disponible.
-  - Implementa las vistas de **Partida Rápida (1 vs 1)**, **Buscando oponente** y **Salas privadas con código** (crear sala con copiado al portapapeles o unirse ingresando código).
+  - Implementa las vistas de **Partida Rápida (1 vs 1)** y **Buscando oponente** en el lobby.
   - Al recibir el evento `PartidaIniciada`, guarda `faltauna_partida_activa` en `localStorage` y redirige automáticamente al tablero de juego (`/juego/ia`).
 - **[Modificación]** `frontend/src/app/paginas/pantalla-inicial-juego/pantalla-inicial-juego.ts`:
   - Desbloquea la opción **Partida contra jugador** (`/juego/jugador`) en el menú de selección de modo.

@@ -14,9 +14,12 @@ export class SalaJuegoService {
   private readonly auth = inject(AuthService);
   private hubConnection: signalR.HubConnection | null = null;
 
-  readonly codigoSala = signal<string | null>(null);
   readonly buscandoRival = signal<boolean>(false);
   readonly partidaIniciada = signal<PartidaIniciadaEvento | null>(null);
+  readonly esperandoRivalRevancha = signal<boolean>(false);
+  readonly revanchaSolicitada = signal<boolean>(false);
+  readonly revanchaCancelada = signal<boolean>(false);
+  readonly revanchaIniciada = signal<PartidaIniciadaEvento | null>(null);
   readonly cargando = signal<boolean>(false);
   readonly error = signal<string | null>(null);
 
@@ -53,20 +56,44 @@ export class SalaJuegoService {
         this.cargando.set(false);
       });
 
-      this.hubConnection.on('SalaCreada', (codigo: string) => {
-        this.codigoSala.set(codigo);
-        this.cargando.set(false);
-      });
-
       this.hubConnection.on('PartidaIniciada', (evento: PartidaIniciadaEvento) => {
         this.buscandoRival.set(false);
         this.partidaIniciada.set(evento);
         this.cargando.set(false);
       });
 
+      this.hubConnection.on('EsperandoRivalRevancha', () => {
+        this.esperandoRivalRevancha.set(true);
+        this.revanchaSolicitada.set(false);
+        this.revanchaCancelada.set(false);
+        this.cargando.set(false);
+      });
+
+      this.hubConnection.on('RevanchaSolicitada', () => {
+        this.revanchaSolicitada.set(true);
+        this.revanchaCancelada.set(false);
+        this.cargando.set(false);
+      });
+
+      this.hubConnection.on('RevanchaCancelada', () => {
+        this.esperandoRivalRevancha.set(false);
+        this.revanchaSolicitada.set(false);
+        this.revanchaCancelada.set(true);
+        this.cargando.set(false);
+      });
+
+      this.hubConnection.on('RevanchaIniciada', (evento: PartidaIniciadaEvento) => {
+        this.esperandoRivalRevancha.set(false);
+        this.revanchaSolicitada.set(false);
+        this.revanchaCancelada.set(false);
+        this.revanchaIniciada.set(evento);
+        this.cargando.set(false);
+      });
+
       this.hubConnection.on('ErrorSala', (mensaje: string) => {
         this.error.set(mensaje);
         this.buscandoRival.set(false);
+        this.esperandoRivalRevancha.set(false);
         this.cargando.set(false);
       });
 
@@ -107,34 +134,51 @@ export class SalaJuegoService {
     this.cargando.set(false);
   }
 
-  async crearSala(mazoId: number): Promise<void> {
+  async unirseACanalPartida(partidaId: number): Promise<void> {
+    await this.conectar();
+    this.cargando.set(false);
+    try {
+      await this.hubConnection!.invoke('UnirseACanalPartida', Number(partidaId));
+    } catch {
+      // Ignorar errores de suscripción silenciosa
+    }
+  }
+
+  async solicitarRevancha(partidaId: number, mazoId: number): Promise<void> {
     await this.conectar();
     this.cargando.set(true);
     this.error.set(null);
 
     try {
-      await this.hubConnection!.invoke('CrearSala', mazoId);
+      await this.hubConnection!.invoke('SolicitarRevancha', Number(partidaId), Number(mazoId));
     } catch (err: unknown) {
-      const mensaje = err instanceof Error ? err.message : 'Error al crear la sala.';
+      const mensaje = err instanceof Error ? err.message : 'Error al solicitar la revancha.';
       this.error.set(mensaje);
+      this.esperandoRivalRevancha.set(false);
       this.cargando.set(false);
       throw err;
     }
   }
 
-  async unirseASala(codigo: string, mazoId: number): Promise<void> {
-    await this.conectar();
-    this.cargando.set(true);
-    this.error.set(null);
-
-    try {
-      await this.hubConnection!.invoke('UnirseASala', codigo.trim().toUpperCase(), mazoId);
-    } catch (err: unknown) {
-      const mensaje = err instanceof Error ? err.message : 'Error al unirse a la sala.';
-      this.error.set(mensaje);
-      this.cargando.set(false);
-      throw err;
+  async cancelarRevancha(partidaId: number): Promise<void> {
+    if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
+      try {
+        await this.hubConnection.invoke('CancelarRevancha', Number(partidaId));
+      } catch {
+        // Ignorar si ya se cerró
+      }
     }
+    this.esperandoRivalRevancha.set(false);
+    this.revanchaSolicitada.set(false);
+    this.revanchaCancelada.set(true);
+    this.cargando.set(false);
+  }
+
+  limpiarEstadoRevancha(): void {
+    this.esperandoRivalRevancha.set(false);
+    this.revanchaSolicitada.set(false);
+    this.revanchaCancelada.set(false);
+    this.revanchaIniciada.set(null);
   }
 
   desconectar(): void {
@@ -145,9 +189,9 @@ export class SalaJuegoService {
       this.hubConnection.stop();
       this.hubConnection = null;
     }
-    this.codigoSala.set(null);
     this.buscandoRival.set(false);
     this.partidaIniciada.set(null);
+    this.limpiarEstadoRevancha();
     this.cargando.set(false);
     this.error.set(null);
   }

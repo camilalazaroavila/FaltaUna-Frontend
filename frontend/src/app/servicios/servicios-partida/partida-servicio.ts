@@ -513,6 +513,14 @@ export class PartidaServicio {
           return;
         }
 
+        this.estadoRealSignal.set(null);
+        this.resultadoSignal.set(null);
+        this.resultadoFinalSignal.set(null);
+        this.historialRondasSignal.set([]);
+        this.deltasSignal.set(DELTAS_VACIOS);
+        this.rondaCerradaSignal.set(false);
+        this.ubicacionFijaCartas.clear();
+        this.cartasConfirmadasRonda.clear();
         this.modoRealSignal.set(true);
         this.aplicarEstado(estado);
         this.guardarPartidaId(estado.partidaId);
@@ -575,6 +583,14 @@ export class PartidaServicio {
           return of(false);
         }
 
+        this.estadoRealSignal.set(null);
+        this.resultadoSignal.set(null);
+        this.resultadoFinalSignal.set(null);
+        this.historialRondasSignal.set([]);
+        this.deltasSignal.set(DELTAS_VACIOS);
+        this.rondaCerradaSignal.set(false);
+        this.ubicacionFijaCartas.clear();
+        this.cartasConfirmadasRonda.clear();
         this.modoRealSignal.set(true);
         this.aplicarEstado(estado);
         this.guardarPartidaId(estado.partidaId);
@@ -1669,9 +1685,10 @@ export class PartidaServicio {
       return;
     }
 
-    const anterior = this.estadoRealSignal();
+    const estadoPrevio = this.estadoRealSignal();
+    const anterior = estadoPrevio && estadoPrevio.partidaId === estado.partidaId ? estadoPrevio : null;
 
-    // Blindado contra respuestas antiguas
+    // Blindado contra respuestas antiguas de la misma partida
     if (anterior && estado.ronda < anterior.ronda) {
       console.warn('[PartidaServicio] Se descartó respuesta con ronda menor', {
         recibido: estado.ronda,

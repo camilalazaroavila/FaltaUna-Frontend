@@ -36,10 +36,6 @@ export class PartidaJugador implements OnInit, OnDestroy {
   protected readonly mazoSeleccionado = signal<number | null>(null);
   protected readonly cargandoMazos = signal<boolean>(true);
 
-  protected readonly codigoParaUnirse = signal<string>('');
-  protected readonly copiado = signal<boolean>(false);
-  protected readonly verSalasPrivadas = signal<boolean>(false);
-
   protected readonly mazosValidos = computed(() =>
     this.mazos().filter((m) => m.completo || m.cartas?.length === 12),
   );
@@ -52,6 +48,10 @@ export class PartidaJugador implements OnInit, OnDestroy {
     effect(() => {
       const evento = this.salaService.partidaIniciada();
       if (evento) {
+        const mazoId = this.mazoSeleccionado();
+        if (mazoId) {
+          localStorage.setItem('faltauna_ultimo_mazo', String(mazoId));
+        }
         localStorage.setItem('faltauna_partida_activa', String(evento.partidaId));
         this.router.navigate(['/juego/ia']);
       }
@@ -96,45 +96,5 @@ export class PartidaJugador implements OnInit, OnDestroy {
 
   protected async cancelarBusqueda(): Promise<void> {
     await this.salaService.cancelarBusqueda();
-  }
-
-  protected async crearSala(): Promise<void> {
-    const mazoId = this.mazoSeleccionado();
-    if (!mazoId) return;
-
-    try {
-      await this.salaService.crearSala(mazoId);
-    } catch {
-      // Error manejado en salaService
-    }
-  }
-
-  protected async unirseASala(): Promise<void> {
-    const mazoId = this.mazoSeleccionado();
-    const codigo = this.codigoParaUnirse().trim().toUpperCase();
-    if (!mazoId || !codigo) return;
-
-    try {
-      await this.salaService.unirseASala(codigo, mazoId);
-    } catch {
-      // Error manejado en salaService
-    }
-  }
-
-  protected copiarCodigo(): void {
-    const codigo = this.salaService.codigoSala();
-    if (codigo) {
-      navigator.clipboard.writeText(codigo);
-      this.copiado.set(true);
-      setTimeout(() => this.copiado.set(false), 2000);
-    }
-  }
-
-  protected cancelarSala(): void {
-    this.salaService.desconectar();
-  }
-
-  protected alternarSalasPrivadas(): void {
-    this.verSalasPrivadas.update((v) => !v);
   }
 }
