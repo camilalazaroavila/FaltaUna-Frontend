@@ -1,8 +1,11 @@
 import { Component, signal } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { BarajaService } from '@servicios/baraja.service';
+import { SalaJuegoService } from '@servicios/sala-juego.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
 import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
 import type { ResultadoRonda } from '@modelos/partida.model';
@@ -41,6 +44,7 @@ describe('Partida', () => {
         propio: { nombre: 'Vos', avatarUrl: null },
         rival: { nombre: 'Bot', avatarUrl: null },
       }),
+      rivalEsBot: signal(true),
       anuncio: anuncioSignal,
       reconectar: jest.fn().mockReturnValue(of(true)),
       detenerSincronizacion: jest.fn(),
@@ -48,6 +52,17 @@ describe('Partida', () => {
       abandonar: jest.fn(),
       rendirse: jest.fn(),
       iniciarContraBot: jest.fn().mockReturnValue(of(true)),
+    };
+
+    const salaMock = {
+      esperandoRivalRevancha: signal(false),
+      revanchaSolicitada: signal(false),
+      revanchaCancelada: signal(false),
+      revanchaIniciada: signal(null),
+      unirseACanalPartida: jest.fn().mockResolvedValue(undefined),
+      solicitarRevancha: jest.fn().mockResolvedValue(undefined),
+      cancelarRevancha: jest.fn().mockResolvedValue(undefined),
+      limpiarEstadoRevancha: jest.fn(),
     };
 
     const barajaMock = {
@@ -58,7 +73,10 @@ describe('Partida', () => {
       imports: [Partida],
       providers: [
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: PartidaServicio, useValue: servicioMock },
+        { provide: SalaJuegoService, useValue: salaMock },
         { provide: BarajaService, useValue: barajaMock },
       ],
     })
