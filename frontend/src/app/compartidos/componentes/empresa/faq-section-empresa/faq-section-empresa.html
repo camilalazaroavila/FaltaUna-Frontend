@@ -1,16 +1,28 @@
 <section
-  class="faq-seccion-empresa"
+  class="faq-seccion-empresa text-[#0A2E36]"
   aria-labelledby="faq-empresa-titulo"
 >
-  <div class="contenedor-landing">
+  <!-- ONDA SUPERIOR: Planes (#675679) -> FAQ -->
+  <div class="landing-onda-svg" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path
+        d="M0,0 L1440,0 L1440,40 C1200,120 920,0 640,90 C400,140 180,20 0,70 Z"
+        fill="#675679"
+      />
+    </svg>
+  </div>
+
+  <div class="contenedor-landing py-12 sm:py-16 md:py-24 lg:py-32 xl:py-36">
+    <!-- Título centrado en violeta corporativo (tamaño intermedio ideal en 1440px+) -->
     <h2
       id="faq-empresa-titulo"
-      class="faq-seccion-empresa__titulo"
+      class="font-titulo font-black text-3xl min-[400px]:text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl min-[1440px]:text-7xl 2xl:text-7xl text-[#675679] text-center tracking-tight uppercase"
     >
-      Preguntas frecuentes
+      PREGUNTAS FRECUENTES
     </h2>
 
-    <div class="faq-seccion-empresa__grilla">
+    <!-- Una sola columna centrada de preguntas más amplia -->
+    <div class="mt-8 sm:mt-12 md:mt-16 max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto flex flex-col gap-4 sm:gap-5">
       @for (item of preguntas(); track item.pregunta; let indice = $index) {
         <app-faq-item-empresa
           [pregunta]="item.pregunta"
@@ -20,5 +32,15 @@
         />
       }
     </div>
+  </div>
+
+  <!-- ONDA INFERIOR: FAQ -> Quiénes Somos (#675679) -->
+  <div class="landing-onda-svg" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path
+        d="M0,120 L1440,120 L1440,35 C1160,110 880,-10 580,85 C340,140 160,15 0,60 Z"
+        fill="#675679"
+      />
+    </svg>
   </div>
 </section>
