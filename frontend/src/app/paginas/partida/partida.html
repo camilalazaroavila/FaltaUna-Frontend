@@ -30,14 +30,14 @@
       }
     </main>
   } @else {
-    <!-- Sin partida activa: mostrar header global y pantalla de selección de mazo -->
-    <main class="relative flex flex-1 flex-col justify-center px-4 pt-2 pb-8 sm:px-8 lg:px-12 overflow-y-auto">
-      <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 py-4">
-        <!-- Componente de volver existente -->
+    <!-- Sin partida activa: pantalla de selección de mazo escalable (sin ilustración del bot) -->
+    <main class="relative flex flex-1 flex-col justify-start sm:justify-center px-4 pt-3 pb-24 sm:pb-8 sm:px-8 lg:px-12 overflow-y-auto">
+      <div class="mx-auto flex w-full max-w-4xl flex-col gap-3 py-2 sm:py-4">
+        <!-- Barra de navegación y volver -->
         <div>
           <a
             routerLink="/usuario/jugar"
-            class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] uppercase transition-colors hover:text-marca-primaria"
+            class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] uppercase transition-colors hover:text-marca-primaria min-h-[44px]"
           >
             <svg
               class="h-4 w-6"
@@ -55,142 +55,100 @@
           </a>
         </div>
 
-        <div
-          class="flex flex-col items-center justify-between gap-8 lg:flex-row lg:items-center lg:gap-12"
+        <!-- Contenedor principal de selección de mazo -->
+        <app-caja
+          variante="elevada"
+          sombra="alta"
+          padding="lg"
+          radio="lg"
+          class="w-full border border-borde-default bg-fondo-elevado"
         >
-          <!-- Formulario a la izquierda -->
-          <div class="w-full max-w-xl flex-1">
-            <app-caja
-              variante="elevada"
-              sombra="alta"
-              padding="lg"
-              radio="lg"
-              class="w-full border border-borde-default bg-fondo-elevado"
-            >
-              <div class="flex flex-col gap-4">
-                <div class="flex flex-col gap-1.5">
-                  <h1 app-titulo tamano="lg">Partida contra el bot</h1>
-
-                  <p app-texto variante="secundario">
-                    Bajá tus cartas a las zonas, sumá poder y cerrá el turno antes de que se agoten los
-                    segundos de la ronda. El bot juega su turno cuando vos finalizás.
-                  </p>
-
-                  <p app-texto variante="secundario" tamano="menor">
-                    Para arrancar necesitás un mazo completo de 12 cartas. Si todavía no lo tenés, armalo en
-                    "Mi baraja".
-                  </p>
-                </div>
-
-                @if (servicio.error(); as mensaje) {
-                  <app-caja variante="error" padding="sm">
-                    <p app-texto variante="heredar" tamano="menor">{{ mensaje }}</p>
-                  </app-caja>
-                }
-
-                @if (errorMazos(); as mensajeMazos) {
-                  <app-caja variante="error" padding="sm">
-                    <p app-texto variante="heredar" tamano="menor">{{ mensajeMazos }}</p>
-                  </app-caja>
-                } @else if (cargandoMazos()) {
-                  <div class="flex items-center gap-3 py-2">
-                    <div
-                      class="size-5 animate-spin rounded-full border-2 border-marca-primaria border-t-transparent"
-                      aria-hidden="true"
-                    ></div>
-                    <p app-texto variante="secundario" tamano="menor">Cargando tus mazos…</p>
-                  </div>
-                } @else if (mazosCompletos().length === 0) {
-                  <app-caja variante="advertencia" padding="md" class="flex flex-col gap-3">
-                    <p app-texto variante="heredar" tamano="menor">
-                      No tenés un mazo completo. Armá uno con 12 cartas para jugar.
-                    </p>
-                    <a
-                      app-boton
-                      variante="secundario"
-                      tamanio="sm"
-                      routerLink="/usuario/mi-baraja"
-                      class="self-start"
-                    >
-                      Ir a Mi baraja
-                    </a>
-                  </app-caja>
-                } @else {
-                  <div class="flex flex-col gap-2">
-                    <span class="font-titulo text-xs tracking-wider text-texto-secundario uppercase">
-                      Elegí tu baraja
-                    </span>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      @for (mazo of mazosCompletos(); track mazo.id) {
-                        <button
-                          type="button"
-                          class="group relative flex flex-col items-start gap-1.5 rounded-2xl border-2 p-3 text-left transition-all cursor-pointer"
-                          [class.border-marca-primaria]="mazoSeleccionado() === mazo.id"
-                          [class.bg-marca-primaria/15]="mazoSeleccionado() === mazo.id"
-                          [class.shadow-[4px_4px_0_0_var(--color-amarillo-logo,#d5ff5f)]]="mazoSeleccionado() === mazo.id"
-                          [class.border-white/10]="mazoSeleccionado() !== mazo.id"
-                          [class.bg-superficie]="mazoSeleccionado() !== mazo.id"
-                          [class.hover:border-white/30]="mazoSeleccionado() !== mazo.id"
-                          (click)="mazoSeleccionado.set(mazo.id)"
-                        >
-                          <div class="flex w-full items-center justify-between">
-                            <span class="font-titulo text-sm uppercase tracking-wide text-texto-primario group-hover:text-marca-acento">
-                              {{ mazo.nombre }}
-                            </span>
-                            <span class="rounded-full bg-marca-primaria/20 px-2 py-0.5 text-[10px] font-bold text-marca-primaria">
-                              12 cartas
-                            </span>
-                          </div>
-                          @if (mazo.cartas && mazo.cartas.length > 0) {
-                            <div class="flex items-center -space-x-2 pt-0.5">
-                              @for (c of mazo.cartas.slice(0, 4); track c.cartaId) {
-                                <div class="size-7 rounded-md border border-white/20 overflow-hidden bg-fondo-superficie shadow-xs shrink-0">
-                                  @if (c.imagenUrl) {
-                                    <img [src]="c.imagenUrl" [alt]="c.nombre" class="size-full object-cover" />
-                                  } @else {
-                                    <div class="size-full bg-marca-primaria/30 flex items-center justify-center font-bold text-[9px] text-white">
-                                      {{ c.poder }}
-                                    </div>
-                                  }
-                                </div>
-                              }
-                            </div>
-                          }
-                        </button>
-                      }
-                    </div>
-                  </div>
-                }
-
-                <div class="flex flex-wrap items-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    app-boton
-                    variante="primario"
-                    [cargando]="servicio.cargando()"
-                    [disabled]="!puedeJugar()"
-                    (click)="jugar()"
-                  >
-                    Jugar contra el bot
-                  </button>
-                  <a app-boton variante="fantasma" routerLink="/usuario/jugar">Volver al menú</a>
-                </div>
+          <div class="flex flex-col gap-4">
+            <!-- Encabezado con título e instrucciones -->
+            <div class="flex flex-col gap-1.5 border-b border-white/10 pb-3">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h1 app-titulo tamano="lg">Partida contra el bot</h1>
+                <a
+                  routerLink="/usuario/mi-baraja"
+                  class="text-xs font-titulo uppercase tracking-wider text-marca-primaria hover:underline inline-flex items-center gap-1 self-start sm:self-auto min-h-[32px]"
+                >
+                  Gestionar en Mi baraja ↗
+                </a>
               </div>
-            </app-caja>
-          </div>
 
-          <!-- Mascota a la derecha: gatito y robot jugando la partida -->
-          <div
-            class="flex w-full max-w-xs flex-1 items-center justify-center sm:max-w-sm lg:max-w-md xl:max-w-xl lg:justify-end"
-          >
-            <img
-              src="/imagenes/gatito/gatito y robot.png"
-              alt=""
-              class="mascota-imagen h-auto w-full max-w-[18rem] object-contain sm:max-w-[22rem] lg:max-w-[32rem] xl:max-w-[38rem] drop-shadow-cartoon select-none pointer-events-none"
-              loading="lazy"
+              <p app-texto variante="secundario">
+                Bajá tus cartas a las zonas, sumá poder y cerrá el turno antes de que se agoten los segundos de la ronda.
+              </p>
+              <p app-texto variante="secundario" tamano="menor">
+                Elegí un mazo reglamentario de 12 cartas (5 comunes, 4 raras, 2 épicas y 1 legendaria).
+              </p>
+            </div>
+
+            <!-- Avisos globales de error de partida -->
+            @if (servicio.error(); as mensaje) {
+              <app-caja variante="error" padding="sm">
+                <p app-texto variante="heredar" tamano="menor">{{ mensaje }}</p>
+              </app-caja>
+            }
+
+            <!-- Selector de Mazos escalable (tarjetas, búsqueda, filtro, teclado y a11y) -->
+            <app-selector-mazos
+              [mazos]="mazos()"
+              [mazoSeleccionadoId]="mazoSeleccionado()"
+              [cargando]="cargandoMazos()"
+              [error]="errorMazos()"
+              (mazoSeleccionadoChange)="seleccionarMazo($event)"
+              (reintentar)="cargarMazos()"
             />
+
+            <!-- Aviso si el mazo elegido no es reglamentario -->
+            @if (mazoSeleccionadoDetalle(); as mazoActual) {
+              @if (!mazoSeleccionadoEsReglamentario()) {
+                <app-caja variante="advertencia" padding="sm">
+                  <p app-texto variante="heredar" tamano="menor">
+                    El mazo "{{ mazoActual.nombre }}" no está completo. Seleccioná un mazo con 12 cartas para jugar.
+                  </p>
+                </app-caja>
+              }
+            }
+
+            <!-- Botones de acción en escritorio / flujo normal -->
+            <div class="hidden sm:flex flex-wrap items-center gap-3 pt-2 border-t border-white/10">
+              <button
+                type="button"
+                app-boton
+                variante="primario"
+                [cargando]="servicio.cargando()"
+                [disabled]="!puedeJugar()"
+                (click)="jugar()"
+                class="min-h-[44px]"
+              >
+                Jugar contra el bot
+              </button>
+              <a app-boton variante="fantasma" routerLink="/usuario/jugar" class="min-h-[44px]">
+                Volver al menú
+              </a>
+            </div>
           </div>
-        </div>
+        </app-caja>
+      </div>
+
+      <!-- Barra de acción flotante inferior en Mobile (siempre visible con safe-area) -->
+      <div class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-fondo-elevado/95 backdrop-blur-md border-t border-borde-default p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] flex items-center gap-2 shadow-alta">
+        <button
+          type="button"
+          app-boton
+          variante="primario"
+          [cargando]="servicio.cargando()"
+          [disabled]="!puedeJugar()"
+          (click)="jugar()"
+          class="flex-1 min-h-[44px]"
+        >
+          Jugar contra el bot
+        </button>
+        <a app-boton variante="fantasma" routerLink="/usuario/jugar" class="min-h-[44px] shrink-0">
+          Volver
+        </a>
       </div>
     </main>
   }

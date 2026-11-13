@@ -27,17 +27,17 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
       <!-- VARIANTE LOGUEADO: en mobile (< md) adopta la misma silueta curva al borde con sombra amarilla que la barra inferior -->
       <header class="relative z-40 m-0 mb-2 md:m-5">
         <div
-          class="flex items-center justify-between gap-2 rounded-t-none rounded-b-[1.5rem] bg-landing-oscuro-fondo px-5 py-3.5 text-landing-oscuro-texto shadow-[0_3px_0_0_var(--nav-inferior-borde),0_8px_18px_rgba(0,0,0,0.32)] sm:gap-4 md:rounded-md md:px-4 md:py-2 md:shadow-md lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
+          class="flex items-center justify-between gap-2 rounded-t-none rounded-b-[1.5rem] bg-fondo-superficie px-5 py-3.5 text-texto-primario shadow-md sm:gap-4 md:rounded-md md:px-4 md:py-2 lg:gap-6 lg:rounded-2xl lg:px-8 lg:py-3"
         >
           <a
             [routerLink]="destinoLogo()"
-            class="flex shrink-0 items-center"
+            class="hidden md:flex shrink-0 items-center"
             aria-label="Ir al inicio de Falta Una"
           >
             <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto sm:h-9 lg:h-[75px]" />
           </a>
 
-          <div class="relative shrink-0">
+          <div class="relative ml-auto shrink-0">
             <button
               type="button"
               (click)="toggleMenuUsuario()"

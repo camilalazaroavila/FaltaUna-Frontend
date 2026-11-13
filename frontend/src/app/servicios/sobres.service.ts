@@ -26,6 +26,7 @@ export interface SobreAbiertoUsuario {
 export interface SobresDisponiblesEstado {
   readonly actuales: number;
   readonly maximo: number;
+  readonly proximaRecarga?: string | null;
 }
 
 function esSobreConMarcaValida(sobre: SobreRespuesta | null | undefined): sobre is SobreRespuesta {
@@ -78,6 +79,7 @@ export class SobresService {
         this._sobresDisponibles.set({
           actuales: estado.cargasDisponibles,
           maximo: estado.cargasMaximas,
+          proximaRecarga: estado.proximaRecarga ?? null,
         });
       }),
     );

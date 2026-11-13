@@ -37,6 +37,7 @@ const OLA = {
   holgura: 6,               // separación constante círculo ↔ curva
   hombro: 24,               // tramo suave entre el borde recto y la curva
   altoMobile: 72,
+  centroYMobile: 29,        // altura del centro del círculo dentro de la barra (px). Más alto = hueco más profundo
   radioEsquinaMobile: 14,
   paddingLateralMobile: 12,
   jugarRadio: 29,           // mitad del botón Jugar (3.625rem ≈ 58 px)
@@ -56,7 +57,6 @@ function geometriaMobile(W: number, xc: number | null): { trazo: string; circulo
   const H = OLA.altoMobile;
   const rE = OLA.radioEsquinaMobile;
   const colW = (W - 2 * OLA.paddingLateralMobile) / 5;
-  // Espacio máximo a cada lado: esquina (columna 0) y botón Jugar (columnas 1 y 3)
   const limite = Math.min(
     OLA.paddingLateralMobile + colW / 2 - rE,
     colW - OLA.jugarRadio - OLA.respiro,
@@ -69,16 +69,19 @@ function geometriaMobile(W: number, xc: number | null): { trazo: string; circulo
     return { trazo: `M ${rE},0 ${cierre}`, circulo };
   }
 
+  // Hueco en U: baja casi vertical, rodea el círculo por abajo y vuelve a subir.
+  const yc = OLA.centroYMobile;
   const w = Math.min(R + OLA.hombro, limite);
-  const b = 0.82 * R;                              // radio de curvatura del fondo ≈ R
-  const a = Math.max(0, Math.min(0.42 * w, w - b));
   const x0 = xc - w;
   const x1 = xc + w;
+  const xi = xc - R;
+  const xd = xc + R;
 
   const trazo = [
     `M ${rE},0 H ${n(x0)}`,
-    `C ${n(x0 + a)},0 ${n(xc - b)},${n(R)} ${n(xc)},${n(R)}`,
-    `C ${n(xc + b)},${n(R)} ${n(x1 - a)},0 ${n(x1)},0`,
+    `C ${n(xi)},0 ${n(xi)},${n(yc * 0.5)} ${n(xi)},${n(yc)}`,
+    `A ${n(R)},${n(R)} 0 0 0 ${n(xd)},${n(yc)}`,
+    `C ${n(xd)},${n(yc * 0.5)} ${n(xd)},0 ${n(x1)},0`,
     cierre,
   ].join(' ');
 
@@ -191,6 +194,7 @@ export class NavegacionOla {
   protected readonly posicionOlaMobileX = signal<number>(39.3);
   protected readonly olaMobileVisible = signal<boolean>(false);
   protected readonly paddingLateralMobile = OLA.paddingLateralMobile;
+  protected readonly centroYMobile = OLA.centroYMobile;
   protected readonly geoMobile = computed(() =>
     geometriaMobile(this.anchoBarraMobile(), this.olaMobileVisible() ? this.posicionOlaMobileX() : null),
   );

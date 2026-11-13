@@ -22,6 +22,7 @@ import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { BotonJugar } from '@compartidos/componentes/controles/boton-jugar/boton-jugar';
 import { Confeti } from '@compartidos/componentes/confeti/confeti';
+import { TemporizadorSobres } from '@compartidos/componentes/cartas/temporizador-sobres/temporizador-sobres';
 import {
   BarajaService,
   NOMBRES_MAZOS_BIENVENIDA,
@@ -189,6 +190,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
     Boton,
     Confeti,
     BotonJugar,
+    TemporizadorSobres,
   ],
   templateUrl: './usuario-dashboard.html',
   styleUrl: './usuario-dashboard.css',
@@ -399,11 +401,21 @@ export class UsuarioDashboard implements OnInit {
     });
   }
 
-  private cargarEstadoDiario(): void {
+  protected readonly cargandoEstadoDiario = signal<boolean>(false);
+  protected readonly errorEstadoDiario = signal<string | null>(null);
+
+  protected cargarEstadoDiario(): void {
     const usuarioId = this.authService.usuarioActual()?.id ?? 1;
+    this.cargandoEstadoDiario.set(true);
+    this.errorEstadoDiario.set(null);
+
     this.sobresService.cargarEstadoDiario(usuarioId).subscribe({
+      next: () => {
+        this.cargandoEstadoDiario.set(false);
+      },
       error: () => {
-        // Mantener estado por defecto si falla
+        this.cargandoEstadoDiario.set(false);
+        this.errorEstadoDiario.set('No se pudo sincronizar el estado de sobres diarios');
       },
     });
   }

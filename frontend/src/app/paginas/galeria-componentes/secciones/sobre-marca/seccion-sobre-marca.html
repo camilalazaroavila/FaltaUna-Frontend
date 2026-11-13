@@ -189,6 +189,39 @@
   </app-tarjeta-muestra>
 
   <app-tarjeta-muestra
+    titulo="app-temporizador-sobres"
+    descripcion="Cuenta regresiva accesible al próximo sobre gratuito sincronizada con la fecha del servidor, con tipografía destacada y estado neutro si no hay fecha."
+  >
+    <div class="grid gap-6 sm:grid-cols-3 p-6 rounded-2xl bg-fondo-elevado border border-borde-default">
+      <div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-superficie/40">
+        <span class="text-xs font-titulo text-texto-secundario uppercase">Con fecha futura (cuenta activa)</span>
+        <app-temporizador-sobres
+          [proximaRecarga]="demoFechaFutura"
+          [sobresDisponibles]="0"
+          [sobresMaximos]="2"
+        />
+      </div>
+
+      <div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-superficie/40">
+        <span class="text-xs font-titulo text-texto-secundario uppercase">Sobres completos (listos)</span>
+        <app-temporizador-sobres
+          [sobresDisponibles]="2"
+          [sobresMaximos]="2"
+        />
+      </div>
+
+      <div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-superficie/40">
+        <span class="text-xs font-titulo text-texto-secundario uppercase">Estado neutro (sin fecha de API)</span>
+        <app-temporizador-sobres
+          [proximaRecarga]="null"
+          [sobresDisponibles]="0"
+          [sobresMaximos]="2"
+        />
+      </div>
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
     titulo="Tokens del sobre (Capa 2)"
     descripcion="El sobre es un elemento de marca, no una superficie de la app: por eso tiene su propio juego de tokens en vez de reusar los de la interfaz. La placa del logo ya no pide un blanco neutro: su silueta usa `--sobre-sombra-placa`, y el sobre de categoría lleva cuerpo y detalle propios."
   >

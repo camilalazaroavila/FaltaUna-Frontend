@@ -8,11 +8,18 @@
   (click)="alHacerClic()"
 >
   @if (!jaimeImagenError()) {
-    <div class="boton-jugar__caja relative aspect-square w-full h-full">
-      <!-- Asset reposo: cartas -->
+    <!-- Globo de diálogo imperativo ("¡Jugá!") para guiar al usuario -->
+    <span class="boton-jugar__globo" aria-hidden="true">
+      <span class="boton-jugar__globo-texto">{{ textoGlobo() }}</span>
+    </span>
+
+    <div class="boton-jugar__caja relative aspect-[435/387] w-full h-full">
+      <!-- Asset reposo: cartas coleccionables -->
       <img
         #imgReposo
         [src]="urlReposo"
+        width="435"
+        height="387"
         alt=""
         aria-hidden="true"
         loading="eager"
@@ -24,6 +31,8 @@
       <img
         #imgHover
         [src]="urlHover"
+        width="435"
+        height="387"
         alt=""
         aria-hidden="true"
         loading="eager"
@@ -34,11 +43,11 @@
     </div>
   } @else {
     <!-- Fallback legible si falla la imagen -->
-    <div class="boton-jugar__respaldo inline-flex flex-col items-center justify-center gap-1.5 rounded-lg bg-marca-primaria px-8 py-5 font-titulo uppercase leading-none text-marca-sobre-primaria shadow-alta">
-      <ng-icon name="phosphorPlayFill" size="28" aria-hidden="true" />
-      <span class="text-xl tracking-[0.06em]">{{ texto() }}</span>
+    <div class="boton-jugar__respaldo inline-flex flex-col items-center justify-center gap-1.5 rounded-lg bg-marca-primaria px-6 py-4 font-titulo uppercase leading-none text-marca-sobre-primaria shadow-alta">
+      <ng-icon name="phosphorPlayFill" size="24" aria-hidden="true" />
+      <span class="text-base tracking-[0.06em]">{{ texto() }}</span>
       @if (haySubtexto()) {
-        <span class="font-cuerpo text-xs font-normal normal-case tracking-normal opacity-85">
+        <span class="font-cuerpo text-[10px] font-normal normal-case tracking-normal opacity-85">
           {{ subtexto() }}
         </span>
       }

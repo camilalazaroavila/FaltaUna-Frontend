@@ -149,10 +149,14 @@ describe('Header (variante logueado)', () => {
     expect(logo.getAttribute('href')).toBe('/misiones');
   });
 
-  it('muestra logo y avatar, sin buscador ni enlaces de login/registro', () => {
+  it('muestra avatar, y oculta el logo en mobile mientras se preserva en desktop', () => {
     const el = fixture.nativeElement as HTMLElement;
+    const enlaceLogo = el.querySelector('a[aria-label="Ir al inicio de Falta Una"]');
 
-    expect(el.querySelector('img[alt="Falta Una"]')).toBeTruthy();
+    expect(enlaceLogo).toBeTruthy();
+    expect(enlaceLogo?.classList.contains('hidden')).toBe(true);
+    expect(enlaceLogo?.classList.contains('md:flex')).toBe(true);
+
     expect(el.querySelector('button[aria-label="Menú de perfil"]')).toBeTruthy();
     expect(el.querySelector('input[type="search"]')).toBeFalsy();
     expect(el.querySelector('a[href="/login"]')).toBeFalsy();

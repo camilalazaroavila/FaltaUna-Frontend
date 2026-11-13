@@ -2,7 +2,11 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideIcons } from '@ng-icons/core';
-import { BotonJugar, URL_JAIME_REPOSO, URL_JAIME_HOVER } from './boton-jugar';
+import {
+  BotonJugar,
+  URL_JAIME_REPOSO,
+  URL_JAIME_HOVER,
+} from './boton-jugar';
 
 const ICONO_PRUEBA = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
 
@@ -14,6 +18,7 @@ const ICONO_PRUEBA = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
     <app-boton-jugar
       id="jugar-custom-label"
       ariaLabel="Entrar a jugar"
+      textoGlobo="¡Vamos!"
       texto="Abrir sobre"
       subtexto="2 gratis hoy"
       (accion)="registrar()"
@@ -45,11 +50,16 @@ describe('BotonJugar Component', () => {
     fixture.detectChanges();
   });
 
-  it('debe renderizar el botón con aria-label "Jugar" por defecto y estructura accesible', () => {
+  it('debe renderizar el botón con aria-label "Jugar una partida" por defecto, globo con "¡Jugá!" e imágenes estáticas', () => {
     const btnEl = boton('jugar-default');
 
     expect(btnEl.type).toBe('button');
-    expect(btnEl.getAttribute('aria-label')).toBe('Jugar');
+    expect(btnEl.getAttribute('aria-label')).toBe('Jugar una partida');
+
+    const globo = btnEl.querySelector('.boton-jugar__globo');
+    expect(globo).toBeTruthy();
+    expect(globo?.getAttribute('aria-hidden')).toBe('true');
+    expect(globo?.textContent?.trim()).toBe('¡Jugá!');
 
     const imagenes = btnEl.querySelectorAll('img');
     expect(imagenes.length).toBe(2);
@@ -60,17 +70,24 @@ describe('BotonJugar Component', () => {
     expect(imgReposo.getAttribute('src')).toBe(URL_JAIME_REPOSO);
     expect(imgReposo.getAttribute('alt')).toBe('');
     expect(imgReposo.getAttribute('aria-hidden')).toBe('true');
+    expect(imgReposo.getAttribute('width')).toBe('435');
+    expect(imgReposo.getAttribute('height')).toBe('387');
+    expect(imgReposo.getAttribute('loading')).toBe('eager');
     expect(imgReposo.classList.contains('boton-jugar__img--reposo')).toBe(true);
 
     expect(imgHover.getAttribute('src')).toBe(URL_JAIME_HOVER);
     expect(imgHover.getAttribute('alt')).toBe('');
     expect(imgHover.getAttribute('aria-hidden')).toBe('true');
+    expect(imgHover.getAttribute('width')).toBe('435');
+    expect(imgHover.getAttribute('height')).toBe('387');
     expect(imgHover.classList.contains('boton-jugar__img--hover')).toBe(true);
   });
 
-  it('debe permitir un aria-label personalizado', () => {
+  it('debe permitir un aria-label personalizado y texto de globo personalizado', () => {
     const btnEl = boton('jugar-custom-label');
     expect(btnEl.getAttribute('aria-label')).toBe('Entrar a jugar');
+    const globo = btnEl.querySelector('.boton-jugar__globo');
+    expect(globo?.textContent?.trim()).toBe('¡Vamos!');
   });
 
   it('debe bloquear el control de forma nativa cuando está deshabilitado', () => {

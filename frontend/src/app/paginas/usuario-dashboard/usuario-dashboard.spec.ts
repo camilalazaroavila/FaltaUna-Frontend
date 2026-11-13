@@ -156,7 +156,7 @@ describe('UsuarioDashboard Component', () => {
 
   it('debe mostrar el contador de sobres diarios disponibles', () => {
     const textoContador = fixture.nativeElement.textContent;
-    expect(textoContador).toContain('2/2 GRATIS');
+    expect(textoContador).toContain('Sobres gratis: 2 de 2');
   });
 
 

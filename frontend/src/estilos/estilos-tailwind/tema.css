@@ -78,6 +78,7 @@
     --color-texto-sobre-claro: var(--texto-sobre-claro);
     --color-texto-link: var(--texto-link);
     --color-texto-link-hover: var(--texto-link-hover);
+    --color-boton-jugar-globo-texto: var(--boton-jugar-globo-texto);
 
     /* Los cinco tokens por estado. `-sobre` es el texto coloreado que se apoya
        sobre el color base solido; sin mapeo, `text-{estado}-sobre` no existia

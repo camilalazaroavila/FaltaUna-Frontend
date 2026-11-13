@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
 import type { VarianteSobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
+import { TemporizadorSobres } from '@compartidos/componentes/cartas/temporizador-sobres/temporizador-sobres';
 import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 import { RegistroEventos } from '@paginas/galeria-componentes/registro-eventos/registro-eventos';
 import { crearRegistroEventos } from '@paginas/galeria-componentes/registro-eventos';
@@ -39,7 +40,7 @@ interface LogoDeMuestra {
 
 @Component({
   selector: 'app-seccion-sobre-marca',
-  imports: [SobreMarca, TarjetaMuestra, RegistroEventos],
+  imports: [SobreMarca, TarjetaMuestra, RegistroEventos, TemporizadorSobres],
   templateUrl: './seccion-sobre-marca.html',
   host: { class: 'block scroll-mt-44' },
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,6 +63,8 @@ export class SeccionSobreMarca {
 
   protected readonly categorias = CATEGORIAS_SOBRE;
   protected readonly etiquetasCategoria = ETIQUETAS_CATEGORIA;
+
+  protected readonly demoFechaFutura = new Date(Date.now() + 14 * 3600 * 1000 + 25 * 60 * 1000).toISOString();
 
   /**
    * Logos reales de `public/imagenes` con sus medidas exactas: la placa es casi

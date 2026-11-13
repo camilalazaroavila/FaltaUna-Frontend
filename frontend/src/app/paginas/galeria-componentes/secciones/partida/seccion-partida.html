@@ -302,4 +302,23 @@
     </p>
   </div>
 </app-tarjeta-muestra>
+
+<app-tarjeta-muestra
+  titulo="app-selector-mazos"
+  descripcion="Selector de mazos escalable para hasta 20 mazos con tarjetas interactivas, navegación accesible por teclado (flechas y Enter), búsqueda por nombre, filtro de solo completos y desglose de rarezas reales."
+>
+  <div class="rounded-2xl border border-borde-default bg-fondo-elevado p-4 sm:p-6">
+    <app-selector-mazos
+      [mazos]="mazosDemo()"
+      [mazoSeleccionadoId]="mazoSeleccionadoId()"
+      (mazoSeleccionadoChange)="mazoSeleccionadoId.set($event)"
+    />
+  </div>
+
+  <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
+    <p class="font-interfaz text-xs text-info-texto">
+      Los mazos incompletos tienen <code>aria-disabled="true"</code> y no se pueden seleccionar. La lista cuenta con scroll interno y no produce desbordes horizontales.
+    </p>
+  </div>
+</app-tarjeta-muestra>
 </div>

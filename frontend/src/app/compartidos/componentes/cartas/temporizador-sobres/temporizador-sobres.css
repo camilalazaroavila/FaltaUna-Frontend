@@ -1,0 +1,14 @@
+:host {
+  display: block;
+}
+
+.temporizador-sobres__digitos {
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse {
+    animation: none !important;
+  }
+}

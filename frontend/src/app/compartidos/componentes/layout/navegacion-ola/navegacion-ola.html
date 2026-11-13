@@ -49,7 +49,7 @@
         [class.nav-ola__circulo-mobile--visible]="olaMobileVisible() && activoM !== null"
         [style.width.px]="geoMobile().circulo"
         [style.height.px]="geoMobile().circulo"
-        [style.transform]="'translate3d(calc(' + posicionOlaMobileX() + 'px - 50%), -50%, 0)'"
+        [style.transform]="'translate3d(calc(' + posicionOlaMobileX() + 'px - 50%), calc(' + centroYMobile + 'px - 50%), 0)'"
         aria-hidden="true"
       >
         @if (activoM?.urlIcono) {
@@ -76,7 +76,9 @@
           [attr.aria-current]="esRutaActiva(accionJugar()) ? 'page' : null"
           (click)="alSeleccionar(accionJugar(), $event)"
         >
-          <img [src]="urlIconoJugar()" alt="" class="nav-ola__img-jugar" />
+          @if (urlIconoJugar()) {
+            <img class="nav-ola__img-jugar" [src]="urlIconoJugar()" alt="" aria-hidden="true" />
+          }
         </a>
       </div>
 

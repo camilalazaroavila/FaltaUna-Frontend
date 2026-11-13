@@ -1,29 +1,40 @@
 :host {
+  /* ── AJUSTABLE: empuje horizontal de cada PNG hacia el borde derecho ──
+     Reposo: subilo hasta que el gato toque el borde. Hover: el suyo ya toca. */
+  --reposo-ajuste-x: 28%;
+  --hover-ajuste-x: 0%;
+
+  --globo-desplazamiento-x: 0px;
+  --globo-desplazamiento-y: 0px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  /* Ancho fluido con clamp, mucho más grande para mobile y desktop */
-  width: clamp(7.5rem, 30vw, 11rem);
+  /* Mobile: ~36% del ancho, entre 8 y 11 rem */
+  width: clamp(8rem, 36vw, 11rem);
   min-width: 44px;
   min-height: 44px;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 435 / 387;
 }
 
+/* En desktop: bajado exactamente 2rem del tamaño previo */
 @media (min-width: 768px) {
   :host {
-    width: clamp(12.5rem, 18vw, 19rem);
+    width: clamp(10.5rem, 15vw, 17rem);
   }
 }
 
 @media (min-width: 1536px) {
   :host {
-    width: clamp(16rem, 20vw, 24rem);
+    width: clamp(14rem, 18vw, 22rem);
   }
 }
 
 .boton-jugar {
   width: 100%;
   height: 100%;
+  min-width: 44px;
+  min-height: 44px;
   transform-origin: right center;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -32,6 +43,81 @@
   width: 100%;
   height: 100%;
   position: relative;
+  aspect-ratio: 435 / 387;
+}
+
+/* Globo de diálogo ilustrado "¡Jugá!" */
+.boton-jugar__globo {
+  position: absolute;
+  top: calc(8% + var(--globo-desplazamiento-y, 0px));
+  left: calc(26% + var(--globo-desplazamiento-x, 0px) + var(--reposo-ajuste-x) - 6%);
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.85rem;
+  max-width: 42%;
+  background-color: var(--marca-acento, #d5ff5f);
+  color: var(--boton-jugar-globo-texto, var(--negro-puro, #000000));
+  font-family: var(--fuente-titulo, 'Rubik', sans-serif);
+  font-size: var(--tipografia-menor, 0.875rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  border-radius: 9999px;
+  border: 2px solid var(--color-teal-profundo, #072428);
+  box-shadow: 2.5px 2.5px 0 var(--color-teal-profundo, #072428);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: globo-flotar 3s ease-in-out infinite;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  transform-origin: bottom right;
+}
+
+@media (min-width: 768px) {
+  .boton-jugar__globo {
+    font-size: var(--tipografia-cuerpo, 1rem);
+    padding: 0.4rem 1rem;
+  }
+}
+
+/* Colita del globo apuntando hacia la oreja/cabeza de Jaime (~0.25rem de distancia) */
+.boton-jugar__globo::before,
+.boton-jugar__globo::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+/* Borde exterior de la colita */
+.boton-jugar__globo::before {
+  bottom: -8px;
+  right: 18px;
+  border-width: 8px 6px 0 3px;
+  border-color: var(--color-teal-profundo, #072428) transparent transparent transparent;
+}
+
+/* Relleno interior de la colita */
+.boton-jugar__globo::after {
+  bottom: -6px;
+  right: 19px;
+  border-width: 6px 4px 0 2px;
+  border-color: var(--marca-acento, #d5ff5f) transparent transparent transparent;
+}
+
+@keyframes globo-flotar {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .boton-jugar__img {
@@ -39,24 +125,27 @@
   height: 100%;
   object-fit: contain;
   object-position: right center;
+  aspect-ratio: 435 / 387;
   will-change: opacity, transform;
 }
 
-/* Reposo por defecto: cartas visible, compensando el margen transparente derecho
-   para que Jaime quede pegado al borde de la pared y con tamaño visual equivalente */
+/* Reposo por defecto: cartas visible */
 .boton-jugar__img--reposo {
   opacity: 1;
-  transform: translateX(14%) scale(1.18);
+  transform: translateX(var(--reposo-ajuste-x)) scale(1.08);
   transform-origin: right center;
   transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 }
 
+/* Hover (con su propio ajuste, independiente del de reposo) */
 .boton-jugar__img--hover {
   opacity: 0;
+  transform: translateX(var(--hover-ajuste-x));
+  transform-origin: right center;
   transition: opacity 0.2s ease-out;
 }
 
-/* Hover en dispositivos con mouse */
+/* Hover en dispositivos con mouse: se oculta el globo CSS y toma el relevo el PNG con "¿jugamos?" */
 @media (hover: hover) {
   .boton-jugar:hover:not(:disabled) {
     transform: scale(1.08);
@@ -64,15 +153,20 @@
 
   .boton-jugar:hover:not(:disabled) .boton-jugar__img--reposo {
     opacity: 0;
-    transform: translateX(14%) scale(1.22);
+    transform: translateX(var(--reposo-ajuste-x)) scale(1.12);
   }
 
   .boton-jugar:hover:not(:disabled) .boton-jugar__img--hover {
     opacity: 1;
   }
+
+  .boton-jugar:hover:not(:disabled) .boton-jugar__globo {
+    opacity: 0;
+    transform: scale(0.85);
+  }
 }
 
-/* Foco por teclado accesible */
+/* Foco por teclado accesible: también se oculta el globo CSS al cambiar la imagen */
 .boton-jugar:focus-visible:not(:disabled) {
   transform: scale(1.08);
 }
@@ -85,12 +179,19 @@
   opacity: 1;
 }
 
+.boton-jugar:focus-visible:not(:disabled) .boton-jugar__globo {
+  opacity: 0;
+  transform: scale(0.85);
+}
+
 /* Estado presionado */
 .boton-jugar:active:not(:disabled) {
   transform: scale(0.96) !important;
 }
 
-/* Dispositivos táctiles (sin hover real) */
+/* Dispositivos táctiles (sin hover real):
+   reposo con cartas y el globo CSS visible permanentemente.
+   "¿jugamos?" y ocultar globo solo mientras el dedo presiona activamente */
 @media (hover: none) {
   .boton-jugar .boton-jugar__img--reposo {
     opacity: 1;
@@ -100,7 +201,11 @@
     opacity: 0;
   }
 
-  /* Solo mientras el dedo está presionado */
+  .boton-jugar .boton-jugar__globo {
+    opacity: 1;
+  }
+
+  /* Solo mientras el dedo está activamente presionando */
   .boton-jugar:active:not(:disabled) .boton-jugar__img--reposo {
     opacity: 0;
   }
@@ -108,16 +213,36 @@
   .boton-jugar:active:not(:disabled) .boton-jugar__img--hover {
     opacity: 1;
   }
+
+  .boton-jugar:active:not(:disabled) .boton-jugar__globo {
+    opacity: 0;
+  }
 }
 
 /* Reducción de movimiento */
 @media (prefers-reduced-motion: reduce) {
+
   .boton-jugar,
   .boton-jugar__img,
-  .boton-jugar__img--reposo {
+  .boton-jugar__img--reposo,
+  .boton-jugar__globo {
     transition: none !important;
+    animation: none !important;
   }
+
   .boton-jugar {
     transform: none !important;
   }
+}
+
+:host-context([data-movimiento='reducido']) .boton-jugar,
+:host-context([data-movimiento='reducido']) .boton-jugar__img,
+:host-context([data-movimiento='reducido']) .boton-jugar__img--reposo,
+:host-context([data-movimiento='reducido']) .boton-jugar__globo {
+  transition: none !important;
+  animation: none !important;
+}
+
+:host-context([data-movimiento='reducido']) .boton-jugar {
+  transform: none !important;
 }

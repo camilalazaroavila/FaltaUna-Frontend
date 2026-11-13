@@ -97,7 +97,7 @@ describe('NavegacionOla (Unificado: Mobile con 5 columnas y Desktop vertical izq
   });
 
   describe('Mobile (< 768px)', () => {
-    it('divide en 5 columnas con botón central JUGAR y 3 destinos visibles', async () => {
+    it('divide en 5 columnas con 3 destinos visibles y el botón jugar en el centro en mobile', async () => {
       await router.navigateByUrl('/usuario');
       fixture.detectChanges();
 
@@ -111,6 +111,7 @@ describe('NavegacionOla (Unificado: Mobile con 5 columnas y Desktop vertical izq
 
       const btnJugar = fixture.nativeElement.querySelector('.nav-ola__boton-jugar-mobile');
       expect(btnJugar).toBeTruthy();
+      expect(btnJugar.getAttribute('href')).toBe('/usuario/jugar');
     });
 
     it('no renderiza la barra mobile en ruta Jugar ni en Intercambio', async () => {

@@ -1,26 +1,35 @@
 <div
-  class="dashboard-contenedor relative flex min-h-dvh flex-col justify-between overflow-x-hidden text-white">
+  class="dashboard-contenedor relative flex h-dvh flex-col justify-between overflow-hidden text-white">
 
-  <app-header [logueado]="true" />
-
-  <!-- MENÚ LATERAL DESKTOP (abierto permanentemente, más grande, con forma de ola y animación de oleaje) -->
-  <!-- ZONA CENTRAL (reserva espacio para barra lateral derecha) -->
+  <app-header [logueado]="true" class="shrink-0" />
 
   <!-- ZONA CENTRAL -->
   <main
-    class="area-contenido-con-nav relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-4 pt-3 sm:px-6 sm:pt-4 md:py-8 2xl:py-12 [--alto-abanico:min(clamp(9.5rem,46vh,46rem),64vw)] md:[--alto-abanico:min(clamp(9.5rem,46vh,46rem),52vw)]">
+  class="area-contenido-con-nav relative z-10 flex min-h-0 flex-1 flex-col items-center justify-between px-3 py-2 sm:px-4 sm:py-3 md:py-4
+         [--reserva-nav:calc(5.25rem+env(safe-area-inset-bottom,0px))] pb-(--reserva-nav) sm:pb-(--reserva-nav) md:pb-4
+         [--alto-abanico:min(clamp(9.5rem,46dvh,46rem),64vw)] md:[--alto-abanico:min(clamp(9.5rem,46dvh,46rem),52vw)]">
 
-    <!-- Contador de sobres disponibles -->
-    <div
-      class="mb-5 sm:mb-2 md:mb-3 2xl:mb-6 flex select-none items-center gap-1.5 2xl:gap-3 font-titulo text-sm sm:text-base md:text-lg lg:text-xl 2xl:text-3xl tracking-wider text-marca-acento/90 shrink-0">
-      <span class="inline-block size-1.5 rounded-circulo bg-marca-acento sm:size-2 md:size-2.5 2xl:size-3.5"></span>
-      <span>{{ sobresDisponibles().actuales }}/{{ sobresDisponibles().maximo }} GRATIS</span>
+    <!-- Contador y temporizador de sobres diarios (instancia única) -->
+    <div class="flex flex-col select-none items-center gap-1 sm:gap-1.5 shrink-0">
+      <div class="font-titulo text-xs sm:text-base md:text-lg lg:text-lg 2xl:text-xl tracking-wider text-marca-acento/90">
+        <span>Sobres gratis: {{ sobresDisponibles().actuales }} de {{ sobresDisponibles().maximo }}</span>
+      </div>
+
+      <!-- Temporizador accesible sincronizado con la fecha del servidor (timer central y chips responsivos) -->
+      <app-temporizador-sobres
+        class="w-full max-w-md"
+        [proximaRecarga]="sobresDisponibles().proximaRecarga"
+        [sobresDisponibles]="sobresDisponibles().actuales"
+        [sobresMaximos]="sobresDisponibles().maximo"
+        [cargando]="cargandoEstadoDiario()"
+        [error]="errorEstadoDiario()"
+        (tiempoAgotado)="cargarEstadoDiario()"
+      />
     </div>
 
-
-    <!-- Abanico de Sobres: el alto fluye con el viewport y el ancho sale de la proporción -->
+    <!-- Abanico de Sobres: el alto fluye con clamp en dvh y no empuja el botón fuera de pantalla -->
     <div
-      class="abanico-sobres relative flex items-center justify-center shrink-0 md:my-auto h-[var(--alto-abanico)] aspect-[16/10] w-auto">
+      class="abanico-sobres relative flex items-center justify-center shrink-0 mt-auto mb-2 sm:mb-3 md:mb-4 h-[var(--alto-abanico)] aspect-[16/10] w-auto">
 
       <!-- Sombra de apoyo -->
       <div
@@ -47,7 +56,7 @@
 
     <!-- Botón Principal "VER SOBRES" -->
     <button id="btn-ver-sobres" type="button" (click)="abrirSelectorSobres()"
-      class="mt-10 sm:mt-4 md:mt-8 2xl:mt-14 shrink-0 cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2.5 sm:px-8 sm:py-3 font-interfaz text-xs sm:text-sm font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:shadow-brillo-verde active:scale-[0.98] md:px-12 md:py-3.5 md:text-base 2xl:px-20 2xl:py-5 2xl:text-2xl">
+      class="mt-3 sm:mt-4 mb-auto shrink-0 cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2.5 sm:px-8 sm:py-3 font-interfaz text-xs sm:text-sm font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:shadow-brillo-verde active:scale-[0.98] md:px-10 md:py-3 md:text-base 2xl:px-16 2xl:py-4 2xl:text-xl">
       VER SOBRES
     </button>
   </main>
@@ -55,7 +64,7 @@
   <!-- BOTÓN ILUSTRADO DE JUGAR (JAIME) -->
   @if (esVistaPrincipal()) {
     <aside
-      class="boton-jaime-aside fixed z-30 select-none bottom-[calc(var(--nav-inferior-reserva,5.5rem)+0.25rem)] right-0 md:bottom-6 md:right-0 lg:bottom-8 xl:bottom-10"
+      class="boton-jaime-aside fixed z-30 select-none bottom-[calc(var(--nav-inferior-reserva,5rem)+0.25rem)] right-0 md:bottom-6 md:right-0 lg:bottom-8 xl:bottom-10"
       aria-label="Acceso a jugar"
     >
       <app-boton-jugar (accion)="irAJugar()" />

@@ -8,9 +8,11 @@ import { Mano } from '@compartidos/componentes/partida/mano/mano';
 import { PantallaResultado } from '@compartidos/componentes/partida/pantalla-resultado/pantalla-resultado';
 import { PuntajeZona } from '@compartidos/componentes/partida/puntaje-zona/puntaje-zona';
 import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-carta';
+import { SelectorMazos } from '@compartidos/componentes/cartas/selector-mazos/selector-mazos';
 import { Texto } from '@compartidos/componentes/textual/texto/texto';
 import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 import { CARTAS_MOCK } from '@modelos/cartas.mock';
+import type { MazoApi } from '@modelos/mazo.model';
 import type { ResultadoPartidaApi, ResultadoRonda } from '@modelos/partida.model';
 
 /** Avatares de ejemplo: SVG embebido, así la galería no pide assets externos. */
@@ -140,6 +142,7 @@ const ZONA_MOCK: ZonaTablero = {
     ControlTurno,
     Mano,
     PantallaResultado,
+    SelectorMazos,
     Zona,
   ],
   templateUrl: './seccion-partida.html',
@@ -161,6 +164,58 @@ export class SeccionPartida {
   protected readonly cartasZonaPropia = [CARTAS_MOCK[0], CARTAS_MOCK[1], null, null, null, null] as const;
   protected readonly cartasZonaRival = [CARTAS_MOCK[2], null, null, null, null, null] as const;
   protected readonly burbujaDemo = signal<PasoBurbuja | null>(null);
+
+  // Mocks para app-selector-mazos
+  protected readonly mazoSeleccionadoId = signal<number | null>(1);
+  protected readonly mazosDemo = signal<readonly MazoApi[]>([
+    {
+      id: 1,
+      nombre: 'Mazo Base Dragón (12 cartas)',
+      completo: true,
+      cartas: Array.from({ length: 12 }, (_, i) => ({
+        cartaId: 100 + i,
+        nombre: `Carta ${i + 1}`,
+        poder: 3 + (i % 7),
+        costoCupon: 1 + (i % 3),
+        rarezaId: i < 5 ? 1 : i < 9 ? 2 : i < 11 ? 3 : 4,
+        rareza: i < 5 ? 'comun' : i < 9 ? 'rara' : i < 11 ? 'epicarta' : 'legendaria',
+        rarezaOrden: i < 5 ? 1 : i < 9 ? 2 : i < 11 ? 3 : 4,
+        imagenUrl: null,
+      })),
+    },
+    {
+      id: 2,
+      nombre: 'Mazo Experimental (Incompleto)',
+      completo: false,
+      cartas: [
+        {
+          cartaId: 201,
+          nombre: 'Carta Fuego',
+          poder: 8,
+          costoCupon: 2,
+          rarezaId: 3,
+          rareza: 'epicarta',
+          rarezaOrden: 3,
+          imagenUrl: null,
+        },
+      ],
+    },
+    {
+      id: 3,
+      nombre: 'Mazo Competitivo Trueno',
+      completo: true,
+      cartas: Array.from({ length: 12 }, (_, i) => ({
+        cartaId: 300 + i,
+        nombre: `Trueno ${i + 1}`,
+        poder: 4 + (i % 6),
+        costoCupon: 1 + (i % 4),
+        rarezaId: i < 5 ? 1 : i < 9 ? 2 : i < 11 ? 3 : 4,
+        rareza: i < 5 ? 'comun' : i < 9 ? 'rara' : i < 11 ? 'epicarta' : 'legendaria',
+        rarezaOrden: i < 5 ? 1 : i < 9 ? 2 : i < 11 ? 3 : 4,
+        imagenUrl: null,
+      })),
+    },
+  ]);
 
   protected probarBurbujaPropia(): void {
     this.burbujaDemo.set({

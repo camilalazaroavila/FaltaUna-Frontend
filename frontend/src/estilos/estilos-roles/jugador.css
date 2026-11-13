@@ -29,6 +29,9 @@
    --marca-acento-suave: rgba(242, 238, 174, 0.14);
    --marca-sobre-acento: var(--color-teal-profundo);
 
+   /* Botón jugar (Jaime): texto del globo de diálogo */
+   --boton-jugar-globo-texto: var(--negro-puro);
+
    /* Acento secundario: en jugador reutiliza el acento cálido del logo. */
    --marca-secundaria: var(--color-amarillo-acento);
    --marca-secundaria-hover: var(--color-amarillo-hover);
@@ -212,7 +215,7 @@
    --nav-ola-jugar-brillo: 0 0 16px color-mix(in srgb, var(--marca-primaria) 45%, transparent);
    --nav-ola-jugar-brillo-hover: 0 0 22px color-mix(in srgb, var(--marca-primaria) 65%, transparent);
    --nav-ola-jugar-sombra: 0 4px 14px color-mix(in srgb, var(--color-teal-profundo) 40%, transparent);
-   --nav-ola-sombra: 0 -4px 20px color-mix(in srgb, var(--color-teal-profundo) 22%, transparent);
+   --nav-ola-sombra: 0 -7px 0 var(--color-amarillo-logo);
    --nav-ola-sombra-desktop: var(--sombra-cartoon-clara);
    --nav-ola-sombra-circulo: var(--sombra-media);
    --nav-ola-indicador: var(--atencion);
