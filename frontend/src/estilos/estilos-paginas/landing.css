@@ -78,7 +78,7 @@
   padding: 0.875rem 2rem;
   border-radius: 9999px;
   box-shadow: none;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease, background-color 0.2s ease;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
@@ -108,6 +108,17 @@
   transform: translateY(1px) scale(0.98);
 }
 
+/* Variante Teal para modo empresa */
+.landing-btn-pildora--teal {
+  background-color: var(--color-teal-profundo, #0a2e36);
+  color: #ffffff;
+}
+
+.landing-btn-pildora--teal:hover {
+  background-color: #0e3d48;
+  color: #ffffff;
+}
+
 .hero-marco-cuadro {
   position: relative;
   width: 100%;
@@ -122,7 +133,7 @@
 /* Ancho reducido para los expandibles de FAQ específicamente en pantallas de 1366px (rango 1280px-1535px) */
 @media (min-width: 1280px) and (max-width: 1535px) {
   .faq-lista-acordeon {
-    width: 560px !important;
+    width: min(896px, 100%) !important;
     min-width: 0 !important;
     max-width: 100% !important;
     margin-inline: auto;

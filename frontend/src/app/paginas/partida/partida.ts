@@ -21,6 +21,7 @@ import { Texto } from '@compartidos/componentes/textual/texto/texto';
 import { Titulo } from '@compartidos/componentes/textual/titulo/titulo';
 import type { MazoApi } from '@modelos/mazo.model';
 import { BarajaService } from '@servicios/baraja.service';
+import { SalaJuegoService } from '@servicios/sala-juego.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
 import { SonidoService } from '@servicios/sonido.service';
 import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja';
@@ -50,6 +51,7 @@ import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja
 })
 export class Partida implements OnInit, OnDestroy {
   protected readonly servicio = inject(PartidaServicio);
+  protected readonly salaService = inject(SalaJuegoService);
   private readonly baraja = inject(BarajaService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
@@ -66,6 +68,30 @@ export class Partida implements OnInit, OnDestroy {
         this.sonido.ajustarVolumenMusicaFondo(0.04);
       } else {
         this.sonido.detenerMusicaFondo();
+      }
+    });
+
+    // Cuando termina una partida PvP, nos suscribimos al canal de revancha de esa partida
+    effect(() => {
+      const partidaId = this.servicio.partidaId();
+      const conResultado = this.mostrarPantallaResultado();
+      const esBot = this.servicio.rivalEsBot();
+
+      if (partidaId !== null && conResultado && !esBot) {
+        void this.salaService.unirseACanalPartida(partidaId);
+      }
+    });
+
+    // Cuando ambos jugadores aceptan la revancha y llega el nuevo partidaId, cargamos la nueva partida
+    effect(() => {
+      const evento = this.salaService.revanchaIniciada();
+      if (evento) {
+        this.salaService.limpiarEstadoRevancha();
+        this.rondaConteoCompletada.set(0);
+        this.enConteoRonda.set(false);
+        this.servicio.abandonarPartida();
+        localStorage.setItem('faltauna_partida_activa', String(evento.partidaId));
+        this.servicio.reconectar().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
       }
     });
   }
@@ -173,7 +199,12 @@ export class Partida implements OnInit, OnDestroy {
       return 'La partida terminó empatada';
     }
 
-    return resultado.gane ? '¡Ganaste la partida!' : 'La partida la ganó el bot';
+    if (resultado.gane) {
+      return '¡Ganaste la partida!';
+    }
+
+    const rival = this.servicio.jugadores().rival;
+    return rival.esBot ? 'La partida la ganó el bot' : `La partida la ganó ${rival.nombre}`;
   });
 
   /** Motivo del fin de partida, con un texto legible para el jugador. */
@@ -207,6 +238,7 @@ export class Partida implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.servicio.detenerSincronizacion();
     this.sonido.detenerMusicaFondo();
+    this.salaService.limpiarEstadoRevancha();
   }
 
   /** Crea una partida nueva contra el bot con el mazo elegido. */
@@ -222,20 +254,53 @@ export class Partida implements OnInit, OnDestroy {
 
   /** Abandona la partida (la confirmación visual previa ya se resolvió en el control de turno). */
   protected abandonar(): void {
+    const eraContraJugador = !this.servicio.rivalEsBot();
     this.servicio.abandonar();
+
+    if (eraContraJugador) {
+      this.router.navigate(['/juego/jugador']);
+    }
   }
 
-  /** Reinicia una partida nueva con el mismo mazo contra el bot. */
+  /** Reinicia una partida contra el bot o solicita/acepta revancha si es PvP. */
   protected reintentarPartida(): void {
-    const mazoId = this.mazoSeleccionado() ?? this.mazosCompletos()[0]?.id ?? null;
+    const ultimoMazoGuardado = Number(localStorage.getItem('faltauna_ultimo_mazo'));
+    const mazoGuardadoValido = this.mazosCompletos().find((m) => m.id === ultimoMazoGuardado)?.id ?? null;
+    const mazoId =
+      mazoGuardadoValido ??
+      this.mazoSeleccionado() ??
+      this.mazosCompletos()[0]?.id ??
+      null;
+
+    if (!this.servicio.rivalEsBot()) {
+      const partidaId = this.servicio.partidaId();
+      if (partidaId !== null && mazoId !== null) {
+        void this.salaService.solicitarRevancha(partidaId, mazoId);
+      }
+      return;
+    }
+
     this.servicio.abandonarPartida();
     if (mazoId !== null) {
       this.servicio.iniciarContraBot(mazoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
     }
   }
 
+  /** Cancela o rechaza la solicitud de revancha en curso. */
+  protected cancelarRevancha(): void {
+    const partidaId = this.servicio.partidaId();
+    if (partidaId !== null) {
+      void this.salaService.cancelarRevancha(partidaId);
+    }
+  }
+
   /** Sale de la partida finalizada y vuelve al menú de modos de juego. */
   protected volverAlMenu(): void {
+    const partidaId = this.servicio.partidaId();
+    if (partidaId !== null && !this.servicio.rivalEsBot()) {
+      void this.salaService.cancelarRevancha(partidaId);
+    }
+    this.salaService.limpiarEstadoRevancha();
     this.servicio.abandonarPartida();
     this.router.navigate(['/usuario/jugar']);
   }

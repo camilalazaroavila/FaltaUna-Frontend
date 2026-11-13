@@ -19,6 +19,8 @@ export interface PlanEmpresa {
   variante: VariantePlan;
   alineacion: 'izquierda' | 'derecha';
   beneficios: BeneficioPlan[];
+  precio?: string;
+  periodo?: string;
 }
 
 export interface PreguntaFrecuente {

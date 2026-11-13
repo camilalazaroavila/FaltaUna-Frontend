@@ -24,7 +24,12 @@
           [nombreRival]="servicio.jugadores().rival.nombre"
           [historialRondas]="servicio.historialRondas()"
           [ultimoResultado]="servicio.resultadoRonda()"
+          [esRivalBot]="servicio.rivalEsBot()"
+          [esperandoRivalRevancha]="salaService.esperandoRivalRevancha()"
+          [revanchaSolicitada]="salaService.revanchaSolicitada()"
+          [revanchaCancelada]="salaService.revanchaCancelada()"
           (jugarOtraVez)="reintentarPartida()"
+          (cancelarRevancha)="cancelarRevancha()"
           (volverAlMenu)="volverAlMenu()"
         />
       }
