@@ -1,0 +1,44 @@
+<div class="space-y-8">
+  <header class="space-y-2">
+    <h2 class="font-titulo text-subtitulo text-texto-primario">Tarjeta de misión</h2>
+    <p class="font-cuerpo text-sm text-texto-secundario">
+      Componente <code class="font-interfaz text-texto-primario">app-tarjeta-mision</code> en formato
+      compacto con sus cuatro estados (en curso, lista para reclamar, reclamada y próximamente)
+      comparados en ambos modos.
+    </p>
+    @if (ultimoReclamo(); as id) {
+      <p class="font-interfaz text-xs text-energia-texto">
+        Último reclamo emitido en galería: misión #{{ id }}.
+      </p>
+    }
+  </header>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    @for (modo of modos; track modo) {
+      <div
+        [attr.data-modo]="modo"
+        class="space-y-6 rounded-lg border border-borde-default bg-fondo-app p-4 text-texto-primario sm:p-6"
+      >
+        <h3 class="font-titulo text-cuerpo text-texto-primario">Modo {{ modo }}</h3>
+
+        <app-tarjeta-muestra
+          titulo="app-tarjeta-mision · 4 estados"
+          descripcion="La tarjeta lista para reclamar usa el token semántico --energia (naranja), texto de estado visible y botón Reclamar."
+        >
+          <div class="space-y-3">
+            @for (muestra of muestras; track muestra.mision.id) {
+              <div class="space-y-1">
+                <p class="font-interfaz text-xs text-texto-secundario">{{ muestra.etiqueta }}</p>
+                <app-tarjeta-mision
+                  [mision]="muestra.mision"
+                  (reclamar)="registrarReclamo($event)"
+                />
+              </div>
+            }
+          </div>
+        </app-tarjeta-muestra>
+      </div>
+    }
+  </div>
+</div>
+

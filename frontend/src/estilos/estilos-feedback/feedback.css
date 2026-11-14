@@ -53,6 +53,17 @@
     --info-borde: rgba(85, 181, 230, 0.55);
     --info-texto: #99DCFF;
     --info-sobre: var(--color-teal-profundo);
+
+    /* ENERGÍA (Cartas repetidas intercambiables y recompensas listas para reclamar) */
+    --energia: var(--color-naranja);
+    --energia-hover: var(--color-naranja-hover);
+    --energia-fondo: var(--color-naranja-fondo);
+    --energia-borde: var(--color-naranja-borde);
+    --energia-texto: var(--color-naranja-texto);
+    --energia-texto-brillante: var(--color-naranja-texto-brillante);
+    --energia-sobre: var(--color-naranja-sobre);
+    --energia-gradiente: var(--gradiente-naranja);
+    --energia-sombra: var(--sombra-naranja);
 }
 
 [data-modo="empresa"] {
@@ -86,4 +97,11 @@
     --info-borde: #93C2E6;
     --info-texto: #144266;
     --info-sobre: var(--blanco-puro);
+
+    /* Respaldo mínimo en modo empresa para vistas compartidas en galería */
+    --energia: #C2410C;
+    --energia-fondo: #FFF7ED;
+    --energia-borde: #FB923C;
+    --energia-texto: #9A3412;
+    --energia-sobre: var(--blanco-puro);
 }

@@ -4,10 +4,16 @@ import { porcentaje } from '@modelos/misiones.model';
 
 /** `mision` = verde, `pity` = amarillo (progreso hacia la legendaria). */
 export type VarianteBarra = 'mision' | 'pity';
+export type TamanoBarra = 'md' | 'sm';
 
 const CLASES_RELLENO: Record<VarianteBarra, string> = {
   mision: 'bg-barra-mision-relleno',
   pity: 'bg-barra-pity-relleno',
+};
+
+const CLASES_CONTENEDOR_TAMANO: Record<TamanoBarra, string> = {
+  md: 'h-9 border-2 border-barra-borde bg-barra-fondo shadow-[0_3px_0_var(--barra-sombra)] sm:h-10 md:h-12',
+  sm: 'h-2 border border-barra-borde bg-fondo-hundido',
 };
 
 /**
@@ -25,6 +31,7 @@ export class BarraProgreso {
   readonly actual = input.required<number>();
   readonly objetivo = input.required<number>();
   readonly variante = input<VarianteBarra>('mision');
+  readonly tamano = input<TamanoBarra>('md');
   /** Nombre accesible de lo que se está midiendo (p. ej. el título de la misión). */
   readonly etiqueta = input.required<string>();
   /** Texto dentro de la pastilla; por defecto "N% completado". */
@@ -36,4 +43,8 @@ export class BarraProgreso {
     () => `${this.actual()} de ${this.objetivo()}, ${this.porcentaje()}%`,
   );
   protected readonly clasesRelleno = computed(() => CLASES_RELLENO[this.variante()]);
+  protected readonly clasesContenedor = computed(
+    () =>
+      `relative w-full overflow-hidden rounded-pildora ${CLASES_CONTENEDOR_TAMANO[this.tamano()]}`,
+  );
 }

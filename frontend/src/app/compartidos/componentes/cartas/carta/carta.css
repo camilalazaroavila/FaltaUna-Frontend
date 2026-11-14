@@ -278,15 +278,15 @@
   justify-content: center;
   gap: 0.05em;
   padding: 0.2em 0.5em;
-  background: var(--gradiente-naranja, linear-gradient(135deg, #f59e0b, #d97706));
-  color: var(--color-naranja-sobre, #04201c);
+  background: var(--energia-gradiente, linear-gradient(135deg, #f59e0b, #d97706));
+  color: var(--energia-sobre, #04201c);
   font-family: var(--fuente-titulo, sans-serif);
   font-weight: 900;
   font-size: 10cqi;
   line-height: 1;
   border-radius: 9999px;
   border: 0.16em solid #fef3c7;
-  box-shadow: var(--sombra-naranja, 0 0.15em 0.35em rgba(0, 0, 0, 0.55), 0 0 0.4em rgba(245, 158, 11, 0.35));
+  box-shadow: var(--energia-sombra, 0 0.15em 0.35em rgba(0, 0, 0, 0.55), 0 0 0.4em rgba(245, 158, 11, 0.35));
   pointer-events: none;
   user-select: none;
   letter-spacing: 0.02em;

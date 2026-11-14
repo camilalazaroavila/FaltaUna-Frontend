@@ -62,7 +62,7 @@ describe('TarjetaMision', () => {
     const boton = el.querySelector('app-sobre-marca button')!;
     expect(boton.getAttribute('aria-label')).toBe('Sobre de Gastronomía');
     expect(el.textContent).toContain('Reclamar');
-    expect(el.textContent).toContain('¡Reclamá tu sobre!');
+    expect(el.textContent).toContain('Lista para reclamar');
   });
 
   it('emite el id al reclamar una misión completada', () => {
@@ -93,7 +93,7 @@ describe('TarjetaMision', () => {
 
     const articulo = el.querySelector('article')!;
     expect(articulo.className).toContain('animate-latido-reclamo');
-    expect(el.textContent).toContain('¡Reclamá tu sobre!');
+    expect(el.textContent).toContain('Lista para reclamar');
   });
 
   it.each<[string, Partial<Mision>]>([

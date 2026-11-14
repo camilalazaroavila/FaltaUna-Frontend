@@ -27,6 +27,8 @@ const ICONOS = {
   phosphorXFill: ICONO_PRUEBA,
   phosphorHeartFill: ICONO_PRUEBA,
   phosphorLockFill: ICONO_PRUEBA,
+  phosphorClockFill: ICONO_PRUEBA,
+  phosphorCheckCircleFill: ICONO_PRUEBA,
   phosphorHourglassMediumFill: ICONO_PRUEBA,
   phosphorUserFill: ICONO_PRUEBA,
   phosphorCoinsFill: ICONO_PRUEBA,
@@ -81,7 +83,7 @@ describe('GaleriaComponentes', () => {
   });
 
   it('debe renderizar todas las secciones de la galeria', () => {
-    expect(SECCIONES.length).toBe(18);
+    expect(SECCIONES.length).toBe(19);
 
     for (const seccion of SECCIONES) {
       expect(html().querySelector(`#${seccion.id}`)).not.toBeNull();

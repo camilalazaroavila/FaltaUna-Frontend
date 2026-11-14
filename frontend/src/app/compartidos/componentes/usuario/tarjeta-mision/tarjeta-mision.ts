@@ -1,29 +1,27 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { BarraProgreso } from '@compartidos/componentes/feedback/barra-progreso/barra-progreso';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
 import { ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
 import type { Mision } from '@modelos/misiones.model';
 
 /**
- * Fila de una misión: estado, título, barra de progreso y recompensa.
+ * Tarjeta compacta de una misión: estado, título, barra de progreso y recompensa.
  *
  * Cuatro estados visuales, cada uno con un indicador que se entiende sin
- * depender solo del color (ícono + texto accesible):
- * - `en_curso`: contorno neutro con reloj de arena (estático, nunca animado).
- * - `completada`: indicador de atención (amarillo) con ícono de regalo; el
- *   sobre es clickeable, habilita el holográfico de `app-sobre-marca` y se
- *   destaca con un halo animado que respeta `prefers-reduced-motion`.
- * - `reclamada`: círculo verde con check.
+ * depender solo del color (ícono + texto visible):
+ * - `en_curso`: contorno neutro con reloj (estático, nunca animado).
+ * - `completada`: energía naranja con ícono de regalo, etiqueta
+ *   "Lista para reclamar", botón "Reclamar" y sobre clickeable con halo animado
+ *   que respeta `prefers-reduced-motion` y `data-movimiento="reducido"`.
+ * - `reclamada`: atenuada, ícono de check y etiqueta "Reclamada".
  * - no disponible (`disponible: false`): candado y tarjeta atenuada.
- *
- * El sobre usa el modo `clickeable` de `app-sobre-marca` (con su hover y
- * holográfico) en lugar de envolverlo en un botón propio.
  */
 @Component({
   selector: 'app-tarjeta-mision',
-  imports: [NgIcon, BarraProgreso, SobreMarca],
+  imports: [NgIcon, BarraProgreso, SobreMarca, Boton],
   templateUrl: './tarjeta-mision.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
@@ -49,9 +47,14 @@ export class TarjetaMision {
   protected readonly textoEstado = computed(() => {
     if (!this.disponible()) return 'Próximamente';
     if (this.reclamada()) return 'Reclamada';
-    if (this.listaParaReclamar()) return '¡Reclamá tu sobre!';
+    if (this.listaParaReclamar()) return 'Lista para reclamar';
     return 'En curso';
   });
+
+  /** Texto compacto de progreso numérico (`actual/objetivo`). */
+  protected readonly progresoTexto = computed(
+    () => `${this.mision().actual}/${this.mision().objetivo}`,
+  );
 
   /** Descripción accesible del indicador circular (nunca depende solo del color). */
   protected readonly textoIndicador = computed(() => {
@@ -66,7 +69,7 @@ export class TarjetaMision {
     if (!this.disponible()) return 'phosphorLockFill';
     if (this.reclamada()) return 'phosphorCheckCircleFill';
     if (this.listaParaReclamar()) return 'phosphorGiftFill';
-    return 'phosphorRadioButtonFill';
+    return 'phosphorClockFill';
   });
 
   protected readonly recompensa = computed(() => this.mision().recompensa);

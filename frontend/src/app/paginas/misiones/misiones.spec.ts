@@ -78,7 +78,7 @@ describe('TarjetaMision', () => {
       const boton = el.querySelector('app-sobre-marca button')!;
       expect(boton.getAttribute('aria-label')).toBe('Sobre de Gastronomía');
       expect(el.textContent).toContain('Reclamar');
-      expect(el.textContent).toContain('¡Reclamá tu sobre!');
+      expect(el.textContent).toContain('Lista para reclamar');
     });
 
     it('no permite reclamar una misión en curso (el sobre no es clickeable)', () => {
@@ -106,7 +106,7 @@ describe('TarjetaMision', () => {
 
       const articulo = el.querySelector('article')!;
       expect(articulo.className).toContain('animate-latido-reclamo');
-      expect(el.textContent).toContain('¡Reclamá tu sobre!');
+      expect(el.textContent).toContain('Lista para reclamar');
     });
   });
 

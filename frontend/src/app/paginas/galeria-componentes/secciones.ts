@@ -117,4 +117,10 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     descripcion:
       'Navegación con efecto ola en dos orientaciones: barra inferior mobile de 5 columnas con botón central JUGAR, y barra vertical derecha para desktop con hover.',
   },
+  {
+    id: 'tarjeta-mision',
+    titulo: 'Tarjeta de misión',
+    descripcion:
+      'Tarjeta compacta de app-tarjeta-mision en sus cuatro estados (en curso, lista para reclamar, reclamada y próximamente) comparada en modo jugador y empresa.',
+  },
 ] as const;

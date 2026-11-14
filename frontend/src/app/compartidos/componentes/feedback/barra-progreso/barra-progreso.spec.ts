@@ -40,4 +40,23 @@ describe('BarraProgreso', () => {
     const relleno = montar(1, 2, 'pity').querySelector('span[aria-hidden="true"]')!;
     expect(relleno.className).toContain('bg-barra-pity-relleno');
   });
+
+  it('usa tamaño md por defecto y soporta tamano="sm" compacto conservando ARIA', () => {
+    const barraMd = montar(1, 2).querySelector('[role="progressbar"]')!;
+    expect(barraMd.className).toContain('h-9');
+    expect(barraMd.textContent).toContain('50% completado');
+
+    fixture.componentRef.setInput('tamano', 'sm');
+    fixture.detectChanges();
+
+    const barraSm = fixture.nativeElement.querySelector('[role="progressbar"]')!;
+    expect(barraSm.className).toContain('h-2');
+    expect(barraSm.getAttribute('aria-valuenow')).toBe('1');
+    expect(barraSm.getAttribute('aria-valuemax')).toBe('2');
+    expect(barraSm.getAttribute('aria-valuetext')).toBe('1 de 2, 50%');
+    expect(barraSm.textContent?.trim()).toBe('');
+
+    const rellenoSm = barraSm.querySelector('span[aria-hidden="true"]') as HTMLElement;
+    expect(rellenoSm.style.width).toBe('50%');
+  });
 });
