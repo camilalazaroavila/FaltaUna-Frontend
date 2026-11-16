@@ -7,71 +7,83 @@ import { ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
 import type { Mision } from '@modelos/misiones.model';
 
 /**
- * Fila de una misión: estado, título, barra de progreso y recompensa.
+ * Tarjeta compacta de una misión: título, estado con ícono, barra `sm` y recompensa opcional.
  *
- * Cuatro estados visuales, cada uno con un indicador que se entiende sin
- * depender solo del color (ícono + texto accesible):
- * - `en_curso`: contorno neutro con reloj de arena (estático, nunca animado).
- * - `completada`: indicador de atención (amarillo) con ícono de regalo; el
- *   sobre es clickeable, habilita el holográfico de `app-sobre-marca` y se
- *   destaca con un halo animado que respeta `prefers-reduced-motion`.
- * - `reclamada`: círculo verde con check.
- * - no disponible (`disponible: false`): candado y tarjeta atenuada.
- *
- * El sobre usa el modo `clickeable` de `app-sobre-marca` (con su hover y
- * holográfico) en lugar de envolverlo en un botón propio.
+ * - En modo Diaria (`mostrarRecompensa = false`): sin sobre ni botón, no clickeable;
+ *   solo estados `En curso` y `Completada` (atenuada con tilde).
+ * - En modo Semanal / Permanente (`mostrarRecompensa = true`): sobre a la derecha y
+ *   cuatro estados (`En curso`, `Lista para reclamar` con token `--energia`, `Reclamada`
+ *   y `Próximamente`).
  */
 @Component({
   selector: 'app-tarjeta-mision',
   imports: [NgIcon, BarraProgreso, SobreMarca],
   templateUrl: './tarjeta-mision.html',
+  styleUrl: './tarjeta-mision.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
 })
 export class TarjetaMision {
   readonly mision = input.required<Mision>();
+  readonly mostrarRecompensa = input<boolean>(true);
 
   readonly reclamar = output<number>();
 
   protected readonly disponible = computed(() => this.mision().disponible);
 
-  protected readonly reclamada = computed(() => this.mision().estado === 'reclamada');
-
-  /** Completada sin reclamar: la recompensa está lista para reclamar. */
-  protected readonly listaParaReclamar = computed(
-    () => this.mision().disponible && this.mision().estado === 'completada',
+  /** En Diaria, tanto `completada` como `reclamada` se muestran como `Completada` (atenuada, sin cobro). */
+  protected readonly completadaDiaria = computed(
+    () =>
+      !this.mostrarRecompensa() &&
+      this.disponible() &&
+      (this.mision().estado === 'completada' || this.mision().estado === 'reclamada'),
   );
 
-  /** Ni reclamada ni lista: sigue en curso (o aún no disponible). */
-  protected readonly enCurso = computed(() => !this.reclamada() && !this.listaParaReclamar());
+  protected readonly reclamada = computed(
+    () => this.mostrarRecompensa() && this.disponible() && this.mision().estado === 'reclamada',
+  );
 
-  /** Texto visible que acompaña al título, según el estado. */
+  /** Completada sin reclamar en modos con recompensa individual. */
+  protected readonly listaParaReclamar = computed(
+    () => this.mostrarRecompensa() && this.disponible() && this.mision().estado === 'completada',
+  );
+
+  protected readonly enCurso = computed(
+    () =>
+      this.disponible() &&
+      !this.completadaDiaria() &&
+      !this.reclamada() &&
+      !this.listaParaReclamar(),
+  );
+
+  protected readonly atenuada = computed(
+    () => !this.disponible() || this.reclamada() || this.completadaDiaria(),
+  );
+
+  /** Ícono único de estado para no duplicar lógica en el template. */
+  protected readonly iconoEstado = computed(() => {
+    if (!this.disponible()) return 'phosphorLockFill';
+    if (this.reclamada() || this.completadaDiaria()) return 'phosphorCheckCircleFill';
+    if (this.listaParaReclamar()) return 'heroCheckSolid';
+    return 'phosphorClock';
+  });
+
+  /** Texto visible que acompaña al título según modo y estado. */
   protected readonly textoEstado = computed(() => {
     if (!this.disponible()) return 'Próximamente';
+    if (this.completadaDiaria()) return 'Completada';
     if (this.reclamada()) return 'Reclamada';
-    if (this.listaParaReclamar()) return '¡Reclamá tu sobre!';
+    if (this.listaParaReclamar()) return 'Lista para reclamar';
     return 'En curso';
   });
 
-  /** Descripción accesible del indicador circular (nunca depende solo del color). */
-  protected readonly textoIndicador = computed(() => {
-    if (!this.disponible()) return 'Misión no disponible todavía';
-    if (this.reclamada()) return 'Recompensa reclamada';
-    if (this.listaParaReclamar()) return 'Recompensa lista para reclamar';
-    return 'Misión en curso';
-  });
-
-  /** Ícono del indicador de estado: se entiende sin leer el color. */
-  protected readonly iconoEstado = computed(() => {
-    if (!this.disponible()) return 'phosphorLockFill';
-    if (this.reclamada()) return 'phosphorCheckCircleFill';
-    if (this.listaParaReclamar()) return 'phosphorGiftFill';
-    return 'phosphorRadioButtonFill';
-  });
+  /** Texto compacto de progreso numérico (`actual/objetivo`). */
+  protected readonly progresoTexto = computed(
+    () => `${this.mision().actual}/${this.mision().objetivo}`,
+  );
 
   protected readonly recompensa = computed(() => this.mision().recompensa);
 
-  /** Props sueltas para `app-sobre-marca`: la recompensa es un union discriminado. */
   protected readonly recompensaCategoria = computed(() => {
     const recompensa = this.mision().recompensa;
     return recompensa?.tipo === 'categoria' ? recompensa.categoria : null;
@@ -87,7 +99,6 @@ export class TarjetaMision {
     return recompensa?.tipo === 'marca' ? recompensa.logoUrl : null;
   });
 
-  /** Texto humano de la recompensa, para el nombre accesible del botón. */
   protected readonly descripcionRecompensa = computed(() => {
     const recompensa = this.mision().recompensa;
     if (!recompensa) return 'una recompensa';

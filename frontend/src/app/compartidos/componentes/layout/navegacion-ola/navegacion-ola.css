@@ -358,6 +358,41 @@ ng-icon[name="phosphorTrophyFill"] {
   transform: scale(1) translateX(0);
 }
 
+/* Submenú interactivo (ej. Misiones -> PT System) */
+.nav-ola__submenu {
+  pointer-events: none;
+  position: absolute;
+  left: calc(100% + var(--ola-circulo) / 2 + 0.5rem);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-6px);
+  transition: opacity 150ms ease, transform 150ms ease, visibility 150ms ease;
+  z-index: 50;
+}
+
+.nav-ola__submenu--abierto,
+.nav-ola__item-desktop:focus-within .nav-ola__submenu {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* Puente invisible entre el ítem/círculo y el submenú para no perder el hover */
+.nav-ola__submenu::before {
+  content: '';
+  position: absolute;
+  inset-block: -0.5rem;
+  right: 100%;
+  width: calc(var(--ola-circulo) / 2 + 1rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-ola__submenu {
+    transition: none;
+  }
+}
+
 .nav-ola__icono-mascara {
   display: inline-block;
   width: 2rem;

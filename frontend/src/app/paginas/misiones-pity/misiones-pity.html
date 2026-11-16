@@ -1,0 +1,220 @@
+<div
+  class="flow-root min-h-dvh bg-fondo-app bg-usuario-gradiente-amarillo-verde font-interfaz text-texto-primario"
+>
+  <app-header [logueado]="true" tamanio="grande" enlaceLogo="/usuario" />
+
+  <div class="area-contenido-con-nav px-4 pt-2 pb-10 sm:px-6 lg:px-8">
+    <div class="pt-1">
+      <a
+        routerLink="/usuario/misiones"
+        class="inline-flex items-center gap-2 font-titulo text-sm tracking-wider uppercase transition-colors hover:text-marca-primaria"
+      >
+        <svg
+          class="h-4 w-6"
+          viewBox="0 0 28 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M27 8H2M9 1L2 8l7 7" />
+        </svg>
+        Volver
+      </a>
+    </div>
+
+    <div class="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+      <h1 class="shrink-0 titulo-sombreado font-titulo text-misiones-titulo tracking-wide text-marca-acento uppercase">
+        PT SYSTEM
+      </h1>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          (click)="abrirModalPity()"
+          class="inline-flex cursor-pointer items-center gap-2 rounded-pildora border border-marca-acento/40 bg-marca-acento/10 px-4 py-2 font-titulo text-xs tracking-wider text-marca-acento uppercase transition-colors hover:border-marca-acento hover:bg-marca-acento/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+        >
+          <svg
+            class="size-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          ¿Qué es el pity system?
+        </button>
+
+        <app-desplegable-seleccion
+          etiqueta="Categoría"
+          marcador="Todas"
+          [mostrarEtiqueta]="true"
+          [opciones]="opcionesCategoria"
+          [valor]="categoriaPity()"
+          (valorCambiar)="cambiarCategoria($event)"
+        />
+        <app-desplegable-seleccion
+          etiqueta="Marca"
+          marcador="Todas"
+          [mostrarEtiqueta]="true"
+          [opciones]="opcionesMarca()"
+          [valor]="marcaPity()"
+          (valorCambiar)="cambiarMarca($event)"
+        />
+        <app-desplegable-seleccion
+          etiqueta="Ordenar por"
+          [mostrarEtiqueta]="true"
+          [permitirLimpiar]="false"
+          [opciones]="opcionesOrden"
+          [valor]="ordenPity()"
+          (valorCambiar)="cambiarOrden($event)"
+        />
+        @if (hayFiltrosPity()) {
+          <button
+            type="button"
+            class="cursor-pointer rounded-pildora border border-marca-coleccion bg-transparent px-4 py-2 text-xs font-bold tracking-wider text-marca-coleccion uppercase transition-colors hover:bg-marca-coleccion hover:text-marca-coleccion-sobre"
+            (click)="limpiarFiltrosPity()"
+          >
+            Limpiar
+          </button>
+        }
+      </div>
+    </div>
+
+    <main class="mt-6">
+      @if (cargando()) {
+        <div
+          class="flex flex-col items-center gap-2 px-8 py-16 text-center"
+          role="status"
+          aria-live="polite"
+        >
+          <svg
+            class="size-6 animate-spin text-marca-acento"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M21 12a9 9 0 1 1-6.22-8.56" />
+          </svg>
+          <p class="text-misiones-texto text-texto-secundario">Cargando PT System…</p>
+        </div>
+      } @else if (error()) {
+        <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center" role="alert">
+          <p class="font-titulo text-misiones-fila text-texto-secundario">{{ error() }}</p>
+          <p class="text-misiones-texto text-texto-apagado">Revisá tu conexión y volvé a intentar.</p>
+          <button
+            type="button"
+            class="mt-4 cursor-pointer rounded-pildora border border-marca-coleccion bg-transparent px-5 py-2 text-xs font-bold tracking-wider text-marca-coleccion uppercase transition-colors hover:bg-marca-coleccion hover:text-marca-coleccion-sobre"
+            (click)="cargar()"
+          >
+            Reintentar
+          </button>
+        </div>
+      } @else if (pityFiltrado().length === 0) {
+        <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center">
+          <p class="font-titulo text-misiones-fila text-texto-secundario">
+            No hay sobres que coincidan con esos filtros.
+          </p>
+          <p class="text-misiones-texto text-texto-apagado">
+            Probá con otra categoría o marca para ver tu progreso hacia la legendaria.
+          </p>
+          @if (hayFiltrosPity()) {
+            <button
+              type="button"
+              class="mt-4 cursor-pointer rounded-pildora border border-marca-coleccion bg-transparent px-5 py-2 text-xs font-bold tracking-wider text-marca-coleccion uppercase transition-colors hover:bg-marca-coleccion hover:text-marca-coleccion-sobre"
+              (click)="limpiarFiltrosPity()"
+            >
+              Limpiar filtros
+            </button>
+          }
+        </div>
+      } @else {
+        <ul class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5">
+          @for (progreso of pityFiltrado(); track progreso.id) {
+            <li>
+              <app-tarjeta-pity [progreso]="progreso" />
+            </li>
+          }
+        </ul>
+      }
+    </main>
+  </div>
+
+  @if (modalPityAbierto()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-modal-pity"
+      (click)="cerrarModalPity()"
+      (keydown.escape)="cerrarModalPity()"
+    >
+      <div
+        class="relative w-full max-w-lg rounded-2xl border-2 border-borde-coleccion bg-fondo-app p-6 shadow-alta sm:p-7"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          type="button"
+          (click)="cerrarModalPity()"
+          class="absolute top-4 right-4 inline-flex size-8 cursor-pointer items-center justify-center rounded-circulo border border-borde-coleccion bg-fondo-coleccion-superficie text-texto-secundario transition-colors hover:bg-white/10 hover:text-texto-primario focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+          aria-label="Cerrar modal"
+        >
+          <svg
+            class="size-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        <h2
+          id="titulo-modal-pity"
+          class="font-titulo text-xl tracking-wider text-marca-acento sm:text-2xl"
+        >
+          ¿Qué es el Pity System?
+        </h2>
+
+        <div class="mt-4 space-y-3 font-interfaz text-sm leading-relaxed text-texto-secundario sm:text-base">
+          <p>
+            El <strong>PT System</strong> (Pity System) cuenta los sobres que abrís de cada tipo. Al
+            completar el total requerido, ¡te asegurás una <strong>carta legendaria</strong>, la
+            más rara del álbum!
+          </p>
+          <p>
+            Si por ejemplo tu progreso está en 9/10, el próximo sobre que abras va a contener una
+            legendaria, así que asegurate de abrir el sobre correcto.
+          </p>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button
+            type="button"
+            (click)="cerrarModalPity()"
+            class="cursor-pointer rounded-pildora bg-marca-acento px-5 py-2 font-titulo text-xs tracking-wider text-marca-sobre-acento uppercase transition-colors hover:bg-marca-acento-activo"
+          >
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

@@ -34,8 +34,8 @@
   </p>
 
   @if (carta().obtenida && (carta().cantidad ?? 0) > 1) {
-    <div class="mt-2.5 badge-naranja-suave">
-      <span class="flex size-2 rounded-full bg-naranja animate-pulse"></span>
+    <div class="mt-2.5 badge-energia-suave">
+      <span class="flex size-2 rounded-full bg-energia animate-pulse"></span>
       <span>Tenés {{ carta().cantidad }} copias ({{ carta().cantidad! - 1 }} repetida{{ carta().cantidad! - 1 > 1 ? 's' : '' }})</span>
     </div>
   }

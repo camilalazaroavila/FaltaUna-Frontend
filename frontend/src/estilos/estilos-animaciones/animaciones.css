@@ -45,11 +45,11 @@
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--marca-acento) 55%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--energia, var(--marca-acento)) 55%, transparent);
   }
 
   50% {
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--marca-acento) 0%, transparent);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--energia, var(--marca-acento)) 0%, transparent);
   }
 }
 

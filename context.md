@@ -366,6 +366,7 @@ Cada estado provee 5 variantes (base, fondo, borde, texto, sobre) para evitar la
 - **Error (`--error`)**: pago rechazado, cupón vencido, fallo de red, derrota.
 - **Advertencia (`--advertencia`)**: oferta de intercambio por vencer, recompensa sin reclamar, tiempos límite.
 - **Atención (`--atencion`)**: cartas nuevas, sobres disponibles y anuncios destacados.
+- **Energía (`--energia`)**: cartas y recompensas que podés mover o reclamar (cartas repetidas para intercambiar, misión lista para reclamar).
 - **Información (`--info`)**: tips, reglas del juego y descripciones informativas.
 
 ### Tipografías (normalizadas)

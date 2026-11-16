@@ -19,7 +19,9 @@ export type TipoMision =
   | 'sobres_abiertos'
   | 'partidas_jugadas'
   | 'reclamar_sobre_diario'
-  | 'obtener_cartas';
+  | 'obtener_cartas'
+  | 'completar_album'
+  | 'completar_tutorial';
 
 /**
  * `completada` = progreso al 100% y recompensa sin reclamar (el sobre se vuelve clickeable).
@@ -70,11 +72,15 @@ export interface Mision {
 }
 
 /** Contrato de `GET /api/Misiones`. */
-export type PeriodoMisionBackend = 'DIARIA' | 'SEMANAL';
+export type PeriodoMisionBackend = 'DIARIA' | 'SEMANAL' | 'PERMANENTE';
 export type ObjetivoMisionBackend =
   | 'ABRIR_SOBRES'
   | 'RECLAMAR_SOBRE_DIARIO'
-  | 'OBTENER_CARTAS';
+  | 'OBTENER_CARTAS'
+  | 'INICIAR_SESION'
+  | 'JUGAR_PARTIDAS'
+  | 'COMPLETAR_ALBUM'
+  | 'COMPLETAR_TUTORIAL';
 export type TipoSobreBackend = 'GENERAL' | 'CATEGORIA' | 'MARCA';
 
 export interface SobreRecompensaRespuesta {
@@ -106,15 +112,64 @@ export interface RecompensaMisionRespuesta {
   readonly cantidad: number;
 }
 
+/** Contrato de `GET /api/Misiones/resumen`. */
+export interface ResumenPeriodoMisiones {
+  readonly proximoReinicioUtc: string;
+}
+
+export interface BonoDiarioMisiones {
+  readonly totalRequeridas: number;
+  readonly completadas: number;
+  readonly disponible: boolean;
+  readonly reclamado: boolean;
+  readonly recompensa: SobreRecompensaRespuesta;
+  readonly cantidadRecompensa: number;
+}
+
+export interface ResumenMisionesRespuesta {
+  readonly fechaServidorUtc: string;
+  readonly diaria: ResumenPeriodoMisiones | null;
+  readonly semanal: ResumenPeriodoMisiones | null;
+  readonly bonoDiario: BonoDiarioMisiones | null;
+}
+
+/** Contrato de `POST /api/Misiones/bono-diario/reclamar`. */
+export interface ReclamarBonoRespuesta {
+  readonly sobreId: number;
+  readonly nombre: string;
+  readonly cantidad: number;
+}
+
+/** Contrato de `POST /api/Misiones/reclamar-todas`. */
+export interface ReclamarTodasRespuesta {
+  readonly sobresAcreditados: readonly ReclamarBonoRespuesta[];
+  readonly misionesReclamadasIds: readonly number[];
+  readonly bonoReclamado: boolean;
+}
+
 const PERIODICIDAD_POR_PERIODO: Record<PeriodoMisionBackend, Periodicidad> = {
   DIARIA: 'diaria',
   SEMANAL: 'semanal',
+  PERMANENTE: 'permanente',
 };
 
 const TIPO_POR_OBJETIVO: Record<ObjetivoMisionBackend, TipoMision> = {
   ABRIR_SOBRES: 'sobres_abiertos',
   RECLAMAR_SOBRE_DIARIO: 'reclamar_sobre_diario',
   OBTENER_CARTAS: 'obtener_cartas',
+  INICIAR_SESION: 'inicio_sesion',
+  JUGAR_PARTIDAS: 'partidas_jugadas',
+  COMPLETAR_ALBUM: 'completar_album',
+  COMPLETAR_TUTORIAL: 'completar_tutorial',
+};
+
+export const mapearObjetivo = (
+  objetivo: string,
+): { readonly tipo: TipoMision; readonly disponible: boolean } => {
+  if (objetivo in TIPO_POR_OBJETIVO) {
+    return { tipo: TIPO_POR_OBJETIVO[objetivo as ObjetivoMisionBackend], disponible: true };
+  }
+  return { tipo: 'obtener_cartas', disponible: false };
 };
 
 export const mapearPeriodicidad = (periodo: string): Periodicidad =>
@@ -163,17 +218,20 @@ export const mapearRecompensa = (
   };
 };
 
-export const mapearMision = (respuesta: MisionRespuesta): Mision => ({
-  id: respuesta.id,
-  titulo: respuesta.nombre,
-  tipo: TIPO_POR_OBJETIVO[respuesta.objetivo] ?? 'obtener_cartas',
-  periodicidad: mapearPeriodicidad(respuesta.periodo),
-  actual: respuesta.progreso,
-  objetivo: respuesta.meta,
-  estado: mapearEstado(respuesta.completada, respuesta.reclamada),
-  recompensa: mapearRecompensa(respuesta.recompensa),
-  disponible: true,
-});
+export const mapearMision = (respuesta: MisionRespuesta): Mision => {
+  const { tipo, disponible } = mapearObjetivo(respuesta.objetivo);
+  return {
+    id: respuesta.id,
+    titulo: respuesta.nombre,
+    tipo,
+    periodicidad: mapearPeriodicidad(respuesta.periodo),
+    actual: respuesta.progreso,
+    objetivo: respuesta.meta,
+    estado: mapearEstado(respuesta.completada, respuesta.reclamada),
+    recompensa: mapearRecompensa(respuesta.recompensa),
+    disponible,
+  };
+};
 
 /** Una fila del PT System: sobres abiertos de un tipo desde la última legendaria. */
 export interface ProgresoPity {

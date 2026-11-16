@@ -1,101 +1,102 @@
-  <article
-    class="flex items-center gap-3 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-3 shadow-marca transition-colors sm:gap-4 sm:p-4"
-    [class.border-atencion]="listaParaReclamar()"
-    [class.border-dashed]="!disponible()"
-    [class.animate-latido-reclamo]="listaParaReclamar()"
-    [class.opacity-70]="!disponible()"
-  >
-    @if (reclamada()) {
-<span
-      class="flex size-misiones-indicador shrink-0 items-center justify-center self-center rounded-circulo border-2 border-exito bg-exito text-exito-sobre shadow-marca"
+<article
+  class="relative flex min-h-32 items-center gap-4 rounded-md border-2 px-5 py-4 transition-[colors,transform] sm:min-h-36 sm:gap-5 sm:px-7 sm:py-5 lg:min-h-40"
+  [class.cursor-pointer]="listaParaReclamar()"
+  [class.hover:-translate-y-0.5]="listaParaReclamar()"
+  [class.bg-superficie-elevada]="!atenuada() && !listaParaReclamar()"
+  [class.border-borde]="!atenuada() && !listaParaReclamar()"
+  [class.shadow-cartoon-clara]="!listaParaReclamar()"
+  [class.bg-energia-fondo]="listaParaReclamar()"
+  [class.border-energia]="listaParaReclamar()"
+  [class.shadow-energia]="listaParaReclamar()"
+  [class.animate-latido-reclamo]="listaParaReclamar()"
+  [class.bg-superficie-base]="atenuada()"
+  [class.border-borde-sutil]="atenuada()"
+  [class.opacity-70]="!disponible()"
+  [class.opacity-80]="disponible() && atenuada()"
+  (click)="listaParaReclamar() && reclamarRecompensa()"
+>
+  @if (mostrarRecompensa() && recompensa() && enCurso()) {
+    <span
+      class="pointer-events-none absolute -top-2.5 right-3 hidden items-center rounded-pildora border border-barra-borde bg-exito px-2.5 py-0.5 font-interfaz text-etiqueta font-bold text-exito-sobre shadow-baja md:inline-flex"
       aria-hidden="true"
     >
-      <ng-icon
-        name="phosphorCheckFill"
-        size="var(--misiones-medida-indicador-icono)"
-      />
+      Recompensa
     </span>
-    <span class="sr-only">{{ textoIndicador() }}</span>
-    } @else {
-      <span
-        class="flex size-misiones-indicador shrink-0 items-center justify-center self-center rounded-circulo border-2 shadow-marca"
-        [class.border-exito]="reclamada()"
-        [class.bg-exito]="reclamada()"
-        [class.text-exito-sobre]="reclamada()"
-        [class.border-atencion]="listaParaReclamar()"
-        [class.bg-atencion]="listaParaReclamar()"
-        [class.text-atencion-sobre]="listaParaReclamar()"
-        [class.border-barra-borde]="enCurso() && disponible()"
-        [class.text-texto-secundario]="enCurso() && disponible()"
-        [class.border-borde-coleccion]="!disponible()"
-        [class.bg-fondo-hundido]="!disponible()"
-        [class.text-texto-apagado]="!disponible()"
-      >
-        <ng-icon
-          [name]="iconoEstado()"
-          size="var(--misiones-medida-indicador-icono)"
-          aria-hidden="true"
-        />
-        <span class="sr-only">{{ textoIndicador() }}</span>
-      </span>
-    }
+  }
 
-  <div class="flex min-w-0 flex-1 flex-col gap-2">
-    <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-      <h3 class="font-titulo text-misiones-fila tracking-[0.02em] text-texto-primario">
+  <span class="sr-only">
+    @if (!disponible()) {
+      Misión no disponible todavía
+    } @else if (completadaDiaria()) {
+      Misión completada
+    } @else if (reclamada()) {
+      Recompensa reclamada
+    } @else if (listaParaReclamar()) {
+      Misión lista para reclamar
+    } @else {
+      Misión en curso
+    }
+  </span>
+
+  <div class="min-w-0 flex-1 space-y-3">
+    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+      <h3 class="line-clamp-2 font-titulo text-misiones-fila leading-snug font-bold tracking-wide text-texto-primario">
         {{ mision().titulo }}
       </h3>
 
-      @if (disponible()) {
+      <span
+        class="inline-flex shrink-0 items-center gap-1.5 font-interfaz text-sm font-bold whitespace-nowrap"
+        [class.text-energia-texto]="listaParaReclamar()"
+        [class.text-exito-texto]="reclamada() || completadaDiaria()"
+        [class.text-texto-secundario]="enCurso() || !disponible()"
+      >
+        @if (listaParaReclamar()) {
           <span
-            class="rounded-pildora border px-3 py-1 text-misiones-badge font-bold tracking-[0.04em]"
-            [class.border-exito-borde]="reclamada()"
-            [class.bg-exito-fondo]="reclamada()"
-            [class.text-exito-texto]="reclamada()"
-            [class.border-atencion-borde]="listaParaReclamar()"
-            [class.bg-atencion-fondo]="listaParaReclamar()"
-            [class.text-atencion-texto]="listaParaReclamar()"
-            [class.border-borde-coleccion]="enCurso()"
-            [class.text-texto-secundario]="enCurso()"
+            class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-energia text-energia-sobre"
+            aria-hidden="true"
           >
-          {{ textoEstado() }}
-        </span>
-      }
+            <ng-icon [name]="iconoEstado()" size="0.75rem" />
+          </span>
+        } @else {
+          <ng-icon
+            [name]="iconoEstado()"
+            size="var(--misiones-medida-indicador-icono)"
+            aria-hidden="true"
+          />
+        }
+        {{ textoEstado() }}
+      </span>
     </div>
 
-    @if (!disponible()) {
-      <p class="font-interfaz text-misiones-texto text-texto-apagado">Próximamente</p>
-    } @else {
+    @if (disponible()) {
       <app-barra-progreso
-        class="block w-full max-w-md"
+        tamano="md"
         [actual]="mision().actual"
         [objetivo]="mision().objetivo"
-        variante="mision"
         [etiqueta]="mision().titulo"
+        [texto]="progresoTexto()"
       />
     }
   </div>
 
-  @if (disponible() && recompensa()) {
-    <div class="flex shrink-0 flex-col items-center gap-1.5">
-      <span class="font-interfaz text-misiones-sobre-accion font-bold tracking-[0.06em] text-texto-apagado uppercase">
-        Recompensa
-      </span>
+  @if (mostrarRecompensa() && recompensa()) {
+    <div
+      class="tarjeta-mision__sobre flex shrink-0 flex-col items-center gap-0.5"
+      (click)="$event.stopPropagation()"
+    >
       <app-sobre-marca
-        tamanio="md"
+        tamanio="sm"
         [clickeable]="listaParaReclamar()"
         [categoria]="recompensaCategoria()"
         [nombre]="recompensaNombre()"
         [logoUrl]="recompensaLogo()"
         (accion)="reclamarRecompensa()"
       />
+
       @if (listaParaReclamar()) {
-        <span
-          class="text-center text-misiones-sobre-accion font-bold tracking-[0.06em] text-atencion uppercase"
-        >
+        <span class="font-interfaz text-etiqueta leading-none font-bold text-energia-texto">
           Reclamar
         </span>
-        <span class="sr-only">Tocá el sobre para reclamar {{ descripcionRecompensa() }}</span>
       }
     </div>
   }

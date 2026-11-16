@@ -1,0 +1,70 @@
+@if (bono(); as datos) {
+  <div class="flex flex-col gap-2">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p class="font-cuerpo text-xs font-medium text-texto-secundario">
+        Bono diario · Completá las {{ datos.totalRequeridas }} misiones para ganar un sobre
+      </p>
+
+      <app-reinicio-misiones
+        [proximoReinicioUtc]="proximoReinicioUtc()"
+        [offsetRelojMs]="offsetRelojMs()"
+        (reinicioAlcanzado)="reinicioAlcanzado.emit()"
+      />
+    </div>
+
+    <div class="flex items-center gap-3 sm:gap-4">
+      <div
+        role="progressbar"
+        aria-label="Progreso del bono diario"
+        aria-valuemin="0"
+        [attr.aria-valuemax]="datos.totalRequeridas"
+        [attr.aria-valuenow]="datos.completadas"
+        [attr.aria-valuetext]="valorAccesible()"
+        class="relative flex h-9 min-w-0 flex-1 items-stretch gap-1 overflow-hidden rounded-pildora border-2 border-barra-borde bg-barra-fondo p-1 shadow-[0_3px_0_var(--barra-sombra)] sm:h-10"
+      >
+        @for (lleno of segmentos(); track $index) {
+          <span
+            class="h-full flex-1 transition-colors duration-300 first:rounded-l-pildora last:rounded-r-pildora motion-reduce:transition-none"
+            [class.bg-barra-mision-relleno]="lleno"
+            [class.bg-superficie-base/40]="!lleno"
+            aria-hidden="true"
+          ></span>
+        }
+
+        <span
+          class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-3 font-titulo text-sm tracking-wide text-barra-texto tabular-nums sm:text-base"
+        >
+          {{ progresoTexto() }}
+        </span>
+      </div>
+
+      <div
+        class="barra-bono__sobre flex shrink-0 flex-col items-center gap-0.5 rounded-sm border p-1 transition-colors"
+        [class.border-transparent]="!disponible()"
+        [class.border-energia]="disponible()"
+        [class.bg-energia-fondo]="disponible()"
+        [class.animate-latido-reclamo]="disponible() && !reclamando()"
+        [class.opacity-65]="!disponible() && !reclamado()"
+        [class.opacity-75]="reclamado()"
+      >
+        <app-sobre-marca
+          tamanio="sm"
+          [clickeable]="disponible() && !reclamando()"
+          [categoria]="sobreCategoria()"
+          [nombre]="sobreNombre()"
+          [logoUrl]="sobreLogo()"
+          (accion)="reclamarBono()"
+        />
+
+        <span
+          class="font-interfaz text-etiqueta leading-none font-bold"
+          [class.text-energia-texto]="disponible()"
+          [class.text-exito-texto]="reclamado()"
+          [class.text-texto-secundario]="!disponible() && !reclamado()"
+        >
+          {{ etiquetaSobre() }}
+        </span>
+      </div>
+    </div>
+  </div>
+}

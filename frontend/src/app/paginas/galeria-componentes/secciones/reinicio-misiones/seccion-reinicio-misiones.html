@@ -1,0 +1,32 @@
+<div class="space-y-8">
+  <header class="space-y-2">
+    <h2 class="font-titulo text-subtitulo text-texto-primario">Reinicio de misiones</h2>
+    <p class="font-cuerpo text-sm text-texto-secundario">
+      Componente <code class="font-interfaz text-texto-primario">app-reinicio-misiones</code> con
+      las dos unidades más grandes y reloj reconocible en ambos modos.
+    </p>
+  </header>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    @for (modo of modos; track modo) {
+      <div
+        [attr.data-modo]="modo"
+        class="space-y-6 rounded-lg border border-borde-default bg-fondo-app p-4 text-texto-primario sm:p-6"
+      >
+        <h3 class="font-titulo text-cuerpo text-texto-primario">Modo {{ modo }}</h3>
+
+        <app-tarjeta-muestra
+          titulo="app-reinicio-misiones · formatos"
+          descripcion="Días + minutos/horas, horas + minutos y minutos solos."
+        >
+          <div class="flex flex-wrap gap-3">
+            <app-reinicio-misiones [proximoReinicioUtc]="en6Dias" />
+            <app-reinicio-misiones [proximoReinicioUtc]="en5Horas" />
+            <app-reinicio-misiones [proximoReinicioUtc]="en12Min" />
+          </div>
+        </app-tarjeta-muestra>
+      </div>
+    }
+  </div>
+</div>
+

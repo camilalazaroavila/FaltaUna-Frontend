@@ -1,0 +1,45 @@
+<div class="space-y-8">
+  <header class="space-y-2">
+    <h2 class="font-titulo text-subtitulo text-texto-primario">Barra de bono diario</h2>
+    <p class="font-cuerpo text-sm text-texto-secundario">
+      Componente <code class="font-interfaz text-texto-primario">app-barra-bono-misiones</code> con
+      barra segmentada en <code class="font-interfaz text-texto-primario">totalRequeridas</code>
+      tramos, sobre adjunto y chip
+      <code class="font-interfaz text-texto-primario">app-reinicio-misiones</code> integrado.
+    </p>
+    @if (ultimoReclamo()) {
+      <p class="font-interfaz text-xs text-energia-texto">
+        Se emitió el reclamo del bono diario en galería.
+      </p>
+    }
+  </header>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    @for (modo of modos; track modo) {
+      <div
+        [attr.data-modo]="modo"
+        class="space-y-6 rounded-lg border border-borde-default bg-fondo-app p-4 text-texto-primario sm:p-6"
+      >
+        <h3 class="font-titulo text-cuerpo text-texto-primario">Modo {{ modo }}</h3>
+
+        <app-tarjeta-muestra
+          titulo="app-barra-bono-misiones · Caja protagonista (3 estados)"
+          descripcion="Barra segmentada en 4 tramos, sobre de meta al final y chip de reinicio en el encabezado."
+        >
+          <div class="space-y-4">
+            @for (muestra of muestras; track muestra.etiqueta) {
+              <div class="space-y-1.5">
+                <p class="font-interfaz text-xs text-texto-secundario">{{ muestra.etiqueta }}</p>
+                <app-barra-bono-misiones
+                  [bono]="muestra.bono"
+                  [proximoReinicioUtc]="proximoReinicioEjemplo"
+                  (reclamar)="ultimoReclamo.set(true)"
+                />
+              </div>
+            }
+          </div>
+        </app-tarjeta-muestra>
+      </div>
+    }
+  </div>
+</div>
