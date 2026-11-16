@@ -216,9 +216,14 @@
         @for (destino of destinosMapeados(); track destino.id; let i = $index) {
           @let enOla = indiceEfectivoDesktop() === i && aparicionDesktop() > 0.5;
           @let esActivo = esRutaActiva(destino);
+          @let tieneSub = (destino.subdestinos?.length ?? 0) > 0;
+          @let subAbierto = tieneSub && submenuAbiertoId() === destino.id;
           <div class="nav-ola__item-desktop"
-            (mouseenter)="destino.deshabilitado ? null : alPasarMouseDesktop(i)"
-            (focusin)="destino.deshabilitado ? null : alPasarMouseDesktop(i)">
+            (mouseenter)="destino.deshabilitado ? null : alPasarMouseDesktop(i); tieneSub ? abrirSubmenuDesktop(destino.id) : null"
+            (mouseleave)="tieneSub ? programarCierreSubmenuDesktop() : null"
+            (focusin)="destino.deshabilitado ? null : alPasarMouseDesktop(i); tieneSub ? abrirSubmenuDesktop(destino.id) : null"
+            (focusout)="tieneSub ? alSalirFocoItemDesktop($event) : null"
+            (keydown.escape)="tieneSub ? cerrarSubmenuDesktop() : null">
             <a
               [routerLink]="destino.deshabilitado ? null : destino.ruta"
               class="nav-ola__enlace-desktop"
@@ -226,6 +231,8 @@
               [class.nav-ola__enlace-desktop--oculto-por-ola]="enOla"
               [attr.aria-label]="destino.etiqueta"
               [attr.aria-current]="esActivo ? 'page' : null"
+              [attr.aria-haspopup]="tieneSub ? 'menu' : null"
+              [attr.aria-expanded]="tieneSub ? subAbierto : null"
               [attr.aria-disabled]="destino.deshabilitado ? 'true' : null"
               [attr.tabindex]="destino.deshabilitado ? -1 : null"
               (click)="alSeleccionar(destino, $event)"
@@ -246,9 +253,46 @@
                 <span class="nav-ola__notificacion" aria-hidden="true"></span>
               }
             </a>
-            <span class="nav-ola__tooltip" role="tooltip">
-              {{ destino.etiqueta }}{{ destino.deshabilitado ? ' (Próximamente)' : '' }}
-            </span>
+            @if (tieneSub) {
+              <div
+                class="nav-ola__submenu flex min-w-36 flex-col gap-1 rounded-md border border-borde-default bg-elevado p-2 text-texto-primario shadow-media"
+                [class.nav-ola__submenu--abierto]="subAbierto"
+                role="menu"
+                [attr.aria-label]="'Opciones de ' + destino.etiqueta"
+                (mouseenter)="abrirSubmenuDesktop(destino.id)"
+              >
+                <a
+                  role="menuitem"
+                  [routerLink]="destino.ruta"
+                  class="block rounded-sm px-2.5 py-1.5 font-titulo text-etiqueta tracking-wide whitespace-nowrap uppercase transition-colors hover:bg-marca-acento hover:!text-marca-sobre-acento focus-visible:bg-marca-acento focus-visible:!text-marca-sobre-acento focus-visible:outline-none motion-reduce:transition-none"
+                  [class.text-texto-primario]="rutaEfectiva() !== destino.ruta"
+                  [class.bg-marca-acento]="rutaEfectiva() === destino.ruta"
+                  [class.!text-marca-sobre-acento]="rutaEfectiva() === destino.ruta"
+                  [attr.aria-current]="rutaEfectiva() === destino.ruta ? 'page' : null"
+                  (click)="alSeleccionar(destino, $event); cerrarSubmenuDesktop()"
+                >
+                  {{ destino.etiqueta }}
+                </a>
+                @for (sub of destino.subdestinos!; track sub.id) {
+                  <a
+                    role="menuitem"
+                    [routerLink]="sub.ruta"
+                    class="block rounded-sm px-2.5 py-1.5 font-titulo text-etiqueta tracking-wide whitespace-nowrap uppercase transition-colors hover:bg-marca-acento hover:!text-marca-sobre-acento focus-visible:bg-marca-acento focus-visible:!text-marca-sobre-acento focus-visible:outline-none motion-reduce:transition-none"
+                    [class.text-texto-primario]="rutaEfectiva() !== sub.ruta"
+                    [class.bg-marca-acento]="rutaEfectiva() === sub.ruta"
+                    [class.!text-marca-sobre-acento]="rutaEfectiva() === sub.ruta"
+                    [attr.aria-current]="rutaEfectiva() === sub.ruta ? 'page' : null"
+                    (click)="cerrarSubmenuDesktop()"
+                  >
+                    {{ sub.etiqueta }}
+                  </a>
+                }
+              </div>
+            } @else {
+              <span class="nav-ola__tooltip" role="tooltip">
+                {{ destino.etiqueta }}{{ destino.deshabilitado ? ' (Próximamente)' : '' }}
+              </span>
+            }
           </div>
         }
       </nav>
@@ -266,6 +310,8 @@
       [style.transform]="transformCirculoDesktop()"
       [attr.aria-label]="destinoO ? destinoO.etiqueta : null"
       [attr.tabindex]="-1"
+      (mouseenter)="destinoO?.subdestinos?.length ? abrirSubmenuDesktop(destinoO!.id) : null"
+      (mouseleave)="destinoO?.subdestinos?.length ? programarCierreSubmenuDesktop() : null"
       (click)="alClickCirculoDesktop($event)">
       @if (destinoO?.urlIcono) {
         <span class="nav-ola__icono-mascara nav-ola__icono-mascara--desktop"

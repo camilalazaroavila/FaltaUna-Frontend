@@ -123,4 +123,16 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     descripcion:
       'Tarjeta compacta de app-tarjeta-mision en sus cuatro estados (en curso, lista para reclamar, reclamada y próximamente) comparada en modo jugador y empresa.',
   },
+  {
+    id: 'barra-bono-misiones',
+    titulo: 'Barra de bono diario',
+    descripcion:
+      'Barra de progreso del bono diario de Misiones (app-barra-bono-misiones) en sus tres estados.',
+  },
+  {
+    id: 'reinicio-misiones',
+    titulo: 'Reinicio de misiones',
+    descripcion:
+      'Chip de cuenta regresiva para el próximo reinicio de misiones (app-reinicio-misiones).',
+  },
 ] as const;

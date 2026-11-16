@@ -3,8 +3,8 @@
     <h2 class="font-titulo text-subtitulo text-texto-primario">Tarjeta de misión</h2>
     <p class="font-cuerpo text-sm text-texto-secundario">
       Componente <code class="font-interfaz text-texto-primario">app-tarjeta-mision</code> en formato
-      compacto con sus cuatro estados (en curso, lista para reclamar, reclamada y próximamente)
-      comparados en ambos modos.
+      compacto: Diaria sin recompensa (en curso y completada) y Semanal/Permanente con sobre
+      (en curso, lista para reclamar, reclamada y próximamente) comparados en ambos modos.
     </p>
     @if (ultimoReclamo(); as id) {
       <p class="font-interfaz text-xs text-energia-texto">
@@ -22,8 +22,8 @@
         <h3 class="font-titulo text-cuerpo text-texto-primario">Modo {{ modo }}</h3>
 
         <app-tarjeta-muestra
-          titulo="app-tarjeta-mision · 4 estados"
-          descripcion="La tarjeta lista para reclamar usa el token semántico --energia (naranja), texto de estado visible y botón Reclamar."
+          titulo="app-tarjeta-mision · Diaria y Semanal/Permanente"
+          descripcion="Diaria omite el sobre y solo distingue En curso / Completada; Semanal/Permanente usa --energia en Lista para reclamar."
         >
           <div class="space-y-3">
             @for (muestra of muestras; track muestra.mision.id) {
@@ -31,6 +31,7 @@
                 <p class="font-interfaz text-xs text-texto-secundario">{{ muestra.etiqueta }}</p>
                 <app-tarjeta-mision
                   [mision]="muestra.mision"
+                  [mostrarRecompensa]="muestra.mostrarRecompensa"
                   (reclamar)="registrarReclamo($event)"
                 />
               </div>
@@ -41,4 +42,3 @@
     }
   </div>
 </div>
-

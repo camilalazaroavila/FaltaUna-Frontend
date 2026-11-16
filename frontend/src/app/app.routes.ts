@@ -118,6 +118,15 @@ export const routes: Routes = [
   },
 
   {
+    path: 'usuario/misiones/pity',
+    title: 'PT System · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('@paginas/misiones-pity/misiones-pity').then((m) => m.MisionesPity),
+  },
+
+  {
     path: 'usuario/albumes',
     title: 'Álbumes · Falta Una',
     canActivate: [rolGuard],

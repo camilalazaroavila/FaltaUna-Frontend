@@ -1,33 +1,34 @@
 <article
-  class="relative flex min-h-[5.5rem] items-center gap-3 rounded-md border-2 px-3 py-2.5 shadow-cartoon transition-colors sm:gap-3.5 sm:px-3.5 sm:py-3"
-  [class.bg-superficie-elevada]="!reclamada() && disponible() && !listaParaReclamar()"
-  [class.border-borde]="!reclamada() && disponible() && !listaParaReclamar()"
+  class="relative flex min-h-32 items-center gap-4 rounded-md border-2 px-5 py-4 transition-[colors,transform] sm:min-h-36 sm:gap-5 sm:px-7 sm:py-5 lg:min-h-40"
+  [class.cursor-pointer]="listaParaReclamar()"
+  [class.hover:-translate-y-0.5]="listaParaReclamar()"
+  [class.bg-superficie-elevada]="!atenuada() && !listaParaReclamar()"
+  [class.border-borde]="!atenuada() && !listaParaReclamar()"
+  [class.shadow-cartoon-clara]="!listaParaReclamar()"
   [class.bg-energia-fondo]="listaParaReclamar()"
-  [class.border-energia-borde]="listaParaReclamar()"
+  [class.border-energia]="listaParaReclamar()"
+  [class.shadow-energia]="listaParaReclamar()"
   [class.animate-latido-reclamo]="listaParaReclamar()"
-  [class.bg-superficie-base]="reclamada() || !disponible()"
-  [class.border-borde-sutil]="reclamada() || !disponible()"
+  [class.bg-superficie-base]="atenuada()"
+  [class.border-borde-sutil]="atenuada()"
   [class.opacity-70]="!disponible()"
-  [class.opacity-80]="reclamada()"
+  [class.opacity-80]="disponible() && atenuada()"
+  (click)="listaParaReclamar() && reclamarRecompensa()"
 >
-  <span
-    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-circulo border-2"
-    [class.border-energia-borde]="listaParaReclamar()"
-    [class.bg-energia]="listaParaReclamar()"
-    [class.text-energia-sobre]="listaParaReclamar()"
-    [class.border-exito-borde]="reclamada()"
-    [class.bg-exito-fondo]="reclamada()"
-    [class.text-exito-texto]="reclamada()"
-    [class.border-borde]="enCurso()"
-    [class.bg-superficie-base]="enCurso()"
-    [class.text-texto-secundario]="enCurso()"
-  >
-    <ng-icon [name]="iconoEstado()" size="var(--misiones-medida-indicador-icono)" aria-hidden="true" />
-  </span>
+  @if (mostrarRecompensa() && recompensa() && enCurso()) {
+    <span
+      class="pointer-events-none absolute -top-2.5 right-3 hidden items-center rounded-pildora border border-barra-borde bg-exito px-2.5 py-0.5 font-interfaz text-etiqueta font-bold text-exito-sobre shadow-baja md:inline-flex"
+      aria-hidden="true"
+    >
+      Recompensa
+    </span>
+  }
 
   <span class="sr-only">
     @if (!disponible()) {
       Misión no disponible todavía
+    } @else if (completadaDiaria()) {
+      Misión completada
     } @else if (reclamada()) {
       Recompensa reclamada
     } @else if (listaParaReclamar()) {
@@ -37,46 +38,52 @@
     }
   </span>
 
-  <div class="min-w-0 flex-1 space-y-1.5">
-    <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-      <h3 class="line-clamp-2 font-titulo text-cuerpo leading-snug font-bold tracking-wide text-texto-principal">
+  <div class="min-w-0 flex-1 space-y-3">
+    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+      <h3 class="line-clamp-2 font-titulo text-misiones-fila leading-snug font-bold tracking-wide text-texto-primario">
         {{ mision().titulo }}
       </h3>
 
       <span
-        class="inline-flex shrink-0 items-center rounded-circulo border px-2 py-0.5 text-menor font-bold whitespace-nowrap"
-        [class.border-energia-borde]="listaParaReclamar()"
-        [class.bg-energia-fondo]="listaParaReclamar()"
+        class="inline-flex shrink-0 items-center gap-1.5 font-interfaz text-sm font-bold whitespace-nowrap"
         [class.text-energia-texto]="listaParaReclamar()"
-        [class.border-exito-borde]="reclamada()"
-        [class.bg-exito-fondo]="reclamada()"
-        [class.text-exito-texto]="reclamada()"
-        [class.border-borde]="enCurso()"
-        [class.bg-superficie-base]="enCurso()"
-        [class.text-texto-secundario]="enCurso()"
+        [class.text-exito-texto]="reclamada() || completadaDiaria()"
+        [class.text-texto-secundario]="enCurso() || !disponible()"
       >
+        @if (listaParaReclamar()) {
+          <span
+            class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-energia text-energia-sobre"
+            aria-hidden="true"
+          >
+            <ng-icon [name]="iconoEstado()" size="0.75rem" />
+          </span>
+        } @else {
+          <ng-icon
+            [name]="iconoEstado()"
+            size="var(--misiones-medida-indicador-icono)"
+            aria-hidden="true"
+          />
+        }
         {{ textoEstado() }}
       </span>
     </div>
 
     @if (disponible()) {
-      <div class="flex items-center gap-2.5">
-        <app-barra-progreso
-          class="min-w-0 flex-1"
-          tamano="sm"
-          [actual]="mision().actual"
-          [objetivo]="mision().objetivo"
-          [etiqueta]="mision().titulo"
-        />
-        <span class="shrink-0 font-titulo text-menor font-bold tabular-nums text-texto-secundario">
-          {{ progresoTexto() }}
-        </span>
-      </div>
+      <app-barra-progreso
+        tamano="md"
+        [actual]="mision().actual"
+        [objetivo]="mision().objetivo"
+        [etiqueta]="mision().titulo"
+        [texto]="progresoTexto()"
+      />
     }
   </div>
 
-  @if (recompensa()) {
-    <div class="flex shrink-0 flex-col items-center gap-1 sm:flex-row sm:gap-2">
+  @if (mostrarRecompensa() && recompensa()) {
+    <div
+      class="tarjeta-mision__sobre flex shrink-0 flex-col items-center gap-0.5"
+      (click)="$event.stopPropagation()"
+    >
       <app-sobre-marca
         tamanio="sm"
         [clickeable]="listaParaReclamar()"
@@ -87,16 +94,9 @@
       />
 
       @if (listaParaReclamar()) {
-        <button
-          type="button"
-          app-boton
-          variante="primario"
-          tamanio="sm"
-          [attr.aria-label]="'Reclamar ' + descripcionRecompensa()"
-          (click)="reclamarRecompensa()"
-        >
+        <span class="font-interfaz text-etiqueta leading-none font-bold text-energia-texto">
           Reclamar
-        </button>
+        </span>
       }
     </div>
   }

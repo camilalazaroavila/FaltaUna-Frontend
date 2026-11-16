@@ -345,6 +345,7 @@
     --shadow-cartoon: var(--sombra-cartoon);
     --shadow-cartoon-gruesa: var(--sombra-cartoon-gruesa);
     --shadow-cartoon-clara: var(--sombra-cartoon-clara);
+    --shadow-energia: var(--sombra-energia);
 
     /* Navegación inferior mobile */
     --color-nav-inferior-superficie: var(--nav-inferior-superficie);

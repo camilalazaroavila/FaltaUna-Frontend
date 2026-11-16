@@ -5,6 +5,12 @@ import urlIconoIntercambio from '@svgs/Icon_Intercambio.svg';
 import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 import urlIconoQr from '@svgs/Icon_Qr.svg';
 
+export interface SubdestinoNavegacionOla {
+  readonly id: string;
+  readonly etiqueta: string;
+  readonly ruta: string;
+}
+
 export interface DestinoNavegacionOla {
   readonly id: string;
   readonly etiqueta: string;
@@ -15,6 +21,7 @@ export interface DestinoNavegacionOla {
   readonly esIconoMulticolor?: boolean;
   readonly deshabilitado?: boolean;
   readonly tieneIndicador?: boolean;
+  readonly subdestinos?: readonly SubdestinoNavegacionOla[];
 }
 
 /**
@@ -33,8 +40,15 @@ export const DESTINOS_NAVEGACION_OLA: readonly DestinoNavegacionOla[] = [
     id: 'misiones',
     etiqueta: 'Misiones',
     ruta: '/usuario/misiones',
-    rutasCoincidentes: ['/usuario/misiones'],
+    rutasCoincidentes: ['/usuario/misiones', '/usuario/misiones/pity'],
     icono: 'phosphorTrophyFill',
+    subdestinos: [
+      {
+        id: 'pity',
+        etiqueta: 'PT System',
+        ruta: '/usuario/misiones/pity',
+      },
+    ],
   },
   {
     id: 'albumes',

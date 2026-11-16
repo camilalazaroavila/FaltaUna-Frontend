@@ -47,16 +47,17 @@ describe('BarraProgreso', () => {
     expect(barraMd.textContent).toContain('50% completado');
 
     fixture.componentRef.setInput('tamano', 'sm');
+    fixture.componentRef.setInput('texto', '1/2');
     fixture.detectChanges();
 
     const barraSm = fixture.nativeElement.querySelector('[role="progressbar"]')!;
-    expect(barraSm.className).toContain('h-2');
+    expect(barraSm.className).toContain('h-6');
     expect(barraSm.getAttribute('aria-valuenow')).toBe('1');
     expect(barraSm.getAttribute('aria-valuemax')).toBe('2');
     expect(barraSm.getAttribute('aria-valuetext')).toBe('1 de 2, 50%');
-    expect(barraSm.textContent?.trim()).toBe('');
+    expect(barraSm.textContent?.trim()).toBe('1/2');
 
     const rellenoSm = barraSm.querySelector('span[aria-hidden="true"]') as HTMLElement;
-    expect(rellenoSm.style.width).toBe('50%');
+    expect(rellenoSm.style.width).toContain('50%');
   });
 });

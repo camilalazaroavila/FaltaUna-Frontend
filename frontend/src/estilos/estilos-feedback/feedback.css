@@ -64,6 +64,7 @@
     --energia-sobre: var(--color-naranja-sobre);
     --energia-gradiente: var(--gradiente-naranja);
     --energia-sombra: var(--sombra-naranja);
+    --sombra-energia: 7px 7px 0 var(--energia);
 }
 
 [data-modo="empresa"] {

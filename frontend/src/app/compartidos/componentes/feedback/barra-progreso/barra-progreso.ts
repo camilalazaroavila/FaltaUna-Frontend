@@ -13,7 +13,7 @@ const CLASES_RELLENO: Record<VarianteBarra, string> = {
 
 const CLASES_CONTENEDOR_TAMANO: Record<TamanoBarra, string> = {
   md: 'h-9 border-2 border-barra-borde bg-barra-fondo shadow-[0_3px_0_var(--barra-sombra)] sm:h-10 md:h-12',
-  sm: 'h-2 border border-barra-borde bg-fondo-hundido',
+  sm: 'h-6 border-2 border-barra-borde bg-barra-fondo sm:h-7',
 };
 
 /**

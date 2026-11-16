@@ -50,6 +50,7 @@ describe('NavegacionOla (Unificado: Mobile con 5 columnas y Desktop vertical izq
           { path: 'usuario', component: DummyComponent },
           { path: 'usuario/mis-cartas', component: DummyComponent },
           { path: 'usuario/misiones', component: DummyComponent },
+          { path: 'usuario/misiones/pity', component: DummyComponent },
           { path: 'usuario/albumes', component: DummyComponent },
           { path: 'usuario/intercambio', component: DummyComponent },
           { path: 'usuario/jugar', component: DummyComponent },
@@ -190,8 +191,19 @@ describe('NavegacionOla (Unificado: Mobile con 5 columnas y Desktop vertical izq
       const items = fixture.nativeElement.querySelectorAll('.nav-ola__item-desktop');
       expect(items.length).toBe(6);
 
-      const tooltips = fixture.nativeElement.querySelectorAll('.nav-ola__tooltip');
-      expect(tooltips.length).toBe(6);
+      const tooltipsYSubmenus = fixture.nativeElement.querySelectorAll(
+        '.nav-ola__tooltip, .nav-ola__submenu',
+      );
+      expect(tooltipsYSubmenus.length).toBe(6);
+
+      const submenuMisiones = fixture.nativeElement.querySelector('.nav-ola__submenu a[href="/usuario/misiones/pity"]');
+      expect(submenuMisiones?.textContent?.trim()).toBe('PT System');
+    });
+
+    it('marca Misiones como activo tanto en /usuario/misiones como en /usuario/misiones/pity', async () => {
+      await router.navigateByUrl('/usuario/misiones/pity');
+      fixture.detectChanges();
+      expect(component.indiceRutaDesktop()).toBe(1);
     });
 
     it('sigue el hover del mouse en desktop y vuelve al salir', async () => {

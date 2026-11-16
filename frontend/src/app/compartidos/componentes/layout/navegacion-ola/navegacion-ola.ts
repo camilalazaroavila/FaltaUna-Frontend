@@ -188,6 +188,8 @@ export class NavegacionOla {
   protected readonly idSeleccionadoManual = signal<string | null>(null);
   protected readonly panelMasAbierto = signal<boolean>(false);
   protected readonly barraMobileOculta = signal<boolean>(false);
+  protected readonly submenuAbiertoId = signal<string | null>(null);
+  private timerCierreSubmenu: ReturnType<typeof setTimeout> | null = null;
 
   // ── Mobile ──
   protected readonly anchoBarraMobile = signal<number>(393);
@@ -329,9 +331,13 @@ export class NavegacionOla {
         this.idSeleccionadoManual.set(null);
         this.panelMasAbierto.set(false);
         this.barraMobileOculta.set(false);
+        this.cerrarSubmenuDesktop();
       });
 
-    this.destroyRef.onDestroy(() => sub.unsubscribe());
+    this.destroyRef.onDestroy(() => {
+      sub.unsubscribe();
+      this.limpiarTimerSubmenu();
+    });
 
     // Sincronización continua de la Ola en Mobile
     effect(() => {
@@ -505,6 +511,39 @@ export class NavegacionOla {
 
   protected alSalirMouseDesktop(): void {
     this.hoverDesktopIndex.set(null);
+    this.programarCierreSubmenuDesktop();
+  }
+
+  protected abrirSubmenuDesktop(id: string): void {
+    this.limpiarTimerSubmenu();
+    this.submenuAbiertoId.set(id);
+  }
+
+  protected programarCierreSubmenuDesktop(): void {
+    this.limpiarTimerSubmenu();
+    this.timerCierreSubmenu = setTimeout(() => {
+      this.submenuAbiertoId.set(null);
+      this.timerCierreSubmenu = null;
+    }, 180);
+  }
+
+  protected cerrarSubmenuDesktop(): void {
+    this.limpiarTimerSubmenu();
+    this.submenuAbiertoId.set(null);
+  }
+
+  protected alSalirFocoItemDesktop(evento: FocusEvent): void {
+    const contenedor = evento.currentTarget as HTMLElement | null;
+    const destino = evento.relatedTarget as Node | null;
+    if (contenedor && destino && contenedor.contains(destino)) return;
+    this.programarCierreSubmenuDesktop();
+  }
+
+  private limpiarTimerSubmenu(): void {
+    if (this.timerCierreSubmenu !== null) {
+      clearTimeout(this.timerCierreSubmenu);
+      this.timerCierreSubmenu = null;
+    }
   }
 
   protected abrirPanelMas(): void {
