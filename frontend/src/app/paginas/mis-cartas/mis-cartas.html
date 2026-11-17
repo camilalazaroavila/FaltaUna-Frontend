@@ -142,6 +142,9 @@
     </div>
 
     <main class="coleccion__contenido w-full">
+      @if (cargando()) {
+        <app-esqueleto-cartas [cantidad]="12" />
+      } @else {
         <p class="mb-3.5 text-right text-xs text-texto-apagado" aria-live="polite">
           <strong class="text-marca-coleccion">{{ resumen().obtenidas }}</strong>
           de {{ resumen().total }} cartas obtenidas
@@ -181,7 +184,8 @@
           }
         </div>
         }
-      </main>
+      }
+    </main>
   </div>
 
   @if (cartaPopup(); as carta) {

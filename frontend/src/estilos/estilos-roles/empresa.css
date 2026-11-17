@@ -49,6 +49,11 @@
     --borde-foco: var(--color-violeta-empresa);
     --overlay: rgba(10, 46, 54, 0.58);
 
+    /* --- Skeleton Loader --- */
+    --esqueleto-fondo: rgba(0, 0, 0, 0.08);
+    --esqueleto-borde: rgba(0, 0, 0, 0.05);
+    --esqueleto-brillo: rgba(255, 255, 255, 0.70);
+
     /* --- Auth: panel de imagen (login / register) ---
        Misma API que en modo jugador; el degradado toma la identidad violeta
        corporativa y el texto sigue siendo claro para convivir con la foto. */

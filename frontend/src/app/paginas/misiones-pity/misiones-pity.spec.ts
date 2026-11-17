@@ -66,5 +66,15 @@ describe('MisionesPity', () => {
     fixture.detectChanges();
     expect(el.querySelector('[role="dialog"]')).toBeNull();
   });
+
+  it('muestra app-esqueleto-pity mientras carga', () => {
+    const service = TestBed.inject(MisionesService) as unknown as { cargando: { set: (v: boolean) => void } };
+    service.cargando.set(true);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-esqueleto-pity')).not.toBeNull();
+    expect(el.textContent).toContain('Cargando PT System…');
+  });
 });
 

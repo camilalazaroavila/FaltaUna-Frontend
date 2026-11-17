@@ -1,0 +1,46 @@
+<div class="w-full" aria-busy="true" aria-live="polite">
+  <span class="sr-only" role="status">Cargando tus cupones…</span>
+
+  <ul
+    class="grid grid-cols-1 gap-x-6 gap-y-6 p-2 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-5 2xl:grid-cols-5"
+    aria-hidden="true"
+  >
+    @for (i of itemsIndices(); track i) {
+      <li class="w-full max-w-xs justify-self-center lg:max-w-[12rem]">
+        <div
+          class="relative block aspect-[4/3] w-full overflow-hidden rounded-lg border-2 border-(--crema)/30 bg-fondo-coleccion-superficie/80 p-2 shadow-marca"
+        >
+          <!-- Contenido interno del cupón esqueleto -->
+          <div
+            class="relative flex size-full flex-col justify-between overflow-hidden rounded-sm border border-(--crema)/20 bg-white/5"
+          >
+            <!-- Centro: nombre de la marca -->
+            <div class="flex flex-1 items-center justify-center px-2">
+              <app-esqueleto
+                variante="texto"
+                [ancho]="i % 2 === 0 ? '60%' : '75%'"
+                alto="1.5rem"
+              />
+            </div>
+
+            <!-- Franja inferior de descuento -->
+            <div
+              class="flex items-center justify-between border-t border-(--crema)/20 bg-white/5 px-2 py-1.5"
+            >
+              <app-esqueleto
+                variante="texto"
+                ancho="40%"
+                alto="0.875rem"
+              />
+              <app-esqueleto
+                variante="circulo"
+                ancho="1.25rem"
+                alto="1.25rem"
+              />
+            </div>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+</div>

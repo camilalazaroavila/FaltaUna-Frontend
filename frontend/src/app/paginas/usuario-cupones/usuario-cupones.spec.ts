@@ -131,6 +131,17 @@ describe('UsuarioCupones', () => {
     });
   });
 
+  it('muestra app-esqueleto-cupones cuando el estado cargando es verdadero', async () => {
+    await montar(null);
+    const componente = fixture.componentInstance as any;
+    componente.cargando.set(true);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-esqueleto-cupones')).not.toBeNull();
+    expect(el.textContent).toContain('Cargando tus cupones…');
+  });
+
   it('limpiarFiltros borra el texto y el estado', async () => {
     await montar(null);
     const componente = fixture.componentInstance as any;

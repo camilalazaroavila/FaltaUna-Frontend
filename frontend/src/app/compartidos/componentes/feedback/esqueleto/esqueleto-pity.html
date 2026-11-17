@@ -1,0 +1,55 @@
+<div class="w-full" aria-busy="true" aria-live="polite">
+  <span class="sr-only" role="status">Cargando PT System…</span>
+
+  <ul class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-5" aria-hidden="true">
+    @for (i of itemsIndices(); track i) {
+      <li>
+        <article
+          class="flex flex-wrap items-center gap-4 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-3 shadow-marca sm:p-4"
+        >
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <app-esqueleto
+                variante="texto"
+                [ancho]="i % 2 === 0 ? '9rem' : '11rem'"
+                alto="1.5rem"
+              />
+              @if (i === 0) {
+                <app-esqueleto
+                  variante="pildora"
+                  ancho="3.5rem"
+                  alto="1.25rem"
+                />
+              }
+            </div>
+
+            <div class="mt-1.5">
+              <app-esqueleto
+                variante="texto"
+                [ancho]="i % 2 === 0 ? '7rem' : '8.5rem'"
+                alto="0.875rem"
+              />
+            </div>
+
+            <div class="mt-3 w-full max-w-md">
+              <app-esqueleto
+                variante="barra"
+                ancho="100%"
+                alto="1.75rem"
+              />
+            </div>
+          </div>
+
+          <div class="shrink-0 flex items-center justify-center">
+            <app-esqueleto
+              variante="sobre"
+              ancho="5rem"
+              alto="6.5rem"
+              class="sm:!h-28 sm:!w-24"
+            />
+          </div>
+        </article>
+      </li>
+    }
+  </ul>
+</div>

@@ -8,6 +8,7 @@ import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
 import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
 import { esCartaSinMarca } from '@modelos/catalogo-cartas-imagenes';
 import { Header } from '@compartidos/componentes/layout/header/header';
+import { EsqueletoCartas } from '@compartidos/componentes/feedback/esqueleto/esqueleto-cartas';
 import { BarajaService } from '@servicios/baraja.service';
 import { AuthService } from '@servicios/auth.service';
 
@@ -51,7 +52,7 @@ const ORDEN_CATEGORIA: Record<CategoriaCarta, number> = {
 @Component({
   selector: 'app-mis-cartas',
   standalone: true,
-  imports: [RouterLink, CartaComponent, CartaPopupComponent, PulsacionCartaDirective, Header],
+  imports: [RouterLink, CartaComponent, CartaPopupComponent, PulsacionCartaDirective, Header, EsqueletoCartas],
   templateUrl: './mis-cartas.html',
   styleUrl: './mis-cartas.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

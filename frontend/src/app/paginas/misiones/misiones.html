@@ -91,7 +91,12 @@
     </div>
 
     <main class="mt-5">
-      @if (!cargando() && !error()) {
+      @if (cargando()) {
+        <app-esqueleto-misiones
+          [mostrarBono]="periodicidadActiva() === 'diaria'"
+          [conSobreEnTarjeta]="periodicidadActiva() !== 'diaria'"
+        />
+      } @else if (!error()) {
         @if (periodicidadActiva() === 'diaria') {
           <div class="mb-6">
             <app-barra-bono-misiones
@@ -119,30 +124,11 @@
           role="tabpanel"
           [id]="'panel-' + periodicidad"
           [attr.aria-labelledby]="'pestana-' + periodicidad"
-          [hidden]="periodicidadActiva() !== periodicidad"
+          [hidden]="periodicidadActiva() !== periodicidad || cargando()"
           tabindex="0"
           class="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
         >
-          @if (cargando()) {
-            <div
-              class="flex flex-col items-center gap-2 px-8 py-16 text-center"
-              role="status"
-              aria-live="polite"
-            >
-              <svg
-                class="size-6 animate-spin text-marca-acento"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                aria-hidden="true"
-              >
-                <path d="M21 12a9 9 0 1 1-6.22-8.56" />
-              </svg>
-              <p class="text-misiones-texto text-texto-secundario">Cargando misiones…</p>
-            </div>
-          } @else if (error()) {
+          @if (!cargando() && error()) {
             <div class="flex flex-col items-center gap-1.5 px-8 py-16 text-center" role="alert">
               <p class="font-titulo text-misiones-fila text-texto-secundario">{{ error() }}</p>
               <p class="text-misiones-texto text-texto-apagado">

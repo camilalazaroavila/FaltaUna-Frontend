@@ -81,6 +81,13 @@ describe('MisCartas', () => {
     fixture.detectChanges();
   });
 
+  it('muestra app-esqueleto-cartas mientras el estado cargando es verdadero', () => {
+    componente['cargando'].set(true);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-esqueleto-cartas')).not.toBeNull();
+  });
+
   it('debe renderizar la colección completa al inicio, sin filtros', () => {
     expect(renderizadas().length).toBe(CARTAS_MOCK.length);
     expect(fixture.nativeElement.querySelectorAll('app-carta').length).toBe(CARTAS_MOCK.length);

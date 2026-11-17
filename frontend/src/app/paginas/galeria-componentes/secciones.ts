@@ -135,4 +135,10 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     descripcion:
       'Chip de cuenta regresiva para el próximo reinicio de misiones (app-reinicio-misiones).',
   },
+  {
+    id: 'esqueleto',
+    titulo: 'app-esqueleto',
+    descripcion:
+      'Átomo y esqueletos de carga de misiones, PT system y cupones con shimmer y dimensiones exactas.',
+  },
 ] as const;

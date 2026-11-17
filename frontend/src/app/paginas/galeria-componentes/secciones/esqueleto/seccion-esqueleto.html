@@ -1,0 +1,78 @@
+<section class="space-y-6">
+  <header>
+    <h2 class="font-titulo text-2xl text-texto-primario">Esqueletos de carga</h2>
+    <p class="font-cuerpo text-sm text-texto-secundario">
+      Átomo <code class="font-interfaz text-texto-primario">app-esqueleto</code> con shimmer continuo
+      y esqueletos preconfigurados con dimensiones exactas para evitar Cumulative Layout Shift (CLS).
+    </p>
+  </header>
+
+  <app-tarjeta-muestra
+    titulo="Átomo app-esqueleto (variantes básicas)"
+    descripcion="Líneas de texto, bloques, círculos, píldoras y barras con animación shimmer."
+    modo="jugador"
+  >
+    <div class="flex flex-col gap-4 max-w-md">
+      <div class="space-y-2">
+        <app-esqueleto variante="texto" ancho="70%" />
+        <app-esqueleto variante="texto" ancho="90%" />
+        <app-esqueleto variante="texto" ancho="40%" />
+      </div>
+
+      <div class="flex items-center gap-3">
+        <app-esqueleto variante="circulo" ancho="3rem" alto="3rem" />
+        <div class="flex-1 space-y-1.5">
+          <app-esqueleto variante="texto" ancho="60%" />
+          <app-esqueleto variante="texto" ancho="35%" alto="0.75rem" />
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <app-esqueleto variante="pildora" ancho="6rem" alto="2rem" />
+        <app-esqueleto variante="pildora" ancho="7rem" alto="2rem" />
+      </div>
+
+      <app-esqueleto variante="barra" ancho="100%" alto="2rem" />
+    </div>
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Esqueleto de Misiones (app-esqueleto-misiones)"
+    descripcion="Espejo pixel-perfect de la barra de bono diario y la grilla 2x2 de tarjetas."
+    modo="jugador"
+  >
+    <app-esqueleto-misiones [cantidad]="4" />
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Esqueleto de PT System (app-esqueleto-pity)"
+    descripcion="Siluetas de tarjetas de pity con barra y sobre."
+    modo="jugador"
+  >
+    <app-esqueleto-pity [cantidad]="2" />
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Esqueleto de Cupones (app-esqueleto-cupones)"
+    descripcion="Grilla responsiva de sellos de cupones con proporción 4/3."
+    modo="jugador"
+  >
+    <app-esqueleto-cupones [cantidad]="4" />
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Esqueleto de Mis Cartas (app-esqueleto-cartas)"
+    descripcion="Grilla de cartas coleccionables de proporción 5/7 con indicador de atributo y arte."
+    modo="jugador"
+  >
+    <app-esqueleto-cartas [cantidad]="6" />
+  </app-tarjeta-muestra>
+
+  <app-tarjeta-muestra
+    titulo="Esqueleto de Gestión de Barajas (app-esqueleto-baraja)"
+    descripcion="Layout completo: panel 3x4 (12 casilleros) y catálogo con filtros."
+    modo="jugador"
+  >
+    <app-esqueleto-baraja [cantidadCatalogo]="4" />
+  </app-tarjeta-muestra>
+</section>

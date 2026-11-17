@@ -50,6 +50,11 @@
    /* Foco visible con máximo contraste sobre teal */
    --overlay: rgba(7, 35, 38, 0.82);
 
+   /* --- Skeleton Loader --- */
+   --esqueleto-fondo: rgba(255, 255, 255, 0.16);
+   --esqueleto-borde: rgba(255, 255, 255, 0.10);
+   --esqueleto-brillo: rgba(255, 255, 255, 0.35);
+
    /* --- Auth: panel de imagen (login / register) ---
        El panel lateral cubre la foto con un degradado del modo para que el
        texto (o el fallback) se lea sobre la imagen sin depender de la foto. */

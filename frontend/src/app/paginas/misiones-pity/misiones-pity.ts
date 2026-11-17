@@ -7,6 +7,7 @@ import {
 } from '@compartidos/componentes/controles/desplegable-seleccion/desplegable-seleccion';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { TarjetaPity } from '@compartidos/componentes/usuario/tarjeta-pity/tarjeta-pity';
+import { EsqueletoPity } from '@compartidos/componentes/feedback/esqueleto/esqueleto-pity';
 import { CATEGORIAS_SOBRE, ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
 import {
   categoriaDeSobre,
@@ -23,7 +24,7 @@ type CriterioOrdenPity = 'cercania' | 'nombre';
  */
 @Component({
   selector: 'app-misiones-pity',
-  imports: [DesplegableSeleccion, TarjetaPity, Header, RouterLink],
+  imports: [DesplegableSeleccion, TarjetaPity, EsqueletoPity, Header, RouterLink],
   templateUrl: './misiones-pity.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -85,9 +86,7 @@ export class MisionesPity implements OnInit {
   });
 
   ngOnInit(): void {
-    if (this.servicio.pity().length === 0) {
-      this.cargar();
-    }
+    this.cargar();
   }
 
   protected cargar(): void {
