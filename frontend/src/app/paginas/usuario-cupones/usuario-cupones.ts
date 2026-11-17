@@ -14,6 +14,7 @@ import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
 import QRCode from 'qrcode';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { TarjetaCupon } from '@compartidos/componentes/cupones/tarjeta-cupon/tarjeta-cupon';
+import { EsqueletoCupones } from '@compartidos/componentes/feedback/esqueleto/esqueleto-cupones';
 import { Confeti } from '@compartidos/componentes/confeti/confeti';
 import { CuponesService } from '@servicios/cupones.service';
 import { SonidoService } from '@servicios/sonido.service';
@@ -40,7 +41,7 @@ interface FiltroCategoria {
 @Component({
   selector: 'app-usuario-cupones',
   standalone: true,
-  imports: [RouterLink, DatePipe, Header, Confeti, TarjetaCupon],
+  imports: [RouterLink, DatePipe, Header, Confeti, TarjetaCupon, EsqueletoCupones],
   templateUrl: './usuario-cupones.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

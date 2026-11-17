@@ -8,6 +8,7 @@ import {
 } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
 import { BarraBonoMisiones } from '@compartidos/componentes/usuario/barra-bono-misiones/barra-bono-misiones';
 import { ReinicioMisiones } from '@compartidos/componentes/usuario/reinicio-misiones/reinicio-misiones';
+import { EsqueletoMisiones } from '@compartidos/componentes/feedback/esqueleto/esqueleto-misiones';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { TarjetaMision } from '@compartidos/componentes/usuario/tarjeta-mision/tarjeta-mision';
 import { ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
@@ -52,6 +53,7 @@ const PRIORIDAD_CON_RECOMPENSA: Record<Mision['estado'], number> = {
     TarjetaMision,
     BarraBonoMisiones,
     ReinicioMisiones,
+    EsqueletoMisiones,
     Header,
     FlujoAperturaSobres,
     RouterLink,

@@ -247,9 +247,7 @@
 
     <main class="coleccion__contenido mt-6 w-full">
         @if (cargando()) {
-          <p class="font-interfaz text-sm font-bold" role="status">
-            Cargando tus cupones…
-          </p>
+          <app-esqueleto-cupones />
         } @else if (error()) {
           <div role="alert" class="font-interfaz text-sm">
             <p class="font-bold">{{ error() }}</p>

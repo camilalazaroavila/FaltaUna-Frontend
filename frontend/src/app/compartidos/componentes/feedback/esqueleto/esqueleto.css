@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--esqueleto-fondo, rgba(255, 255, 255, 0.16));
+  border: 1px solid var(--esqueleto-borde, rgba(255, 255, 255, 0.10));
+}
+
+:host(.esqueleto--pulso) {
+  animation: esqueletoPulso 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+:host(.esqueleto--brillo)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 25%,
+    var(--esqueleto-brillo, rgba(255, 255, 255, 0.35)) 50%,
+    rgba(255, 255, 255, 0.05) 75%,
+    transparent 100%
+  );
+  animation: esqueletoShimmer 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes esqueletoShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes esqueletoPulso {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host(.esqueleto--pulso) {
+    animation: none !important;
+  }
+  :host(.esqueleto--brillo)::after {
+    animation: none !important;
+    display: none !important;
+  }
+}
+
+:host-context([data-movimiento='reducido']) {
+  animation: none !important;
+}
+
+:host-context([data-movimiento='reducido'])::after {
+  animation: none !important;
+  display: none !important;
+}

@@ -52,6 +52,12 @@ describe('MiBaraja', () => {
     componente = fixture.componentInstance;
     fixture.detectChanges();
   });
+  it('muestra app-esqueleto-baraja mientras el estado cargando es verdadero', () => {
+    componente['cargandoCartas'].set(true);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-esqueleto-baraja')).not.toBeNull();
+  });
   it('carga solo las cartas obtenidas y arranca con la baraja vacía', () => {
     expect(coleccion().length).toBe(disponibles().length);
     expect(coleccion().every((carta) => carta.obtenida)).toBe(true);

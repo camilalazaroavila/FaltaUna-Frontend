@@ -22,6 +22,7 @@ import { SeccionPartida } from '@paginas/galeria-componentes/secciones/partida/s
 import { SeccionTablero } from './secciones/tablero/seccion-tablero';
 import { SeccionTutorial } from '@paginas/galeria-componentes/secciones/tutorial/seccion-tutorial';
 import { SeccionNavegacionInferiorMobile } from '@paginas/galeria-componentes/secciones/navegacion-inferior-mobile/seccion-navegacion-inferior-mobile';
+import { SeccionEsqueleto } from './secciones/esqueleto/seccion-esqueleto';
 
 export type ModoGaleria = 'jugador' | 'empresa';
 
@@ -50,6 +51,7 @@ export type ModoGaleria = 'jugador' | 'empresa';
     SeccionTablero,
     SeccionTutorial,
     SeccionNavegacionInferiorMobile,
+    SeccionEsqueleto,
   ],
   templateUrl: './galeria-componentes.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

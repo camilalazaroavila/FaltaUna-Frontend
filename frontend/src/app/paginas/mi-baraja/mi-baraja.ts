@@ -14,6 +14,7 @@ import { Header } from '@compartidos/componentes/layout/header/header';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { CartaSeleccionableComponent } from '@compartidos/componentes/cartas/carta-seleccionable/carta-seleccionable';
 import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup/carta-popup';
+import { EsqueletoBaraja } from '@compartidos/componentes/feedback/esqueleto/esqueleto-baraja';
 import { PulsacionCartaDirective } from '@compartidos/directivas/pulsacion-carta.directive';
 import { BarajaService, mapearCartaMazo } from '@servicios/baraja.service';
 import type { Carta, CategoriaCarta, RarezaCarta } from '@modelos/carta.model';
@@ -54,6 +55,7 @@ interface OpcionOrden {
     CartaSeleccionableComponent,
     CartaPopupComponent,
     PulsacionCartaDirective,
+    EsqueletoBaraja,
   ],
   templateUrl: './mi-baraja.html',
   styleUrl: './mi-baraja.css',
@@ -69,6 +71,9 @@ export class MiBaraja {
   protected readonly tinteIcono =
     'brightness(0) saturate(100%) invert(44%) sepia(34%) saturate(229%) hue-rotate(19deg) brightness(173%) contrast(129%)';
   // Datos
+  protected readonly cargandoCartas = signal(true);
+  protected readonly cargandoMazos = signal(true);
+  protected readonly cargando = computed(() => this.cargandoCartas() || this.cargandoMazos());
   protected readonly coleccion = signal<Carta[]>([]);
   protected readonly seleccion = signal<Carta[]>([]);
   protected readonly nombreBaraja = signal('Mi baraja');
@@ -207,15 +212,21 @@ export class MiBaraja {
     this.barajaService
       .obtenerCartasDisponibles()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((cartas) => {
-        this.coleccion.set(cartas);
-        const categoriasPorId = new Map(cartas.map((c) => [c.id, c.categoria]));
-        this.seleccion.update((sel) =>
-          sel.map((c) => {
-            const cat = categoriasPorId.get(c.id);
-            return cat ? { ...c, categoria: cat } : c;
-          }),
-        );
+      .subscribe({
+        next: (cartas) => {
+          this.coleccion.set(cartas);
+          const categoriasPorId = new Map(cartas.map((c) => [c.id, c.categoria]));
+          this.seleccion.update((sel) =>
+            sel.map((c) => {
+              const cat = categoriasPorId.get(c.id);
+              return cat ? { ...c, categoria: cat } : c;
+            }),
+          );
+          this.cargandoCartas.set(false);
+        },
+        error: () => {
+          this.cargandoCartas.set(false);
+        },
       });
 
     this.cargarMazos();
@@ -225,15 +236,21 @@ export class MiBaraja {
     this.barajaService
       .obtenerMazos()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((mazos) => {
-        this.mazos.set(mazos);
-        const actualId = this.mazoSeleccionadoId();
-        const seleccionado = actualId !== null
-          ? mazos.find((m) => m.id === actualId) ?? mazos[0]
-          : mazos[0];
-        if (seleccionado && actualId === null) {
-          this.seleccionarMazo(seleccionado);
-        }
+      .subscribe({
+        next: (mazos) => {
+          this.mazos.set(mazos);
+          const actualId = this.mazoSeleccionadoId();
+          const seleccionado = actualId !== null
+            ? mazos.find((m) => m.id === actualId) ?? mazos[0]
+            : mazos[0];
+          if (seleccionado && actualId === null) {
+            this.seleccionarMazo(seleccionado);
+          }
+          this.cargandoMazos.set(false);
+        },
+        error: () => {
+          this.cargandoMazos.set(false);
+        },
       });
   }
 

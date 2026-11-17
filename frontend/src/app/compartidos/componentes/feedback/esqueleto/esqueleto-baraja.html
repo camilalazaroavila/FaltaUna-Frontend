@@ -1,0 +1,192 @@
+<div class="w-full" aria-busy="true" aria-live="polite">
+  <span class="sr-only" role="status">Cargando gestión de barajas…</span>
+
+  <!-- Selector superior de barajas espejo -->
+  <div class="mb-4 flex flex-wrap items-center gap-2" aria-hidden="true">
+    <app-esqueleto
+      variante="texto"
+      ancho="5.5rem"
+      alto="1rem"
+      class="mr-1"
+    />
+    <app-esqueleto
+      variante="pildora"
+      ancho="6.5rem"
+      alto="1.875rem"
+    />
+    <app-esqueleto
+      variante="pildora"
+      ancho="6.5rem"
+      alto="1.875rem"
+    />
+    <app-esqueleto
+      variante="pildora"
+      ancho="7.5rem"
+      alto="1.875rem"
+    />
+  </div>
+
+  <div class="baraja__layout" aria-hidden="true">
+    <!-- Panel izquierdo: baraja en construcción (3x4) -->
+    <aside class="baraja__panel">
+      <!-- Encabezado del panel -->
+      <div class="flex items-center justify-between gap-3">
+        <app-esqueleto
+          variante="texto"
+          ancho="6rem"
+          alto="1.25rem"
+        />
+        <app-esqueleto
+          variante="pildora"
+          ancho="4.5rem"
+          alto="1.625rem"
+        />
+      </div>
+
+      <!-- Campo nombre de la baraja -->
+      <div class="mt-4 space-y-1.5">
+        <app-esqueleto
+          variante="texto"
+          ancho="8rem"
+          alto="0.75rem"
+        />
+        <app-esqueleto
+          variante="pildora"
+          ancho="100%"
+          alto="2.25rem"
+        />
+      </div>
+
+      <!-- Barra de progreso -->
+      <div class="baraja__progreso">
+        <app-esqueleto
+          variante="barra"
+          ancho="60%"
+          alto="100%"
+        />
+      </div>
+
+      <!-- Conteos por rareza -->
+      <div class="space-y-1.5 py-1">
+        @for (r of [1, 2, 3, 4]; track r) {
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <app-esqueleto
+                variante="circulo"
+                ancho="0.625rem"
+                alto="0.625rem"
+              />
+              <app-esqueleto
+                variante="texto"
+                ancho="4rem"
+                alto="0.75rem"
+              />
+            </div>
+            <app-esqueleto
+              variante="texto"
+              ancho="2rem"
+              alto="0.75rem"
+            />
+          </div>
+        }
+      </div>
+
+      <!-- 12 slots de cartas de la baraja en grilla 3x4 -->
+      <div class="baraja__slots">
+        @for (slot of slotsIndices(); track slot) {
+          <div class="baraja__slot-esqueleto">
+            <app-esqueleto
+              variante="carta"
+              ancho="100%"
+              alto="100%"
+              class="border border-borde-coleccion/50"
+            />
+          </div>
+        }
+      </div>
+
+      <!-- Botón guardar baraja -->
+      <div class="mt-4">
+        <app-esqueleto
+          variante="pildora"
+          ancho="100%"
+          alto="2.5rem"
+        />
+      </div>
+    </aside>
+
+    <!-- Catálogo derecho -->
+    <main class="baraja__catalogo">
+      <div class="flex flex-col gap-3 pb-4">
+        <!-- Barra de búsqueda y selector de orden -->
+        <div class="flex flex-wrap items-center gap-3">
+          <app-esqueleto
+            variante="pildora"
+            ancho="100%"
+            alto="2.5rem"
+            class="min-w-0 flex-1 basis-56"
+          />
+          <app-esqueleto
+            variante="pildora"
+            ancho="11rem"
+            alto="2.5rem"
+            class="shrink-0"
+          />
+        </div>
+
+        <!-- Chips de filtros: categorías y rarezas -->
+        <div class="flex flex-wrap items-center gap-2">
+          @for (c of [1, 2, 3, 4, 5]; track c) {
+            <app-esqueleto
+              variante="pildora"
+              ancho="5.5rem"
+              alto="1.875rem"
+            />
+          }
+        </div>
+      </div>
+
+      <!-- Grilla de cartas disponibles -->
+      <div class="baraja__grilla">
+        @for (i of catalogoIndices(); track i) {
+          <div
+            class="relative flex aspect-[5/7] w-full flex-col justify-between overflow-hidden rounded-xl border-2 border-borde-coleccion/60 bg-fondo-coleccion-superficie/80 p-2 shadow-marca sm:p-2.5"
+          >
+            <div class="flex items-center justify-between">
+              <app-esqueleto
+                variante="circulo"
+                ancho="1.25rem"
+                alto="1.25rem"
+              />
+              <app-esqueleto
+                variante="circulo"
+                ancho="1rem"
+                alto="1rem"
+              />
+            </div>
+            <div class="my-1 flex flex-1 items-center justify-center">
+              <app-esqueleto
+                variante="bloque"
+                ancho="85%"
+                alto="70%"
+                class="rounded-md"
+              />
+            </div>
+            <div class="space-y-1">
+              <app-esqueleto
+                variante="texto"
+                ancho="70%"
+                alto="0.75rem"
+              />
+              <app-esqueleto
+                variante="texto"
+                ancho="40%"
+                alto="0.625rem"
+              />
+            </div>
+          </div>
+        }
+      </div>
+    </main>
+  </div>
+</div>
