@@ -1,27 +1,27 @@
 <section
-  class="pt-6 pb-12 sm:pt-10 sm:pb-16 md:pt-12 md:pb-20 lg:pt-16 lg:pb-28 text-[#0A2E36]"
+  class="hero-empresa-seccion pt-6 pb-12 sm:pt-10 sm:pb-16 md:pt-12 md:pb-20 lg:pt-16 lg:pb-28 text-[#0A2E36]"
   aria-labelledby="hero-empresa-titulo"
 >
   <div
-    class="contenedor-landing flex flex-col md:flex-row items-center justify-between gap-8 sm:gap-12 md:gap-10 lg:gap-14 xl:gap-20"
+    class="hero-empresa-contenedor contenedor-landing flex flex-col md:flex-row items-center justify-between gap-8 sm:gap-12 md:gap-10 lg:gap-14 xl:gap-20"
   >
     <!-- Columna Izquierda: Título, Subtítulo y Botón Ver Planes -->
-    <div class="w-full md:w-1/2 min-w-0 text-center md:text-left">
+    <div class="hero-empresa-col-izq w-full md:w-1/2 min-w-0 text-center md:text-left">
       <h1
         id="hero-empresa-titulo"
-        class="font-titulo font-black text-3xl min-[400px]:text-4xl sm:text-5xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl leading-[1.05] tracking-tight uppercase"
+        class="hero-empresa-titulo font-titulo font-black text-3xl min-[400px]:text-4xl sm:text-5xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl leading-[1.05] tracking-tight uppercase"
       >
         <span class="text-[#0A2E36]">TU NEGOCIO</span><br />
         <span class="text-[#675679]">TAMBIÉN<br />PUEDE SER<br />PARTE.</span>
       </h1>
 
       <p
-        class="mt-4 md:mt-6 font-cuerpo font-normal text-sm sm:text-base md:text-sm lg:text-base xl:text-lg 2xl:text-xl text-[#0A2E36] leading-relaxed max-w-lg 2xl:max-w-xl mx-auto md:mx-0 text-pretty"
+        class="hero-empresa-descripcion mt-4 md:mt-6 font-cuerpo font-normal text-sm sm:text-base md:text-sm lg:text-base xl:text-lg 2xl:text-xl text-[#0A2E36] leading-relaxed max-w-lg 2xl:max-w-xl mx-auto md:mx-0 text-pretty"
       >
         Creá albumes para que la gente coleccione y aumentá tus clientes.
       </p>
 
-      <div class="mt-6 sm:mt-8 md:mt-10 flex justify-center md:justify-start">
+      <div class="hero-empresa-boton-wrapper mt-6 sm:mt-8 md:mt-10 flex justify-center md:justify-start">
         <button
           type="button"
           (click)="irAPlanes()"
@@ -33,9 +33,9 @@
     </div>
 
     <!-- Columna Derecha: Ilustración foto_landing_empresa ampliada con bordes inferiores redondeados -->
-    <div class="w-full md:w-1/2 flex justify-center md:justify-end min-w-0">
+    <div class="hero-empresa-col-der w-full md:w-1/2 flex justify-center md:justify-end min-w-0">
       <div
-        class="w-full max-w-[360px] min-[400px]:max-w-[420px] sm:max-w-[500px] md:max-w-[540px] lg:max-w-[620px] xl:max-w-[700px] 2xl:max-w-[760px] rounded-b-[2rem] sm:rounded-b-[2.5rem] lg:rounded-b-[3rem] overflow-hidden"
+        class="hero-empresa-imagen-wrapper w-full max-w-[360px] min-[400px]:max-w-[420px] sm:max-w-[500px] md:max-w-[540px] lg:max-w-[620px] xl:max-w-[700px] 2xl:max-w-[760px] rounded-b-[2rem] sm:rounded-b-[2.5rem] lg:rounded-b-[3rem] overflow-hidden"
       >
         <img
           src="/imagenes/landing-empresa/foto_landing_empresa.png"
