@@ -257,6 +257,10 @@ export class UsuarioCupones {
         }
       }
 
+      if (c.categoria === null) {
+        continue;
+      }
+
       encontradas.add(c.categoria);
     }
 

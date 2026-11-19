@@ -38,7 +38,8 @@ export function categoriaCuponDesdeCarta(
 export interface CuponDescuento {
   id: number;
   marca: string;
-  categoria: CategoriaCupon;
+  /** Categoría del cupón según el backend. Puede ser null si el backend no la informa. */
+  categoria: CategoriaCupon | null;
   titulo: string;
   descripcion: string;
   detalles: string;
@@ -61,6 +62,7 @@ export interface CanjearCuponSolicitud {
 export interface MiCuponApi {
   cuponId: number;
   marca: string;
+  categoria?: string | null;
   nombre: string;
   descripcion: string;
   codigo: string;

@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { environment } from '@environments/environment';
+import { ApiService } from './api.service';
 import {
   CanjeApi,
   CanjeExitosoRespuesta,
@@ -17,100 +16,48 @@ import {
   ValidarQrApi,
 } from '@modelos/cupon.model';
 
-/**
- * El backend todavía no manda la categoría del cupón, así que se deduce de la marca.
- * Una marca que no esté acá cae en 'gastronomia'.
- */
-const CATEGORIA_POR_MARCA: Record<string, CategoriaCupon> = {
-  'mcdonald\'s': 'gastronomia',
-  'burger king': 'gastronomia',
-  mostaza: 'gastronomia',
-  grido: 'gastronomia',
-  freddo: 'gastronomia',
-  havanna: 'gastronomia',
-  'levi\'s': 'indumentaria',
-  zara: 'indumentaria',
-  adidas: 'indumentaria',
-  nike: 'indumentaria',
-  hoyts: 'entretenimiento',
-  cinemark: 'entretenimiento',
-  samsung: 'tecnologia',
-  musimundo: 'tecnologia',
-
-  // Marcas ficticias del seed de demostración (5 por categoría).
-  'sabor criollo': 'gastronomia',
-  'don luigi pizzería': 'gastronomia',
-  'la parrilla del sur': 'gastronomia',
-  'café aromo': 'gastronomia',
-  'heladería copo': 'gastronomia',
-  'casa nogal': 'deco',
-  'hogar lumbre': 'deco',
-  'rincón textil': 'deco',
-  'luz & madera': 'deco',
-  'verde interior': 'deco',
-  'bella aurora': 'cosmetica',
-  'piel serena': 'cosmetica',
-  'esencia lunar': 'cosmetica',
-  'brillo natural': 'cosmetica',
-  'aura beauty': 'cosmetica',
-  'urbano norte': 'indumentaria',
-  'hilo sur': 'indumentaria',
-  'trama denim': 'indumentaria',
-  'paso ligero': 'indumentaria',
-  'cima outdoor': 'indumentaria',
-  'cine estelar': 'entretenimiento',
-  'parque aventura sol': 'entretenimiento',
-  'escape room enigma': 'entretenimiento',
-  'strike zone bowling': 'entretenimiento',
-  'teatro telón': 'entretenimiento',
-  'acorde estudio': 'musica',
-  'vinilo vivo': 'musica',
-  'sonora instrumentos': 'musica',
-  'ritmo academia': 'musica',
-  'entrada fest': 'musica',
-  'byte market': 'tecnologia',
-  'conecta hogar': 'tecnologia',
-  'pixel store': 'tecnologia',
-  'nodo gadgets': 'tecnologia',
-  'circuito tech': 'tecnologia',
+const CATEGORIA_BACKEND_A_FRONT: Record<string, CategoriaCupon> = {
+  'gastronomía': 'gastronomia',
+  gastronomia: 'gastronomia',
+  indumentaria: 'indumentaria',
+  entretenimiento: 'entretenimiento',
+  tecnologia: 'tecnologia',
+  deco: 'deco',
+  decoracion: 'deco',
+  cosmetica: 'cosmetica',
+  cosmeticos: 'cosmetica',
+  musica: 'musica',
 };
 
-/** El seed deja el link de la promo al final de la descripción: "Fuente: https://...". */
-/**
- * Demo: muestra todos los cupones como "Disponible" sin importar el estado que mande el backend.
- * Poner en `false` para respetar Usado / Vencido.
- */
-const FORZAR_CUPONES_DISPONIBLES = true;
-
-const REGEX_ENLACE = /\s*Fuente:\s*(https?:\/\/\S+)/i;
+/** Normaliza el nombre de categoría del backend al tipo del frontend. */
+function categoriaDesdeBackend(valor: string | null | undefined): CategoriaCupon | null {
+  if (!valor) {
+    return null;
+  }
+  const clave = valor.trim().toLowerCase();
+  return CATEGORIA_BACKEND_A_FRONT[clave] ?? null;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class CuponesService {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = environment.apiUrl;
+  private readonly api = inject(ApiService);
 
   /**
    * Cupones del usuario logueado (rol Usuario).
-   * Los filtros los aplica el backend.
+   * Los filtros y el estado los aplica el backend.
    */
   obtenerMisCupones(
     filtros: FiltrosCupones = {},
   ): Observable<CuponDescuento[]> {
-    let params = new HttpParams();
-    const buscar = filtros.buscar?.trim();
-
-    if (buscar) {
-      params = params.set('buscar', buscar);
-    }
-
-    if (filtros.estado) {
-      params = params.set('estado', filtros.estado);
-    }
-
-    return this.http
-      .get<MiCuponApi[]>(`${this.apiUrl}/Cupones/mis-cupones`, { params })
+    return this.api
+      .get<MiCuponApi[]>('Cupones/mis-cupones', {
+        params: {
+          buscar: filtros.buscar?.trim() || null,
+          estado: filtros.estado || null,
+        },
+      })
       .pipe(map((cupones) => cupones.map((c) => this.aCuponDescuento(c))));
   }
 
@@ -118,8 +65,8 @@ export class CuponesService {
    * Obtiene el QR del cupón y convierte su imagen en un Blob.
    */
   obtenerQr(cuponId: number): Observable<QrCupon> {
-    return this.http
-      .get<QrCuponApi>(`${this.apiUrl}/Cupones/${cuponId}/qr`)
+    return this.api
+      .get<QrCuponApi>(`Cupones/${cuponId}/qr`)
       .pipe(
         map((qr) => ({
           imagen: this.dataUrlABlob(qr.qrDataUrl),
@@ -132,9 +79,9 @@ export class CuponesService {
    * Rol Empleado: verifica el QR sin consumir el cupón.
    */
   validar(qrToken: string): Observable<CuponValidado> {
-    return this.http
+    return this.api
       .post<ValidarQrApi>(
-        `${this.apiUrl}/Cupones/empleado/validar-qr`,
+        'Cupones/empleado/validar-qr',
         { qrToken },
       )
       .pipe(
@@ -156,9 +103,9 @@ export class CuponesService {
   canjear(qrToken: string): Observable<CanjeExitosoRespuesta> {
     const solicitud: CanjearCuponSolicitud = { qrToken };
 
-    return this.http
+    return this.api
       .post<CanjeApi>(
-        `${this.apiUrl}/Cupones/empleado/canjear`,
+        'Cupones/empleado/canjear',
         solicitud,
       )
       .pipe(
@@ -172,30 +119,24 @@ export class CuponesService {
   }
 
   private aCuponDescuento(c: MiCuponApi): CuponDescuento {
-    const textoOriginal = c.descripcion || c.nombre;
-    const enlace = REGEX_ENLACE.exec(textoOriginal)?.[1] ?? null;
+    const descripcion = c.descripcion || c.nombre;
 
     return {
       id: c.cuponId,
       marca: c.marca,
-      categoria:
-        CATEGORIA_POR_MARCA[c.marca.toLowerCase()] ?? 'gastronomia',
+      categoria: categoriaDesdeBackend(c.categoria),
       titulo: c.nombre,
-      descripcion: textoOriginal.replace(REGEX_ENLACE, '').trim(),
+      descripcion,
       detalles: `${c.porcentajeDescuento}% de descuento`,
       codigo: c.codigo,
       vigenteHastaUtc: c.fechaVencimiento,
       estado: this.estadoDe(c),
-      enlace,
+      enlace: null,
       porcentajeDescuento: c.porcentajeDescuento,
     };
   }
 
   private estadoDe(c: MiCuponApi): EstadoCupon {
-    if (FORZAR_CUPONES_DISPONIBLES) {
-      return 'Disponible';
-    }
-
     const estado = c.estado.toUpperCase();
 
     if (estado === 'USADO' || estado === 'CANJEADO') {
