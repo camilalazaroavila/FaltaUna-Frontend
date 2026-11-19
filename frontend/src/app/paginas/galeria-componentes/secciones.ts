@@ -124,6 +124,12 @@ export const SECCIONES: readonly SeccionGaleria[] = [
       'Tarjeta compacta de app-tarjeta-mision en sus cuatro estados (en curso, lista para reclamar, reclamada y próximamente) comparada en modo jugador y empresa.',
   },
   {
+    id: 'tarjeta-pity',
+    titulo: 'Tarjeta del PT System',
+    descripcion:
+      'Tarjeta de progreso hacia la legendaria (app-tarjeta-pity) en sus tres estados (en progreso, cerca y garantizada).',
+  },
+  {
     id: 'barra-bono-misiones',
     titulo: 'Barra de bono diario',
     descripcion:

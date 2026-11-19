@@ -1,13 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import type { ProgresoPity } from '@modelos/misiones.model';
 import { TarjetaPity } from './tarjeta-pity';
 
 const crearProgreso = (parcial: Partial<ProgresoPity> = {}): ProgresoPity => ({
-  id: 'generico',
-  sobre: { tipo: 'generico' },
-  abiertos: 30,
-  umbral: 50,
+  tipo: 'GENERAL',
+  contador: 30,
+  umbral: 40,
+  sobresRestantes: 10,
+  garantizada: false,
   ...parcial,
 });
 
@@ -21,67 +23,86 @@ describe('TarjetaPity', () => {
   };
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [TarjetaPity] });
+    TestBed.configureTestingModule({
+      imports: [TarjetaPity],
+      providers: [provideRouter([])],
+    });
     fixture = TestBed.createComponent(TarjetaPity);
   });
 
-  it('muestra cuántos sobres faltan para la legendaria', () => {
-    const el = montar(crearProgreso({ abiertos: 30, umbral: 50 }));
-    expect(el.textContent).toContain('Faltan 20 sobres para la legendaria');
+  it('aplica la sombra cartoon clara en los 3 estados (en progreso, cerca y garantizada)', () => {
+    const progreso = montar(crearProgreso({ contador: 10, umbral: 40, sobresRestantes: 30, garantizada: false }));
+    expect(progreso.querySelector('article')!.classList.contains('shadow-cartoon-clara')).toBe(true);
+
+    const cerca = montar(crearProgreso({ tipo: 'CATEGORIA', contador: 18, umbral: 20, sobresRestantes: 2, garantizada: false }));
+    expect(cerca.querySelector('article')!.classList.contains('shadow-cartoon-clara')).toBe(true);
+
+    const garantizada = montar(crearProgreso({ tipo: 'MARCA', contador: 10, umbral: 10, sobresRestantes: 0, garantizada: true }));
+    expect(garantizada.querySelector('article')!.classList.contains('shadow-cartoon-clara')).toBe(true);
+    expect(garantizada.querySelector('article')!.classList.contains('border-pity-garantizada-borde')).toBe(true);
+    expect(garantizada.querySelector('article')!.classList.contains('ring-pity-garantizada-aro')).toBe(true);
+  });
+
+  it('muestra cuántos sobres faltan para la garantía', () => {
+    const el = montar(crearProgreso({ contador: 20, umbral: 40, sobresRestantes: 20 }));
+    expect(el.textContent).toContain('Faltan 20 sobres para la garantía');
   });
 
   it('usa el singular cuando falta exactamente un sobre', () => {
-    const el = montar(crearProgreso({ abiertos: 9, umbral: 10 }));
-    expect(el.textContent).toContain('Falta 1 sobre para la legendaria');
+    const el = montar(crearProgreso({ contador: 39, umbral: 40, sobresRestantes: 1 }));
+    expect(el.textContent).toContain('Falta 1 sobre para la garantía');
   });
 
-  it('muestra un mensaje acorde cuando ya no falta ningún sobre', () => {
-    const el = montar(crearProgreso({ abiertos: 60, umbral: 50 }));
-    expect(el.textContent).toContain('¡Legendaria asegurada!');
-    expect(el.textContent).not.toContain('Faltan 0');
+  it('muestra mensaje garantizado cuando el backend confirma garantizada=true', () => {
+    const el = montar(crearProgreso({ contador: 40, umbral: 40, sobresRestantes: 0, garantizada: true }));
+    expect(el.textContent).toContain('¡Tu próximo sobre trae una legendaria!');
   });
 
-  it('nombra la legendaria de la marca cuando la fila ya está completa', () => {
-    const el = montar(
-      crearProgreso({
-        abiertos: 10,
-        umbral: 10,
-        sobre: { tipo: 'marca', nombre: 'Grido', logoUrl: null },
-      }),
-    );
-    expect(el.textContent).toContain('¡Legendaria de Grido asegurada!');
+  it('incluye el botón de abrir sobre apagado (deshabilitado) en los 3 estados', () => {
+    const elProgreso = montar(crearProgreso({ tipo: 'GENERAL', contador: 15, umbral: 40, sobresRestantes: 25, garantizada: false }));
+    const botonProgreso = elProgreso.querySelector('button[app-boton]') as HTMLButtonElement;
+    expect(botonProgreso).not.toBeNull();
+    expect(botonProgreso.disabled).toBe(true);
+    expect(botonProgreso.getAttribute('aria-disabled')).toBe('true');
+    expect(botonProgreso.textContent).toContain('Abrir sobre general');
+
+    const elGarantizada = montar(crearProgreso({ tipo: 'MARCA', contador: 10, umbral: 10, sobresRestantes: 0, garantizada: true }));
+    const botonGarantizada = elGarantizada.querySelector('button[app-boton]') as HTMLButtonElement;
+    expect(botonGarantizada.disabled).toBe(true);
+    expect(botonGarantizada.getAttribute('aria-disabled')).toBe('true');
+    expect(botonGarantizada.textContent).toContain('Abrir sobre de marca');
   });
 
-  it('destaca las filas cercanas a la legendaria con "¡Casi!" y borde de acento', () => {
-    const cercana = montar(crearProgreso({ abiertos: 8, umbral: 10 }));
+  it('asocia una descripción accesible neutral para lector de pantalla al botón apagado', () => {
+    const el = montar(crearProgreso({ tipo: 'CATEGORIA', contador: 18, umbral: 20, sobresRestantes: 2 }));
+    const boton = el.querySelector('button[app-boton]') as HTMLButtonElement;
+    const descId = boton.getAttribute('aria-describedby');
+    expect(descId).toBe('desc-boton-pity-CATEGORIA');
+    const descEl = el.querySelector(`#${descId}`);
+    expect(descEl).not.toBeNull();
+    expect(descEl?.textContent).toContain('no disponible por el momento en esta vista');
+  });
+
+  it('destaca las filas cercanas a la garantía con "¡Casi!" y borde de atención', () => {
+    const cercana = montar(crearProgreso({ tipo: 'MARCA', contador: 8, umbral: 10, sobresRestantes: 2, garantizada: false }));
     expect(cercana.textContent).toContain('¡Casi!');
-    expect(cercana.querySelector('article')!.className).toContain('border-atencion');
+    expect(cercana.querySelector('article')!.className).toContain('border-atencion-borde');
   });
 
-  it('no destaca las filas lejanas a la legendaria', () => {
-    const lejana = montar(crearProgreso({ abiertos: 30, umbral: 50 }));
+  it('no destaca las filas lejanas a la garantía', () => {
+    const lejana = montar(crearProgreso({ contador: 10, umbral: 40, sobresRestantes: 30, garantizada: false }));
     expect(lejana.textContent).not.toContain('¡Casi!');
-    expect(lejana.querySelector('article')!.className).not.toContain('border-atencion');
+    expect(lejana.querySelector('article')!.className).not.toContain('border-atencion-borde');
   });
 
-  it('etiqueta el tipo de sobre sin repetir la palabra "sobres"', () => {
-    const generico = montar(crearProgreso());
-    expect(generico.querySelector('p')?.textContent).toContain('Genérico');
+  it('etiqueta el tipo de sobre como General, Categoría y Marca', () => {
+    const general = montar(crearProgreso({ tipo: 'GENERAL' }));
+    expect(general.textContent).toContain('General');
 
-    const categoria = montar(
-      crearProgreso({ id: 'cat', sobre: { tipo: 'categoria', categoria: 'musica' } }),
-    );
-    expect(categoria.querySelector('p')?.textContent).toContain('Categoría');
+    const categoria = montar(crearProgreso({ tipo: 'CATEGORIA' }));
+    expect(categoria.textContent).toContain('Categoría');
 
-    const marca = montar(
-      crearProgreso({ id: 'marca', sobre: { tipo: 'marca', nombre: 'Grido', logoUrl: null } }),
-    );
-    expect(marca.querySelector('p')?.textContent).toContain('Marca');
-  });
-
-  it('renderiza el sobre como elemento informativo, sin botón', () => {
-    const el = montar(crearProgreso());
-    expect(el.querySelector('app-sobre-marca')).not.toBeNull();
-    expect(el.querySelector('button')).toBeNull();
+    const marca = montar(crearProgreso({ tipo: 'MARCA' }));
+    expect(marca.textContent).toContain('Marca');
   });
 });

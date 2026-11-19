@@ -1,0 +1,17 @@
+/**
+ * Reserva inferior para la vista del PT System:
+ * En mobile utiliza la variable real de reserva del layout (--reserva-nav-inferior)
+ * con valor de respaldo final (5rem) más espacio adicional (2rem) para asegurar
+ * que la última tarjeta nunca quede tapada por la barra ola móvil.
+ * En tablet/desktop (>= 768px), donde la barra inferior no se renderiza,
+ * adopta el relleno estándar de 2.5rem.
+ */
+.pity-vista__contenedor {
+  padding-bottom: calc(var(--reserva-nav-inferior, 5rem) + 2rem);
+}
+
+@media (min-width: 768px) {
+  .pity-vista__contenedor {
+    padding-bottom: 2.5rem;
+  }
+}

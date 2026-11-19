@@ -9,16 +9,25 @@ import { MisionesPity } from './misiones-pity';
 
 const PITY_MOCK: readonly ProgresoPity[] = [
   {
-    id: 1,
-    sobre: { tipo: 'generico' },
-    abiertos: 7,
-    meta: 10,
+    tipo: 'GENERAL',
+    contador: 20,
+    umbral: 40,
+    sobresRestantes: 20,
+    garantizada: false,
   },
   {
-    id: 2,
-    sobre: { tipo: 'categoria', categoria: 'gastronomia' },
-    abiertos: 3,
-    meta: 10,
+    tipo: 'CATEGORIA',
+    contador: 15,
+    umbral: 20,
+    sobresRestantes: 5,
+    garantizada: false,
+  },
+  {
+    tipo: 'MARCA',
+    contador: 10,
+    umbral: 10,
+    sobresRestantes: 0,
+    garantizada: true,
   },
 ];
 
@@ -33,10 +42,10 @@ describe('MisionesPity', () => {
         {
           provide: MisionesService,
           useValue: {
-            cargando: signal(false),
-            error: signal<string | null>(null),
+            cargandoPity: signal(false),
+            errorPity: signal<string | null>(null),
             pity: signal(PITY_MOCK),
-            cargarMisiones: () => of(void 0),
+            cargarPity: () => of(PITY_MOCK),
           },
         },
       ],
@@ -49,7 +58,16 @@ describe('MisionesPity', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('h1')?.textContent?.trim()).toBe('PT SYSTEM');
     expect(el.querySelector('a[href="/usuario/misiones"]')).not.toBeNull();
-    expect(el.querySelectorAll('app-tarjeta-pity').length).toBe(2);
+    expect(el.querySelectorAll('app-tarjeta-pity').length).toBe(3);
+  });
+
+  it('el botón "¿Qué es el pity system?" usa app-boton con variante primaria', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    const boton = Array.from(el.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('¿Qué es el pity system?'),
+    )!;
+    expect(boton.hasAttribute('app-boton')).toBe(true);
+    expect(boton.classList.contains('bg-btn-primario-bg')).toBe(true);
   });
 
   it('abre y cierra el modal explicativo del Pity System', () => {
@@ -68,8 +86,8 @@ describe('MisionesPity', () => {
   });
 
   it('muestra app-esqueleto-pity mientras carga', () => {
-    const service = TestBed.inject(MisionesService) as unknown as { cargando: { set: (v: boolean) => void } };
-    service.cargando.set(true);
+    const service = TestBed.inject(MisionesService) as unknown as { cargandoPity: { set: (v: boolean) => void } };
+    service.cargandoPity.set(true);
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
@@ -77,4 +95,3 @@ describe('MisionesPity', () => {
     expect(el.textContent).toContain('Cargando PT System…');
   });
 });
-
