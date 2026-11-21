@@ -1,0 +1,202 @@
+<div class="selector-mazos flex flex-col gap-3.5 w-full">
+  <!-- Región aria-live para anunciar selecciones o advertencias de teclado -->
+  <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    {{ mensajeAriaLive() }}
+  </span>
+
+  <!-- Encabezado de control: Buscador y Filtro "Solo completos" -->
+  <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+    <!-- Buscador -->
+    <div class="relative flex-1 max-w-md">
+      <input
+        type="search"
+        [ngModel]="terminoBusqueda()"
+        (ngModelChange)="terminoBusqueda.set($event)"
+        placeholder="Buscar mazo por nombre…"
+        aria-label="Buscar mazo por nombre"
+        class="h-11 w-full rounded-xl border border-borde-default bg-fondo-superficie px-3.5 text-sm text-texto-primario placeholder:text-texto-secundario outline-none transition-colors focus:border-marca-primaria"
+      />
+      @if (terminoBusqueda()) {
+        <button
+          type="button"
+          (click)="terminoBusqueda.set('')"
+          aria-label="Limpiar búsqueda"
+          class="absolute right-2.5 top-1/2 -translate-y-1/2 text-texto-secundario hover:text-texto-primario p-1 text-xs"
+        >
+          ✕
+        </button>
+      }
+    </div>
+
+    <!-- Filtro Solo completos -->
+    <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs font-titulo uppercase tracking-wider text-texto-secundario min-h-[44px]">
+      <input
+        type="checkbox"
+        [checked]="soloCompletos()"
+        (change)="soloCompletos.set(!soloCompletos())"
+        class="size-4 rounded accent-marca-primaria cursor-pointer"
+      />
+      <span>Solo completos</span>
+      <span class="text-[11px] font-normal normal-case opacity-75">
+        ({{ mazosFiltrados().length }} de {{ mazos().length }})
+      </span>
+    </label>
+  </div>
+
+  <!-- Estados de carga / error / vacíos -->
+  @if (cargando()) {
+    <div class="flex items-center justify-center gap-3 py-10 rounded-2xl border border-borde-default bg-fondo-elevado/50">
+      <div
+        class="size-6 animate-spin rounded-full border-2 border-marca-primaria border-t-transparent"
+        aria-hidden="true"
+      ></div>
+      <p app-texto variante="secundario" tamano="menor">Cargando tus mazos…</p>
+    </div>
+  } @else if (error(); as mensajeError) {
+    <app-caja variante="error" padding="md" class="flex flex-col gap-3">
+      <p app-texto variante="heredar" tamano="menor">{{ mensajeError }}</p>
+      <button
+        type="button"
+        app-boton
+        variante="secundario"
+        tamanio="sm"
+        (click)="reintentar.emit()"
+        class="self-start min-h-[44px]"
+      >
+        Reintentar carga
+      </button>
+    </app-caja>
+  } @else if (mazos().length === 0) {
+    <!-- Estado vacío: sin ningún mazo -->
+    <app-caja variante="advertencia" padding="md" class="flex flex-col gap-3">
+      <p app-texto variante="heredar" tamano="menor">
+        No tenés ningún mazo configurado todavía.
+      </p>
+      <a
+        app-boton
+        variante="primario"
+        tamanio="sm"
+        routerLink="/usuario/mi-baraja"
+        class="self-start min-h-[44px]"
+      >
+        Ir a Mi baraja
+      </a>
+    </app-caja>
+  } @else if (mazosFiltrados().length === 0) {
+    <!-- Estado vacío: sin resultados con los filtros actuales -->
+    <div class="flex flex-col items-center justify-center gap-2 py-8 text-center rounded-2xl border border-dashed border-borde-default bg-superficie/30">
+      <p app-texto variante="secundario" tamano="menor">
+        No hay mazos que coincidan con "{{ terminoBusqueda() }}"
+        @if (soloCompletos()) { que además estén completos. }
+      </p>
+      <button
+        type="button"
+        app-boton
+        variante="fantasma"
+        tamanio="sm"
+        (click)="terminoBusqueda.set(''); soloCompletos.set(false)"
+        class="min-h-[44px]"
+      >
+        Limpiar filtros
+      </button>
+    </div>
+  } @else {
+    <!-- Listado con scroll interno cómodo para hasta 20 mazos sin scroll horizontal -->
+    <div
+      role="radiogroup"
+      aria-label="Selección de mazo para la partida"
+      class="selector-mazos__lista grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[380px] overflow-y-auto pr-1.5 focus:outline-none"
+    >
+      @for (item of mazosFiltrados(); track item.mazo.id; let idx = $index) {
+        @let seleccionado = mazoSeleccionadoId() === item.mazo.id;
+        <div
+          [id]="'tarjeta-mazo-' + item.mazo.id"
+          role="radio"
+          tabindex="0"
+          [attr.aria-checked]="seleccionado"
+          [attr.aria-disabled]="!item.completo"
+          [attr.aria-label]="item.mazo.nombre + (item.completo ? ', mazo completo' : ', incompleto: ' + item.motivoIncompleto)"
+          (keydown)="manejarTeclado($event, idx)"
+          (click)="seleccionar(item)"
+          class="tarjeta-mazo group relative flex flex-col justify-between gap-2.5 rounded-2xl border-2 p-3.5 transition-all outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+          [class.tarjeta-mazo--seleccionada]="seleccionado"
+          [class.tarjeta-mazo--incompleta]="!item.completo"
+          [class.cursor-pointer]="item.completo"
+          [class.cursor-not-allowed]="!item.completo"
+          [class.border-marca-primaria]="seleccionado"
+          [class.bg-marca-primaria/15]="seleccionado"
+          [class.shadow-[3px_3px_0_0_var(--color-amarillo-logo,#d5ff5f)]]="seleccionado"
+          [class.border-white/10]="!seleccionado && item.completo"
+          [class.bg-superficie]="!seleccionado"
+          [class.hover:border-white/30]="!seleccionado && item.completo"
+          [class.border-error/30]="!item.completo && !seleccionado"
+          [class.opacity-75]="!item.completo"
+        >
+          <!-- Encabezado de la tarjeta: Nombre + Badge de estado -->
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              @if (seleccionado) {
+                <span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-marca-primaria text-marca-sobre-primaria font-bold text-xs">
+                  ✓
+                </span>
+              }
+              <span class="font-titulo text-sm uppercase tracking-wide text-texto-primario truncate group-hover:text-marca-acento">
+                {{ item.mazo.nombre }}
+              </span>
+            </div>
+
+            <!-- Indicador claro de estado (completo vs incompleto) -->
+            @if (item.completo) {
+              <span class="inline-flex items-center gap-1 rounded-full bg-exito/20 px-2 py-0.5 text-[10px] font-bold text-exito shrink-0">
+                <span>✓</span> Listo (12)
+              </span>
+            } @else {
+              <span class="inline-flex items-center gap-1 rounded-full bg-alerta/20 px-2 py-0.5 text-[10px] font-bold text-alerta shrink-0">
+                <span>⚠</span> {{ item.motivoIncompleto }}
+              </span>
+            }
+          </div>
+
+          <!-- Desglose breve de composición de rarezas (datos reales del contrato) -->
+          <div class="flex items-center justify-between gap-1 text-[11px] text-texto-secundario border-t border-white/5 pt-2">
+            <span title="Comunes">Com: <b class="text-texto-primario">{{ item.conteoRarezas.comun }}</b>/5</span>
+            <span title="Raras">Rar: <b class="text-texto-primario">{{ item.conteoRarezas.rara }}</b>/4</span>
+            <span title="Épicas">Épi: <b class="text-texto-primario">{{ item.conteoRarezas.epicarta }}</b>/2</span>
+            <span title="Legendarias">Leg: <b class="text-texto-primario">{{ item.conteoRarezas.legendaria }}</b>/1</span>
+          </div>
+
+          <!-- Muestra de miniaturas o indicador base -->
+          @if (item.mazo.cartas && item.mazo.cartas.length > 0) {
+            <div class="flex items-center justify-between pt-0.5">
+              <div class="flex items-center -space-x-1.5">
+                @for (c of item.mazo.cartas.slice(0, 4); track c.cartaId) {
+                  <div class="size-6 rounded-md border border-white/20 overflow-hidden bg-fondo-superficie shadow-xs shrink-0">
+                    @if (c.imagenUrl) {
+                      <img [src]="c.imagenUrl" [alt]="c.nombre" class="size-full object-cover" />
+                    } @else {
+                      <div class="size-full bg-marca-primaria/30 flex items-center justify-center font-bold text-[8px] text-white">
+                        {{ c.poder }}
+                      </div>
+                    }
+                  </div>
+                }
+                @if (item.mazo.cartas.length > 4) {
+                  <span class="text-[10px] text-texto-secundario pl-2 font-mono">
+                    +{{ item.mazo.cartas.length - 4 }}
+                  </span>
+                }
+              </div>
+
+              @if (item.esBase) {
+                <span class="text-[10px] text-texto-secundario font-medium">
+                  🔒 Base
+                </span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
+

@@ -66,62 +66,38 @@
 @import "./estilos/estilos-animaciones/intercambio-animacion.css";
 
 /* ==========================================================================
-   ACENTO NARANJA GENÉRICO (Tokens, Badges, Textos y Destacados Reutilizables)
+   ACENTO DE ENERGÍA (Badges, Textos y Destacados para repetidas y recompensas)
    ========================================================================== */
-:root {
-  --color-naranja: #f59e0b;
-  --color-naranja-hover: #d97706;
-  --color-naranja-fondo: rgba(245, 158, 11, 0.15);
-  --color-naranja-borde: rgba(245, 158, 11, 0.45);
-  --color-naranja-texto: #fbbf24;
-  --color-naranja-texto-brillante: #fcd34d;
-  --color-naranja-sobre: #04201c;
-  --gradiente-naranja: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  --sombra-naranja: 0 0.15em 0.35em rgba(0, 0, 0, 0.55), 0 0 0.4em rgba(245, 158, 11, 0.35);
 
-  /* Aliases semánticos para repetidas y acentos */
-  --color-acento-repetida: var(--color-naranja);
-  --color-acento-repetida-hover: var(--color-naranja-hover);
-  --color-acento-repetida-fondo: var(--color-naranja-fondo);
-  --color-acento-repetida-borde: var(--color-naranja-borde);
-  --color-acento-repetida-texto: var(--color-naranja-texto);
-  --color-acento-repetida-texto-brillante: var(--color-naranja-texto-brillante);
-  --color-acento-repetida-sobre: var(--color-naranja-sobre);
-  --gradiente-acento-repetida: var(--gradiente-naranja);
-  --sombra-acento-repetida: var(--sombra-naranja);
-}
-
-/* Badge con gradiente sólido naranja para destacar elementos, cantidades o copias */
-.badge-naranja,
-.badge-repetida {
+/* Badge con gradiente sólido de energía para destacar elementos, cantidades o copias */
+.badge-energia {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
   padding: 0.2rem 0.55rem;
-  background: var(--gradiente-naranja);
-  color: var(--color-naranja-sobre);
+  background: var(--energia-gradiente);
+  color: var(--energia-sobre);
   font-family: var(--fuente-titulo, sans-serif);
   font-weight: 900;
   font-size: 0.75rem;
   line-height: 1;
   border-radius: 9999px;
   border: 1.5px solid #fef3c7;
-  box-shadow: var(--sombra-naranja);
+  box-shadow: var(--energia-sombra);
   user-select: none;
   letter-spacing: 0.02em;
 }
 
-/* Badge / pastilla suave con tinte naranja para filtros, chips y cards de detalle */
-.badge-naranja-suave,
-.badge-repetida-suave {
+/* Badge / pastilla suave con tinte de energía para filtros, chips y cards de detalle */
+.badge-energia-suave {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0.75rem;
-  background-color: var(--color-naranja-fondo);
-  border: 1px solid var(--color-naranja-borde);
-  color: var(--color-naranja-texto);
+  background-color: var(--energia-fondo);
+  border: 1px solid var(--energia-borde);
+  color: var(--energia-texto);
   font-family: var(--fuente-interfaz, sans-serif);
   font-weight: 700;
   font-size: 0.75rem;
@@ -129,21 +105,18 @@
   transition: all 0.2s ease;
 }
 
-.badge-naranja-suave:hover,
-.badge-repetida-suave:hover {
+.badge-energia-suave:hover {
   background-color: rgba(245, 158, 11, 0.25);
-  border-color: var(--color-naranja);
+  border-color: var(--energia);
 }
 
-/* Textos de acento general en naranja */
-.texto-naranja,
-.texto-acento-repetida {
-  color: var(--color-naranja-texto);
+/* Textos de acento de energía */
+.texto-energia {
+  color: var(--energia-texto);
   font-weight: 700;
 }
 
-.texto-naranja-brillante,
-.texto-acento-repetida-brillante {
-  color: var(--color-naranja-texto-brillante);
+.texto-energia-brillante {
+  color: var(--energia-texto-brillante);
   font-weight: 800;
 }

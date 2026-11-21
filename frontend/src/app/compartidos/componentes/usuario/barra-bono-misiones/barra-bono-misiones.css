@@ -1,0 +1,8 @@
+/* Acota el sobre `sm` para acompañar la barra de bono sin modificar `app-sobre-marca`. */
+:host ::ng-deep .barra-bono__sobre app-sobre-marca > button,
+:host ::ng-deep .barra-bono__sobre app-sobre-marca > div {
+  width: 2.875rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+

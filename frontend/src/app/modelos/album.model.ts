@@ -122,8 +122,13 @@ export interface ImagenAlbumRespuesta {
   id: number;
   imagenUrl: string;
   descripcion: string | null;
-  rarezaId?: number | null;
-  rarezaNombre?: string | null;
+  rareza: string;
+  poder: number;
+  costoCupon: number;
+  totalObtenidas?: number;
+  totalFavoritos?: number;
+  totalIntercambios?: number;
+  totalPartidas?: number;
 }
 
 /**

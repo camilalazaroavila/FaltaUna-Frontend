@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SobresService, type SobreInventarioUsuario } from '@servicios/sobres.service';
 import { AuthService } from '@servicios/auth.service';
-import { BotonNavegacionCircular } from '@compartidos/componentes/controles/boton-navegacion-circular/boton-navegacion-circular';
 import { FlujoAperturaSobres } from '@compartidos/componentes/cartas/flujo-apertura-sobres/flujo-apertura-sobres';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
@@ -11,7 +12,6 @@ import { SobreRespuesta } from '@modelos/sobre.model';
 import urlSobreIzquierda from '@svgs/PaqueteHuhDosColores.svg';
 import urlSobreCentro from '@svgs/Paquete1.svg';
 import urlSobreDerecha from '@svgs/Paquete2.svg';
-import urlIconPelea from '@svgs/IconPelea.svg';
 
 import urlIconoMisCartas from '@svgs/Icon_misCartas.svg';
 import urlIconoAlbum from '@svgs/Icon_Album.svg';
@@ -20,7 +20,9 @@ import urlIconoQr from '@svgs/Icon_Qr.svg';
 import urlIconoDescuento from '@svgs/Icon_Descuento.svg';
 
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
+import { BotonJugar } from '@compartidos/componentes/controles/boton-jugar/boton-jugar';
 import { Confeti } from '@compartidos/componentes/confeti/confeti';
+import { TemporizadorSobres } from '@compartidos/componentes/cartas/temporizador-sobres/temporizador-sobres';
 import {
   BarajaService,
   NOMBRES_MAZOS_BIENVENIDA,
@@ -183,17 +185,20 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
   selector: 'app-usuario-dashboard',
   imports: [
     Header,
-    BotonNavegacionCircular,
     FlujoAperturaSobres,
     SobreMarca,
     Boton,
     Confeti,
+    BotonJugar,
+    TemporizadorSobres,
   ],
   templateUrl: './usuario-dashboard.html',
+  styleUrl: './usuario-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuarioDashboard implements OnInit {
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly sobresService = inject(SobresService);
   private readonly authService = inject(AuthService);
   private readonly intercambioService = inject(IntercambioService);
@@ -202,7 +207,11 @@ export class UsuarioDashboard implements OnInit {
 
   readonly confeti = viewChild(Confeti);
 
-
+  protected readonly rutaActual = signal(this.router.url);
+  protected readonly esVistaPrincipal = computed(() => {
+    const ruta = (this.rutaActual() || '').split('?')[0].split('#')[0];
+    return ruta === '/usuario' || ruta === '/' || ruta === '';
+  });
 
   protected readonly juegoHabilitado = true;
   protected readonly sobresCatalogo = signal<readonly SobreRespuesta[]>([]);
@@ -211,7 +220,16 @@ export class UsuarioDashboard implements OnInit {
   protected readonly modalBienvenidaMazosVisible = signal<boolean>(false);
   protected readonly mazosBienvenida = signal<readonly MazoApi[]>([]);
 
-  protected readonly urlIconPelea = urlIconPelea;
+  constructor() {
+    this.router.events
+      .pipe(
+        filter((ev): ev is NavigationEnd => ev instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((ev) => {
+        this.rutaActual.set(ev.urlAfterRedirects || ev.url);
+      });
+  }
 
   protected readonly destinos: readonly DestinoNavegacion[] = [
     { id: 'cartas', nombre: 'Mis cartas', ruta: '/usuario/mis-cartas', urlIcono: urlIconoMisCartas },
@@ -254,6 +272,17 @@ export class UsuarioDashboard implements OnInit {
 
   /** Ninguna sección está activa por defecto: el dashboard no es ninguno de los destinos del dock. */
   protected readonly seccionActiva = signal<string | null>(null);
+  protected readonly indiceOlaActivo = computed<number | null>(() => {
+    const activa = this.seccionActiva();
+    if (!activa) return null;
+    const idx = this.destinos.findIndex((d) => d.id === activa);
+    return idx >= 0 ? idx : null;
+  });
+  protected readonly posicionOlaY = computed<string>(() => {
+    const idx = this.indiceOlaActivo();
+    if (idx === null || idx < 0) return '-400px';
+    return (46 + idx * 72) + 'px';
+  });
   protected readonly selectorSobresAbierto = signal<boolean>(false);
   protected readonly sobresDisponibles = this.sobresService.sobresDisponibles ?? signal<{ actuales: number; maximo: number }>({
     actuales: 2,
@@ -372,11 +401,21 @@ export class UsuarioDashboard implements OnInit {
     });
   }
 
-  private cargarEstadoDiario(): void {
+  protected readonly cargandoEstadoDiario = signal<boolean>(false);
+  protected readonly errorEstadoDiario = signal<string | null>(null);
+
+  protected cargarEstadoDiario(): void {
     const usuarioId = this.authService.usuarioActual()?.id ?? 1;
+    this.cargandoEstadoDiario.set(true);
+    this.errorEstadoDiario.set(null);
+
     this.sobresService.cargarEstadoDiario(usuarioId).subscribe({
+      next: () => {
+        this.cargandoEstadoDiario.set(false);
+      },
       error: () => {
-        // Mantener estado por defecto si falla
+        this.cargandoEstadoDiario.set(false);
+        this.errorEstadoDiario.set('No se pudo sincronizar el estado de sobres diarios');
       },
     });
   }

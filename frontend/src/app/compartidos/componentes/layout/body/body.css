@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+:host([data-con-nav="true"]) {
+  /* En mobile: sin reserva lateral, reserva inferior para la barra mobile */
+  --reserva-nav-lateral: 0px;
+  --reserva-nav-inferior: var(--nav-inferior-reserva);
+}
+
+@media (min-width: 768px) {
+  :host([data-con-nav="true"]) {
+    /* En desktop: reserva lateral para el rail izquierdo, sin reserva inferior */
+    --reserva-nav-lateral: var(--nav-ola-reserva-desktop);
+    --reserva-nav-inferior: 0px;
+  }
+}
+
+:host([data-con-nav="false"]) {
+  --reserva-nav-lateral: 0px;
+  --reserva-nav-inferior: 0px;
+}
+

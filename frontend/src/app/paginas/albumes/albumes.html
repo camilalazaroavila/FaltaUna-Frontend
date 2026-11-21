@@ -3,43 +3,48 @@
 >
   <app-header [logueado]="true" enlaceLogo="/usuario" />
 
-  <div class="mx-auto w-full max-w-screen-2xl px-5 pb-12 max-md:pb-nav-inferior-reserva pt-6 sm:px-8">
-    <a
-      routerLink="/usuario"
-      class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] uppercase transition-colors hover:text-marca-primaria"
-    >
-      <svg
-        class="h-4 w-6"
-        viewBox="0 0 28 16"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
+  <div class="look-cartas area-contenido-con-nav px-4 pt-2 pb-8 sm:px-6 lg:px-8">
+    <div class="px-3 pt-4 sm:px-0">
+      <a
+        routerLink="/usuario"
+        class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] uppercase transition-colors hover:text-marca-primaria"
       >
-        <path d="M27 8H2M9 1L2 8l7 7" />
-      </svg>
-      Volver
-    </a>
+        <svg
+          class="h-4 w-6"
+          viewBox="0 0 28 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M27 8H2M9 1L2 8l7 7" />
+        </svg>
+        Volver
+      </a>
+    </div>
 
-    <h1 class="mt-2 titulo-sombreado font-titulo text-3xl uppercase tracking-[0.04em] text-marca-acento sm:text-3xl">
-      ÁLBUMES
-    </h1>
-
-    <div class="mt-6 flex flex-col gap-6 md:flex-row md:items-start">
-      <!-- Listado de álbumes (con filtro por categoría y buscador) -->
-      <div
-        class="w-full md:block md:w-64 md:min-w-0 md:shrink-0"
-        [class.hidden]="albumSeleccionado()"
-      >
+    <div class="flex flex-wrap items-center justify-between gap-4 py-4">
+      <h1 class="shrink-0 titulo-sombreado font-titulo text-3xl uppercase tracking-[0.04em] text-marca-acento sm:text-3xl">
+        ÁLBUMES
+      </h1>
+      <div class="ml-auto flex items-center gap-3">
         <app-filtros-categoria-album
           [categorias]="categorias()"
           [categoriaActiva]="categoriaActiva()"
           (cambiar)="cambiarCategoria($event)"
         />
+      </div>
+    </div>
 
-        <div class="relative mt-4">
+    <div class="mt-2 flex flex-col gap-6 md:flex-row md:items-start">
+      <!-- Listado de marcas (con buscador) -->
+      <div
+        class="w-full md:block md:w-64 md:min-w-0 md:shrink-0"
+        [class.hidden]="albumSeleccionado()"
+      >
+        <div class="relative">
           <label class="sr-only" for="buscador-marcas">Buscar marca</label>
           <ng-icon
             name="phosphorMagnifyingGlassFill"

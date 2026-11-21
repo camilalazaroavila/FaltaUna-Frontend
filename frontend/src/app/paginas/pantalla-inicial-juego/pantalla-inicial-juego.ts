@@ -16,7 +16,7 @@ interface OpcionJuego {
 // El tutorial guiado vive en /usuario/tutorial y no depende de haberlo
 // completado antes. La partida contra jugador sigue requiriéndolo.
 const OPCIONES_JUEGO: readonly OpcionJuego[] = [
-  { id: 'jugador', texto: 'Partida contra jugador', ruta: '/juego/jugador', requiereTutorial: true },
+  { id: 'jugador', texto: 'Partida contra jugador', ruta: '/juego/jugador' },
   { id: 'ia', texto: 'Partida contra la IA', ruta: '/juego/ia' },
   { id: 'tutorial', texto: 'Tutorial', ruta: '/usuario/tutorial' },
 ];
@@ -36,8 +36,7 @@ export class PantallaInicialJuego {
     protected readonly opciones = computed(() =>
        OPCIONES_JUEGO.map((opcion) => {
          const bloqueada =
-           opcion.id === 'jugador' ||
-           (opcion.requiereTutorial === true && !this.progreso.tutorialCompletado());
+           opcion.requiereTutorial === true && !this.progreso.tutorialCompletado();
          return { ...opcion, bloqueada };
     }),
   );

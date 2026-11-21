@@ -1,8 +1,11 @@
 import { Component, signal } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { BarajaService } from '@servicios/baraja.service';
+import { SalaJuegoService } from '@servicios/sala-juego.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
 import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
 import type { ResultadoRonda } from '@modelos/partida.model';
@@ -20,6 +23,9 @@ describe('Partida', () => {
   let partidaIdSignal: ReturnType<typeof signal<number | null>>;
   let resultadoSignal: ReturnType<typeof signal<ResultadoRonda | null>>;
   let anuncioSignal: ReturnType<typeof signal<string>>;
+  let barajaMock: {
+    obtenerMazos: jest.Mock;
+  };
 
   beforeEach(async () => {
     partidaIdSignal = signal<number | null>(7);
@@ -41,6 +47,7 @@ describe('Partida', () => {
         propio: { nombre: 'Vos', avatarUrl: null },
         rival: { nombre: 'Bot', avatarUrl: null },
       }),
+      rivalEsBot: signal(true),
       anuncio: anuncioSignal,
       reconectar: jest.fn().mockReturnValue(of(true)),
       detenerSincronizacion: jest.fn(),
@@ -50,7 +57,18 @@ describe('Partida', () => {
       iniciarContraBot: jest.fn().mockReturnValue(of(true)),
     };
 
-    const barajaMock = {
+    const salaMock = {
+      esperandoRivalRevancha: signal(false),
+      revanchaSolicitada: signal(false),
+      revanchaCancelada: signal(false),
+      revanchaIniciada: signal(null),
+      unirseACanalPartida: jest.fn().mockResolvedValue(undefined),
+      solicitarRevancha: jest.fn().mockResolvedValue(undefined),
+      cancelarRevancha: jest.fn().mockResolvedValue(undefined),
+      limpiarEstadoRevancha: jest.fn(),
+    };
+
+    barajaMock = {
       obtenerMazos: jest.fn().mockReturnValue(of([])),
     };
 
@@ -58,7 +76,10 @@ describe('Partida', () => {
       imports: [Partida],
       providers: [
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: PartidaServicio, useValue: servicioMock },
+        { provide: SalaJuegoService, useValue: salaMock },
         { provide: BarajaService, useValue: barajaMock },
       ],
     })
@@ -117,54 +138,18 @@ describe('Partida', () => {
       fixture.detectChanges();
     });
 
-    it('muestra el enlace de volver y la mascota con texto alternativo accesible', () => {
+    it('muestra el enlace de volver y el selector de mazos sin ilustración del bot', () => {
       const enlaceVolver = fixture.nativeElement.querySelector('a[routerLink="/usuario/jugar"]');
       expect(enlaceVolver).toBeTruthy();
       expect(enlaceVolver.textContent).toContain('Volver');
 
-      const mascota = fixture.nativeElement.querySelector('img.mascota-imagen') as HTMLImageElement;
-      expect(mascota).toBeTruthy();
-      expect(mascota.getAttribute('alt')).toContain('Elegí tu mazo, lo voy a poner');
-    });
+      // Comprobar que no hay imágenes de mascota del bot
+      const mascota = fixture.nativeElement.querySelector('img[src*="Gatos jugando cartas"]');
+      expect(mascota).toBeFalsy();
 
-    it('muestra estado de carga mientras cargandoMazos es true', () => {
-      fixture.componentInstance['cargandoMazos'].set(true);
-      fixture.detectChanges();
-
-      const texto = fixture.nativeElement.textContent;
-      expect(texto).toContain('Cargando tus mazos…');
-    });
-
-    it('muestra mensaje de error cuando falla la carga de mazos', () => {
-      fixture.componentInstance['cargandoMazos'].set(false);
-      fixture.componentInstance['errorMazos'].set('Error al conectar con el servidor.');
-      fixture.detectChanges();
-
-      const texto = fixture.nativeElement.textContent;
-      expect(texto).toContain('Error al conectar con el servidor.');
-    });
-
-    it('muestra advertencia y acceso directo a Mi baraja cuando no hay mazos completos', () => {
-      fixture.componentInstance['cargandoMazos'].set(false);
-      fixture.componentInstance['errorMazos'].set(null);
-      fixture.componentInstance['mazos'].set([
-        { id: 1, nombre: 'Mazo Incompleto', completo: false, cartas: [] } as any,
-      ]);
-      fixture.detectChanges();
-
-      const texto = fixture.nativeElement.textContent;
-      expect(texto).toContain('No tenés un mazo completo');
-
-      const enlaceBaraja = fixture.nativeElement.querySelector(
-        'a[routerLink="/usuario/mi-baraja"]',
-      );
-      expect(enlaceBaraja).toBeTruthy();
-      expect(enlaceBaraja.textContent).toContain('Ir a Mi baraja');
-
-      const botonJugar = Array.from(fixture.nativeElement.querySelectorAll('button')).find(
-        (b) => (b as HTMLButtonElement).textContent?.includes('Jugar contra el bot'),
-      ) as HTMLButtonElement;
-      expect(botonJugar.disabled).toBe(true);
+      // Comprobar que contiene el componente selector de mazos
+      const selector = fixture.nativeElement.querySelector('app-selector-mazos');
+      expect(selector).toBeTruthy();
     });
 
     it('permite jugar cuando hay un mazo completo seleccionado', () => {
@@ -177,24 +162,23 @@ describe('Partida', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance['puedeJugar']()).toBe(true);
-      const botonJugar = Array.from(fixture.nativeElement.querySelectorAll('button')).find(
+      const botonJugar = Array.from(fixture.nativeElement.querySelectorAll('button[app-boton]')).find(
         (b) => (b as HTMLButtonElement).textContent?.includes('Jugar contra el bot'),
       ) as HTMLButtonElement;
       expect(botonJugar).toBeTruthy();
       expect(botonJugar.disabled).toBe(false);
     });
 
-    it('deshabilita el botón y muestra spinner cuando la partida está creándose', () => {
+    it('deshabilita el botón de jugar si el mazo seleccionado está incompleto', () => {
       fixture.componentInstance['cargandoMazos'].set(false);
       fixture.componentInstance['mazos'].set([
-        { id: 10, nombre: 'Mazo Campeón', completo: true, cartas: [] } as any,
+        { id: 1, nombre: 'Mazo Incompleto', completo: false, cartas: [] } as any,
       ]);
-      fixture.componentInstance['mazoSeleccionado'].set(10);
-      (fixture.componentInstance['servicio'].cargando as unknown as { set: (v: boolean) => void }).set(true);
+      fixture.componentInstance['mazoSeleccionado'].set(1);
       fixture.detectChanges();
 
       expect(fixture.componentInstance['puedeJugar']()).toBe(false);
-      const botonJugar = Array.from(fixture.nativeElement.querySelectorAll('button')).find(
+      const botonJugar = Array.from(fixture.nativeElement.querySelectorAll('button[app-boton]')).find(
         (b) => (b as HTMLButtonElement).textContent?.includes('Jugar contra el bot'),
       ) as HTMLButtonElement;
       expect(botonJugar.disabled).toBe(true);

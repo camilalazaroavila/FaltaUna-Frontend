@@ -1,27 +1,64 @@
 <article
-  class="relative flex min-h-40 items-stretch overflow-visible rounded-[1.5rem] bg-landing-claro-superficie shadow-[10px_10px_0_var(--color-violeta-empresa)]"
-  [class.flex-row-reverse]="plan().alineacion === 'derecha'"
+  class="tarjeta-plan-vertical"
+  [class.tarjeta-plan-vertical--expandido]="expandido()"
   [attr.aria-label]="'Plan ' + plan().nombre"
 >
-  <p
-    [class]="clasesEtiqueta()"
-    class="rounded-xl relative z-10 flex w-[32%] shrink-0 items-center justify-center px-3 py-6 text-center font-titulo text-xl uppercase tracking-wide text-landing-claro-fondo md:w-[30%] md:text-2xl lg:text-3xl"
-  >
-    {{ plan().nombre }}
-  </p>
+  <!-- Encabezado con cuadro estilizado del plan -->
+  <div class="tarjeta-plan-vertical__cabecera">
+    <app-cuadro-plan [tipo]="plan().id" [titulo]="plan().nombre" />
+  </div>
 
-  <ul class="flex min-w-0 flex-1 flex-col justify-center gap-4 p-4 sm:p-6 md:gap-5 md:p-8">
-    @for (beneficio of plan().beneficios; track beneficio.texto) {
-      <li
-        class="flex items-start gap-3 font-interfaz text-sm leading-snug text-landing-claro-texto md:text-base lg:text-lg"
-      >
-        <ng-icon
-          [name]="iconoDe(beneficio)"
-          class="mt-0.5 size-5 shrink-0 text-marca-primaria md:size-6"
-          aria-hidden="true"
-        />
-        <span [innerHTML]="resaltarNumero(beneficio.texto)"></span>
-      </li>
-    }
-  </ul>
+  <!-- Botón móvil para ver más/menos (estrictamente solo en mobile < md) -->
+  <button
+    type="button"
+    class="tarjeta-plan-vertical__toggle md:!hidden"
+    (click)="alternarExpandir()"
+    [attr.aria-expanded]="expandido()"
+  >
+    <span class="underline decoration-2 underline-offset-4">
+      {{ expandido() ? 'VER MENOS' : 'VER MÁS' }}
+    </span>
+    <span class="text-xs transition-transform duration-200" [class.rotate-180]="expandido()">
+      ▼
+    </span>
+  </button>
+
+  <!-- Cuerpo de la tarjeta: siempre visible en desktop (md:), colapsable en mobile -->
+  <div
+    class="tarjeta-plan-vertical__cuerpo"
+    [class.tarjeta-plan-vertical__cuerpo--abierto]="expandido()"
+  >
+    <div class="tarjeta-plan-vertical__contenido">
+      <!-- Lista de beneficios -->
+      <ul class="tarjeta-plan-vertical__beneficios">
+        @for (beneficio of plan().beneficios; track beneficio.texto) {
+          <li class="tarjeta-plan-vertical__beneficio">
+            <!-- Icono de viñeta en forma de gota violeta -->
+            <svg
+              class="tarjeta-plan-vertical__icono-gota"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M8 1.5 C8 1.5 3 7 3 10.8 C3 13.5 5.2 15.5 8 15.5 C10.8 15.5 13 13.5 13 10.8 C13 7 8 1.5 8 1.5 Z" />
+            </svg>
+            <span
+              class="tarjeta-plan-vertical__texto-beneficio"
+              [innerHTML]="resaltarNumero(beneficio.texto)"
+            ></span>
+          </li>
+        }
+      </ul>
+
+      <!-- Precio al pie -->
+      <div class="tarjeta-plan-vertical__precio-bloque">
+        <span class="tarjeta-plan-vertical__monto">
+          {{ precio() }}
+        </span>
+        <span class="tarjeta-plan-vertical__periodo">
+          {{ periodo() }}
+        </span>
+      </div>
+    </div>
+  </div>
 </article>

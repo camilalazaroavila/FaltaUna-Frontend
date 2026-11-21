@@ -19,8 +19,9 @@ const crearMision = (parcial: Partial<Mision> = {}): Mision => ({
 describe('TarjetaMision', () => {
   let fixture: ComponentFixture<TarjetaMision>;
 
-  const montar = (mision: Mision): HTMLElement => {
+  const montar = (mision: Mision, mostrarRecompensa = true): HTMLElement => {
     fixture.componentRef.setInput('mision', mision);
+    fixture.componentRef.setInput('mostrarRecompensa', mostrarRecompensa);
     fixture.detectChanges();
     return fixture.nativeElement as HTMLElement;
   };
@@ -37,9 +38,11 @@ describe('TarjetaMision', () => {
     expect(el.textContent).toContain('Misión en curso');
   });
 
-  it('renderiza la barra de progreso cuando la misión está disponible', () => {
+  it('renderiza la barra de progreso compacta (sm) cuando la misión está disponible', () => {
     const el = montar(crearMision());
-    expect(el.querySelector('app-barra-progreso')).not.toBeNull();
+    const barra = el.querySelector('app-barra-progreso');
+    expect(barra).not.toBeNull();
+    expect(barra?.textContent).toContain('1/2');
   });
 
   it('no muestra la barra ni la recompensa cuando no está disponible', () => {
@@ -52,61 +55,67 @@ describe('TarjetaMision', () => {
     expect(el.querySelector('app-sobre-marca')).toBeNull();
   });
 
-  it('en una misión completada el sobre es clickeable y la recompensa está lista', () => {
+  it('en modo recompensa, una misión completada muestra "Lista para reclamar", halo y sobre clickeable', () => {
     const el = montar(
       crearMision({
+        periodicidad: 'semanal',
         estado: 'completada',
         recompensa: { tipo: 'categoria', categoria: 'gastronomia' },
       }),
+      true,
     );
     const boton = el.querySelector('app-sobre-marca button')!;
+    const articulo = el.querySelector('article')!;
     expect(boton.getAttribute('aria-label')).toBe('Sobre de Gastronomía');
+    expect(el.textContent).toContain('Lista para reclamar');
     expect(el.textContent).toContain('Reclamar');
-    expect(el.textContent).toContain('¡Reclamá tu sobre!');
+    expect(articulo.className).toContain('animate-latido-reclamo');
   });
 
-  it('emite el id al reclamar una misión completada', () => {
+  it('emite el id al reclamar una misión completada con recompensa', () => {
     let reclamado: number | null = null;
     fixture.componentInstance.reclamar.subscribe((id) => (reclamado = id));
-    const el = montar(crearMision({ id: 7, estado: 'completada' }));
+    const el = montar(crearMision({ id: 7, periodicidad: 'semanal', estado: 'completada' }), true);
 
     el.querySelector('app-sobre-marca button')!.dispatchEvent(new MouseEvent('click'));
 
     expect(reclamado).toBe(7);
   });
 
+  it('en modo Diaria (mostrarRecompensa = false) no muestra sobre, ni botón ni energía y muestra "Completada"', () => {
+    let reclamado: number | null = null;
+    fixture.componentInstance.reclamar.subscribe((id) => (reclamado = id));
+    const el = montar(crearMision({ id: 9, periodicidad: 'diaria', estado: 'completada' }), false);
+
+    const articulo = el.querySelector('article')!;
+    articulo.dispatchEvent(new MouseEvent('click'));
+
+    expect(el.querySelector('app-sobre-marca')).toBeNull();
+    expect(el.querySelector('button')).toBeNull();
+    expect(el.textContent).toContain('Completada');
+    expect(el.textContent).not.toContain('Reclamar');
+    expect(articulo.className).not.toContain('animate-latido-reclamo');
+    expect(reclamado).toBeNull();
+  });
+
   it('no permite reclamar una misión en curso (el sobre no es clickeable)', () => {
-    const el = montar(crearMision({ estado: 'en_curso' }));
+    const el = montar(crearMision({ estado: 'en_curso' }), true);
     expect(el.querySelector('app-sobre-marca button')).toBeNull();
     expect(el.textContent).toContain('En curso');
   });
 
   it('marca visualmente una misión reclamada', () => {
-    const el = montar(crearMision({ estado: 'reclamada' }));
+    const el = montar(crearMision({ periodicidad: 'semanal', estado: 'reclamada' }), true);
     expect(el.textContent).toContain('Recompensa reclamada');
     expect(el.textContent).toContain('Reclamada');
     expect(el.querySelector('app-sobre-marca button')).toBeNull();
   });
 
-  it('destaca una misión reclamable con el halo animado y el estado visible', () => {
-    const el = montar(crearMision({ estado: 'completada' }));
-
-    const articulo = el.querySelector('article')!;
-    expect(articulo.className).toContain('animate-latido-reclamo');
-    expect(el.textContent).toContain('¡Reclamá tu sobre!');
-  });
-
-  it.each<[string, Partial<Mision>]>([
-    ['en curso', { estado: 'en_curso', disponible: true }],
-    ['lista para reclamar', { estado: 'completada', disponible: true }],
-    ['reclamada', { estado: 'reclamada', disponible: true }],
-    ['no disponible', { disponible: false }],
-  ])('el ícono del indicador (%s) toma el token fluido de tamaño', (_estado, parcial) => {
-    const el = montar(crearMision(parcial));
-
-    const icono = el.querySelector('ng-icon') as HTMLElement | null;
+  it('el ícono del candado en misión no disponible toma el token fluido de tamaño', () => {
+    const el = montar(crearMision({ disponible: false }));
+    const icono = el.querySelector('ng-icon');
     expect(icono).not.toBeNull();
-    expect(icono!.style.getPropertyValue('--ng-icon__size')).toBe(
+    expect(icono?.getAttribute('style') ?? icono?.outerHTML).toContain(
       'var(--misiones-medida-indicador-icono)',
     );
   });

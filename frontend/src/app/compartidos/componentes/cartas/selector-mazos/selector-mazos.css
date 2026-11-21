@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.selector-mazos__lista {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-marca-primaria, #00eb5e) transparent;
+}
+
+.selector-mazos__lista::-webkit-scrollbar {
+  width: 6px;
+}
+
+.selector-mazos__lista::-webkit-scrollbar-thumb {
+  background-color: var(--color-marca-primaria, #00eb5e);
+  border-radius: 9999px;
+}
+
+.tarjeta-mazo {
+  min-height: 44px;
+}
+
+.tarjeta-mazo--incompleta {
+  cursor: not-allowed !important;
+}
+

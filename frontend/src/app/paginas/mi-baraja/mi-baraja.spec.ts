@@ -52,6 +52,12 @@ describe('MiBaraja', () => {
     componente = fixture.componentInstance;
     fixture.detectChanges();
   });
+  it('muestra app-esqueleto-baraja mientras el estado cargando es verdadero', () => {
+    componente['cargandoCartas'].set(true);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-esqueleto-baraja')).not.toBeNull();
+  });
   it('carga solo las cartas obtenidas y arranca con la baraja vacía', () => {
     expect(coleccion().length).toBe(disponibles().length);
     expect(coleccion().every((carta) => carta.obtenida)).toBe(true);
@@ -184,5 +190,19 @@ describe('MiBaraja', () => {
     componente['cerrarPopup']();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('app-carta-popup')).toBeNull();
+  });
+
+  it('debe contener el enlace de volver y el título dentro del área con reserva de nav', () => {
+    fixture.detectChanges();
+    const contenedorReserva = fixture.nativeElement.querySelector('.area-contenido-con-nav');
+    expect(contenedorReserva).toBeTruthy();
+
+    const volver = contenedorReserva.querySelector('a[routerLink="/usuario/mis-cartas"]');
+    const titulo = contenedorReserva.querySelector('h1');
+
+    expect(volver).toBeTruthy();
+    expect(volver.textContent).toContain('Mis cartas');
+    expect(titulo).toBeTruthy();
+    expect(titulo.textContent).toContain('Gestión de barajas');
   });
 });

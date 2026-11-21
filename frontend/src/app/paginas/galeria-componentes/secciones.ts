@@ -113,8 +113,32 @@ export const SECCIONES: readonly SeccionGaleria[] = [
   },
   {
     id: 'navegacion-inferior-mobile',
-    titulo: 'app-navegacion-inferior-mobile',
+    titulo: 'app-navegacion-ola (Mobile y Desktop)',
     descripcion:
-      'Barra de navegación inferior mobile con botón flotante izquierdo abrazado por recorte cóncavo vectorial, en modo jugador y empresa.',
+      'Navegación con efecto ola en dos orientaciones: barra inferior mobile de 5 columnas con botón central JUGAR, y barra vertical derecha para desktop con hover.',
+  },
+  {
+    id: 'tarjeta-mision',
+    titulo: 'Tarjeta de misión',
+    descripcion:
+      'Tarjeta compacta de app-tarjeta-mision en sus cuatro estados (en curso, lista para reclamar, reclamada y próximamente) comparada en modo jugador y empresa.',
+  },
+  {
+    id: 'barra-bono-misiones',
+    titulo: 'Barra de bono diario',
+    descripcion:
+      'Barra de progreso del bono diario de Misiones (app-barra-bono-misiones) en sus tres estados.',
+  },
+  {
+    id: 'reinicio-misiones',
+    titulo: 'Reinicio de misiones',
+    descripcion:
+      'Chip de cuenta regresiva para el próximo reinicio de misiones (app-reinicio-misiones).',
+  },
+  {
+    id: 'esqueleto',
+    titulo: 'app-esqueleto',
+    descripcion:
+      'Átomo y esqueletos de carga de misiones, PT system y cupones con shimmer y dimensiones exactas.',
   },
 ] as const;

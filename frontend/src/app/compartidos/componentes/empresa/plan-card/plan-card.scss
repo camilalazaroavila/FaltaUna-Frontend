@@ -1,3 +1,169 @@
 :host {
   display: block;
+  height: 100%;
+}
+
+.tarjeta-plan-vertical {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 2rem;
+  padding: 1.25rem 1rem;
+  box-shadow: 6px 6px 0px #fcefe0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: auto;
+  max-width: 340px;
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .tarjeta-plan-vertical {
+    border-radius: 2.5rem;
+    padding: 1.75rem 1.5rem 2rem;
+    box-shadow: 8px 8px 0px #fcefe0;
+    height: 100%;
+    max-width: none;
+    justify-content: space-between;
+  }
+
+  .tarjeta-plan-vertical:hover {
+    transform: translateY(-4px);
+    box-shadow: 10px 10px 0px #fcefe0;
+  }
+}
+
+.tarjeta-plan-vertical__cabecera {
+  width: 100%;
+}
+
+.tarjeta-plan-vertical__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  font-family: var(--fuente-titulo, 'Changa', sans-serif);
+  font-weight: 800;
+  font-size: 0.875rem;
+  color: #0a2e36;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+}
+
+.tarjeta-plan-vertical__cuerpo {
+  display: none;
+  width: 100%;
+  margin-top: 1rem;
+
+  &--abierto {
+    display: block;
+    animation: fadeIn 0.25s ease-out;
+  }
+
+  @media (min-width: 768px) {
+    display: flex !important;
+    flex-direction: column;
+    flex: 1;
+    margin-top: 1.5rem;
+  }
+}
+
+.tarjeta-plan-vertical__contenido {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.tarjeta-plan-vertical__beneficios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tarjeta-plan-vertical__beneficio {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-family: var(--fuente-interfaz, 'Rubik', sans-serif);
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: #1a3237;
+}
+
+@media (min-width: 1024px) {
+  .tarjeta-plan-vertical__beneficio {
+    font-size: 0.9375rem;
+  }
+}
+
+.tarjeta-plan-vertical__icono-gota {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  color: #675679;
+}
+
+.tarjeta-plan-vertical__texto-beneficio {
+  flex: 1;
+}
+
+.tarjeta-plan-vertical__precio-bloque {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+}
+
+.tarjeta-plan-vertical__monto {
+  font-family: var(--fuente-titulo, 'Changa', sans-serif);
+  font-weight: 900;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: #0a2e36;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 1024px) {
+  .tarjeta-plan-vertical__monto {
+    font-size: 2.125rem;
+  }
+}
+
+.tarjeta-plan-vertical__periodo {
+  font-family: var(--fuente-titulo, 'Changa', sans-serif);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #0a2e36;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

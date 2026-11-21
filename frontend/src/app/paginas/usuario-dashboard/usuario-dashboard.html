@@ -1,38 +1,35 @@
 <div
-  class="relative flex min-h-dvh flex-col justify-between overflow-x-hidden bg-usuario-gradiente-amarillo-verde text-white">
+  class="dashboard-contenedor relative flex h-dvh flex-col justify-between overflow-hidden text-white">
 
-  <app-header [logueado]="true" />
-
-  <!-- MENÚ LATERAL (solo desde md hacia arriba; en mobile lo reemplaza app-navegacion-inferior-mobile) -->
-  <aside aria-label="Navegación principal"
-    class="hidden md:flex md:pointer-events-auto md:fixed md:z-30 md:justify-start md:p-0 md:left-5 lg:left-7 xl:left-8 2xl:left-12 md:top-[calc(50%+24px)] md:-translate-y-1/2 md:max-h-[calc(100dvh-130px)]">
-    <nav
-      class="pointer-events-auto flex flex-row md:flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-[#072428]/95 p-1.5 shadow-alta backdrop-blur-md sm:gap-2.5 sm:p-2 md:rounded-3xl md:p-2.5 lg:gap-3 lg:p-3 xl:gap-3.5 xl:p-3.5 overflow-visible origin-bottom md:origin-left transition-transform lg:scale-105 2xl:scale-125 min-[2200px]:scale-150">
-      @for (destino of destinos; track destino.id) {
-      <app-boton-navegacion-circular [urlIcono]="destino.urlIcono ?? null" [icono]="destino.icono ?? null"
-        [etiquetaAria]="destino.nombre" [activo]="seccionActiva() === destino.id" [expandible]="true"
-        [fondoBlanco]="true" [deshabilitado]="destino.deshabilitado ?? false"
-        [insignia]="destino.id === 'intercambios' && tieneNovedadIntercambios() ? '!' : null"
-        tamanio="md" (accion)="seleccionarSeccion(destino.id)" />
-      }
-    </nav>
-  </aside>
+  <app-header [logueado]="true" class="shrink-0" />
 
   <!-- ZONA CENTRAL -->
   <main
-    class="relative z-10 mx-auto flex w-full max-w-[120rem] min-h-0 flex-1 flex-col items-center justify-center px-4 pt-3 pb-nav-inferior-reserva sm:px-6 sm:pt-4 md:px-24 md:py-8 lg:px-32 xl:px-40 2xl:px-52 2xl:py-12 min-[2200px]:px-64 [--alto-abanico:min(clamp(9.5rem,46vh,46rem),64vw)] md:[--alto-abanico:min(clamp(9.5rem,46vh,46rem),52vw)]">
+  class="area-contenido-con-nav relative z-10 flex min-h-0 flex-1 flex-col items-center justify-between px-3 py-2 sm:px-4 sm:py-3 md:py-4
+         [--reserva-nav:calc(5.25rem+env(safe-area-inset-bottom,0px))] pb-(--reserva-nav) sm:pb-(--reserva-nav) md:pb-4
+         [--alto-abanico:min(clamp(9.5rem,46dvh,46rem),64vw)] md:[--alto-abanico:min(clamp(9.5rem,46dvh,46rem),52vw)]">
 
-    <!-- Contador de sobres disponibles -->
-    <div
-      class="mb-5 sm:mb-2 md:mb-3 2xl:mb-6 flex select-none items-center gap-1.5 2xl:gap-3 font-titulo text-sm sm:text-base md:text-lg lg:text-xl 2xl:text-3xl tracking-wider text-marca-acento/90 shrink-0">
-      <span class="inline-block size-1.5 rounded-circulo bg-marca-acento sm:size-2 md:size-2.5 2xl:size-3.5"></span>
-      <span>{{ sobresDisponibles().actuales }}/{{ sobresDisponibles().maximo }} GRATIS</span>
+    <!-- Contador y temporizador de sobres diarios (instancia única) -->
+    <div class="flex flex-col select-none items-center gap-1 sm:gap-1.5 shrink-0">
+      <div class="font-titulo text-xs sm:text-base md:text-lg lg:text-lg 2xl:text-xl tracking-wider text-marca-acento/90">
+        <span>Sobres gratis: {{ sobresDisponibles().actuales }} de {{ sobresDisponibles().maximo }}</span>
+      </div>
+
+      <!-- Temporizador accesible sincronizado con la fecha del servidor (timer central y chips responsivos) -->
+      <app-temporizador-sobres
+        class="w-full max-w-md"
+        [proximaRecarga]="sobresDisponibles().proximaRecarga"
+        [sobresDisponibles]="sobresDisponibles().actuales"
+        [sobresMaximos]="sobresDisponibles().maximo"
+        [cargando]="cargandoEstadoDiario()"
+        [error]="errorEstadoDiario()"
+        (tiempoAgotado)="cargarEstadoDiario()"
+      />
     </div>
 
-
-    <!-- Abanico de Sobres: el alto fluye con el viewport y el ancho sale de la proporción -->
+    <!-- Abanico de Sobres: el alto fluye con clamp en dvh y no empuja el botón fuera de pantalla -->
     <div
-      class="abanico-sobres relative flex items-center justify-center shrink-0 md:my-auto h-[var(--alto-abanico)] aspect-[16/10] w-auto">
+      class="abanico-sobres relative flex items-center justify-center shrink-0 mt-auto mb-2 sm:mb-3 md:mb-4 h-[var(--alto-abanico)] aspect-[16/10] w-auto">
 
       <!-- Sombra de apoyo -->
       <div
@@ -59,19 +56,20 @@
 
     <!-- Botón Principal "VER SOBRES" -->
     <button id="btn-ver-sobres" type="button" (click)="abrirSelectorSobres()"
-      class="mt-10 sm:mt-4 md:mt-8 2xl:mt-14 shrink-0 cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2.5 sm:px-8 sm:py-3 font-interfaz text-xs sm:text-sm font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:shadow-brillo-verde active:scale-[0.98] md:px-12 md:py-3.5 md:text-base 2xl:px-20 2xl:py-5 2xl:text-2xl">
+      class="mt-3 sm:mt-4 mb-auto shrink-0 cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2.5 sm:px-8 sm:py-3 font-interfaz text-xs sm:text-sm font-black uppercase tracking-wider text-marca-sobre-primaria shadow-alta shadow-marca-primaria/25 transition-all hover:bg-marca-primaria-hover hover:shadow-brillo-verde active:scale-[0.98] md:px-10 md:py-3 md:text-base 2xl:px-16 2xl:py-4 2xl:text-xl">
       VER SOBRES
     </button>
   </main>
 
-  <!-- ICONO FLOTANTE DE JUGAR (solo desde md hacia arriba; en mobile va en el FAB de app-navegacion-inferior-mobile) -->
-
-  <aside
-    class="hidden md:block fixed md:bottom-6 md:right-6 lg:bottom-8 lg:right-8 xl:bottom-10 xl:right-10 2xl:bottom-14 2xl:right-14 z-20 cursor-pointer transition-transform hover:scale-110 active:scale-95"
-    (click)="irAJugar()" title="jugar">
-    <img [src]="urlIconPelea" alt="Abrir sobre"
-      class="pointer-events-none size-12 sm:size-16 md:size-20 lg:size-24 xl:size-32 2xl:size-40 select-none drop-shadow-xl" />
-  </aside>
+  <!-- BOTÓN ILUSTRADO DE JUGAR (JAIME) -->
+  @if (esVistaPrincipal()) {
+    <aside
+      class="boton-jaime-aside fixed z-30 select-none bottom-[calc(var(--nav-inferior-reserva,5rem)+0.25rem)] right-0 md:bottom-6 md:right-0 lg:bottom-8 xl:bottom-10"
+      aria-label="Acceso a jugar"
+    >
+      <app-boton-jugar (accion)="irAJugar()" />
+    </aside>
+  }
   
 
   <app-flujo-apertura-sobres [abierto]="selectorSobresAbierto()" [sobresCatalogo]="sobresCatalogo()"

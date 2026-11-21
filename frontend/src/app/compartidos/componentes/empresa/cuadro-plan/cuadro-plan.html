@@ -1,0 +1,69 @@
+<div class="cuadro-plan" [class]="clasesFondo()" [attr.aria-label]="textoMostrar()">
+  <svg
+    class="cuadro-plan__marco"
+    viewBox="0 0 240 180"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <defs>
+      <!-- Gradientes por tipo -->
+      <linearGradient id="grad-basico" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#072226" />
+        <stop offset="50%" stop-color="#0a2e36" />
+        <stop offset="100%" stop-color="#103d45" />
+      </linearGradient>
+      <linearGradient id="grad-standard" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1e1e35" />
+        <stop offset="45%" stop-color="#2a2748" />
+        <stop offset="100%" stop-color="#40325a" />
+      </linearGradient>
+      <linearGradient id="grad-premium" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#341b3d" />
+        <stop offset="50%" stop-color="#462452" />
+        <stop offset="100%" stop-color="#5a2f69" />
+      </linearGradient>
+
+      <!-- Clip path orgánico para el relleno -->
+      <clipPath id="clip-relleno">
+        <path d="M 24,14 C 75,8 165,9 216,14 C 228,15 233,26 231,42 C 229,82 231,122 229,152 C 227,166 218,172 204,171 C 155,168 85,169 34,171 C 18,172 9,165 11,148 C 12,114 11,72 12,38 C 13,22 19,14 24,14 Z" />
+      </clipPath>
+    </defs>
+
+    <!-- Fondo relleno según gradiente -->
+    <rect
+      x="0"
+      y="0"
+      width="240"
+      height="180"
+      clip-path="url(#clip-relleno)"
+      class="cuadro-plan__fondo-svg"
+    />
+
+    <!-- Trazo exterior orgánico (sketch) -->
+    <path
+      class="cuadro-plan__trazo-exterior"
+      d="M 22,14 C 75,8 165,8 218,14 C 229,15 234,25 232,40 C 230,82 232,122 230,152 C 228,166 219,172 205,171 C 155,168 85,169 34,171 C 19,172 10,165 11,148 C 12,114 10,72 12,38 C 13,22 18,14 22,14 Z"
+      stroke="white"
+      stroke-width="3"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+    />
+
+    <!-- Trazo interior orgánico (segundo contorno sketch) -->
+    <path
+      class="cuadro-plan__trazo-interior"
+      d="M 30,22 C 78,17 162,17 210,22 C 220,23 224,31 222,44 C 220,80 222,118 221,144 C 220,156 212,161 199,160 C 153,157 87,158 41,160 C 28,161 21,155 22,141 C 23,114 21,74 23,43 C 24,30 27,22 30,22 Z"
+      stroke="white"
+      stroke-width="2.5"
+      stroke-opacity="0.9"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+    />
+  </svg>
+
+  <span class="cuadro-plan__texto">
+    {{ textoMostrar() }}
+  </span>
+</div>

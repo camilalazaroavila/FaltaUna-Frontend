@@ -1,0 +1,92 @@
+<div class="w-full space-y-6" aria-busy="true" aria-live="polite">
+  <span class="sr-only" role="status">Cargando misiones…</span>
+
+  @if (mostrarBono()) {
+    <!-- Barra de bono diario espejo -->
+    <div class="mb-6 flex flex-col gap-2" aria-hidden="true">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <app-esqueleto
+          variante="texto"
+          ancho="18rem"
+          alto="0.875rem"
+          class="max-w-[65%]"
+        />
+        <app-esqueleto
+          variante="pildora"
+          ancho="8rem"
+          alto="1.75rem"
+          class="shrink-0"
+        />
+      </div>
+
+      <div class="flex items-center gap-3 sm:gap-4">
+        <!-- Barra gruesa segmentada -->
+        <app-esqueleto
+          variante="barra"
+          ancho="100%"
+          alto="2.5rem"
+          class="min-w-0 flex-1 sm:!h-10"
+        />
+
+        <!-- Sobre genérico y texto -->
+        <div class="flex shrink-0 flex-col items-center gap-1 p-1">
+          <app-esqueleto
+            variante="sobre"
+            ancho="2.75rem"
+            alto="3.75rem"
+            class="sm:!h-18 sm:!w-12"
+          />
+          <app-esqueleto
+            variante="texto"
+            ancho="2.5rem"
+            alto="0.625rem"
+          />
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Grilla 2x2 espejo de misiones__lista -->
+  <ul class="misiones__lista" aria-hidden="true">
+    @for (i of tarjetasIndices(); track i) {
+      <li>
+        <div
+          class="relative flex min-h-32 items-center gap-4 rounded-md border-2 border-borde bg-superficie-elevada px-5 py-4 shadow-cartoon-clara sm:min-h-36 sm:gap-5 sm:px-7 sm:py-5 lg:min-h-40"
+        >
+          <div class="min-w-0 flex-1 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+              <app-esqueleto
+                variante="texto"
+                [ancho]="i % 2 === 0 ? '48%' : '60%'"
+                alto="1.25rem"
+              />
+              <app-esqueleto
+                variante="pildora"
+                ancho="4.5rem"
+                alto="1.125rem"
+                class="shrink-0"
+              />
+            </div>
+
+            <app-esqueleto
+              variante="barra"
+              ancho="100%"
+              alto="1.75rem"
+              class="sm:!h-8"
+            />
+          </div>
+
+          @if (conSobreEnTarjeta()) {
+            <div class="flex shrink-0 flex-col items-center gap-0.5">
+              <app-esqueleto
+                variante="sobre"
+                ancho="2.75rem"
+                alto="3.75rem"
+              />
+            </div>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+</div>

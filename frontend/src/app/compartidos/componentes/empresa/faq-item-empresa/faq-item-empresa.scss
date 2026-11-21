@@ -4,38 +4,58 @@
 
 .faq-empresa {
   overflow: hidden;
-  border: 2px solid var(--color-violeta-empresa);
-  border-radius: var(--radio-md);
-  background: transparent;
+  border: 1.5px solid #0a2e36;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  transition: border-radius 200ms ease, box-shadow 200ms ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+
+  &--abierto {
+    border-radius: 1.75rem;
+    box-shadow: 0 6px 16px rgba(10, 46, 54, 0.1);
+  }
 }
 
 .faq-empresa__cabecera {
+  position: relative;
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
+  justify-content: center;
+  padding: 0.9rem 2.75rem;
   border: 0;
   background: transparent;
-  color: var(--color-teal-profundo);
-  font-family: var(--fuente-interfaz);
-  font-size: 1rem;
+  color: #0a2e36;
+  font-family: var(--fuente-interfaz, 'Rubik', sans-serif);
+  font-size: 0.95rem;
   font-weight: 700;
-  line-height: 1.4;
-  text-align: left;
+  line-height: 1.35;
+  text-align: center;
   cursor: pointer;
   transition: color 150ms ease;
+
+  &:hover {
+    color: #675679;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #675679;
+    outline-offset: -2px;
+  }
 }
 
-.faq-empresa__cabecera:hover {
-  color: var(--color-violeta-empresa);
+@media (min-width: 640px) {
+  .faq-empresa__cabecera {
+    padding: 1.15rem 3.5rem;
+    font-size: 1.1rem;
+  }
 }
 
-.faq-empresa__cabecera:focus-visible {
-  outline: 2px solid var(--color-violeta-empresa);
-  outline-offset: -4px;
-  border-radius: var(--radio-md);
+@media (min-width: 1024px) {
+  .faq-empresa__cabecera {
+    padding: 1.35rem 4.5rem;
+    font-size: 1.25rem;
+  }
 }
 
 .faq-empresa__pregunta {
@@ -43,15 +63,25 @@
 }
 
 .faq-empresa__flecha {
-  flex: 0 0 auto;
-  width: 1.1rem;
-  height: 1.1rem;
-  color: var(--color-violeta-empresa);
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0a2e36;
   transition: transform 200ms ease;
 }
 
+@media (min-width: 640px) {
+  .faq-empresa__flecha {
+    right: 1.75rem;
+  }
+}
+
 .faq-empresa--abierto .faq-empresa__flecha {
-  transform: rotate(180deg);
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .faq-empresa__panel {
@@ -70,32 +100,34 @@
 }
 
 .faq-empresa--abierto .faq-empresa__contenido {
-  padding-block: 0 1rem;
+  padding-block: 0.35rem 1.25rem;
 }
 
 .faq-empresa__respuesta {
   margin: 0;
-  padding-inline: 1.25rem;
-  color: var(--color-teal-profundo);
-  font-family: var(--fuente-interfaz);
+  padding-inline: 1.5rem;
+  color: #2a3a3e;
+  font-family: var(--fuente-cuerpo, sans-serif);
   font-size: 0.95rem;
   line-height: 1.6;
+  text-align: center;
 }
 
-@media (min-width: 768px) {
-  .faq-empresa__cabecera {
-    padding: 1.1rem 1.5rem;
-    font-size: 1.1rem;
-  }
-
+@media (min-width: 640px) {
   .faq-empresa__respuesta {
-    padding-inline: 1.5rem;
-    font-size: 1rem;
+    padding-inline: 3rem;
+    font-size: 1.05rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .faq-empresa__respuesta {
+    padding-inline: 4rem;
+    font-size: 1.125rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .faq-empresa__cabecera,
   .faq-empresa__flecha,
   .faq-empresa__panel {
     transition: none;

@@ -1,0 +1,101 @@
+<div class="temporizador-sobres select-none flex flex-col items-center justify-center text-center w-full max-w-md mx-auto">
+  <!-- Región aria-live para notificar solo cambios de estado importantes -->
+  <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    {{ mensajeAriaLive() }}
+  </span>
+
+  @if (cargando()) {
+    <div class="flex items-center gap-2 text-texto-secundario text-xs py-1">
+      <span class="size-3.5 animate-spin rounded-full border-2 border-marca-acento border-t-transparent"></span>
+      <span>Consultando sobres…</span>
+    </div>
+  } @else if (error(); as err) {
+    <p class="text-xs text-alerta py-1" role="alert">
+      Información de sobres no disponible
+    </p>
+  } @else {
+    <!-- Bloque de cuenta regresiva / mensaje grande central -->
+    @if (formato(); as f) {
+      <div
+        class="flex flex-col items-center gap-1 mb-2"
+        [attr.aria-label]="f.textoLegible"
+        role="timer"
+      >
+        <span class="text-[11px] sm:text-xs font-titulo uppercase tracking-wider text-texto-secundario opacity-90">
+          Próximo sobre gratis en
+        </span>
+        <div class="flex items-baseline gap-1.5 font-titulo text-3xl sm:text-4xl md:text-5xl font-black text-marca-acento tracking-tight drop-shadow-md">
+          <span class="temporizador-sobres__digitos font-mono">{{ f.horas }}</span>
+          <span class="text-xl sm:text-2xl opacity-60">:</span>
+          <span class="temporizador-sobres__digitos font-mono">{{ f.minutos }}</span>
+          <span class="text-xl sm:text-2xl opacity-60">:</span>
+          <span class="temporizador-sobres__digitos font-mono">{{ f.segundos }}</span>
+        </div>
+      </div>
+    } @else if (sobresDisponibles() >= sobresMaximos()) {
+      <!-- Estado: capacidad máxima de sobres alcanzada -->
+      <div class="flex items-center gap-2 text-xs font-titulo uppercase tracking-wider text-marca-primaria mb-2">
+        <span class="size-2 rounded-full bg-marca-primaria animate-pulse"></span>
+        <span>¡Tenés todos tus sobres diarios listos para abrir!</span>
+      </div>
+    } @else if (sobresDisponibles() > 0 && !proximaRecarga()) {
+      <!-- Estado: tiene sobre disponible y el backend no envió fecha de la siguiente carga -->
+      <div class="flex items-center gap-2 text-xs font-titulo uppercase tracking-wider text-marca-acento mb-2">
+        <span class="size-2 rounded-full bg-marca-acento"></span>
+        <span>Sobre diario disponible para reclamar</span>
+      </div>
+    } @else {
+      <!-- Estado neutro: sin fecha del backend disponible -->
+      <div class="flex items-center gap-1.5 text-xs text-texto-secundario mb-2">
+        <span>Los sobres gratuitos se recargan diariamente.</span>
+      </div>
+    }
+
+    <!-- Chips: fila de 2 en mobile/tablet; columna absoluta a la derecha del <main> desde lg -->
+<div
+  class="temporizador-sobres__slots mx-auto grid w-full max-w-xs grid-cols-2 gap-3
+         lg:absolute lg:right-6 lg:top-4 lg:mx-0 lg:w-52 lg:max-w-none lg:grid-cols-1 xl:right-8"
+  aria-label="Progreso de recarga de sobres diarios"
+>
+  @for (slot of slotsSobres(); track slot.indice) {
+    <div
+      class="flex min-w-0 flex-col gap-1.5 rounded-md border-2 bg-fondo-elevado px-3 py-2 text-left"
+      [class.border-marca-primaria]="slot.estado === 'listo'"
+      [class.border-marca-acento]="slot.estado === 'cargando'"
+      [class.border-borde-fuerte]="slot.estado === 'en_espera'"
+      [class.shadow-cartoon-clara]="slot.estado === 'cargando'"
+      [class.shadow-cartoon]="slot.estado !== 'cargando'"
+    >
+      <div class="flex items-center justify-between gap-2 whitespace-nowrap font-titulo text-etiqueta uppercase tracking-etiqueta">
+        <span class="font-bold text-texto-primario">{{ slot.etiqueta }}</span>
+        <span
+          class="font-interfaz font-bold"
+          [class.text-marca-primaria]="slot.estado === 'listo'"
+          [class.text-marca-acento]="slot.estado === 'cargando'"
+          [class.text-texto-secundario]="slot.estado === 'en_espera'"
+        >
+          {{ slot.textoEstado }}
+        </span>
+      </div>
+
+      <div
+        role="progressbar"
+        [attr.aria-valuenow]="slot.porcentaje"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-label]="slot.etiqueta + ': ' + slot.textoEstado"
+        class="h-2 w-full overflow-hidden rounded-pildora border border-borde-default bg-fondo-hundido"
+      >
+        <div
+          class="h-full rounded-pildora transition-[width] duration-300 ease-out motion-reduce:transition-none"
+          [class.bg-marca-primaria]="slot.estado === 'listo'"
+          [class.bg-marca-acento]="slot.estado === 'cargando'"
+          [style.width.%]="slot.porcentaje"
+        ></div>
+        </div>
+      </div>
+    }
+  </div>
+}
+</div>
+

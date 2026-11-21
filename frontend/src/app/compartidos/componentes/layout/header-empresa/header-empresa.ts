@@ -31,14 +31,14 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
         @if (destinoLogo(); as destino) {
           <a
             [routerLink]="destino"
-            class="flex shrink-0 items-center"
+            class="hidden md:flex shrink-0 items-center"
             aria-label="Ir al panel de empresa"
           >
             <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto sm:h-9 lg:h-[75px]" />
           </a>
         } @else {
           <!-- Alta en curso: el logo queda inerte para no interrumpir el formulario. -->
-          <span class="flex shrink-0 items-center" aria-hidden="true">
+          <span class="hidden md:flex shrink-0 items-center" aria-hidden="true">
             <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto sm:h-9 lg:h-[75px]" />
           </span>
         }

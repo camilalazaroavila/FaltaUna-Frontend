@@ -1,14 +1,39 @@
-<div class="w-full" data-modo="empresa">
-  <div class="flow-root bg-landing-claro-fondo">
-    <app-navbar/>
-    <app-hero/>
+<div class="w-full overflow-x-clip" data-modo="empresa">
+  <!-- SECCIÓN HERO Y HEADER FLOTANTE -->
+  <div class="flow-root bg-[#FCEFE0]">
+    <app-navbar />
+    <app-hero />
   </div>
 
+  <!-- ONDA 1: Hero (#FCEFE0) -> Planes (#675679) -->
+  <div class="landing-onda bg-[#675679]" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path
+        d="M0,0 L1440,0 L1440,35 C1160,110 880,-10 580,85 C340,140 160,15 0,60 Z"
+        fill="#FCEFE0"
+      />
+    </svg>
+  </div>
+
+  <!-- SECCIÓN DE PLANES -->
   <app-plans-section [planes]="planes" />
 
+  <!-- SECCIÓN DE PREGUNTAS FRECUENTES (con fondo cover unificado y delimitado por sus ondas) -->
   <app-faq-section-empresa [preguntas]="preguntas" />
 
-  <app-team-section [integrantes]="integrantes" />
+  <!-- SECCIÓN ¿QUIÉNES SOMOS? -->
+  <app-team-section [integrantes]="integrantes" modo="empresa" />
 
+  <!-- ONDA 4: Quiénes Somos (#675679) -> Footer (#FCEFE0) -->
+  <div class="landing-onda bg-[#FCEFE0]" aria-hidden="true">
+    <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path
+        d="M0,0 L1440,0 L1440,35 C1160,110 880,-10 580,85 C340,140 160,15 0,60 Z"
+        fill="#675679"
+      />
+    </svg>
+  </div>
+
+  <!-- FOOTER EMPRESA -->
   <app-footer modo="empresa" />
 </div>

@@ -1,0 +1,15 @@
+/* Acota el ancho visual del sobre `sm` dentro de la tarjeta sin modificar `app-sobre-marca`.
+   Área táctil resultante >= 44x44. */
+:host ::ng-deep .tarjeta-mision__sobre app-sobre-marca > button,
+:host ::ng-deep .tarjeta-mision__sobre app-sobre-marca > div {
+  width: 3.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
+@media (min-width: 1024px) {
+  :host ::ng-deep .tarjeta-mision__sobre app-sobre-marca > button,
+  :host ::ng-deep .tarjeta-mision__sobre app-sobre-marca > div {
+    width: 4.5rem;
+  }
+}

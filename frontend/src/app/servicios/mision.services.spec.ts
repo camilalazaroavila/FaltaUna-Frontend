@@ -161,6 +161,17 @@ describe('MisionesService', () => {
     expect(servicio.misiones()).toEqual([]);
   });
 
+  it('muestra un mensaje amigable cuando el servidor no responde (status 0)', () => {
+    servicio.cargarMisiones().subscribe({ error: () => undefined });
+
+    http
+      .expectOne(pedidoDeMisiones())
+      .error(new ProgressEvent('error'), { status: 0, statusText: 'Unknown Error' });
+
+    expect(servicio.error()).toContain('No pudimos conectarnos con el servidor');
+    expect(servicio.error()).not.toContain('Http failure response');
+  });
+
   it('reclama una misión y la marca como reclamada', () => {
     cargar();
 
@@ -196,5 +207,89 @@ describe('MisionesService', () => {
   it('ordena el PT System de menos a más faltantes', () => {
     const faltantes = servicio.pityPorCercania().map(faltantesPity);
     expect(faltantes).toEqual([...faltantes].sort((a, b) => a - b));
+  });
+
+  it('mapea PERMANENTE y los 4 objetivos nuevos; un objetivo desconocido queda no disponible', () => {
+    const extras: MisionRespuesta[] = [
+      { ...MISIONES_BACKEND[0], id: 10, periodo: 'PERMANENTE' as MisionRespuesta['periodo'], objetivo: 'INICIAR_SESION' as MisionRespuesta['objetivo'] },
+      { ...MISIONES_BACKEND[0], id: 11, periodo: 'PERMANENTE' as MisionRespuesta['periodo'], objetivo: 'JUGAR_PARTIDAS' as MisionRespuesta['objetivo'] },
+      { ...MISIONES_BACKEND[0], id: 12, periodo: 'PERMANENTE' as MisionRespuesta['periodo'], objetivo: 'COMPLETAR_ALBUM' as MisionRespuesta['objetivo'] },
+      { ...MISIONES_BACKEND[0], id: 13, periodo: 'PERMANENTE' as MisionRespuesta['periodo'], objetivo: 'COMPLETAR_TUTORIAL' as MisionRespuesta['objetivo'] },
+      { ...MISIONES_BACKEND[0], id: 14, objetivo: 'OBJETIVO_DESCONOCIDO' as MisionRespuesta['objetivo'] },
+    ];
+    cargar(extras);
+
+    expect(servicio.misionesDe('permanente').map((m) => [m.tipo, m.disponible])).toEqual([
+      ['inicio_sesion', true],
+      ['partidas_jugadas', true],
+      ['completar_album', true],
+      ['completar_tutorial', true],
+    ]);
+    expect(servicio.misiones().find((m) => m.id === 14)?.disponible).toBe(false);
+  });
+
+  it('cargarResumen calcula offsetRelojMs y falla en silencio devolviendo null', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-11-14T12:00:00.000Z'));
+
+    servicio.cargarResumen().subscribe();
+    http
+      .expectOne((req) => req.method === 'GET' && req.url.endsWith('/api/Misiones/resumen'))
+      .flush({
+        fechaServidorUtc: '2026-11-14T12:05:00.000Z',
+        diaria: { proximoReinicioUtc: '2026-11-15T00:00:00.000Z' },
+        semanal: { proximoReinicioUtc: '2026-11-21T00:00:00.000Z' },
+        bonoDiario: null,
+      });
+
+    expect(servicio.offsetRelojMs()).toBe(5 * 60 * 1000);
+    expect(servicio.resumen()?.diaria?.proximoReinicioUtc).toBe('2026-11-15T00:00:00.000Z');
+
+    let resultado: unknown = 'pendiente';
+    servicio.cargarResumen().subscribe((res) => (resultado = res));
+    http
+      .expectOne((req) => req.method === 'GET' && req.url.endsWith('/api/Misiones/resumen'))
+      .flush({}, { status: 404, statusText: 'Not Found' });
+
+    expect(resultado).toBeNull();
+    expect(servicio.resumen()).toBeNull();
+    expect(servicio.error()).toBeNull();
+
+    jest.useRealTimers();
+  });
+
+  it('reclamarTodas reclama en secuencia y resincroniza al final', () => {
+    let respuestaFinal: readonly number[] | null = null;
+    servicio.reclamarTodas([1, 2]).subscribe((res) => {
+      respuestaFinal = res.misionesReclamadasIds;
+    });
+
+    // Solo debe haberse disparado el primer POST (secuencial, nunca en paralelo)
+    http.expectNone((req) => req.url.endsWith('/api/Misiones/2/reclamar'));
+    http
+      .expectOne((req) => req.method === 'POST' && req.url.endsWith('/api/Misiones/1/reclamar'))
+      .flush({ sobreId: 1, sobre: 'Sobre 1', cantidad: 1 });
+
+    http
+      .expectOne((req) => req.method === 'POST' && req.url.endsWith('/api/Misiones/2/reclamar'))
+      .flush({ sobreId: 2, sobre: 'Sobre 2', cantidad: 1 });
+
+    http.expectOne(pedidoDeMisiones()).flush(MISIONES_BACKEND);
+    expect(respuestaFinal).toEqual([1, 2]);
+  });
+
+  it('reclamarTodas frena ante un error y resincroniza', () => {
+    let fallo = false;
+    servicio.reclamarTodas([1, 2]).subscribe({
+      error: () => (fallo = true),
+    });
+
+    http
+      .expectOne((req) => req.method === 'POST' && req.url.endsWith('/api/Misiones/1/reclamar'))
+      .flush({ mensaje: 'Error' }, { status: 500, statusText: 'Error' });
+
+    http.expectNone((req) => req.url.endsWith('/api/Misiones/2/reclamar'));
+    http.expectOne(pedidoDeMisiones()).flush(MISIONES_BACKEND);
+    expect(fallo).toBe(true);
   });
 });

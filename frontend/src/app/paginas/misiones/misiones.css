@@ -1,14 +1,38 @@
+.misiones__area {
+  padding-bottom: calc(var(--reserva-nav-inferior, var(--nav-inferior-reserva)) + 1.25rem);
+}
+
+.misiones__area--con-pildora {
+  padding-bottom: calc(var(--reserva-nav-inferior, var(--nav-inferior-reserva)) + 4.75rem);
+}
+
 .misiones__lista {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.misiones__reclamar-todas {
+  position: fixed;
+  right: 1.25rem;
+  bottom: calc(var(--reserva-nav-inferior, var(--nav-inferior-reserva)) + 0.75rem);
+  z-index: 30;
+}
+
 @media (min-width: 768px) {
+  .misiones__area--con-pildora {
+    padding-bottom: calc(var(--reserva-nav-inferior, var(--nav-inferior-reserva)) + 1.25rem);
+  }
+
   .misiones__lista {
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 2.5rem;
+  }
+
+  .misiones__reclamar-todas {
+    position: static;
   }
 }

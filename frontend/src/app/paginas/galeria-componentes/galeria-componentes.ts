@@ -15,10 +15,14 @@ import { SeccionCartaPopup } from '@paginas/galeria-componentes/secciones/carta-
 import { SeccionAreaEmpresa } from '@paginas/galeria-componentes/secciones/area-empresa/seccion-area-empresa';
 import { SeccionTexto } from '@paginas/galeria-componentes/secciones/texto/seccion-texto';
 import { SeccionCajas } from '@paginas/galeria-componentes/secciones/cajas/seccion-cajas';
+import { SeccionTarjetaMision } from '@paginas/galeria-componentes/secciones/tarjeta-mision/seccion-tarjeta-mision';
+import { SeccionBarraBonoMisiones } from '@paginas/galeria-componentes/secciones/barra-bono-misiones/seccion-barra-bono-misiones';
+import { SeccionReinicioMisiones } from '@paginas/galeria-componentes/secciones/reinicio-misiones/seccion-reinicio-misiones';
 import { SeccionPartida } from '@paginas/galeria-componentes/secciones/partida/seccion-partida';
 import { SeccionTablero } from './secciones/tablero/seccion-tablero';
 import { SeccionTutorial } from '@paginas/galeria-componentes/secciones/tutorial/seccion-tutorial';
 import { SeccionNavegacionInferiorMobile } from '@paginas/galeria-componentes/secciones/navegacion-inferior-mobile/seccion-navegacion-inferior-mobile';
+import { SeccionEsqueleto } from './secciones/esqueleto/seccion-esqueleto';
 
 export type ModoGaleria = 'jugador' | 'empresa';
 
@@ -40,10 +44,14 @@ export type ModoGaleria = 'jugador' | 'empresa';
     SeccionAreaEmpresa,
     SeccionTexto,
     SeccionCajas,
+    SeccionTarjetaMision,
+    SeccionBarraBonoMisiones,
+    SeccionReinicioMisiones,
     SeccionPartida,
     SeccionTablero,
     SeccionTutorial,
     SeccionNavegacionInferiorMobile,
+    SeccionEsqueleto,
   ],
   templateUrl: './galeria-componentes.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

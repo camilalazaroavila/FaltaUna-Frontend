@@ -14,6 +14,7 @@ import { debounceTime, distinctUntilChanged, skip } from 'rxjs';
 import QRCode from 'qrcode';
 import { Header } from '@compartidos/componentes/layout/header/header';
 import { TarjetaCupon } from '@compartidos/componentes/cupones/tarjeta-cupon/tarjeta-cupon';
+import { EsqueletoCupones } from '@compartidos/componentes/feedback/esqueleto/esqueleto-cupones';
 import { Confeti } from '@compartidos/componentes/confeti/confeti';
 import { CuponesService } from '@servicios/cupones.service';
 import { SonidoService } from '@servicios/sonido.service';
@@ -40,7 +41,7 @@ interface FiltroCategoria {
 @Component({
   selector: 'app-usuario-cupones',
   standalone: true,
-  imports: [RouterLink, DatePipe, Header, Confeti, TarjetaCupon],
+  imports: [RouterLink, DatePipe, Header, Confeti, TarjetaCupon, EsqueletoCupones],
   templateUrl: './usuario-cupones.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -168,6 +169,11 @@ export class UsuarioCupones {
   ];
 
   protected readonly menuAbierto = signal(false);
+  protected readonly menuCategoriasAbierto = signal(false);
+
+  protected readonly categoriaActivaObjeto = computed(
+    () => this.categorias.find((c) => c.id === this.categoriaActiva()) ?? null,
+  );
 
   protected readonly hayFiltros = computed(
     () => this.busqueda().trim() !== '' || this.estadoActivo() !== null,
@@ -329,14 +335,26 @@ export class UsuarioCupones {
 
   protected elegirCategoria(id: CategoriaCupon): void {
     this.categoriaActiva.set(id);
+    this.menuCategoriasAbierto.set(false);
   }
 
   protected alternarMenu(): void {
     this.menuAbierto.update((abierto) => !abierto);
+    if (this.menuAbierto()) {
+      this.menuCategoriasAbierto.set(false);
+    }
+  }
+
+  protected alternarMenuCategorias(): void {
+    this.menuCategoriasAbierto.update((abierto) => !abierto);
+    if (this.menuCategoriasAbierto()) {
+      this.menuAbierto.set(false);
+    }
   }
 
   protected cerrarMenu(): void {
     this.menuAbierto.set(false);
+    this.menuCategoriasAbierto.set(false);
   }
 
   protected escribirBusqueda(texto: string): void {

@@ -1,0 +1,68 @@
+.baraja__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 640px) {
+  .baraja__layout {
+    grid-template-columns: 22rem minmax(0, 1fr);
+  }
+}
+
+.baraja__panel {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--borde-coleccion);
+  border-radius: var(--radio-lg);
+  background: var(--fondo-coleccion);
+}
+
+.baraja__progreso {
+  height: 0.5rem;
+  margin: 0.75rem 0;
+  overflow: hidden;
+  border-radius: var(--radio-pildora);
+  background: rgba(244, 250, 246, 0.12);
+}
+
+.baraja__slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.baraja__slot-esqueleto {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 7;
+  border-radius: var(--radio-md);
+  overflow: hidden;
+}
+
+.baraja__catalogo {
+  min-width: 0;
+}
+
+.baraja__grilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 480px) {
+  .baraja__grilla {
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .baraja__grilla {
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: 1.25rem;
+  }
+}

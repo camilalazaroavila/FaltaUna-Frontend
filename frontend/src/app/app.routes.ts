@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { rolGuard } from '@app/guardias/rol.guard';
 import { planElegidoGuard } from '@app/guardias/plan-elegido.guard';
 import { empresaRegistradaGuard } from '@app/guardias/empresa-registrada.guard';
+import { isDevMode } from '@angular/core';
 
 /**
  * Rutas de la aplicación.
@@ -15,6 +16,19 @@ import { empresaRegistradaGuard } from '@app/guardias/empresa-registrada.guard';
  */
 const cargaJuego = () =>
   import('./paginas/pantalla-carga-juego/pantalla-carga-juego').then((m) => m.PantallaCargaJuego);
+
+const rutasDev: Routes = isDevMode()
+  ? [
+      {
+        path: 'componentes',
+        title: 'Galería de componentes · Falta Una',
+        loadComponent: () =>
+          import('@paginas/galeria-componentes/galeria-componentes').then(
+            (m) => m.GaleriaComponentes,
+          ),
+      },
+    ]
+  : [];
 
 export const routes: Routes = [
   {
@@ -101,6 +115,15 @@ export const routes: Routes = [
     data: { rolesPermitidos: ['Usuario'] },
     loadComponent: () =>
       import('@paginas/misiones/misiones').then((m) => m.Misiones),
+  },
+
+  {
+    path: 'usuario/misiones/pity',
+    title: 'PT System · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('@paginas/misiones-pity/misiones-pity').then((m) => m.MisionesPity),
   },
 
   {
@@ -197,11 +220,7 @@ export const routes: Routes = [
   },
 
   {
-    // Rol Empresa: el layout aporta header y tema claro. Al entrar (/empresa)
-    // se ve la elección de plan; el panel actual queda en /empresa/panel.
     path: 'empresa',
-    canActivate: [rolGuard],
-    data: { rolesPermitidos: ['Empresa'] },
     loadComponent: () =>
       import('@paginas/empresa-layout/empresa-layout').then((m) => m.EmpresaLayout),
     children: [
@@ -312,6 +331,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@paginas/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
   },
+
+  ... rutasDev,
+  { path: '**', redirectTo: 'login' },
 
   {
     path: 'componentes',

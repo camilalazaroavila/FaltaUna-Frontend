@@ -150,3 +150,19 @@
             var(--combate-fondo-alto),
             var(--combate-fondo-bajo));
 }
+
+/* Área de contenido de usuario con reserva para navegación (lateral en desktop, inferior en mobile).
+   Usa margen izquierdo para evitar colisiones con utilidades px-* de Tailwind. */
+@utility area-contenido-con-nav {
+    margin-left: 0;
+    width: 100%;
+    padding-bottom: var(--reserva-nav-inferior, var(--nav-inferior-reserva));
+    box-sizing: border-box;
+
+    @media (min-width: 768px) {
+        margin-left: var(--reserva-nav-lateral, var(--nav-ola-reserva-desktop, 6rem));
+        width: calc(100% - var(--reserva-nav-lateral, var(--nav-ola-reserva-desktop, 6rem)));
+        max-width: calc(100% - var(--reserva-nav-lateral, var(--nav-ola-reserva-desktop, 6rem)));
+        padding-bottom: 0;
+    }
+}
