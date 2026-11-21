@@ -7,23 +7,21 @@ import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarj
 import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
-import { ETIQUETA_RAREZA } from '@modelos/carta.model';
-
+import { ETIQUETA_RAREZA, rarezaDesdeNombre } from '@modelos/carta.model';
 import { AlbumesService } from '@servicios/albumes.service';
 import { AlbumRespuesta } from '@modelos/album.model';
 import {
-  EMPRESA_ACTUAL,
-  ESTADISTICAS_CARTA,
   ORDEN_RAREZA,
   RAREZAS_ORDENADAS,
   COLOR_RAREZA,
   SIN_ESTADISTICAS,
-  TOTAL_USUARIOS_EMPRESA,
   type AlbumEmpresa,
   type EstadoAlbum,
   type EstadisticasCartaEmpresa,
   type ResumenAlbum,
 } from '@modelos/empresa.mock';
+import { EstadisticasEmpresaService } from '@app/servicios/estadisticas-empresa-service';
+import { EstadisticasEmpresaRespuesta } from '../empresa-estadisticas/empresa-estadisticas';
 
 export type CriterioOrdenAlbum = 'nombre-asc' | 'nombre-desc' | 'rareza';
 
@@ -58,13 +56,18 @@ interface AlbumConResumen extends AlbumEmpresa {
 })
 export class EmpresaAlbumes implements OnInit {
   private readonly albumesService = inject(AlbumesService);
+  private readonly estadisticasService = inject(EstadisticasEmpresaService);
+
 
   /** Datos crudos traídos del backend */
   protected readonly coleccionesBackend = signal<AlbumRespuesta[]>([]);
+  protected readonly estadisticasPorMarca = signal<Record<number, EstadisticasEmpresaRespuesta>>({});
+  protected readonly estadisticasGenerales = signal<EstadisticasEmpresaRespuesta | null>(null);
   protected readonly cargando = signal(true);
 
-  protected readonly empresa = EMPRESA_ACTUAL;
-  protected readonly totalUsuarios = TOTAL_USUARIOS_EMPRESA;
+  protected readonly totalUsuarios = computed(
+    () => this.estadisticasGenerales()?.totalJugadoresInteractuando ?? 0,
+  );
   protected readonly etiquetaRareza = ETIQUETA_RAREZA;
 
   ngOnInit(): void {
@@ -73,10 +76,25 @@ export class EmpresaAlbumes implements OnInit {
 
   private cargarColecciones(): void {
     this.cargando.set(true);
+
+    this.estadisticasService.obtenerEstadisticas().subscribe({
+      next: (est) => this.estadisticasGenerales.set(est),
+    });
+
     this.albumesService.obtenerMisAlbumes().subscribe({
       next: (colecciones) => {
         this.coleccionesBackend.set(colecciones);
         this.cargando.set(false);
+
+        const marcasIds = [...new Set(colecciones.map((c) => c.marcaId))];
+
+        for (const marcaId of marcasIds) {
+          this.estadisticasService.obtenerEstadisticas(marcaId).subscribe({
+            next: (est) => {
+              this.estadisticasPorMarca.update((actual) => ({ ...actual, [marcaId]: est }));
+            },
+          });
+        }
       },
       error: (err) => {
         console.error('Error al obtener álbumes del backend:', err);
@@ -90,22 +108,29 @@ export class EmpresaAlbumes implements OnInit {
     return this.coleccionesBackend().map((c) => {
       const imagenes = c.imagenesAlbum || [];
       const totalCartas = imagenes.length;
+      const est = this.estadisticasPorMarca()[c.marcaId];
+      const favAlbum =
+        est?.favoritosPorAlbum.find((f) => f.coleccionId === c.id)?.cantidadFavoritos ??
+        est?.totalFavoritos ??
+        0;
+      const anio = c.fechaInicio ? new Date(c.fechaInicio).getFullYear() : NaN;
+      const temporada = (Number.isNaN(anio) || anio < 2000 ? new Date().getFullYear() : anio).toString();
 
       const albumEmpresa: AlbumEmpresa = {
         id: String(c.id),
         nombre: c.nombre,
-        temporada: new Date(c.fechaInicio).getFullYear().toString(),
+        temporada,
         estado: c.activa ? 'activo' : 'finalizado',
         tono: 'azul',
         descripcion: c.descripcion,
         recompensa: 'Premio por completar la colección',
         imagenPortada: c.marcaLogoUrl,
         cartasIds: imagenes.map((img) => String(img.id)),
-        jugadoresCompletaron: 0,
+        jugadoresCompletaron: est?.jugadoresCompletaronAlbumes ?? 0,
       };
 
       const reparto = RAREZAS_ORDENADAS.map((rareza) => {
-        const cantidad = rareza === 'comun' ? totalCartas : 0;
+        const cantidad = imagenes.filter((img) => rarezaDesdeNombre(img.rareza) === rareza).length;
         return {
           rareza,
           etiqueta: ETIQUETA_RAREZA[rareza],
@@ -118,9 +143,9 @@ export class EmpresaAlbumes implements OnInit {
       const resumen: ResumenAlbum = {
         totalCartas,
         reparto,
-        favoritos: 0,
-        intercambios: 0,
-        porcentajeCompletado: 0,
+        favoritos: favAlbum,
+        intercambios: est?.cartasIntercambiadas ?? 0,
+        porcentajeCompletado: Math.round(est?.porcentajeJugadoresCompletaron ?? 0),
       };
 
       return {
@@ -157,10 +182,10 @@ export class EmpresaAlbumes implements OnInit {
       id: String(img.id),
       nombre: img.descripcion || `${coleccionBackend.nombre} #${idx + 1}`,
       imagenUrl: img.imagenUrl,
-      rareza: 'comun',
+      rareza: rarezaDesdeNombre(img.rareza),
       categoria: 'gastronomia',
-      atributoIzquierdo: 10,
-      atributoDerecho: 10,
+      atributoIzquierdo: img.poder ?? 10,
+      atributoDerecho: img.costoCupon ?? 10,
       obtenida: true,
     }));
   });
@@ -231,7 +256,7 @@ export class EmpresaAlbumes implements OnInit {
 
   protected readonly estadisticasSeleccionada = computed(() => {
     const carta = this.cartaSeleccionada();
-    return carta ? this.estadisticasDe(carta.id) : null;
+    return carta ? this.obtenerEstadisticasCarta(carta.id) : null;
   });
 
   protected seleccionarAlbum(id: string): void {
@@ -276,8 +301,28 @@ export class EmpresaAlbumes implements OnInit {
     return estado === 'activo' ? 'Activo' : 'Finalizado';
   }
 
-  protected estadisticasDe(id: string): EstadisticasCartaEmpresa {
-    return ESTADISTICAS_CARTA[id] ?? SIN_ESTADISTICAS;
+  protected obtenerEstadisticasCarta(id: string): EstadisticasCartaEmpresa {
+    for (const col of this.coleccionesBackend()) {
+      const img = (col.imagenesAlbum || []).find((i) => String(i.id) === id);
+      if (img) {
+        const usuariosQueLaTienen = img.totalObtenidas ?? 0;
+        const totalJugadoresMarca =
+          this.estadisticasPorMarca()[col.marcaId]?.totalJugadoresInteractuando ??
+          this.totalUsuarios();
+        const porcentajeUsuarios =
+          totalJugadoresMarca > 0
+            ? Math.min(100, Math.round((usuariosQueLaTienen / totalJugadoresMarca) * 100))
+            : 0;
+        return {
+          usuariosQueLaTienen,
+          porcentajeUsuarios,
+          favoritos: img.totalFavoritos ?? 0,
+          intercambios: img.totalIntercambios ?? 0,
+          partidas: img.totalPartidas ?? 0,
+        };
+      }
+    }
+    return SIN_ESTADISTICAS;
   }
 
   @HostListener('document:keydown.escape')
