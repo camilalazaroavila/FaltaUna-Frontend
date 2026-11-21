@@ -22,6 +22,7 @@ import { estaCercaPity, type ProgresoPity } from '@modelos/misiones.model';
   selector: 'app-tarjeta-pity',
   imports: [BarraProgreso, SobreMarca, Boton],
   templateUrl: './tarjeta-pity.html',
+  styleUrl: './tarjeta-pity.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block h-full' },
 })
@@ -33,6 +34,12 @@ export class TarjetaPity {
   protected readonly garantizada = computed(() => this.progreso().garantizada);
 
   protected readonly cerca = computed(() => estaCercaPity(this.progreso()));
+
+  protected readonly progresoRatio = computed(() => {
+    const p = this.progreso();
+    if (!p || p.umbral <= 0) return 0;
+    return Math.min(1, Math.max(0, p.contador / p.umbral));
+  });
 
   /** Rótulo visible: "General", "Categoría", "Marca". */
   protected readonly nombreTipo = computed(() => {
@@ -56,8 +63,8 @@ export class TarjetaPity {
     }
     const faltantes = this.progreso().sobresRestantes;
     return faltantes === 1
-      ? 'Falta 1 sobre para la garantía'
-      : `Faltan ${faltantes} sobres para la garantía`;
+      ? 'Falta 1 sobre para la legendaria asegurada'
+      : `Faltan ${faltantes} sobres para la legendaria asegurada`;
   });
 
   protected readonly textoBarra = computed(

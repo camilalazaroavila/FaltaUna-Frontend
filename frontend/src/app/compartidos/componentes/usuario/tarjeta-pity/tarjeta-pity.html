@@ -41,29 +41,77 @@
 
       <!-- Sobre (grande arriba en desktop, lateral en mobile) -->
       <div class="shrink-0 lg:mb-4">
-        @if (progreso().tipo === 'GENERAL') {
-          <app-sobre-marca
-            variante="oscuro"
-            tamanio="md"
-            class="w-20 sm:w-24 lg:w-36"
-            [clickeable]="false"
-          />
-        } @else if (progreso().tipo === 'CATEGORIA') {
-          <app-sobre-marca
-            categoria="entretenimiento"
-            tamanio="md"
-            class="w-20 sm:w-24 lg:w-36"
-            [clickeable]="false"
-          />
-        } @else {
-          <app-sobre-marca
-            variante="claro"
-            [mostrarPregunta]="true"
-            tamanio="md"
-            class="w-20 sm:w-24 lg:w-36"
-            [clickeable]="false"
-          />
-        }
+        <div
+          class="tarjeta-pity__sobre-aura"
+          [class.tarjeta-pity__sobre-aura--garantizada]="garantizada()"
+          [style.--progreso-ratio]="progresoRatio()"
+        >
+          @if (progreso().tipo === 'GENERAL') {
+            <app-sobre-marca
+              variante="oscuro"
+              tamanio="md"
+              class="w-20 sm:w-24 lg:w-32 [&>*]:w-full!"
+              [clickeable]="false"
+            />
+          } @else if (progreso().tipo === 'CATEGORIA') {
+            <div class="tarjeta-pity__abanico">
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--izq">
+                <app-sobre-marca
+                  categoria="gastronomia"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--centro">
+                <app-sobre-marca
+                  categoria="entretenimiento"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--der">
+                <app-sobre-marca
+                  categoria="indumentaria"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+            </div>
+          } @else {
+            <div class="tarjeta-pity__abanico">
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--izq">
+                <app-sobre-marca
+                  nombre="Aura"
+                  logoUrl="https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779586/AURA_logo.jpg"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--centro">
+                <app-sobre-marca
+                  nombre="Dulce Atelier"
+                  logoUrl="https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771203/Dulce_Atelier_logo.jpg"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--der">
+                <app-sobre-marca
+                  nombre="Cineverse"
+                  logoUrl="https://res.cloudinary.com/w0uxy0vd/image/upload/v1792778422/Cineverse_logo.jpg"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+            </div>
+          }
+        </div>
       </div>
     </div>
 
@@ -123,20 +171,6 @@
         [attr.aria-describedby]="'desc-boton-pity-' + progreso().tipo"
         (click)="irASobres()"
       >
-        <svg
-          class="size-4 shrink-0"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-          <path d="m3.3 7 8.7 5 8.7-5" />
-          <path d="M12 22V12" />
-        </svg>
         {{ textoBotonAbrir() }}
       </button>
       <span

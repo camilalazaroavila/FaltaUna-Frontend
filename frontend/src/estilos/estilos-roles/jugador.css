@@ -204,10 +204,10 @@
    --nav-inferior-fab-texto: var(--texto-primario);
    --nav-inferior-fab-anillo: var(--color-amarillo-logo);
    --nav-inferior-sombra: 0 -3px 0 var(--color-amarillo-logo);
-   --nav-inferior-alto: 4.5rem;
+   --nav-inferior-alto: 4.75rem;
    --nav-inferior-franja-asomada: 1.25rem;
    --nav-inferior-fab-tamano: 3.375rem;
-   --nav-inferior-reserva: calc(var(--nav-inferior-alto) + 1.25rem + env(safe-area-inset-bottom, 0px));
+   --nav-inferior-reserva: calc(var(--nav-inferior-alto) + 1.5rem + env(safe-area-inset-bottom, 0px));
 
    /* --- Navegación con Efecto de Ola (Capa 2: Jugador) --- */
    --nav-ola-superficie: var(--fondo-superficie);
