@@ -5,6 +5,7 @@ import {
   type Mision,
   type MisionRespuesta,
   type Periodicidad,
+  type PityBackendRespuesta,
   type ProgresoPity,
   type ReclamarBonoRespuesta,
   type ReclamarTodasRespuesta,
@@ -12,23 +13,9 @@ import {
   type ResumenMisionesRespuesta,
   faltantesPity,
   mapearMision,
+  mapearPity,
 } from '@modelos/misiones.model';
 import { ApiService } from './api.service';
-
-import urlSobre1 from '@svgs/Paquete1.svg';
-import urlSobre2 from '@svgs/Paquete2.svg';
-import urlSobre3 from '@svgs/PaqueteHuh.svg';
-
-/**
- * Filas de prueba del PT System. Las marcas llevan su categoría para que el
- * filtro por categoría también las incluya (la relación categoría↔marca todavía
- * no existe en el backend: esto es dato de prueba).
- */
-const PITY_MOCK: readonly ProgresoPity[] = [
-  { id: 'generico', sobre: { tipo: 'generico' }, abiertos: 30, umbral: 40, imagenSvg: urlSobre1 },
-  { id: 'cat-tecnologia', sobre: { tipo: 'categoria', categoria: 'tecnologia' }, abiertos: 13, umbral: 20, imagenSvg: urlSobre2 },
-  { id: 'marca-mcdonalds', sobre: { tipo: 'marca', nombre: 'McDonald\'s', logoUrl: null, categoria: 'gastronomia' }, abiertos: 3, umbral: 10, imagenSvg: urlSobre3 },
-];
 
 type ErrorApi = {
   readonly status?: number;
@@ -54,11 +41,13 @@ export class MisionesService {
   private readonly api = inject(ApiService);
 
   private readonly _misiones = signal<readonly Mision[]>([]);
-  private readonly _pity = signal<readonly ProgresoPity[]>(PITY_MOCK);
+  private readonly _pity = signal<readonly ProgresoPity[]>([]);
   private readonly _resumen = signal<ResumenMisionesRespuesta | null>(null);
   private readonly _offsetRelojMs = signal<number>(0);
   private readonly _cargando = signal(false);
   private readonly _error = signal<string | null>(null);
+  private readonly _cargandoPity = signal(false);
+  private readonly _errorPity = signal<string | null>(null);
 
   readonly misiones = this._misiones.asReadonly();
   readonly pity = this._pity.asReadonly();
@@ -66,11 +55,37 @@ export class MisionesService {
   readonly offsetRelojMs = this._offsetRelojMs.asReadonly();
   readonly cargando = this._cargando.asReadonly();
   readonly error = this._error.asReadonly();
+  readonly cargandoPity = this._cargandoPity.asReadonly();
+  readonly errorPity = this._errorPity.asReadonly();
 
-  /** Filas del PT System ordenadas de la más cercana a la legendaria a la más lejana. */
+  /** Filas del PT System ordenadas de la más cercana a la garantía a la más lejana. */
   readonly pityPorCercania = computed(() =>
     [...this._pity()].sort((a, b) => faltantesPity(a) - faltantesPity(b)),
   );
+
+  /** Trae el estado actual del pity system para el usuario autenticado. */
+  cargarPity(): Observable<readonly ProgresoPity[]> {
+    this._cargandoPity.set(true);
+    this._errorPity.set(null);
+
+    return this.api.get<PityBackendRespuesta[]>('Sobres/pity').pipe(
+      map(mapearPity),
+      tap({
+        next: (pity) => {
+          this._pity.set(pity);
+          this._cargandoPity.set(false);
+        },
+        error: (error: unknown) => {
+          this._pity.set([]);
+          this._errorPity.set(mensajeDeError(error, 'No pudimos cargar el estado del pity system.'));
+          this._cargandoPity.set(false);
+        },
+      }),
+      catchError((error: unknown) =>
+        throwError(() => new Error(mensajeDeError(error, 'No pudimos cargar el estado del pity system.'))),
+      ),
+    );
+  }
 
   /** Trae las misiones reales del usuario logueado (el JWT lo agrega el interceptor). */
   cargarMisiones(): Observable<readonly Mision[]> {

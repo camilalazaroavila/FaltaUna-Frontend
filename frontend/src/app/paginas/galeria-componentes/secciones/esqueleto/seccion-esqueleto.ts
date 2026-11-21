@@ -5,7 +5,7 @@ import { EsqueletoPity } from '@compartidos/componentes/feedback/esqueleto/esque
 import { EsqueletoCupones } from '@compartidos/componentes/feedback/esqueleto/esqueleto-cupones';
 import { EsqueletoCartas } from '@compartidos/componentes/feedback/esqueleto/esqueleto-cartas';
 import { EsqueletoBaraja } from '@compartidos/componentes/feedback/esqueleto/esqueleto-baraja';
-import { TarjetaMuestra } from '../../tarjeta-muestra/tarjeta-muestra';
+import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
 
 @Component({
   selector: 'app-seccion-esqueleto',

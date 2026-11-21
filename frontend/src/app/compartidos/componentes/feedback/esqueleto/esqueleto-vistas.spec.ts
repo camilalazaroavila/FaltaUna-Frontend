@@ -39,11 +39,11 @@ describe('Esqueletos de Vistas', () => {
       fixture.detectChanges();
     });
 
-    it('renderiza 4 tarjetas de pity con barra y sobre', () => {
+    it('renderiza 3 tarjetas de pity con barra y sobre', () => {
       const el = fixture.nativeElement as HTMLElement;
       expect(el.textContent).toContain('Cargando PT System…');
       const cards = el.querySelectorAll('li');
-      expect(cards.length).toBe(4);
+      expect(cards.length).toBe(3);
     });
   });
 

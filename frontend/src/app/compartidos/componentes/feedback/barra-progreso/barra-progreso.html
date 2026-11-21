@@ -11,9 +11,20 @@
     <span
       class="absolute inset-y-0.5 left-0.5 rounded-pildora transition-[width] duration-500 ease-out motion-reduce:transition-none"
       [class]="clasesRelleno()"
-      [style.width]="'calc(' + porcentaje() + '% - 4px)'"
+      [style.width]="porcentajeRelleno() > 0 ? 'calc(' + porcentajeRelleno() + '% - 4px)' : '0px'"
       aria-hidden="true"
     ></span>
+
+    @if (segmentada()) {
+      <div class="pointer-events-none absolute inset-0 z-[5] flex" aria-hidden="true">
+        @for (pos of divisiones(); track $index) {
+          <span
+            class="absolute inset-y-0 w-px bg-barra-borde/25"
+            [style.left.%]="pos"
+          ></span>
+        }
+      </div>
+    }
 
     <span
       class="relative z-10 flex h-full items-center justify-center px-3 font-titulo text-sm uppercase tracking-wide text-barra-texto sm:text-base md:text-lg"
@@ -24,9 +35,20 @@
     <span
       class="absolute inset-y-0.5 left-0.5 rounded-pildora transition-[width] duration-300 ease-out motion-reduce:transition-none"
       [class]="clasesRelleno()"
-      [style.width]="porcentaje() > 0 ? 'calc(' + porcentaje() + '% - 4px)' : '0px'"
+      [style.width]="porcentajeRelleno() > 0 ? 'calc(' + porcentajeRelleno() + '% - 4px)' : '0px'"
       aria-hidden="true"
     ></span>
+
+    @if (segmentada()) {
+      <div class="pointer-events-none absolute inset-0 z-[5] flex" aria-hidden="true">
+        @for (pos of divisiones(); track $index) {
+          <span
+            class="absolute inset-y-0 w-px bg-barra-borde/25"
+            [style.left.%]="pos"
+          ></span>
+        }
+      </div>
+    }
 
     <span
       class="relative z-10 flex h-full items-center justify-center px-2 font-titulo text-etiqueta leading-none tracking-wide text-barra-texto tabular-nums"

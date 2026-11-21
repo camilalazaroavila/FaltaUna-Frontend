@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input } from '@angular/core';
 
 import { porcentaje } from '@modelos/misiones.model';
 
@@ -32,12 +32,33 @@ export class BarraProgreso {
   readonly objetivo = input.required<number>();
   readonly variante = input<VarianteBarra>('mision');
   readonly tamano = input<TamanoBarra>('md');
+  readonly segmentada = input<boolean, unknown>(false, { transform: booleanAttribute });
   /** Nombre accesible de lo que se está midiendo (p. ej. el título de la misión). */
   readonly etiqueta = input.required<string>();
   /** Texto dentro de la pastilla; por defecto "N% completado". */
   readonly texto = input<string | null>(null);
 
   protected readonly porcentaje = computed(() => porcentaje(this.actual(), this.objetivo()));
+  protected readonly porcentajeRelleno = computed(() => {
+    const obj = this.objetivo();
+    if (obj <= 0) return 0;
+    return Math.min(100, Math.max(0, (this.actual() / obj) * 100));
+  });
+
+  protected readonly divisiones = computed<readonly number[]>(() => {
+    if (!this.segmentada()) return [];
+    const obj = this.objetivo();
+    if (obj <= 1) return [];
+
+    // Umbrales <= 20 van paso a paso; mayores se agrupan de a 5.
+    const paso = obj <= 20 ? 1 : 5;
+    const ticks: number[] = [];
+    for (let i = paso; i < obj; i += paso) {
+      ticks.push((i / obj) * 100);
+    }
+    return ticks;
+  });
+
   protected readonly leyenda = computed(() => this.texto() ?? `${this.porcentaje()}% completado`);
   protected readonly valorAccesible = computed(
     () => `${this.actual()} de ${this.objetivo()}, ${this.porcentaje()}%`,

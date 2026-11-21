@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 import { ApiService } from './api.service';
+import { MisionesService } from './mision.services';
 import {
   AbrirSobreSolicitud,
   AperturaSobreRespuesta,
@@ -58,6 +59,7 @@ function filtrarRespuestaApertura(respuesta: AperturaSobreRespuesta): AperturaSo
 })
 export class SobresService {
   private readonly api = inject(ApiService);
+  private readonly misionesService = inject(MisionesService);
 
   private readonly _sobresDisponibles = signal<SobresDisponiblesEstado>({
     actuales: 0,
@@ -95,7 +97,12 @@ export class SobresService {
     const cuerpo: AbrirSobreSolicitud = { usuarioId };
     return this.api
       .post<AperturaSobreRespuesta>(`Sobres/${sobreId}/abrir`, cuerpo)
-      .pipe(map(filtrarRespuestaApertura));
+      .pipe(
+        map(filtrarRespuestaApertura),
+        tap(() => {
+          this.misionesService.cargarPity().subscribe({ error: () => undefined });
+        }),
+      );
   }
 
   /** Reclama y abre el sobre diario gratuito del usuario */
@@ -104,7 +111,7 @@ export class SobresService {
     return this.api.post<AperturaSobreRespuesta>('Sobres/diario', cuerpo).pipe(
       map(filtrarRespuestaApertura),
       tap(() => {
-        // El estado se refrescará desde el componente tras la apertura
+        this.misionesService.cargarPity().subscribe({ error: () => undefined });
       }),
     );
   }

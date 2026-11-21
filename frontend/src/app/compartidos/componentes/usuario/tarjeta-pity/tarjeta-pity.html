@@ -1,49 +1,184 @@
 <article
-  class="flex flex-wrap items-center gap-4 rounded-lg border-2 border-borde-coleccion bg-fondo-coleccion-superficie p-3 shadow-marca transition-colors sm:p-4"
-  [class.border-atencion]="casi()"
+  class="relative flex h-full flex-col justify-between rounded-xl border-2 bg-superficie-elevada p-4 shadow-cartoon-clara transition-all duration-300 sm:p-5 lg:items-center lg:p-6 lg:text-center"
+  [class.border-pity-garantizada-borde]="garantizada()"
+  [class.ring-2]="garantizada()"
+  [class.ring-pity-garantizada-aro]="garantizada()"
+  [class.border-atencion-borde]="cerca() && !garantizada()"
+  [class.bg-atencion-fondo/5]="cerca() && !garantizada()"
+  [class.border-borde]="!garantizada() && !cerca()"
 >
-  <div class="min-w-0 flex-1">
-    <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-      <h3 class="font-titulo text-misiones-fila tracking-[0.02em] text-marca-acento">
-        {{ textoFaltantes() }}
-      </h3>
-      @if (casi()) {
-        <span
-          class="rounded-pildora border border-atencion-borde bg-atencion-fondo px-3 py-1 text-misiones-badge font-bold tracking-[0.06em] text-atencion-texto uppercase"
+  <div class="flex w-full flex-1 flex-col justify-between lg:items-center">
+    <!-- Fila superior mobile / Sobre desktop -->
+    <div class="flex items-center justify-between gap-4 lg:flex-col lg:justify-center">
+      <!-- Textos en mobile -->
+      <div class="min-w-0 flex-1 lg:hidden">
+        <div class="flex flex-wrap items-center gap-2">
+          <h3
+            class="font-titulo text-base font-bold tracking-wide uppercase sm:text-lg"
+            [class.text-marca-primaria]="garantizada()"
+            [class.text-texto-primario]="!garantizada()"
+          >
+            {{ textoFaltantes() }}
+          </h3>
+          @if (garantizada()) {
+            <span
+              class="rounded-pildora border border-marca-primaria/40 bg-marca-primaria/15 px-2.5 py-0.5 font-titulo text-[11px] font-bold tracking-wider text-marca-primaria uppercase"
+            >
+              Garantizada
+            </span>
+          } @else if (cerca()) {
+            <span
+              class="rounded-pildora border border-atencion-borde bg-atencion-fondo px-2.5 py-0.5 font-titulo text-[11px] font-bold tracking-wider text-atencion-texto uppercase"
+            >
+              ¡Casi!
+            </span>
+          }
+        </div>
+        <p class="mt-0.5 font-interfaz text-xs tracking-wider text-texto-secundario uppercase">
+          {{ nombreTipo() }}
+        </p>
+      </div>
+
+      <!-- Sobre (grande arriba en desktop, lateral en mobile) -->
+      <div class="shrink-0 lg:mb-4">
+        <div
+          class="tarjeta-pity__sobre-aura"
+          [class.tarjeta-pity__sobre-aura--garantizada]="garantizada()"
+          [style.--progreso-ratio]="progresoRatio()"
         >
-          ¡Casi!
-        </span>
-      }
+          @if (progreso().tipo === 'GENERAL') {
+            <app-sobre-marca
+              variante="oscuro"
+              tamanio="md"
+              class="w-20 sm:w-24 lg:w-32 [&>*]:w-full!"
+              [clickeable]="false"
+            />
+          } @else if (progreso().tipo === 'CATEGORIA') {
+            <div class="tarjeta-pity__abanico">
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--izq">
+                <app-sobre-marca
+                  categoria="gastronomia"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--centro">
+                <app-sobre-marca
+                  categoria="entretenimiento"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--der">
+                <app-sobre-marca
+                  categoria="indumentaria"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+            </div>
+          } @else {
+            <div class="tarjeta-pity__abanico">
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--izq">
+                <app-sobre-marca
+                  nombre="Aura"
+                  logoUrl="https://res.cloudinary.com/w0uxy0vd/image/upload/v1792779586/AURA_logo.jpg"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--centro">
+                <app-sobre-marca
+                  nombre="Dulce Atelier"
+                  logoUrl="https://res.cloudinary.com/w0uxy0vd/image/upload/v1792771203/Dulce_Atelier_logo.jpg"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+              <div class="tarjeta-pity__abanico-sobre tarjeta-pity__abanico-sobre--der">
+                <app-sobre-marca
+                  nombre="Cineverse"
+                  logoUrl="https://res.cloudinary.com/w0uxy0vd/image/upload/v1792778422/Cineverse_logo.jpg"
+                  tamanio="sm"
+                  class="w-14 sm:w-16 lg:w-24 [&>*]:w-full!"
+                  [clickeable]="false"
+                />
+              </div>
+            </div>
+          }
+        </div>
+      </div>
     </div>
 
-    <p class="mt-0.5 font-interfaz text-misiones-texto text-texto-secundario">
-      {{ nombreSobre() }}
-    </p>
+    <!-- Textos en Desktop -->
+    <div class="hidden w-full lg:block lg:mb-4">
+      <div class="flex flex-col items-center gap-1.5">
+        <div class="flex items-center gap-2">
+          <p class="font-interfaz text-xs tracking-wider text-texto-secundario uppercase">
+            {{ nombreTipo() }}
+          </p>
+          @if (garantizada()) {
+            <span
+              class="rounded-pildora border border-marca-primaria/40 bg-marca-primaria/15 px-2.5 py-0.5 font-titulo text-[11px] font-bold tracking-wider text-marca-primaria uppercase"
+            >
+              Garantizada
+            </span>
+          } @else if (cerca()) {
+            <span
+              class="rounded-pildora border border-atencion-borde bg-atencion-fondo px-2.5 py-0.5 font-titulo text-[11px] font-bold tracking-wider text-atencion-texto uppercase"
+            >
+              ¡Casi!
+            </span>
+          }
+        </div>
+        <h3
+          class="font-titulo text-lg font-bold tracking-wide uppercase xl:text-xl"
+          [class.text-marca-primaria]="garantizada()"
+          [class.text-texto-primario]="!garantizada()"
+        >
+          {{ textoFaltantes() }}
+        </h3>
+      </div>
+    </div>
 
-    <app-barra-progreso
-      class="mt-2 block w-full max-w-md"
-      [actual]="progreso().abiertos"
-      [objetivo]="progreso().umbral"
-      variante="pity"
-      [etiqueta]="etiquetaSobre()"
-      [texto]="textoBarra()"
-    />
-  </div>
-
-  <div class="shrink-0 flex items-center justify-center">
-    @if (progreso().imagenSvg; as svg) {
-      <img
-        [src]="svg"
-        [alt]="etiquetaSobre()"
-        class="h-auto w-20 sm:w-24 md:w-28 object-contain drop-shadow-md select-none pointer-events-none"
+    <!-- Barra de progreso segmentada -->
+    <div class="mt-3 w-full lg:mt-0 lg:mb-4">
+      <app-barra-progreso
+        class="w-full"
+        [actual]="progreso().contador"
+        [objetivo]="progreso().umbral"
+        [segmentada]="true"
+        variante="pity"
+        [etiqueta]="etiquetaSobre()"
+        [texto]="textoBarra()"
       />
-    } @else {
-      <app-sobre-marca
+    </div>
+
+    <!-- Botón "Abrir sobre" en cada tarjeta (apagado en todos los estados por ahora) -->
+    <div class="mt-4 flex w-full justify-center">
+      <button
+        app-boton
+        type="button"
+        variante="primario"
         tamanio="md"
-        [categoria]="categoria()"
-        [nombre]="nombre()"
-        [logoUrl]="logoUrl()"
-      />
-    }
+        class="w-auto px-6 text-xs sm:text-sm"
+        [disabled]="!botonAbrirHabilitado()"
+        [attr.aria-describedby]="'desc-boton-pity-' + progreso().tipo"
+        (click)="irASobres()"
+      >
+        {{ textoBotonAbrir() }}
+      </button>
+      <span
+        [id]="'desc-boton-pity-' + progreso().tipo"
+        class="sr-only"
+      >
+        {{ descripcionBotonDeshabilitado() }}
+      </span>
+    </div>
   </div>
 </article>
