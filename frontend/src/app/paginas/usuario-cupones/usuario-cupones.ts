@@ -19,6 +19,7 @@ import { Confeti } from '@compartidos/componentes/confeti/confeti';
 import { CuponesService } from '@servicios/cupones.service';
 import { SonidoService } from '@servicios/sonido.service';
 import { CategoriaCupon, CuponDescuento, EstadoCupon } from '@modelos/cupon.model';
+import { toast } from 'ngx-sonner';
 
 import urlIconoGastro from '@svgs/Icon_GastroInv.svg';
 import urlIconoDeco from '@svgs/Icon_DecoInv.svg';
@@ -29,9 +30,9 @@ import urlIconoMusica from '@svgs/Icon_MusicaINV.svg';
 import urlIconoTecno from '@svgs/Icon_TecnoInv.svg';
 
 interface FiltroCategoria {
-  readonly id: CategoriaCupon;
+  readonly id: CategoriaCupon | null;
   readonly nombre: string;
-  readonly urlIcono: string;
+  readonly urlIcono: string | null;
 }
 
 /**
@@ -132,6 +133,7 @@ export class UsuarioCupones {
   private readonly sonidoCanje = 'sonidos/canje.mp3';
 
   protected readonly categorias: readonly FiltroCategoria[] = [
+    { id: null, nombre: 'Todos', urlIcono: null },
     { id: 'gastronomia', nombre: 'Gastronomía', urlIcono: urlIconoGastro },
     { id: 'deco', nombre: 'Deco', urlIcono: urlIconoDeco },
     {
@@ -155,7 +157,8 @@ export class UsuarioCupones {
 
   protected readonly cargando = signal(true);
   protected readonly error = signal<string | null>(null);
-  protected readonly categoriaActiva = signal<CategoriaCupon>('gastronomia');
+  /** Categoría elegida en el filtro; null significa "Todos". */
+  protected readonly categoriaActiva = signal<CategoriaCupon | null>(null);
 
   /** Texto del buscador. */
   protected readonly busqueda = signal('');
@@ -172,7 +175,13 @@ export class UsuarioCupones {
   protected readonly menuCategoriasAbierto = signal(false);
 
   protected readonly categoriaActivaObjeto = computed(
-    () => this.categorias.find((c) => c.id === this.categoriaActiva()) ?? null,
+    () => {
+      const categoria = this.categoriaActiva();
+      if (categoria === null) {
+        return null;
+      }
+      return this.categorias.find((c) => c.id === categoria) ?? null;
+    },
   );
 
   protected readonly hayFiltros = computed(
@@ -191,7 +200,8 @@ export class UsuarioCupones {
     const texto = this.busqueda().trim().toLowerCase();
 
     return this.cupones().filter((c) => {
-      if (c.categoria !== categoria) {
+      // Si no hay categoría activa, mostramos todos (filtro "Todos").
+      if (categoria !== null && c.categoria !== categoria) {
         return false;
       }
 
@@ -327,6 +337,20 @@ export class UsuarioCupones {
         next: (cupones) => {
           this.cupones.set(cupones);
           this.cargando.set(false);
+
+          // Notificación automática: si hay cupones disponibles, avisamos al usuario.
+          const disponibles = cupones.filter((c) => c.estado === 'Disponible');
+          if (disponibles.length > 0) {
+            toast.success(
+              `¡Tienes ${disponibles.length} cupón${
+                disponibles.length > 1 ? 'es' : ''
+              } disponible${disponibles.length > 1 ? 's' : ''}!`,
+              {
+                description: 'Ve tu colección de cupones y canjéalos cuando quieras.',
+                position: 'top-center',
+              }
+            );
+          }
         },
         error: () => {
           this.error.set(
@@ -337,7 +361,7 @@ export class UsuarioCupones {
       });
   }
 
-  protected elegirCategoria(id: CategoriaCupon): void {
+  protected elegirCategoria(id: CategoriaCupon | null): void {
     this.categoriaActiva.set(id);
     this.menuCategoriasAbierto.set(false);
   }
