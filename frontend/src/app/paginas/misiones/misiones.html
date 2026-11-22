@@ -36,24 +36,16 @@
       </a>
     </div>
 
-    <div class="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-      <h1
-        class="shrink-0 titulo-sombreado font-titulo text-misiones-titulo tracking-wide text-marca-acento uppercase"
-      >
-        MISIONES
-      </h1>
-
-      <div class="flex flex-wrap items-center justify-end gap-3">
-        @if (reclamablesActivas().length > 0) {
-          <button
-            type="button"
-            [disabled]="reclamandoEnVuelo()"
-            (click)="reclamarTodas()"
-            class="misiones__reclamar-todas inline-flex cursor-pointer items-center gap-1.5 rounded-pildora border-2 border-barra-borde bg-marca-primaria px-3.5 py-1.5 font-titulo text-xs tracking-wide text-marca-sobre-primaria whitespace-nowrap shadow-cartoon-clara transition-colors hover:bg-marca-primaria-hover active:bg-marca-primaria-activa disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca-acento sm:text-sm"
-          >
-            Reclamar todas ({{ reclamablesActivas().length }})
-          </button>
-        }
+    <div
+      class="misiones__cabecera mt-2"
+      [class.misiones__cabecera-diaria]="periodicidadActiva() === 'diaria'"
+    >
+      <div class="misiones__col-izq flex flex-col items-start gap-2.5">
+        <h1
+          class="shrink-0 titulo-sombreado font-titulo text-misiones-titulo tracking-wide text-marca-acento uppercase"
+        >
+          MISIONES
+        </h1>
 
         <div
           role="tablist"
@@ -88,6 +80,39 @@
           }
         </div>
       </div>
+
+      <div class="misiones__col-der flex flex-wrap items-center justify-end gap-3">
+        @if (reclamablesActivas().length > 0) {
+          <button
+            type="button"
+            [disabled]="reclamandoEnVuelo()"
+            (click)="reclamarTodas()"
+            class="misiones__reclamar-todas inline-flex cursor-pointer items-center gap-1.5 rounded-pildora border-2 border-barra-borde bg-marca-primaria px-3.5 py-1.5 font-titulo text-xs tracking-wide text-marca-sobre-primaria whitespace-nowrap shadow-cartoon-clara transition-colors hover:bg-marca-primaria-hover active:bg-marca-primaria-activa disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marca-acento sm:text-sm"
+          >
+            Reclamar todas ({{ reclamablesActivas().length }})
+          </button>
+        }
+
+        @if (periodicidadActiva() === 'semanal' && proximoReinicioSemanalUtc(); as reinicioUtc) {
+          <app-reinicio-misiones
+            [proximoReinicioUtc]="reinicioUtc"
+            [offsetRelojMs]="offsetRelojMs()"
+            (reinicioAlcanzado)="alAlcanzarReinicio()"
+          />
+        }
+      </div>
+
+      @if (!cargando() && !error() && periodicidadActiva() === 'diaria') {
+        <app-barra-bono-misiones
+          class="misiones__bloque-bono"
+          [bono]="bonoDiario()"
+          [reclamando]="reclamandoEnVuelo()"
+          [proximoReinicioUtc]="proximoReinicioDiarioUtc()"
+          [offsetRelojMs]="offsetRelojMs()"
+          (reinicioAlcanzado)="alAlcanzarReinicio()"
+          (reclamar)="reclamarBono()"
+        />
+      }
     </div>
 
     <main class="mt-5">
@@ -97,26 +122,7 @@
           [conSobreEnTarjeta]="periodicidadActiva() !== 'diaria'"
         />
       } @else if (!error()) {
-        @if (periodicidadActiva() === 'diaria') {
-          <div class="mb-6">
-            <app-barra-bono-misiones
-              [bono]="bonoDiario()"
-              [reclamando]="reclamandoEnVuelo()"
-              [proximoReinicioUtc]="proximoReinicioDiarioUtc()"
-              [offsetRelojMs]="offsetRelojMs()"
-              (reclamar)="reclamarBono()"
-              (reinicioAlcanzado)="alAlcanzarReinicio()"
-            />
-          </div>
-        } @else if (proximoReinicioSemanalUtc(); as reinicioUtc) {
-          <div class="mb-5 flex justify-start">
-            <app-reinicio-misiones
-              [proximoReinicioUtc]="reinicioUtc"
-              [offsetRelojMs]="offsetRelojMs()"
-              (reinicioAlcanzado)="alAlcanzarReinicio()"
-            />
-          </div>
-        }
+        <!-- Los paneles de misiones se renderizan aquí abajo -->
       }
 
       @for (periodicidad of periodicidades; track periodicidad) {

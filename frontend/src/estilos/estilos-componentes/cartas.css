@@ -30,6 +30,8 @@
     --carta-color-borde-imagen: rgba(255, 243, 160, 0.25);
     --carta-legendaria-acento: var(--color-legendaria-brillo);
     --carta-legendaria-halo: rgba(59, 217, 114, 0.45);
+    --pity-garantizada-borde: var(--color-legendaria-brillo);
+    --pity-garantizada-aro: rgba(123, 240, 165, 0.45);
     --carta-opacidad-no-obtenida: 0.55;
 
     /* Filtros de tinte para los SVG monocromos que se pintan con `<img>`.

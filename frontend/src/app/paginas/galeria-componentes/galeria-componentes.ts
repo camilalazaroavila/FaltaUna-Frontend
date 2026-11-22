@@ -16,6 +16,7 @@ import { SeccionAreaEmpresa } from '@paginas/galeria-componentes/secciones/area-
 import { SeccionTexto } from '@paginas/galeria-componentes/secciones/texto/seccion-texto';
 import { SeccionCajas } from '@paginas/galeria-componentes/secciones/cajas/seccion-cajas';
 import { SeccionTarjetaMision } from '@paginas/galeria-componentes/secciones/tarjeta-mision/seccion-tarjeta-mision';
+import { SeccionTarjetaPity } from '@paginas/galeria-componentes/secciones/tarjeta-pity/seccion-tarjeta-pity';
 import { SeccionBarraBonoMisiones } from '@paginas/galeria-componentes/secciones/barra-bono-misiones/seccion-barra-bono-misiones';
 import { SeccionReinicioMisiones } from '@paginas/galeria-componentes/secciones/reinicio-misiones/seccion-reinicio-misiones';
 import { SeccionPartida } from '@paginas/galeria-componentes/secciones/partida/seccion-partida';
@@ -45,6 +46,7 @@ export type ModoGaleria = 'jugador' | 'empresa';
     SeccionTexto,
     SeccionCajas,
     SeccionTarjetaMision,
+    SeccionTarjetaPity,
     SeccionBarraBonoMisiones,
     SeccionReinicioMisiones,
     SeccionPartida,
