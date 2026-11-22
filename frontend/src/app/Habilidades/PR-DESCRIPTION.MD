@@ -1,12 +1,12 @@
 ## 📝 Descripción
-Implementa el flujo completo de **Partida 1 vs 1 contra otro jugador** en el frontend (`partida-sala`): habilita el acceso desde el menú principal de modos de juego, incorpora el servicio `SalaJuegoService` conectado por WebSockets (SignalR) al Hub del backend (`/hubs/juego`) para emparejamiento automático y salas privadas con código, construye la pantalla interactiva de lobby en `/juego/jugador` con selección de mazo reglamentario (12 cartas) y adapta `PartidaServicio`, el tablero y la pantalla de resultado para sincronizar y mostrar el estado de un rival humano en tiempo real.
+Conecta las vistas de **Estadísticas de Empresa** (`/empresa/panel/estadisticas`) y **Álbumes de Empresa** (`/empresa/panel/albumes`) con los datos reales del backend en la rama `estadisticas`, reemplazando los datos simulados de `empresa-estadisticas.mock.ts` y `empresa.mock.ts`. Incorpora el servicio `EstadisticasEmpresaService` (`GET /api/EstadisticasEmpresa/estadisticas`), agrega filtrado interactivo por marca cuando la empresa posee múltiples marcas, y vincula las métricas reales de cada colección y carta (rareza, poder, costo de cupón, jugadores que la tienen, favoritos, intercambios y partidas).
 
 ### 💡 ¿Por qué es importante este cambio?
-Permite que dos usuarios reales puedan enfrentarse en línea de punta a punta, ya sea buscando rival en la cola pública o compartiendo un código de sala privada, con retroalimentación clara durante cada ronda sin bloquear el turno del jugador que aún sigue pensando su jugada.
+Permite que las empresas consulten indicadores reales sobre el desempeño de sus marcas, álbumes y cartas a partir de la actividad efectiva de los jugadores en la plataforma, dejando atrás las cifras estáticas de demostración (Grido mock).
 
-1. **[Emparejamiento y salas privadas en tiempo real]**: antes la vista `/juego/jugador` mostraba un cartel estático indicando que el modo no estaba disponible; ahora conecta vía SignalR para buscar partida rápida (`BuscarPartida` / `CancelarBusqueda`) o crear/unirse a salas con código (`CrearSala` / `UnirseASala`).
-2. **[Sincronización de turnos entre humanos]**: antes `PartidaServicio` asumía siempre un rival bot (`esBot: true`) y detenía el polling o bloqueaba la fase al esperar; ahora distingue si el rival es humano, informa visualmente cuando el oponente ya cerró su turno (`rivalListo`) y acelera el polling (cada 2 s) tras confirmar el turno propio para resolver la ronda apenas ambos estén listos.
-3. **[Bloqueo seguro tras confirmar jugada]**: impide arrastrar nuevas cartas cuando el jugador propio ya marcó su turno como listo (`servicio.propioListo()`) mientras aguarda la confirmación del rival.
+1. **[Tablero de estadísticas conectado al backend con filtro por marca]**: antes `EmpresaEstadisticas` consumía constantes locales (`KPIS_EMPRESA`, `EVOLUCION_FAVORITOS`, `CARTAS_EMPRESA`); ahora consulta `EstadisticasEmpresaService.obtenerEstadisticas(marcaId?)`, permitiendo alternar entre **"Todas"** las marcas de la empresa o filtrar KPIs, favoritos por álbum, distribución por rareza, top cartas y evolución mensual por una marca específica.
+2. **[Métricas reales por álbum y por carta en `EmpresaAlbumes`]**: antes la grilla y el detalle de álbumes calculaban rarezas, completados, favoritos, intercambios y estadísticas del modal de carta con valores fijos o generados por `ESTADISTICAS_CARTA`; ahora cruza las colecciones de `AlbumesService.obtenerMisAlbumes()` con las estadísticas por `marcaId` y los contadores individuales de cada imagen (`totalObtenidas`, `totalFavoritos`, `totalIntercambios`, `totalPartidas`).
+3. **[Atributos reales de carta desde la API]**: `ImagenAlbumRespuesta` incorpora `rareza`, `poder`, `costoCupon` y métricas de uso, mapeando cada carta del álbum con su rareza y atributos reales en lugar de valores hardcodeados (`'comun'`, `10`, `10`).
 
 ---
 
@@ -19,28 +19,25 @@ Permite que dos usuarios reales puedan enfrentarse en línea de punta a punta, y
 ---
 
 ## 🛠️ Cambios Principales
-- **[Nuevo]** `frontend/src/app/servicios/sala-juego.service.ts`:
-  - Gestiona la conexión SignalR autenticada con JWT hacia `environment.hubUrl`.
-  - Expone señales reactivas (`codigoSala`, `buscandoRival`, `partidaIniciada`, `cargando`, `error`) y los métodos `buscarPartida`, `cancelarBusqueda`, `crearSala`, `unirseASala` y `desconectar`.
-- **[Modificación]** `frontend/src/app/paginas/partida-jugador/partida-jugador.ts` y `partida-jugador.html`:
-  - Carga los mazos del usuario (`BarajaService.obtenerMazos`), filtra los mazos completos de 12 cartas (`mazosValidos`) y preselecciona el primero disponible.
-  - Implementa las vistas de **Partida Rápida (1 vs 1)** y **Buscando oponente** en el lobby.
-  - Al recibir el evento `PartidaIniciada`, guarda `faltauna_partida_activa` en `localStorage` y redirige automáticamente al tablero de juego (`/juego/ia`).
-- **[Modificación]** `frontend/src/app/paginas/pantalla-inicial-juego/pantalla-inicial-juego.ts`:
-  - Desbloquea la opción **Partida contra jugador** (`/juego/jugador`) en el menú de selección de modo.
-- **[Modificación]** `frontend/src/app/servicios/servicios-partida/partida-servicio.ts` y `frontend/src/app/modelos/partida.model.ts`:
-  - Agrega `turnoActivoUsuarioId` y `esMiTurno` a `EstadoPartidaApi`.
-  - Incorpora señales computadas `rivalListo`, `rivalEsBot`, `propioListo` y `esMiTurno`, mapeando `estado.rival.esBot` y `estado.rival.listo` reales en lugar de fijar `esBot: true`.
-  - En `fase()`, proyecta `'esperando'` únicamente cuando el jugador propio confirmó (`estado.listo`), y acelera la consulta de estado cada 2 segundos mientras espera al rival.
-- **[Modificación]** `frontend/src/app/compartidos/componentes/partida/tablero/tablero.html` y `frontend/src/app/paginas/partida/partida.ts`:
-  - Muestra el badge `✅ Listo` junto al rival y el aviso `⚡ Tu rival ya terminó su turno` cuando el oponente confirma primero.
-  - Bloquea el arrastre de cartas de la mano propia cuando `servicio.propioListo()` es `true`.
-  - Muestra el nombre real del rival humano en el mensaje de victoria al terminar la partida (`"La partida la ganó <nombre>"`).
+- **[Nuevo]** `frontend/src/app/servicios/estadisticas-empresa-service.ts`:
+  - Crea `EstadisticasEmpresaService` con el método `obtenerEstadisticas(marcaId?: number)` que consume `GET ${environment.apiUrl}/EstadisticasEmpresa/estadisticas` enviando `marcaId` como query param opcional.
+- **[Eliminado]** `frontend/src/app/paginas/empresa-estadisticas/empresa-estadisticas.mock.ts`:
+  - Se elimina el archivo de mocks estáticos de KPIs y evolución de favoritos del panel de estadísticas.
+- **[Modificación]** `frontend/src/app/paginas/empresa-estadisticas/empresa-estadisticas.ts` y `empresa-estadisticas.html`:
+  - Define los contratos `EstadisticasEmpresaRespuesta`, `FavoritoPorAlbum`, `FavoritoPorRareza`, `CartaMasQuerida` y `EvolucionFavorito`.
+  - Obtiene las marcas disponibles del usuario a partir de `AlbumesService.obtenerMisAlbumes()` y renderiza píldoras de filtro (**Todas** / cada marca) cuando la empresa gestiona más de una marca.
+  - Transforma reactivamente la respuesta de la API en las señales computadas `kpis`, `favoritosPorAlbum`, `distribucionRareza`, `topCartas`, `totalFavoritosRareza` y `evolucion`.
+- **[Modificación]** `frontend/src/app/modelos/album.model.ts`:
+  - Amplía `ImagenAlbumRespuesta` con `rareza`, `poder`, `costoCupon`, `totalObtenidas`, `totalFavoritos`, `totalIntercambios` y `totalPartidas`.
+- **[Modificación]** `frontend/src/app/paginas/empresa-albumes/empresa-albumes.ts` y `empresa-albumes.html`:
+  - Consume `EstadisticasEmpresaService` (general y por cada `marcaId`) junto con `AlbumesService.obtenerMisAlbumes()`.
+  - Calcula `totalUsuarios()`, `jugadoresCompletaron`, `favoritos`, `intercambios`, `porcentajeCompletado` y el reparto de rarezas por álbum a partir de los datos del backend.
+  - Mapea las cartas del álbum usando `rarezaDesdeNombre(img.rareza)`, `img.poder` y `img.costoCupon`, y actualiza `obtenerEstadisticasCarta(id)` para poblar el modal de detalle de carta con las métricas reales devueltas por el backend.
 
 ---
 
 ## ✅ Checklist
-- [x] Pasaron los tests (`npm test -- --watch=false`)
+- [ ] Pasaron los tests (`npm test -- --watch=false`)
 - [x] Build correcto (`npm run build`)
 - [ ] Sin errores de lint (`npm run lint`)
 - [ ] Revisado por otro miembro del equipo
@@ -48,7 +45,7 @@ Permite que dos usuarios reales puedan enfrentarse en línea de punta a punta, y
 ---
 
 ## 🧪 Pasos para Verificar (Cómo Probar)
-1. **[Acceso y validación de mazo]**: Ingresar a `/usuario/jugar` → elegir **Partida contra jugador** (`/juego/jugador`) → verificar que se listan únicamente los mazos completos de 12 cartas (o alerta hacia *Mis Mazos* si no tiene ninguno).
-2. **[Emparejamiento rápido 1 vs 1]**: Abrir dos sesiones con usuarios distintos en `/juego/jugador` → presionar **🎮 Buscar Partida** en ambos → verificar que pasa al estado *"Buscando oponente..."* y que al emparejarse ambos navegan automáticamente al tablero de la misma partida.
-3. **[Sala privada con código]**: En el usuario A desplegar *"O jugar partida privada con código"* y tocar **Crear Sala** → copiar el código de 5 caracteres → en el usuario B pegar el código y tocar **Unirse** → verificar que inicia la partida entre ambos.
-4. **[Sincronización de turno y resolución]**: Jugar cartas con el usuario A y confirmar fin de turno → verificar que en A se bloquea el arrastre de cartas y pasa a espera, mientras en el usuario B aparece `✅ Listo` y `⚡ Tu rival ya terminó su turno` pudiendo seguir jugando → confirmar turno en B y verificar que la ronda se resuelve en ambas pantallas.
+1. **[Estadísticas generales de empresa]**: Iniciar sesión con una cuenta de empresa → ir a `/empresa/panel/estadisticas` → verificar que se realiza la petición a `GET /api/EstadisticasEmpresa/estadisticas` y se visualizan el nombre de marca/categoría, total de jugadores, los 4 KPIs con su porcentaje de tendencia, *Favoritos por álbum*, gráfico donut *Por rareza*, ranking *Cartas más queridas* y *Evolución de favoritos*.
+2. **[Filtro por marca]**: Con una empresa que tenga colecciones de más de una marca, verificar que aparecen los botones de filtro (**Todas** y cada marca) en el encabezado de `/empresa/panel/estadisticas` y que al seleccionarlos se recargan las métricas filtradas por `marcaId`.
+3. **[Listado y resumen de álbumes]**: Navegar a `/empresa/panel/albumes` → comprobar que el contador de jugadores, la barra de reparto por rareza, los favoritos, intercambios y porcentaje de completado de cada tarjeta de álbum reflejan los datos reales del backend.
+4. **[Detalle de álbum y modal de estadísticas de carta]**: Entrar al detalle de un álbum → verificar que las cartas muestran su rareza y atributos (`poder` / `costoCupon`) reales → hacer clic sobre una carta y corroborar que el modal muestra la cantidad y porcentaje de jugadores que la tienen, favoritos, intercambios y partidas.

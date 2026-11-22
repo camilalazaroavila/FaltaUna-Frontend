@@ -1,8 +1,102 @@
-/* Acota el sobre `sm` para acompañar la barra de bono sin modificar `app-sobre-marca`. */
-:host ::ng-deep .barra-bono__sobre app-sobre-marca > button,
-:host ::ng-deep .barra-bono__sobre app-sobre-marca > div {
-  width: 2.875rem;
-  min-width: 2.75rem;
-  min-height: 2.75rem;
+:host {
+  display: block;
 }
 
+/* El sobre de bono es el protagonista con aura reactiva al progreso */
+.barra-bono__sobre-aura {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-md, 0.5rem);
+  /* Halo de energía proporcional a cuántas misiones se completaron */
+  filter: drop-shadow(
+    0 0 calc(2px + 10px * var(--progreso-ratio, 0))
+    rgba(255, 154, 46, calc(0.12 + 0.7 * var(--progreso-ratio, 0)))
+  );
+  transition: transform var(--duracion-interaccion, 250ms) cubic-bezier(0.2, 0, 0, 1),
+              filter var(--duracion-interaccion, 250ms) ease;
+}
+
+/* Movimiento de vida en hover */
+.barra-bono__sobre-aura:hover {
+  transform: translateY(-4px) scale(1.04);
+  filter: drop-shadow(
+    0 0 calc(6px + 14px * var(--progreso-ratio, 0))
+    var(--energia)
+  );
+}
+
+/* Mientras NO esté disponible para reclamar, no tiene cursor pointer */
+.barra-bono__sobre:not(.barra-bono__sobre--disponible) .barra-bono__sobre-aura,
+.barra-bono__sobre:not(.barra-bono__sobre--disponible) .barra-bono__sobre-aura button,
+.barra-bono__sobre:not(.barra-bono__sobre--disponible) .barra-bono__sobre-aura app-sobre-marca {
+  cursor: default !important;
+}
+
+/* Cuando está disponible para reclamar, sí tiene cursor pointer y halo de energía activo */
+.barra-bono__sobre--disponible .barra-bono__sobre-aura,
+.barra-bono__sobre--disponible .barra-bono__sobre-aura button {
+  cursor: pointer !important;
+  box-shadow: 0 0 16px var(--energia);
+  filter: drop-shadow(0 0 14px var(--energia));
+}
+
+.barra-bono__sobre--disponible .barra-bono__sobre-aura:hover {
+  box-shadow: 0 0 22px var(--energia);
+  filter: drop-shadow(0 0 20px var(--energia));
+}
+
+.barra-bono__sobre--apagado {
+  opacity: calc(0.65 + 0.35 * var(--progreso-ratio, 0));
+}
+
+.barra-bono__sobre--reclamado {
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barra-bono__sobre,
+  .barra-bono__sobre-aura {
+    animation: none !important;
+    transition: none !important;
+  }
+  .barra-bono__sobre-aura:hover {
+    transform: none !important;
+  }
+}
+
+/* Integración a la misma altura en desktop dentro de la cabecera diaria */
+@media (min-width: 1024px) {
+  :host-context(.misiones__cabecera-diaria) {
+    display: contents;
+  }
+
+  :host-context(.misiones__cabecera-diaria) .barra-bono__grid {
+    display: contents;
+  }
+
+  :host-context(.misiones__cabecera-diaria) .barra-bono__encabezado {
+    display: contents;
+  }
+
+  :host-context(.misiones__cabecera-diaria) .barra-bono__subtitulo {
+    grid-area: subtitulo;
+    align-self: start;
+  }
+
+  :host-context(.misiones__cabecera-diaria) .barra-bono__sobre {
+    grid-area: sobre;
+    grid-row: 1 / 3;
+    justify-self: center;
+  }
+
+  :host-context(.misiones__cabecera-diaria) .barra-bono__timer {
+    grid-area: timer;
+    justify-self: end;
+  }
+
+  :host-context(.misiones__cabecera-diaria) .barra-bono__barra {
+    grid-area: barra;
+  }
+}

@@ -6,6 +6,39 @@
   padding-bottom: calc(var(--reserva-nav-inferior, var(--nav-inferior-reserva)) + 4.75rem);
 }
 
+.misiones__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .misiones__cabecera-diaria {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      "titulo sobre acciones"
+      "subtitulo sobre timer"
+      "barra barra barra";
+    align-items: center;
+    column-gap: 2.5rem;
+    row-gap: 0.5rem;
+  }
+
+  .misiones__cabecera-diaria .misiones__col-izq {
+    grid-area: titulo;
+  }
+
+  .misiones__cabecera-diaria .misiones__col-der {
+    grid-area: acciones;
+    justify-self: end;
+  }
+
+  .misiones__cabecera-diaria .misiones__bloque-bono {
+    display: contents;
+  }
+}
+
 .misiones__lista {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

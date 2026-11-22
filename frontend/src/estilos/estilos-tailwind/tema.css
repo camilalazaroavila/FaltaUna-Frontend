@@ -133,6 +133,10 @@
     --color-marca-coleccion-sobre: var(--marca-coleccion-sobre);
     --color-marca-coleccion-fondo: var(--marca-coleccion-fondo);
 
+    /* PT System (Pity): borde y aro de tarjeta garantizada */
+    --color-pity-garantizada-borde: var(--pity-garantizada-borde);
+    --color-pity-garantizada-aro: var(--pity-garantizada-aro);
+
     /* Sobres de cartas: el componente los baja por cascada a tres variables
        locales y de ahi los pinta con `fill`, asi que no usa utilidades. El
        mapeo existe para que queden disponibles en la capa 3 (`bg-sobre-*`,

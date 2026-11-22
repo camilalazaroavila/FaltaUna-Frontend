@@ -106,6 +106,9 @@ describe('SobresService', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ usuarioId: 5 });
     req.flush(mockApertura);
+
+    // Tras abrir sobre, recarga el pity automáticamente
+    httpTesting.expectOne(`${baseUrl}/pity`).flush([]);
   });
 
   it('debe filtrar cartas huérfanas de marcas eliminadas al abrir un sobre o reclamar diario', () => {
@@ -124,6 +127,7 @@ describe('SobresService', () => {
     service.reclamarSobreDiario(5).subscribe((res) => (resultado = res));
 
     httpTesting.expectOne(`${baseUrl}/diario`).flush(mockAperturaConHuerfanas);
+    httpTesting.expectOne(`${baseUrl}/pity`).flush([]);
     expect(resultado?.cartas.map((c) => c.nombre)).toEqual(['Royal Bacon Melt']);
   });
 
@@ -145,5 +149,6 @@ describe('SobresService', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ usuarioId: 5 });
     req.flush(mockApertura);
+    httpTesting.expectOne(`${baseUrl}/pity`).flush([]);
   });
 });
