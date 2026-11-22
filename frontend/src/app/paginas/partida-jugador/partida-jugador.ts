@@ -73,6 +73,10 @@ protected seleccionarMazo(mazoId: number): void {
   this.mazoSeleccionado.set(mazoId);
 }
 
+protected readonly mazoSeleccionadoDetalle = computed(
+  () => this.mazos().find((m) => m.id === this.mazoSeleccionado()) ?? null,
+);
+
   protected cargarMazos(): void {
     this.errorMazos.set(null); 
     this.cargandoMazos.set(true);

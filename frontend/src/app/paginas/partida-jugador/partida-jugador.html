@@ -65,32 +65,38 @@
           </p>
         </div>
 
-        <!-- Selección de Mazo -->
-        <!-- Selección de mazo: mismas tarjetas que en la partida contra el bot -->
-        <div
-          class="mb-6 flex flex-col gap-3"
-          [class.opacity-50]="salaService.buscandoRival()"
-          [attr.inert]="salaService.buscandoRival() ? '' : null"
-        >
-          <p app-texto variante="secundario" tamano="menor">
-            Elegí un mazo reglamentario de 12 cartas (5 comunes, 4 raras, 2 épicas y 1 legendaria).
-          </p>
+        <!--Muestra el nombre del mazo seleccionado -->
+        @if (salaService.buscandoRival()) {
+        <div class="mb-6 flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-fondo-app/50 px-4 py-3">
+          <span class="font-titulo text-xs tracking-wider text-texto-secundario uppercase">Mazo elegido</span>
+          <span class="font-titulo text-sm tracking-wide text-texto-primario uppercase">
+            {{ mazoSeleccionadoDetalle()?.nombre }}
+          </span>
+        </div>
+        }
 
-          <app-selector-mazos
-            [mazos]="mazos()"
-            [mazoSeleccionadoId]="mazoSeleccionado()"
-            [cargando]="cargandoMazos()"
-            [error]="errorMazos()"
-            (mazoSeleccionadoChange)="seleccionarMazo($event)"
-            (reintentar)="cargarMazos()"
-          />
+        <div class="mb-6" [class.hidden]="salaService.buscandoRival()">
+          <div class="flex flex-col gap-3">
+            <p app-texto variante="secundario" tamano="menor">
+              Elegí un mazo reglamentario de 12 cartas (5 comunes, 4 raras, 2 épicas y 1 legendaria).
+            </p>
 
-          @if (!cargandoMazos() && mazos().length > 0 && mazosValidos().length === 0) {
-          <div class="rounded-md bg-alerta-fondo p-3 text-alerta-texto text-sm">
-            Ninguno de tus mazos tiene las 12 cartas. Completá uno en
-            <a routerLink="/usuario/mi-baraja" class="underline font-bold">Mi baraja</a> para poder jugar.
+            <app-selector-mazos
+              [mazos]="mazos()"
+              [mazoSeleccionadoId]="mazoSeleccionado()"
+              [cargando]="cargandoMazos()"
+              [error]="errorMazos()"
+              (mazoSeleccionadoChange)="seleccionarMazo($event)"
+              (reintentar)="cargarMazos()"
+            />
+
+            @if (!cargandoMazos() && mazos().length > 0 && mazosValidos().length === 0) {
+            <div class="rounded-md bg-alerta-fondo p-3 text-alerta-texto text-sm">
+              Ninguno de tus mazos tiene las 12 cartas. Completá uno en
+              <a routerLink="/usuario/mi-baraja" class="underline font-bold">Mi baraja</a> para poder jugar.
+            </div>
+            }
           </div>
-          }
         </div>
 
         <!-- Alerta de Error -->
