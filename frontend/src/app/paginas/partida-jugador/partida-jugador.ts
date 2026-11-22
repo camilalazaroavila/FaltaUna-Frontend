@@ -14,7 +14,6 @@ import { Router, RouterLink } from '@angular/router';
 
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { Caja } from '@compartidos/componentes/contenedor/caja/caja';
-import { Header } from '@compartidos/componentes/layout/header/header';
 import { Texto } from '@compartidos/componentes/textual/texto/texto';
 import { Titulo } from '@compartidos/componentes/textual/titulo/titulo';
 import type { MazoApi } from '@modelos/mazo.model';
@@ -23,7 +22,7 @@ import { SalaJuegoService } from '@servicios/sala-juego.service';
 
 @Component({
   selector: 'app-partida-jugador',
-  imports: [Boton, Caja, FormsModule, Header, RouterLink, Texto, Titulo],
+  imports: [Boton, Caja, FormsModule, RouterLink, Texto, Titulo],
   templateUrl: './partida-jugador.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
