@@ -9,7 +9,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+//import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
@@ -19,10 +19,11 @@ import { Titulo } from '@compartidos/componentes/textual/titulo/titulo';
 import type { MazoApi } from '@modelos/mazo.model';
 import { BarajaService } from '@servicios/baraja.service';
 import { SalaJuegoService } from '@servicios/sala-juego.service';
+import { SelectorMazos } from '@compartidos/componentes/cartas/selector-mazos/selector-mazos';
 
 @Component({
   selector: 'app-partida-jugador',
-  imports: [Boton, Caja, FormsModule, RouterLink, Texto, Titulo],
+  imports: [Boton, Caja, RouterLink, Texto, Titulo, SelectorMazos],
   templateUrl: './partida-jugador.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -65,7 +66,14 @@ export class PartidaJugador implements OnInit, OnDestroy {
     this.salaService.desconectar();
   }
 
-  private cargarMazos(): void {
+protected readonly errorMazos = signal<string | null>(null);
+
+protected seleccionarMazo(mazoId: number): void {
+  this.mazoSeleccionado.set(mazoId);
+}
+
+  protected cargarMazos(): void {
+    this.errorMazos.set(null); 
     this.cargandoMazos.set(true);
     this.barajaService.obtenerMazos().subscribe({
       next: (mazos) => {
@@ -77,8 +85,9 @@ export class PartidaJugador implements OnInit, OnDestroy {
         this.cargandoMazos.set(false);
       },
       error: () => {
-        this.cargandoMazos.set(false);
-      },
+      this.errorMazos.set('No pudimos cargar tus mazos. Intentá de nuevo.');  // nuevo
+      this.cargandoMazos.set(false);
+    },
     });
   }
 
