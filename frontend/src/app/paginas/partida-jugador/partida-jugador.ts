@@ -9,8 +9,9 @@ import {
   inject,
   signal,
 } from '@angular/core';
-//import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { phosphorMagnifyingGlassFill } from '@ng-icons/phosphor-icons/fill';
 
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { Caja } from '@compartidos/componentes/contenedor/caja/caja';
@@ -23,9 +24,10 @@ import { SelectorMazos } from '@compartidos/componentes/cartas/selector-mazos/se
 
 @Component({
   selector: 'app-partida-jugador',
-  imports: [Boton, Caja, RouterLink, Texto, Titulo, SelectorMazos],
+  imports: [Boton, Caja, RouterLink, Texto, Titulo, SelectorMazos, NgIcon],
   templateUrl: './partida-jugador.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  viewProviders: [provideIcons({ phosphorMagnifyingGlassFill })],
 })
 export class PartidaJugador implements OnInit, OnDestroy {
   protected readonly salaService = inject(SalaJuegoService);
