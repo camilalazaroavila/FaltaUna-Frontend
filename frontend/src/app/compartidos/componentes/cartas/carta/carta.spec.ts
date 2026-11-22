@@ -284,5 +284,21 @@ describe('CartaComponent · mapeo de assets por rareza y categoría', () => {
     expect(badge).not.toBeNull();
     expect(badge?.textContent?.trim()).toBe('×3');
   });
+
+  it('Dado modoSubida = true, Cuando se renderiza, Entonces muestra el slot central blanco con el + o imagen y las estrellas de rareza', () => {
+    // Given
+    fixture.componentRef.setInput('modoSubida', true);
+    conCarta(cartaComun);
+
+    // When
+    fixture.detectChanges();
+
+    // Then
+    const host = fixture.nativeElement as HTMLElement;
+    const slot = host.querySelector('.carta__subida-slot');
+    expect(slot).not.toBeNull();
+    expect(slot?.textContent?.trim()).toBe('+');
+    expect(host.querySelector('.carta__estrellas')).not.toBeNull();
+  });
 });
 

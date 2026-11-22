@@ -60,10 +60,10 @@ export interface DatosBorradorAlbum {
   redSocial: string;
   usuarioRedSocial: string;
   categoriaId: number;
-  /** `YYYY-MM-DD` */
-  fechaInicio: string;
-  /** `YYYY-MM-DD` */
-  fechaFin: string;
+  /** `YYYY-MM-DD` opcional */
+  fechaInicio?: string;
+  /** `YYYY-MM-DD` opcional */
+  fechaFin?: string;
   logo: File;
   fotoLocal: File;
 }
@@ -74,6 +74,7 @@ export interface CrearBorradorSolicitud extends DatosBorradorAlbum {
   imagenes: File[];
   /** Id de rareza (del back) de cada imagen, en el mismo orden que `imagenes`. */
   rarezaIds: number[];
+  nombresCartas?: string[];
 }
 
 export interface ImagenBorradorRespuesta {

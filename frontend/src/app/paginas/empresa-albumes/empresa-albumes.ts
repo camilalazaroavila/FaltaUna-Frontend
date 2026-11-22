@@ -178,8 +178,6 @@ export class EmpresaAlbumes implements OnInit {
     const coleccionBackend = this.coleccionesBackend().find((c) => String(c.id) === album.id);
     if (!coleccionBackend) return [];
 
-    const categoria = categoriaCartaDesdeNombre(coleccionBackend.categoriaNombre);
-
     return (coleccionBackend.imagenesAlbum || []).map((img, idx) => ({
       id: String(img.id),
       nombre: img.descripcion || `${coleccionBackend.nombre} #${idx + 1}`,

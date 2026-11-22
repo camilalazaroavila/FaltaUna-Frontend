@@ -245,8 +245,8 @@ export const routes: Routes = [
         redirectTo: 'album/pago/pendiente',
       },
       {
-        // Pasos 2 a 5 (marca, identidad, cupón y vista previa): solo con un plan elegido (planElegidoGuard).
-        // El pago es el paso 6: sale del botón "Siguiente" de la vista previa y vuelve a album/pago/:resultado.
+        // Pasos 2 a 4 (marca, álbum y vista previa): solo con un plan elegido (planElegidoGuard).
+        // El pago es el paso 5: sale del botón "Finalizar" de la vista previa y vuelve a album/pago/:resultado.
         path: 'album/crear',
         canActivate: [planElegidoGuard],
         children: [
@@ -260,19 +260,11 @@ export const routes: Routes = [
               ),
           },
           {
-            path: 'identidad',
-            title: 'Qué te identifica · Falta Una',
+            path: 'album',
+            title: 'Tu primer álbum · Falta Una',
             loadComponent: () =>
-              import('@paginas/empresa-album-identidad/empresa-album-identidad').then(
-                (m) => m.EmpresaAlbumIdentidad,
-              ),
-          },
-          {
-            path: 'cupon',
-            title: 'Crear cupón · Falta Una',
-            loadComponent: () =>
-              import('@paginas/empresa-album-cupon/empresa-album-cupon').then(
-                (m) => m.EmpresaAlbumCupon,
+              import('@paginas/empresa-album-cartas/empresa-album-cartas').then(
+                (m) => m.EmpresaAlbumCartas,
               ),
           },
           {

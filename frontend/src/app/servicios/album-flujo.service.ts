@@ -66,8 +66,8 @@ export class AlbumFlujo {
   /** Se pide una sola vez por sesión: las rarezas casi nunca cambian. */
   private rarezasCache: Record<RarezaCarta, number> | null = null;
 
-  /** Pasos 2 a 4 → back. Devuelve el id del álbum borrador. */
-  guardarBorradorYCupon(): Observable<number> {
+  /** Pasos 2 y 3 → back. Devuelve el id del álbum borrador. */
+  guardarBorrador(): Observable<number> {
     const b = this.borrador;
     const plan = this.estado.planElegido();
     const logo = b.logo();
@@ -84,8 +84,6 @@ export class AlbumFlujo {
       redSocial: b.redSocial(),
       usuarioRedSocial: b.usuarioRedSocial().trim(),
       categoriaId: Number(b.categoria()),
-      fechaInicio: b.fechaInicio(),
-      fechaFin: b.fechaFin(),
       logo,
       fotoLocal,
     };
@@ -104,23 +102,12 @@ export class AlbumFlujo {
                   planId: plan.backendId,
                   imagenes: subidas.map((s) => s.archivo),
                   rarezaIds: subidas.map((s) => mapa[b.rarezaDe(s.indice)]),
+                  nombresCartas: subidas.map((s) => b.nombreCartaDe(s.indice)),
                 })
                 .pipe(tap((album) => this.registrarBorrador(album, subidas, mapa)))
             : this.actualizarBorrador(idExistente, datos, subidas, mapa);
 
-        return album$.pipe(
-          switchMap((album) =>
-            this.albumes
-              .guardarCupon(album.id, {
-                nombre: b.cuponNombre().trim(),
-                descripcion: b.cuponDescripcion().trim(),
-                porcentajeDescuento: Number(b.cuponDescuento()),
-                fechaInicio: `${b.fechaInicio()}T00:00:00`,
-                fechaVencimiento: `${b.fechaFin()}T23:59:59`,
-              })
-              .pipe(map(() => album.id)),
-          ),
-        );
+        return album$.pipe(map((album) => album.id));
       }),
     );
   }
@@ -129,7 +116,7 @@ export class AlbumFlujo {
   iniciarPago(): Observable<IniciarPagoRespuesta> {
     const id = this.borrador.albumId();
     if (id === null) {
-      return throwError(() => new Error('Todavía no se guardó tu álbum. Volvé al paso del cupón.'));
+      return throwError(() => new Error('Todavía no se guardó tu álbum. Volvé a generarlo.'));
     }
 
     return this.sincronizarRarezas(id).pipe(

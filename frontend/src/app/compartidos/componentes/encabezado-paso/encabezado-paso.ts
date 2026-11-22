@@ -15,26 +15,27 @@ import { StepperSuscripcion } from '@compartidos/componentes/empresa/stepper-sus
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (rutaVolver()) {
-      <a
-        [routerLink]="rutaVolver()"
-        class="inline-flex items-center gap-2 font-interfaz text-xs font-bold uppercase text-texto-primario hover:text-marca-primaria"
-      >
-        <ng-icon name="phosphorArrowLeftFill" aria-hidden="true" />
-        {{ etiquetaVolver() }}
-      </a>
+      <div class="mb-2 text-left">
+        <a
+          [routerLink]="rutaVolver()"
+          class="inline-flex items-center gap-1.5 font-titulo text-xs sm:text-sm font-bold uppercase tracking-wider text-[#122B2E] hover:text-[#584462] transition-colors"
+        >
+          <ng-icon name="phosphorArrowLeftFill" aria-hidden="true" />
+          {{ etiquetaVolver() }}
+        </a>
+      </div>
     }
 
-    <div class="mt-4 grid items-start gap-6 md:grid-cols-[1fr_auto_1fr]">
+    <div class="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
       <h1
-        class="font-titulo text-4xl uppercase leading-[0.95] text-marca-primaria sm:text-5xl"
-        [class.max-w-[10ch]]="tituloAngosto()"
+        class="font-titulo font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-[#584462] text-left"
       >
         {{ titulo() }}
       </h1>
 
-      <app-stepper-suscripcion [pasoActual]="paso()" />
-
-      <span class="hidden md:block" aria-hidden="true"></span>
+      <div class="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex justify-center w-full sm:w-auto">
+        <app-stepper-suscripcion [pasoActual]="paso()" />
+      </div>
     </div>
   `,
 })

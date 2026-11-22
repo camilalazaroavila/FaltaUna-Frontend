@@ -1,92 +1,172 @@
-<main class="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-8">
+<main class="mx-auto w-full max-w-[1600px] 2xl:max-w-[1800px] px-6 sm:px-10 lg:px-14 pb-16 pt-6">
   <app-encabezado-paso
     titulo="Visualización previa"
-    [paso]="5"
-    rutaVolver="/empresa/album/crear/cupon"
-    [tituloAngosto]="false"
+    [paso]="4"
+    rutaVolver="/empresa/album/crear/album"
   />
 
-  <p class="mt-4 max-w-xl font-interfaz text-sm font-semibold text-texto-secundario">
-    Así van a ver tu álbum los jugadores. Podés editar el tipo de cada carta antes de pagar.
+  <p class="mt-4 font-cuerpo text-sm sm:text-base font-semibold text-[#122B2E]">
+    Así van a ver tu álbum, revisá que todo esté bien antes de pagar, podés editar .
   </p>
 
-  <section class="mt-8 flex flex-wrap items-center gap-5" aria-label="Tu marca">
-    @if (logoUrl(); as url) {
-      <img
-        [src]="url"
-        alt=""
-        class="size-20 rounded-md border-2 border-texto-primario bg-fondo-superficie object-cover"
-      />
-    }
-    <div class="min-w-0">
-      <h2 class="font-titulo text-3xl uppercase leading-none text-marca-primaria">
-        {{ borrador.nombreMarca() }}
-      </h2>
-      <p class="mt-1 font-interfaz text-xs font-bold uppercase text-texto-secundario">
-        {{ borrador.categoriaNombre() }}
-      </p>
-      <p class="mt-2 max-w-xl font-interfaz text-sm text-texto-primario">
-        {{ borrador.descripcion() }}
-      </p>
-    </div>
-  </section>
-
-  <section class="mt-10" aria-labelledby="titulo-cartas-previa">
-    <h2 id="titulo-cartas-previa" class="font-interfaz text-xs font-bold uppercase text-texto-primario">
-      Tus cartas
-      <span class="text-error">{{ cartas().length }}</span>
-    </h2>
-
-    <ul class="mt-4 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-      @for (item of cartas(); track item.indice) {
-        <li class="flex flex-col gap-2">
-          <app-carta [carta]="item.carta" />
-          <label class="sr-only" [attr.for]="'rareza-' + item.indice">
-            Tipo de la carta {{ item.carta.nombre }}
-          </label>
-          <select
-            [id]="'rareza-' + item.indice"
-            class="w-full cursor-pointer rounded-pildora border-2 border-texto-primario bg-transparent px-3 py-1.5 font-interfaz text-xs font-bold uppercase text-texto-primario focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
-            [value]="item.carta.rareza"
-            (change)="cambiarRareza(item.indice, $any($event.target).value)"
+  <div class="mt-8 grid gap-8 lg:grid-cols-[auto_1fr] items-start">
+    <!-- Columna Izquierda: Logo y Foto del Local -->
+    <div class="flex flex-col sm:flex-row lg:flex-col gap-6">
+      <!-- Tu Logo -->
+      <div>
+        <div class="flex items-center gap-1.5 mb-2 font-cuerpo text-base font-bold text-[#122B2E]">
+          <span>Tu logo</span>
+          <button
+            type="button"
+            (click)="editarPaso(2)"
+            class="text-sm cursor-pointer hover:scale-110 transition-transform"
+            title="Editar logo"
           >
-            @for (rareza of rarezas; track rareza.valor) {
-              <option [value]="rareza.valor" [selected]="rareza.valor === item.carta.rareza">
-                {{ rareza.etiqueta }}
-              </option>
-            }
-          </select>
-        </li>
-      }
-    </ul>
+            ✏️
+          </button>
+        </div>
 
-    <p class="mt-4 font-interfaz text-xs text-texto-apagado">
-      El costo y el poder de cada carta los define el equipo de Falta Una.
-    </p>
-  </section>
+        <div class="relative flex size-32 sm:size-36 overflow-hidden rounded-2xl border-4 border-[#3c2a47] bg-[#584462] shadow-md">
+          @if (logoUrl(); as url) {
+            <img [src]="url" alt="Logo de la marca" class="size-full object-cover" />
+          } @else {
+            <div class="size-full flex items-center justify-center font-titulo text-white/50 text-xs">Sin logo</div>
+          }
+        </div>
+      </div>
 
-  <section class="mt-10" aria-label="Tu cupón">
-    <p class="mb-2 font-interfaz text-xs font-bold uppercase text-texto-primario">Tu cupón</p>
-    <div class="pointer-events-none w-56" aria-hidden="true">
-      <app-tarjeta-cupon [cupon]="cupon()" />
+      <!-- Tu Local -->
+      <div>
+        <div class="flex items-center gap-1.5 mb-2 font-cuerpo text-base font-bold text-[#122B2E]">
+          <span>Tu local</span>
+          <button
+            type="button"
+            (click)="editarPaso(2)"
+            class="text-sm cursor-pointer hover:scale-110 transition-transform"
+            title="Editar foto del local"
+          >
+            ✏️
+          </button>
+        </div>
+
+        <div class="relative flex h-32 w-44 sm:h-36 sm:w-48 overflow-hidden rounded-2xl border-4 border-[#3c2a47] bg-[#584462] shadow-md">
+          @if (localUrl(); as url) {
+            <img [src]="url" alt="Foto del local" class="size-full object-cover" />
+          } @else {
+            <div class="size-full flex items-center justify-center font-titulo text-white/50 text-xs">Sin foto local</div>
+          }
+        </div>
+      </div>
     </div>
-  </section>
 
-  <div class="mt-12 flex flex-col items-end gap-3">
-    <p class="max-w-sm text-right font-interfaz text-xs font-semibold text-texto-secundario">
-      Al continuar te llevamos a Mercado Pago para abonar el plan {{ planNombre() }}.
-      Tu álbum se publica cuando el pago se acredite.
-    </p>
-    <button
-      app-boton
-      type="button"
-      variante="secundario"
-      tamanio="lg"
-      [cargando]="enviando()"
-      (click)="irAPagar()"
-    >
-      Siguiente
-      <ng-icon name="phosphorArrowRightFill" aria-hidden="true" />
-    </button>
+    <!-- Columna Derecha: Tus Cartas -->
+    <div>
+      <div class="flex items-center gap-1.5 mb-2 font-cuerpo text-base font-bold text-[#122B2E]">
+        <span>Tus cartas</span>
+        <button
+          type="button"
+          (click)="editarPaso(3)"
+          class="text-sm cursor-pointer hover:scale-110 transition-transform"
+          title="Editar cartas"
+        >
+          ✏️
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 items-start">
+        @for (carta of cartas(); track carta.indice) {
+          <div class="flex flex-col items-center gap-1.5 w-full">
+            <div class="w-full">
+              <app-carta
+                [modoSubida]="true"
+                [carta]="cartaPara(carta)"
+                [imagenSubida]="carta.imagenUrl"
+              />
+            </div>
+            @if (carta.nombre) {
+              <span class="font-cuerpo text-xs font-semibold text-[#122B2E] text-center truncate max-w-full">
+                {{ carta.nombre }}
+              </span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección Inferior: Textos de la marca y Botón Finalizar -->
+  <div class="mt-10 grid gap-8 lg:grid-cols-2 items-end pt-4 border-t border-[#122B2E]/10">
+    <div class="space-y-4">
+      <div class="flex flex-wrap items-baseline gap-8">
+        <div>
+          <div class="flex items-center gap-1.5 font-titulo text-base font-bold text-[#122B2E]">
+            <span>Marca</span>
+            <button
+              type="button"
+              (click)="editarPaso(2)"
+              class="text-xs cursor-pointer hover:scale-110 transition-transform"
+              title="Editar nombre"
+            >
+              ✏️
+            </button>
+          </div>
+          <p class="font-cuerpo text-sm text-[#122B2E] mt-0.5">{{ borrador.nombreMarca() }}</p>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-1.5 font-titulo text-base font-bold text-[#122B2E]">
+            <span>Categoría</span>
+            <button
+              type="button"
+              (click)="editarPaso(2)"
+              class="text-xs cursor-pointer hover:scale-110 transition-transform"
+              title="Editar categoría"
+            >
+              ✏️
+            </button>
+          </div>
+          <p class="font-cuerpo text-sm text-[#122B2E] mt-0.5">{{ borrador.categoriaNombre() }}</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center gap-1.5 font-titulo text-base font-bold text-[#122B2E]">
+          <span>Descripción</span>
+          <button
+            type="button"
+            (click)="editarPaso(2)"
+            class="text-xs cursor-pointer hover:scale-110 transition-transform"
+            title="Editar descripción"
+          >
+            ✏️
+          </button>
+        </div>
+        <p class="font-cuerpo text-sm text-[#122B2E] mt-0.5 max-w-xl leading-relaxed whitespace-pre-line">
+          {{ borrador.descripcion() }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Bloque de Pago y Finalizar -->
+    <div class="flex flex-col items-end gap-3 text-right">
+      <p class="max-w-sm font-cuerpo text-xs font-semibold text-[#122B2E] leading-snug">
+        Al continuar te llevamos a Mercado Pago para abonar el plan {{ planNombre() }}.
+        Tu álbum se publica cuando el pago se acredite.
+      </p>
+
+      <button
+        type="button"
+        class="inline-flex items-center gap-2 rounded-full bg-[#584462] hover:bg-[#6c5478] px-8 py-3.5 font-titulo text-sm sm:text-base uppercase tracking-wider text-white shadow-md transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+        [disabled]="enviando()"
+        (click)="finalizar()"
+      >
+        @if (enviando()) {
+          <span>CONECTANDO...</span>
+        } @else {
+          <span>FINALIZAR</span>
+          <span class="text-lg">→</span>
+        }
+      </button>
+    </div>
   </div>
 </main>

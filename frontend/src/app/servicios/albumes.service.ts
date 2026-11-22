@@ -91,6 +91,28 @@ export class AlbumesService {
     return this.http.get<AlbumBorradorRespuesta>(`${this.borradorUrl}/${id}`);
   }
 
+  /** POST /api/empresa/albumes/marca (multipart): guarda el perfil de la marca antes de omitir álbum. */
+  guardarMarca(datos: {
+    nombreMarca: string;
+    descripcion: string;
+    emailContacto: string;
+    redSocial: string;
+    usuarioRedSocial: string;
+    categoriaId: number;
+    logo?: File | null;
+    fotoLocal?: File | null;
+  }): Observable<unknown> {
+    const form = new FormData();
+    form.append('NombreMarca', datos.nombreMarca);
+    form.append('DescripcionMarca', datos.descripcion);
+    form.append('EmailContacto', datos.emailContacto);
+    form.append('RedesSociales', `${datos.redSocial}: ${datos.usuarioRedSocial}`);
+    form.append('CategoriaId', String(datos.categoriaId));
+    if (datos.logo) form.append('Logo', datos.logo);
+    if (datos.fotoLocal) form.append('FotoLocal', datos.fotoLocal);
+    return this.http.post(`${this.borradorUrl}/marca`, form);
+  }
+
   /**
    * POST /api/empresa/albumes/borrador (multipart). Crea el álbum en estado Borrador con el plan
    * elegido en el paso 1. NO cobra nada. Los campos coinciden con `CrearBorradorAlbumSolicitud`.
@@ -101,6 +123,9 @@ export class AlbumesService {
     solicitud.imagenes.forEach((imagen) => form.append('ImagenesCartas', imagen));
     // La rareza i corresponde a la imagen i (mismo orden), como exige el back.
     solicitud.rarezaIds.forEach((id) => form.append('RarezasCartas', String(id)));
+    if (solicitud.nombresCartas) {
+      solicitud.nombresCartas.forEach((nombre) => form.append('NombresCartas', nombre));
+    }
     return this.http.post<AlbumBorradorRespuesta>(`${this.borradorUrl}/borrador`, form);
   }
 
@@ -150,12 +175,10 @@ export class AlbumesService {
     form.append('EmailContacto', d.emailContacto);
     form.append('RedesSociales', `${d.redSocial}: ${d.usuarioRedSocial}`);
     form.append('CategoriaId', String(d.categoriaId));
-    // Con hora: el back las guarda como DateTime. El álbum dura desde el inicio del primer día
-    // hasta el final del último.
-    form.append('FechaInicio', `${d.fechaInicio}T00:00:00`);
-    form.append('FechaFin', `${d.fechaFin}T23:59:59`);
-    form.append('Logo', d.logo);
-    form.append('FotoLocal', d.fotoLocal);
+    if (d.fechaInicio) form.append('FechaInicio', `${d.fechaInicio}T00:00:00`);
+    if (d.fechaFin) form.append('FechaFin', `${d.fechaFin}T23:59:59`);
+    if (d.logo) form.append('Logo', d.logo);
+    if (d.fotoLocal) form.append('FotoLocal', d.fotoLocal);
     return form;
   }
 }

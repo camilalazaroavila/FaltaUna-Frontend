@@ -147,7 +147,8 @@ describe('EmpresaPagoResultado', () => {
     expect(el.textContent).not.toContain('Crear mi álbum');
   });
 
-  it('no navega solo al paso 2 tras un pago aprobado', async () => {
+  it('Dado un pago aprobado, Cuando se confirma la acreditación, Entonces navega al panel de álbumes', async () => {
+    // Given
     jest.useFakeTimers();
     const { fixture } = await configurarModulo('exito', {
       payment_id: '999888',
@@ -156,10 +157,12 @@ describe('EmpresaPagoResultado', () => {
     const router = TestBed.inject(Router);
     const navigateSpy = jest.spyOn(router, 'navigate').mockResolvedValue(true);
 
+    // When
     fixture.detectChanges();
     jest.advanceTimersByTime(10000);
 
-    expect(navigateSpy).not.toHaveBeenCalled();
+    // Then
+    expect(navigateSpy).toHaveBeenCalledWith(['/empresa/panel/albumes'], { replaceUrl: true });
     jest.useRealTimers();
   });
   
