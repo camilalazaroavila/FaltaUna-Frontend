@@ -51,7 +51,7 @@
         <!-- Encabezado: título + acceso a Mi baraja (igual que en la partida contra el bot) -->
         <div class="mb-4 flex flex-col gap-1.5 border-b border-white/10 pb-3">
           <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-            <h1 app-titulo tamano="lg">⚔️ Partida 1 vs 1 Online</h1>
+            <h1 app-titulo tamano="lg">Partida 1 vs 1 Online</h1>
             <a
               routerLink="/usuario/mi-baraja"
               class="inline-flex min-h-[32px] items-center gap-1 self-start font-titulo text-xs tracking-wider text-marca-primaria uppercase hover:underline sm:self-auto"
@@ -87,7 +87,7 @@
 
           @if (!cargandoMazos() && mazos().length > 0 && mazosValidos().length === 0) {
           <div class="rounded-md bg-alerta-fondo p-3 text-alerta-texto text-sm">
-            ⚠️ Ninguno de tus mazos tiene las 12 cartas. Completá uno en
+            Ninguno de tus mazos tiene las 12 cartas. Completá uno en
             <a routerLink="/usuario/mi-baraja" class="underline font-bold">Mi baraja</a> para poder jugar.
           </div>
           }
@@ -96,7 +96,7 @@
         <!-- Alerta de Error -->
         @if (salaService.error()) {
         <div class="mb-6 rounded-md bg-error-fondo/20 border border-error-borde p-3 text-error-texto text-sm">
-          ❌ {{ salaService.error() }}
+          {{ salaService.error() }}
         </div>
         }
 
