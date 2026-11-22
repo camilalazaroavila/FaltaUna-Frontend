@@ -1,0 +1,133 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+/*
+ * Contenedor del sobre con aura legendaria interactiva.
+ * Brilla más a medida que el contador se acerca al umbral (progresoRatio).
+ * Los sobres nunca muestran cursor pointer porque no son clickeables en esta vista.
+ */
+.tarjeta-pity__sobre-aura {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-md, 0.5rem);
+  cursor: default !important;
+  /* Halo legendario proporcional a la cercanía de la legendaria */
+  filter: drop-shadow(
+    0 0 calc(3px + 10px * var(--progreso-ratio, 0))
+    rgba(123, 240, 165, calc(0.2 + 0.65 * var(--progreso-ratio, 0)))
+  );
+  transition: transform var(--duracion-interaccion, 250ms) cubic-bezier(0.2, 0, 0, 1),
+              filter var(--duracion-interaccion, 250ms) ease;
+}
+
+.tarjeta-pity__sobre-aura,
+.tarjeta-pity__sobre-aura button,
+.tarjeta-pity__sobre-aura app-sobre-marca {
+  cursor: default !important;
+}
+
+/*
+ * Desactiva cualquier interacción o cursor pointer dentro del pity:
+ * los sobres son puramente informativos e ilustrativos.
+ */
+:host ::ng-deep .tarjeta-pity__sobre-aura,
+:host ::ng-deep .tarjeta-pity__sobre-aura *,
+:host ::ng-deep .tarjeta-pity__abanico,
+:host ::ng-deep .tarjeta-pity__abanico * {
+  cursor: default !important;
+  pointer-events: none;
+}
+
+/*
+ * Abanico de 3 sobres desplegados para Marca y Categoría.
+ * Muestra 3 ejemplos reales desplegados en abanico sin desbordar el contenedor.
+ */
+.tarjeta-pity__abanico {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+}
+
+.tarjeta-pity__abanico-sobre {
+  transform-origin: 50% 100%;
+  transition: transform var(--duracion-interaccion, 250ms) cubic-bezier(0.2, 0, 0, 1),
+              filter var(--duracion-interaccion, 250ms) ease;
+}
+
+.tarjeta-pity__abanico-sobre--izq {
+  transform: rotate(-12deg) translateX(18%) scale(0.9);
+  z-index: 1;
+}
+
+.tarjeta-pity__abanico-sobre--centro {
+  transform: translateY(-4px) scale(1.02);
+  z-index: 2;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+}
+
+.tarjeta-pity__abanico-sobre--der {
+  transform: rotate(12deg) translateX(-18%) scale(0.9);
+  z-index: 1;
+}
+
+/* Efecto hover sobre el contenedor: el abanico se abre un poco más dándole vida */
+.tarjeta-pity__sobre-aura:hover .tarjeta-pity__abanico-sobre--izq {
+  transform: rotate(-18deg) translateX(10%) scale(0.93);
+}
+
+.tarjeta-pity__sobre-aura:hover .tarjeta-pity__abanico-sobre--centro {
+  transform: translateY(-8px) scale(1.06);
+}
+
+.tarjeta-pity__sobre-aura:hover .tarjeta-pity__abanico-sobre--der {
+  transform: rotate(18deg) translateX(-10%) scale(0.93);
+}
+
+.tarjeta-pity__sobre-aura:hover {
+  transform: translateY(-4px) scale(1.04);
+  filter: drop-shadow(0 0 calc(8px + 14px * var(--progreso-ratio, 0)) var(--pity-garantizada-borde, #7BF0A5))
+          drop-shadow(0 0 calc(12px + 18px * var(--progreso-ratio, 0)) var(--pity-garantizada-aro, rgba(123, 240, 165, 0.5)));
+}
+
+/* Estado garantizado: resplandor activo pleno y latido suave */
+.tarjeta-pity__sobre-aura--garantizada {
+  filter: drop-shadow(0 0 16px var(--pity-garantizada-borde, #7BF0A5))
+          drop-shadow(0 0 24px var(--pity-garantizada-aro, rgba(123, 240, 165, 0.6)));
+  animation: latido-legendario 2.4s ease-in-out infinite;
+}
+
+.tarjeta-pity__sobre-aura--garantizada:hover {
+  filter: drop-shadow(0 0 22px var(--pity-garantizada-borde, #7BF0A5))
+          drop-shadow(0 0 32px var(--pity-garantizada-aro, rgba(123, 240, 165, 0.75)));
+}
+
+@keyframes latido-legendario {
+  0%, 100% {
+    filter: drop-shadow(0 0 12px var(--pity-garantizada-borde, #7BF0A5))
+            drop-shadow(0 0 18px var(--pity-garantizada-aro, rgba(123, 240, 165, 0.45)));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px var(--pity-garantizada-borde, #7BF0A5))
+            drop-shadow(0 0 30px var(--pity-garantizada-aro, rgba(123, 240, 165, 0.7)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta-pity__sobre-aura,
+  .tarjeta-pity__abanico-sobre {
+    animation: none !important;
+    transition: none !important;
+  }
+  .tarjeta-pity__sobre-aura:hover,
+  .tarjeta-pity__sobre-aura:hover .tarjeta-pity__abanico-sobre--izq,
+  .tarjeta-pity__sobre-aura:hover .tarjeta-pity__abanico-sobre--centro,
+  .tarjeta-pity__sobre-aura:hover .tarjeta-pity__abanico-sobre--der {
+    transform: none !important;
+  }
+}

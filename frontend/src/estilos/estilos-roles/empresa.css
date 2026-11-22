@@ -134,4 +134,8 @@
     --nav-ola-circulo-desktop: 2.5rem;
     --nav-ola-jugar-tamano: 3.125rem;
     --nav-ola-franja-asomada: 1.25rem;
+
+    /* PT System - Aro y borde garantizada con contraste accesible AA */
+    --pity-garantizada-borde: #02571B;
+    --pity-garantizada-aro: rgba(2, 87, 27, 0.35);
 }

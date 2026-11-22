@@ -42,7 +42,13 @@
         }
       </g>
 
-      @if (esCategoria() && iconoCategoria(); as icono) {
+      @if (mostrarPregunta()) {
+        <!-- Sobre con signo de pregunta (marca desconocida / PT System marca) -->
+        <g class="sobre__pregunta">
+          <path class="sobre__pregunta-fondo" d="M69.38,160.88l41.75-20.81-6-36.14-18.77,2.25-2.78,30.55-55.42,5-1.22-85L167.3,38.54l20.4,109.54-48.41,21.33L137,196.85,77.07,204Zm11.91,52.64,54.1-6.49,8.41,56.09-56.88,6.82Z"/>
+          <path class="sobre__pregunta-frente" d="M66.46,153.33l37.65-18.76L98.69,102l-16.93,2-2.5,27.54-50,4.48-1.1-76.6L154.76,43l18.39,98.77L129.5,161l-2.09,24.74-54,6.48ZM77.2,200.79,126,195l7.58,50.57-51.29,6.15Z"/>
+        </g>
+      } @else if (esCategoria() && iconoCategoria(); as icono) {
         <!-- Sobre de categoria: el icono va directo sobre el cuerpo amarillo,
              sin placa ni sombra. La placa punteaguda es exclusiva de marca. -->
         <svg

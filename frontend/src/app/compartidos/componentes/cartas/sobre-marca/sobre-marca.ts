@@ -308,6 +308,14 @@ let instancias = 0;
       transition: opacity 200ms ease-out;
     }
 
+    .sobre__pregunta-fondo {
+      fill: var(--marca-primaria);
+    }
+
+    .sobre__pregunta-frente {
+      fill: var(--blanco-puro);
+    }
+
     .sobre__logo--oculto {
       opacity: 0;
     }
@@ -376,6 +384,8 @@ export class SobreMarca {
 
   readonly variante = input<VarianteSobreMarca>('oscuro');
   readonly tamanio = input<TamanioSobreMarca>('md');
+
+  readonly mostrarPregunta = input<boolean, unknown>(false, { transform: booleanAttribute });
 
   /**
    * Ancho fluido: además del ancho base del `tamanio`, crece por breakpoint

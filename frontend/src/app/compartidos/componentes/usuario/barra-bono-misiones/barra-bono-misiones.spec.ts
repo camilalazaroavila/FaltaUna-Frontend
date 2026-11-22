@@ -44,7 +44,7 @@ describe('BarraBonoMisiones', () => {
     expect(el.querySelector('[role="progressbar"]')).toBeNull();
   });
 
-  it('divide la barra en totalRequeridas segmentos sin contenedor app-caja y muestra "Reclamar" cuando no está disponible', () => {
+  it('divide la barra en totalRequeridas segmentos sin contenedor app-caja y muestra "Premio" cuando no está disponible', () => {
     const el = montar(crearBono({ completadas: 1, totalRequeridas: 4, disponible: false }));
     expect(el.querySelector('app-caja')).toBeNull();
     const barra = el.querySelector('[role="progressbar"]')!;
@@ -53,7 +53,7 @@ describe('BarraBonoMisiones', () => {
     expect(segmentos[0].className).toContain('bg-barra-mision-relleno');
     expect(segmentos[1].className).not.toContain('bg-barra-mision-relleno');
     expect(el.textContent).toContain('1/4');
-    expect(el.textContent).toContain('Reclamar');
+    expect(el.textContent).toContain('Premio');
     expect(el.querySelector('app-sobre-marca button')).toBeNull();
   });
 
