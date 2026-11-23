@@ -2,7 +2,7 @@
     max-width: 100%;
 }
 
-.cupon-leyenda {
+.ticket-leyenda {
     line-height: 1.05;
     white-space: nowrap;
 }
@@ -12,34 +12,34 @@
         max-width: 9rem;
     }
 
-    .cupon {
+    .ticket {
         height: clamp(2rem, 4.5cqh, 3rem);
         max-height: clamp(2rem, 4.5cqh, 3rem);
         max-width: 9rem;
     }
 
-    .cupon--completa {
+    .ticket--completa {
         gap: 0.375rem;
         padding: 0.25rem 0.75rem;
     }
 
-    .cupon--compacta {
+    .ticket--compacta {
         gap: 0.25rem;
         padding: 0.125rem 0.625rem;
     }
 
-    .cupon-numero {
+    .ticket-numero {
         font-size: var(--tipografia-subtitulo);
     }
 }
 
 @media (max-width: 639px) {
-    .cupon {
+    .ticket {
         gap: 0.2rem;
         padding-inline: 0.45rem;
     }
 
-    .cupon ng-icon {
+    .ticket ng-icon {
         display: none;
     }
 }

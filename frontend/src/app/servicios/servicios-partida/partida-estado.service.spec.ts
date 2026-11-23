@@ -127,8 +127,8 @@ describe('PartidaEstadoService (mock)', () => {
 
       expect(servicio.manoPropia()).toHaveLength(ESCENARIO_TUTORIAL.mano.length);
       expect(servicio.turno()).toBe(1);
-      expect(servicio.cuponesPropio()).toBe(3);
-      expect(servicio.cuponMaximo()).toBe(3);
+      expect(servicio.ticketsPropio()).toBe(3);
+      expect(servicio.ticketsMaximos()).toBe(3);
       expect(servicio.barraPropia()).toBe(0);
       expect(servicio.lugares().izquierda.propio.every((carta) => carta === null)).toBe(true);
       expect(servicio.lugares().izquierda.rival.every((carta) => carta === null)).toBe(true);
@@ -144,7 +144,7 @@ describe('PartidaEstadoService (mock)', () => {
 
       expect(servicio.lugares().derecha.rival[0]?.id).toBe(CARTA_RIVAL_TUTORIAL.id);
       expect(servicio.turno()).toBe(2);
-      expect(servicio.cuponMaximo()).toBe(2);
+      expect(servicio.ticketsMaximos()).toBe(2);
       expect(servicio.estadoRondaMock()).toBe('jugando');
       expect(servicio.barraRival()).toBeGreaterThan(0);
     });
@@ -155,8 +155,8 @@ describe('PartidaEstadoService (mock)', () => {
 
       expect(servicio.manoPropia()).toHaveLength(5);
       expect(servicio.turno()).toBe(3);
-      expect(servicio.cuponesPropio()).toBe(3);
-      expect(servicio.cuponMaximo()).toBe(3);
+      expect(servicio.ticketsPropio()).toBe(3);
+      expect(servicio.ticketsMaximos()).toBe(3);
       expect(servicio.barraPropia()).toBe(42);
     });
   });

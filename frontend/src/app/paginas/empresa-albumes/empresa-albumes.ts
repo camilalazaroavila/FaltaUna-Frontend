@@ -20,8 +20,8 @@ import {
   type EstadisticasCartaEmpresa,
   type ResumenAlbum,
 } from '@modelos/empresa.mock';
-import { EstadisticasEmpresaService } from '@app/servicios/estadisticas-empresa-service';
-import { EstadisticasEmpresaRespuesta } from '../empresa-estadisticas/empresa-estadisticas';
+import { EstadisticasEmpresaService } from '@servicios/estadisticas-empresa-service';
+import type { EstadisticasEmpresaRespuesta } from '@paginas/empresa-estadisticas/empresa-estadisticas';
 
 export type CriterioOrdenAlbum = 'nombre-asc' | 'nombre-desc' | 'rareza';
 
@@ -185,7 +185,7 @@ export class EmpresaAlbumes implements OnInit {
       rareza: rarezaDesdeNombre(img.rareza),
       categoria: 'gastronomia',
       atributoIzquierdo: img.poder ?? 10,
-      atributoDerecho: img.costoCupon ?? 10,
+      atributoDerecho: img.costeTicket ?? img.costoCupon ?? 10,
       obtenida: true,
     }));
   });

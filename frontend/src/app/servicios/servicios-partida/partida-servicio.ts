@@ -185,8 +185,8 @@ interface EstadoReal {
   readonly segundosTotales?: number;
   readonly finDeRondaMs: number | null;
   readonly desfaseServidorMs: number;
-  readonly cuponActual: number;
-  readonly cuponMaximo: number;
+  readonly ticketsActuales: number;
+  readonly ticketsMaximos: number;
   readonly puntosPropio: number;
   readonly puntosRival: number;
   readonly listo: boolean;
@@ -228,7 +228,7 @@ const invertirPuntaje = (
  *
  * Cuando se crea o recupera una partida, pasa a **modo real**: el estado del
  * servidor es la única fuente de verdad. El servicio no calcula puntajes,
- * cupones, ganadores de zona ni progreso a 100; solo adapta el contrato a los
+ * tickets, ganadores de zona ni progreso a 100; solo adapta el contrato a los
  * modelos del tablero y sincroniza (heartbeat + polling).
  */
 @Injectable({ providedIn: 'root' })
@@ -418,14 +418,14 @@ export class PartidaServicio {
     this.modoRealSignal() ? this.estadoRealSignal()?.segundosTotales : 180,
   );
 
-  /** Cupones de recurso disponibles. */
-  readonly cuponesPropio = computed(() =>
-    this.modoRealSignal() ? (this.estadoRealSignal()?.cuponActual ?? 0) : this.mock.cuponesPropio(),
+  /** Tickets de recurso disponibles. */
+  readonly ticketsPropio = computed(() =>
+    this.modoRealSignal() ? (this.estadoRealSignal()?.ticketsActuales ?? 0) : this.mock.ticketsPropio(),
   );
 
-  /** Máximo de cupones de la ronda, definido por el servidor. */
-  readonly cuponMaximo = computed(() =>
-    this.modoRealSignal() ? (this.estadoRealSignal()?.cuponMaximo ?? 1) : this.mock.cuponMaximo(),
+  /** Máximo de tickets de la ronda, definido por el servidor. */
+  readonly ticketsMaximos = computed(() =>
+    this.modoRealSignal() ? (this.estadoRealSignal()?.ticketsMaximos ?? 1) : this.mock.ticketsMaximos(),
   );
 
   readonly barraPropia = computed(() =>
@@ -692,7 +692,7 @@ export class PartidaServicio {
     this.mock.restaurarEscenario();
   }
 
-  /** Salta la partida a las rondas finales (5 y 6) con 5 cupones (solo mock). */
+  /** Salta la partida a las rondas finales (5 y 6) con 5 tickets (solo mock). */
   saltarARondasDecisivasTutorial(): void {
     if (this.modoRealSignal()) {
       return;
@@ -757,7 +757,7 @@ export class PartidaServicio {
     }
 
     const costo = enMano.atributoIzquierdo ?? 0;
-    if (costo > estado.cuponActual) {
+    if (costo > estado.ticketsActuales) {
       return false;
     }
 
@@ -794,7 +794,7 @@ export class PartidaServicio {
     }
 
     // 1. Actualización optimista inmediata en el cliente
-    const nuevoCupon = Math.max(0, estado.cuponActual - costo);
+    const nuevoTicket = Math.max(0, estado.ticketsActuales - costo);
     const nuevaMano = estado.mano
       .filter((item) => {
         if (enMano.cartaPartidaId != null && item.cartaPartidaId != null) {
@@ -804,7 +804,7 @@ export class PartidaServicio {
       })
       .map((item) => ({
         ...item,
-        jugable: (item.atributoIzquierdo ?? 0) <= nuevoCupon,
+        jugable: (item.atributoIzquierdo ?? 0) <= nuevoTicket,
       }));
 
     const cartaParaMesa: CartaMesaVista = {
@@ -842,7 +842,7 @@ export class PartidaServicio {
       ...estado,
       mano: nuevaMano,
       cartasMesa: nuevasCartasMesa,
-      cuponActual: nuevoCupon,
+      ticketsActuales: nuevoTicket,
       zonas: nuevasZonas,
     };
 
@@ -1097,7 +1097,7 @@ export class PartidaServicio {
       return;
     }
 
-    let cuponRestante = estado.cuponActual;
+    let ticketsRestantes = estado.ticketsActuales;
     let manoRestante = [...estado.mano];
     const cartasMesaActualizadas = [...estado.cartasMesa];
     const zonasActualizadas = {
@@ -1106,7 +1106,7 @@ export class PartidaServicio {
     };
 
     for (const jugada of this.colaJugadas) {
-      cuponRestante = Math.max(0, cuponRestante - jugada.costo);
+      ticketsRestantes = Math.max(0, ticketsRestantes - jugada.costo);
       manoRestante = manoRestante.filter((item) => {
         if (jugada.carta.cartaPartidaId != null && item.cartaPartidaId != null) {
           return item.cartaPartidaId !== jugada.carta.cartaPartidaId;
@@ -1136,12 +1136,12 @@ export class PartidaServicio {
 
     manoRestante = manoRestante.map((item) => ({
       ...item,
-      jugable: (item.atributoIzquierdo ?? 0) <= cuponRestante,
+      jugable: (item.atributoIzquierdo ?? 0) <= ticketsRestantes,
     }));
 
     this.estadoRealSignal.set({
       ...estado,
-      cuponActual: cuponRestante,
+      ticketsActuales: ticketsRestantes,
       mano: manoRestante,
       cartasMesa: cartasMesaActualizadas,
       zonas: zonasActualizadas,
@@ -1166,13 +1166,13 @@ export class PartidaServicio {
         ),
     );
 
-    const nuevoCupon = estado.cuponActual + jugada.costo;
+    const nuevoTicket = estado.ticketsActuales + jugada.costo;
     const nuevaMano = [
       ...estado.mano,
       { ...jugada.carta, jugable: true },
     ].map((item) => ({
       ...item,
-      jugable: (item.atributoIzquierdo ?? 0) <= nuevoCupon,
+      jugable: (item.atributoIzquierdo ?? 0) <= nuevoTicket,
     }));
 
     const poderCarta = jugada.carta.poderBase ?? jugada.carta.atributoDerecho ?? 0;
@@ -1188,7 +1188,7 @@ export class PartidaServicio {
       ...estado,
       mano: nuevaMano,
       cartasMesa: nuevasCartasMesa,
-      cuponActual: nuevoCupon,
+      ticketsActuales: nuevoTicket,
       zonas: nuevasZonas,
     });
 
@@ -1222,7 +1222,7 @@ export class PartidaServicio {
 
   /**
    * Retira una carta provisional de la mesa antes de presionar «Realizar»,
-   * liberando el slot, devolviendo la carta a la mano y reembolsando sus cupones.
+   * liberando el slot, devolviendo la carta a la mano y reembolsando sus tickets.
    */
   retirarCarta(carta: Carta): boolean {
     if (!this.modoRealSignal()) {
@@ -1277,17 +1277,17 @@ export class PartidaServicio {
 
     const cartaEnMesa = estado.cartasMesa[idxMesa];
     const costo = carta.atributoIzquierdo ?? 0;
-    const nuevoCupon = Math.min(estado.cuponMaximo, estado.cuponActual + costo);
+    const nuevoTicket = Math.min(estado.ticketsMaximos, estado.ticketsActuales + costo);
     const nuevasCartasMesa = estado.cartasMesa.filter((_, i) => i !== idxMesa);
 
     const cartaRestaurada: Carta = {
       ...cartaEnMesa.carta,
-      jugable: (cartaEnMesa.carta.atributoIzquierdo ?? 0) <= nuevoCupon,
+      jugable: (cartaEnMesa.carta.atributoIzquierdo ?? 0) <= nuevoTicket,
     };
 
     const nuevaMano = [...estado.mano, cartaRestaurada].map((c) => ({
       ...c,
-      jugable: (c.atributoIzquierdo ?? 0) <= nuevoCupon,
+      jugable: (c.atributoIzquierdo ?? 0) <= nuevoTicket,
     }));
 
     // Recalcular poder provisional de la zona usando su lugar físico
@@ -1306,7 +1306,7 @@ export class PartidaServicio {
       ...estado,
       mano: nuevaMano,
       cartasMesa: nuevasCartasMesa,
-      cuponActual: nuevoCupon,
+      ticketsActuales: nuevoTicket,
       zonas: nuevasZonas,
     };
 
@@ -1948,8 +1948,16 @@ export class PartidaServicio {
       finDeRondaMs,
       desfaseServidorMs,
       mapaZonaLugar,
-      cuponActual: estado.jugadorPropio.cuponActual,
-      cuponMaximo: estado.jugadorPropio.cuponMaximo,
+      // Adaptador retrocompatible de contrato con el backend:
+      // quitar el viejo (cuponActual/cuponMaximo) cuando el back lo publique
+      ticketsActuales:
+        (estado.jugadorPropio as { ticketsActuales?: number }).ticketsActuales ??
+        estado.jugadorPropio.cuponActual ??
+        0,
+      ticketsMaximos:
+        (estado.jugadorPropio as { ticketsMaximos?: number }).ticketsMaximos ??
+        estado.jugadorPropio.cuponMaximo ??
+        1,
       puntosPropio: estado.jugadorPropio.puntosTotales,
       puntosRival: estado.rival.puntosTotales,
       listo: estado.jugadorPropio.listo,
@@ -2667,7 +2675,10 @@ export class PartidaServicio {
       imagenUrl: urlFinal,
       rareza: rarezaDesdeNombre(carta.rareza),
       categoria: categoriaCartaDesdeNombre(carta.categoria),
-      atributoIzquierdo: carta.costoCupon,
+      // Adaptador retrocompatible de contrato con el backend:
+      // quitar el viejo (costoCupon) cuando el back lo publique
+      atributoIzquierdo:
+        (carta as { costeTicket?: number }).costeTicket ?? carta.costoCupon ?? 0,
       atributoDerecho: poderActual,
       poderBase,
       obtenida: true,

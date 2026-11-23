@@ -64,9 +64,9 @@
 }
 
 
-/* Muescas laterales del cupón: máscara con dos radial-gradient que recortan
+/* Muescas laterales del ticket: máscara con dos radial-gradient que recortan
    un semicírculo transparente en cada borde. Va sobre el cuerpo del ticket. */
-@utility muesca-cupon {
+@utility muesca-ticket {
     --muesca-radio: 0.45rem;
     -webkit-mask:
         radial-gradient(circle at 0 50%, transparent var(--muesca-radio), black calc(var(--muesca-radio) + 0.5px)) left / 51% 100% no-repeat,
@@ -76,11 +76,11 @@
         radial-gradient(circle at 100% 50%, transparent var(--muesca-radio), black calc(var(--muesca-radio) + 0.5px)) right / 51% 100% no-repeat;
 }
 
-/* Contorno y sombra del cupón. Va en el host: como mask elimina los bordes,
+/* Contorno y sombra del ticket. Va en el host: como mask elimina los bordes,
    drop-shadow sin blur dibuja el contorno siguiendo la silueta recortada. */
-@utility cupon-contorno {
+@utility ticket-contorno {
     filter:
-        drop-shadow(2px 0 0 var(--cupon-borde)) drop-shadow(-2px 0 0 var(--cupon-borde)) drop-shadow(0 2px 0 var(--cupon-borde)) drop-shadow(0 -2px 0 var(--cupon-borde)) drop-shadow(var(--sombra-cartoon));
+        drop-shadow(2px 0 0 var(--ticket-borde)) drop-shadow(-2px 0 0 var(--ticket-borde)) drop-shadow(0 2px 0 var(--ticket-borde)) drop-shadow(0 -2px 0 var(--ticket-borde)) drop-shadow(var(--sombra-cartoon));
 }
 
 /* Marcos como máscaras SVG: el componente pinta el color con bg-*, y cambiar

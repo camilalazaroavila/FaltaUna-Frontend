@@ -82,7 +82,7 @@ export interface EscenarioPartidaTutorial {
   readonly mano: readonly Carta[];
   readonly turno: number;
   readonly segundos: number;
-  readonly cupones: number;
+  readonly tickets: number;
   readonly barraPropia: number;
   readonly barraRival: number;
 }
@@ -131,16 +131,16 @@ export class PartidaEstadoService {
   // ── MOCK: valores fijos, sin cálculo de victoria por 100 (§10 pendiente) ──
   private readonly estadoTurno = signal(3);
   private readonly estadoSegundos = signal(180);
-  /** El máximo del cupón es el turno actual (A confirmar con §10). */
-  private readonly estadoCupones = signal(3);
-  private readonly estadoCuponMaximo = signal(3);
+  /** El máximo de tickets es el turno actual. */
+  private readonly estadoTickets = signal(3);
+  private readonly estadoTicketsMaximos = signal(3);
   private readonly estadoBarraPropia = signal(42);
   private readonly estadoBarraRival = signal(18);
 
   readonly turno = this.estadoTurno.asReadonly();
   readonly segundosRestantes = this.estadoSegundos.asReadonly();
-  readonly cuponesPropio = this.estadoCupones.asReadonly();
-  readonly cuponMaximo = this.estadoCuponMaximo.asReadonly();
+  readonly ticketsPropio = this.estadoTickets.asReadonly();
+  readonly ticketsMaximos = this.estadoTicketsMaximos.asReadonly();
   readonly barraPropia = this.estadoBarraPropia.asReadonly();
   readonly barraRival = this.estadoBarraRival.asReadonly();
   readonly jugadores = JUGADORES_MOCK;
@@ -293,8 +293,8 @@ export class PartidaEstadoService {
     this.estadoManoPropia.set(escenario.mano);
     this.estadoTurno.set(escenario.turno);
     this.estadoSegundos.set(escenario.segundos);
-    this.estadoCupones.set(escenario.cupones);
-    this.estadoCuponMaximo.set(escenario.cupones);
+    this.estadoTickets.set(escenario.tickets);
+    this.estadoTicketsMaximos.set(escenario.tickets);
     this.estadoBarraPropia.set(escenario.barraPropia);
     this.estadoBarraRival.set(escenario.barraRival);
     this.estadoDeltas.set({ ...DELTAS_VACIOS });
@@ -344,8 +344,8 @@ export class PartidaEstadoService {
         derecha: { propio: deltaPropioDer, rival: deltaRivalDer },
       });
       this.estadoTurno.set(2);
-      this.estadoCupones.set(2);
-      this.estadoCuponMaximo.set(2);
+      this.estadoTickets.set(2);
+      this.estadoTicketsMaximos.set(2);
       this.estadoRonda.set('jugando');
       this.estadoAnuncio.set('Ronda guiada completada. Así se suman los puntos por diferencia.');
       this.temporizadorGuionado = undefined;
@@ -353,21 +353,21 @@ export class PartidaEstadoService {
   }
 
   /**
-   * MOCK: salta la partida a las rondas decisivas 5 y 6 con 5 cupones,
+   * MOCK: salta la partida a las rondas decisivas 5 y 6 con 5 tickets,
    * cartas reales con habilidades y puntuación previa para jugar hasta ganar.
    */
   saltarARondasDecisivasTutorial(): void {
     this.limpiarTemporizadorGuionado();
     this.estadoTurno.set(5);
-    this.estadoCupones.set(5);
-    this.estadoCuponMaximo.set(5);
+    this.estadoTickets.set(5);
+    this.estadoTicketsMaximos.set(5);
     this.estadoBarraPropia.set(58);
     this.estadoBarraRival.set(40);
     this.estadoManoPropia.set([...CARTAS_FINALES_TUTORIAL]);
     this.rotarZonas();
     this.estadoRonda.set('jugando');
     this.estadoTerminada.set(false);
-    this.estadoAnuncio.set('¡Ronda 5 de 6! Tenés 5 cupones. Bajá tus mejores cartas.');
+    this.estadoAnuncio.set('¡Ronda 5 de 6! Tenés 5 tickets. Bajá tus mejores cartas.');
   }
 
   /**
@@ -451,11 +451,11 @@ export class PartidaEstadoService {
         this.estadoAnuncio.set('¡Victoria! Has superado al bot.');
       } else {
         this.estadoTurno.set(siguienteTurno);
-        this.estadoCupones.set(siguienteTurno);
-        this.estadoCuponMaximo.set(siguienteTurno);
+        this.estadoTickets.set(siguienteTurno);
+        this.estadoTicketsMaximos.set(siguienteTurno);
         this.rotarZonas();
         this.estadoRonda.set('jugando');
-        this.estadoAnuncio.set(`Ronda final ${siguienteTurno} de 6. ¡Tenés ${siguienteTurno} cupones!`);
+        this.estadoAnuncio.set(`Ronda final ${siguienteTurno} de 6. ¡Tenés ${siguienteTurno} tickets!`);
       }
       this.temporizadorGuionado = undefined;
     }, 1200);
@@ -472,8 +472,8 @@ export class PartidaEstadoService {
     this.estadoManoPropia.set(crearManoInicial());
     this.estadoTurno.set(3);
     this.estadoSegundos.set(180);
-    this.estadoCupones.set(3);
-    this.estadoCuponMaximo.set(3);
+    this.estadoTickets.set(3);
+    this.estadoTicketsMaximos.set(3);
     this.estadoBarraPropia.set(42);
     this.estadoBarraRival.set(18);
     this.estadoDeltas.set({ ...DELTAS_VACIOS });

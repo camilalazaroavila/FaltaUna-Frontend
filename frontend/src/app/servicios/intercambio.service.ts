@@ -257,7 +257,7 @@ export class IntercambioService {
               rareza: mapearRareza(s.rareza, s.rarezaOrden ?? 1),
               categoria: categoriaCartaDesdeNombre(s.categoria ?? ''),
               atributoDerecho: s.poder ?? 0,
-              atributoIzquierdo: s.costoCupon ?? 0,
+              atributoIzquierdo: (s as { costeTicket?: number }).costeTicket ?? s.costoCupon ?? 0,
               obtenida: true,
               descripcion: s.descripcion,
             }));
@@ -416,7 +416,7 @@ export class IntercambioService {
       rareza: mapearRareza(c.rareza, c.rarezaOrden),
       categoria: categoriaCartaDesdeNombre(c.categoria),
       atributoDerecho: c.poder,
-      atributoIzquierdo: c.costoCupon,
+      atributoIzquierdo: (c as { costeTicket?: number }).costeTicket ?? c.costoCupon ?? 0,
       obtenida: true,
       cantidad: c.cantidad,
       descripcion: c.descripcion,
