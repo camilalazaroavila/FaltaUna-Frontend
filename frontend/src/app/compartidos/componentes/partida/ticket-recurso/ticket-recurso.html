@@ -1,0 +1,9 @@
+<span class="ticket muesca-ticket inline-flex items-center rounded-md bg-ticket-fondo" [class]="clasesCuerpo()">
+  <span #numero class="ticket-numero block text-titulo leading-titulo tabular-nums">{{ valor() }}</span>
+
+  @if (esCompacta()) {
+    <ng-icon name="phosphorTicketFill" size="18" aria-hidden="true" />
+  } @else {
+    <span class="ticket-leyenda font-interfaz text-menor uppercase tracking-etiqueta">{{ leyenda() }}</span>
+  }
+</span>

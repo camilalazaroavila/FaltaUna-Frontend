@@ -41,7 +41,7 @@ describe('Tutorial', () => {
     expect(tutorial.activo()).toBe(true);
     expect(servicio.manoPropia()).toHaveLength(4);
     expect(servicio.turno()).toBe(1);
-    expect(servicio.cuponesPropio()).toBe(3);
+    expect(servicio.ticketsPropio()).toBe(3);
   });
 
   it('usa la clase partida-activa en el contenedor principal', () => {
@@ -118,6 +118,6 @@ describe('Tutorial', () => {
 
     expect(servicio.manoPropia()).toHaveLength(5);
     expect(servicio.turno()).toBe(3);
-    expect(servicio.cuponesPropio()).toBe(3);
+    expect(servicio.ticketsPropio()).toBe(3);
   });
 });

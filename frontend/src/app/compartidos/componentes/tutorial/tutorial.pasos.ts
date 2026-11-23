@@ -14,17 +14,17 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
     pista: 'Podés salir del tutorial cuando quieras.',
   },
   {
-    ancla: 'cupones',
-    titulo: 'Los cupones',
+    ancla: 'tickets',
+    titulo: 'Los tickets',
     texto:
-      'Cada carta cuesta cupones para bajarla a la mesa. Ahora tenés 3, y en cada ronda vas a recibir más. Usalos con criterio.',
-    pista: 'En esta práctica arrancás con 3 cupones.',
+      'Los tickets son el costo para jugar cartas. Empezás con 1 ticket y ganás 1 más por ronda. En esta práctica arrancás con 3 tickets. Usalos con criterio.',
+    pista: 'Tenés 3 tickets.',
   },
   {
     ancla: 'mano',
     titulo: 'Tu mano',
     texto:
-      'Estas son tus cartas, acomodadas en abanico. Cada una cuenta con su propio costo en cupones, poder de combate y habilidades especiales.',
+      'Estas son tus cartas, acomodadas en abanico. Cada una cuenta con su propio costo en tickets, poder de combate y habilidades especiales.',
     pista: 'Las cartas se inclinan según su posición en la mano.',
   },
   {
@@ -33,7 +33,7 @@ export const PASOS_TUTORIAL: readonly PasoTutorial[] = [
     titulo: 'Costo y poder',
     texto: 'Tocá una carta de tu mano para mirarla de cerca.',
     textoAlIniciarAccion:
-      'Fijate en los números: el de la izquierda es el costo en cupones; el de la derecha, el poder que sumás a la zona. Abajo tenés su habilidad especial y su categoría. Tocá "Siguiente" o cerrá el detalle para continuar.',
+      'Fijate en los números: el de la izquierda es el costo en tickets; el de la derecha, el poder que sumás a la zona. Abajo tenés su habilidad especial y su categoría. Tocá "Siguiente" o cerrá el detalle para continuar.',
     espera: 'carta-vista',
     pista: 'Tocá una carta de tu mano para abrir su detalle.',
   },

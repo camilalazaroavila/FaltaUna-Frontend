@@ -134,6 +134,7 @@ logs/
 *.temp
 *.bak
 *.orig
+scratch/
 
 # ─── Herramientas de IA y Skills ───────────────────────────────────────────────
 .claude/

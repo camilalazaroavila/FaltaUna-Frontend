@@ -4,10 +4,10 @@
     <p class="font-cuerpo text-sm text-texto-secundario">
       Átomos de la pantalla de partida en
       <code class="font-interfaz text-texto-primario">compartidos/componentes/partida/</code>:
-      casilla de tablero, contador de cupones, barra de puntos, chip de jugador, cabecera de
+      casilla de tablero, contador de tickets, barra de puntos, chip de jugador, cabecera de
       turno y puntaje por zona. Se apoyan en los tokens de
       <code class="font-interfaz text-texto-primario">jugador.css</code> (<code>--slot-*</code>,
-      <code>--cupon-*</code>, <code>--barra-puntos-*</code> y <code>--puntaje-zona-*</code>), que
+      <code>--ticket-*</code>, <code>--barra-puntos-*</code> y <code>--puntaje-zona-*</code>), que
       solo existen en modo jugador.
     </p>
   </header>
@@ -50,14 +50,14 @@
 </app-tarjeta-muestra>
 
   <app-tarjeta-muestra
-    titulo="app-cupon-recurso"
-    descripcion="Recurso de juego de la mano. Perforaciones laterales con --cupon-perforacion; el número sube o se sacude al cambiar el valor."
+    titulo="app-ticket-recurso"
+    descripcion="Recurso de juego de la mano. Perforaciones laterales con --ticket-perforacion; el número sube o se sacude al cambiar el valor."
   >
     <div class="flex flex-wrap items-center gap-6">
-      <app-cupon-recurso [valor]="0" [maximo]="6" />
-      <app-cupon-recurso [valor]="3" [maximo]="6" />
-      <app-cupon-recurso [valor]="6" [maximo]="6" />
-      <app-cupon-recurso [valor]="3" [maximo]="6" variante="compacta" />
+      <app-ticket-recurso [valor]="0" [maximo]="6" />
+      <app-ticket-recurso [valor]="3" [maximo]="6" />
+      <app-ticket-recurso [valor]="6" [maximo]="6" />
+      <app-ticket-recurso [valor]="3" [maximo]="6" variante="compacta" />
     </div>
 
     <div slot="nota" class="mt-4 rounded-md border-l-2 border-info bg-info-fondo px-3 py-2">
@@ -65,7 +65,7 @@
         El contador usa <code>role="status"</code> y un
         <code>aria-label</code> completo, porque el jugador debe leer el valor al cambiar sin
         depender del color. Las muescas laterales salen de la utilidad
-        <code>muesca-cupon</code>; <code>variante="compacta"</code> es la versión de la franja
+        <code>muesca-ticket</code>; <code>variante="compacta"</code> es la versión de la franja
         del tablero (solo número y ticket).
       </p>
     </div>
@@ -83,7 +83,7 @@
 
       <p app-texto variante="secundario" tamano="menor">
         Hacé clic o cambia los valores en las otras muestras: los cambios de
-        <code>valor</code> en <code>app-cupon-recurso</code> y de
+        <code>valor</code> en <code>app-ticket-recurso</code> y de
         <code>puntos</code>/<code>delta</code> en <code>app-barra-puntos</code> y
         <code>app-puntaje-zona</code> disparan las micro-animaciones programadas con GSAP.
       </p>

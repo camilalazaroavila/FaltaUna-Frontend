@@ -101,12 +101,12 @@
       </div>
     </div>
 
-    <app-cupon-recurso
-      data-tutorial="cupones"
-      [valor]="servicio.cuponesPropio()"
-      [maximo]="servicio.cuponMaximo()"
+    <app-ticket-recurso
+      data-tutorial="tickets"
+      [valor]="servicio.ticketsPropio()"
+      [maximo]="servicio.ticketsMaximos()"
       variante="completa"
-      appTooltipPartida="Tus cupones de recurso disponibles en esta ronda. Cada carta requiere una cantidad de cupones para ser jugada."
+      appTooltipPartida="Tus tickets de recurso disponibles en esta ronda. Cada carta requiere una cantidad de tickets para ser jugada."
     />
   </main>
 
