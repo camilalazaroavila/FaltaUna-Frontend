@@ -1,8 +1,7 @@
 /* Sello postal: borde ondulado fino (perforaciones) alrededor de un fondo crema. */
-.sello {
+.cupon {
   --perf: 3.5px;
   --linea: 2px;
-  /* Sobre fondo oscuro: la línea del sello es crema y las perforaciones dejan ver el fondo. */
   --tinta: var(--crema, var(--color-amarillo-logo, #f5e064));
   --papel: var(--fondo, var(--color-teal-profundo, #072326));
   position: relative;
@@ -18,7 +17,7 @@
 }
 
 /* Hoja crema interior: deja a la vista solo una línea fina de tinta en el borde. */
-.sello__hoja {
+.cupon__hoja {
   position: absolute;
   inset: var(--linea);
   background-color: var(--papel);
@@ -33,24 +32,70 @@
 }
 
 /* Cupón: al pasar el mouse o enfocarlo se ilumina. */
-.sello:hover,
-.sello:focus-visible {
-  filter: brightness(1.07) saturate(1.15)
-    drop-shadow(0 0 0.7rem color-mix(in srgb, var(--color-verde-jugador, #3bd972) 85%, transparent));
+.cupon:hover,
+.cupon:focus-visible {
+  filter: brightness(1.06) saturate(1.1)
+    drop-shadow(0 0 0.6rem color-mix(in srgb, var(--color-verde-jugador, #3bd972) 70%, transparent));
 }
 
-/* Sello: las bandas del arte se mecen apenas al pasar el mouse. */
-.sello__arte {
-  transition: transform 0.6s ease;
+.cupon__logo {
+  transition: transform 0.5s ease;
 }
 
-.sello:hover .sello__arte,
-.sello:focus-visible .sello__arte {
-  transform: scale(1.06);
+.cupon:hover .cupon__logo,
+.cupon:focus-visible .cupon__logo {
+  transform: scale(1.05);
+}
+
+.cupon__flecha {
+  transition: transform 0.3s ease;
+}
+
+.cupon:hover .cupon__flecha,
+.cupon:focus-visible .cupon__flecha {
+  transform: translateX(2px);
+}
+
+.cupon--atenuado {
+  filter: grayscale(0.5);
+  opacity: 0.7;
+}
+
+.cupon--atenuado:hover,
+.cupon--atenuado:focus-visible {
+  filter: grayscale(0.3) brightness(1.02);
+  opacity: 0.85;
+}
+
+.badge-estado--disponible {
+  background-color: var(--exito, #3bd972);
+  color: var(--exito-texto, #06281a);
+}
+.badge-estado--usado {
+  background-color: var(--texto-secundario, #9aa8a6);
+  color: var(--fondo, #0d3b40);
+}
+.badge-estado--vencido {
+  background-color: var(--error, #ef4444);
+  color: var(--error-texto, #2a0606);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sello__arte {
+  .cupon__logo,
+  .cupon__flecha {
     transition: none;
+  }
+  .cupon:hover,
+  .cupon:focus-visible,
+  .cupon--atenuado:hover,
+  .cupon--atenuado:focus-visible {
+    filter: none;
+    opacity: 1;
+  }
+  .cupon:hover .cupon__logo,
+  .cupon:focus-visible .cupon__logo,
+  .cupon:hover .cupon__flecha,
+  .cupon:focus-visible .cupon__flecha {
+    transform: none;
   }
 }

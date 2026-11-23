@@ -15,6 +15,7 @@ import {
   QrCuponApi,
   ValidarQrApi,
 } from '@modelos/cupon.model';
+import { normalizarUrlImagen } from '@modelos/carta.model';
 
 const CATEGORIA_BACKEND_A_FRONT: Record<string, CategoriaCupon> = {
   'gastronomía': 'gastronomia',
@@ -131,8 +132,10 @@ export class CuponesService {
       codigo: c.codigo,
       vigenteHastaUtc: c.fechaVencimiento,
       estado: this.estadoDe(c),
-      enlace: null,
+      enlace: c.enlace ?? null,
       porcentajeDescuento: c.porcentajeDescuento,
+      tieneQr: c.tieneQr,
+      marcaLogoUrl: normalizarUrlImagen(c.marcaLogoUrl),
     };
   }
 

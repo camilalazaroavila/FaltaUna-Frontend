@@ -53,11 +53,22 @@
 
     <!-- Título + buscador y filtros -->
     <div class="mt-2 flex flex-wrap items-center gap-x-6 gap-y-3 sm:gap-x-10">
-      <h1
-        class="titulo-cupones font-titulo text-3xl uppercase tracking-[0.04em] sm:text-3xl"
-      >
-        Tus cupones
-      </h1>
+      <div class="flex items-baseline gap-2">
+        <h1
+          class="titulo-cupones font-titulo text-3xl uppercase tracking-[0.04em] sm:text-3xl"
+        >
+          Tus cupones
+        </h1>
+
+        @if (!cargando() && cuponesFiltrados().length > 0) {
+          <span
+            class="font-interfaz text-xs font-bold text-(--crema)/70"
+            aria-live="polite"
+          >
+            {{ cuponesFiltrados().length }} {{ cuponesFiltrados().length === 1 ? 'cupón' : 'cupones' }}
+          </span>
+        }
+      </div>
 
       <!-- Buscador y filtros de cupones propios -->
       <div
@@ -388,11 +399,9 @@
           {{ cupon.codigo }}
         </p>
 
-        @if (tokenQr(); as token) {
-          <p class="mt-1 break-all font-interfaz text-xs text-texto-secundario">
-            Token de canje: <span class="font-bold">{{ token }}</span>
-          </p>
-        }
+        <p class="mt-1 break-all font-interfaz text-xs text-texto-secundario">
+          Código de canje: <span class="font-bold">{{ cupon.codigo }}</span>
+        </p>
 
         <p class="mt-3 font-interfaz text-sm font-bold text-marca-primaria">
           @if (cupon.enlace) {

@@ -244,7 +244,7 @@ describe('UsuarioCupones', () => {
 
     expect(sonido.precargar).toHaveBeenCalledWith('sonidos/canje.mp3');
 
-    (raiz.querySelector('ul button.sello') as HTMLButtonElement).click();
+    (raiz.querySelector('ul button.cupon') as HTMLButtonElement).click();
 
     expect(sonido.reproducir).toHaveBeenCalledWith('sonidos/canje.mp3');
   });

@@ -51,6 +51,8 @@ export interface CuponDescuento {
   enlace: string | null;
   /** Porcentaje de descuento, si el backend lo informa (se muestra como "20% OFF"). */
   porcentajeDescuento?: number;
+  tieneQr?: boolean;
+  marcaLogoUrl?: string | null;
 }
 
 /** El backend identifica el cupón del usuario por el token de su QR (no por el código del cupón). */
@@ -73,6 +75,8 @@ export interface MiCuponApi {
   fechaObtencion: string;
   fechaUso: string | null;
   tieneQr: boolean;
+  marcaLogoUrl?: string | null;
+  enlace?: string | null;
 }
 
 /** Respuesta cruda de GET /Cupones/{cuponId}/qr. */
