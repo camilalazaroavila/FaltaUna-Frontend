@@ -4,6 +4,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  computed,
   inject,
   input,
   signal,
@@ -30,10 +31,12 @@ import {
         </div>
       </div>
 
-      <!-- BARRA PERSONALIZADA: carril amarillo ancho + tirador verde fino y centrado.
-           Es siempre visible: sin nada que desplazar, el tirador ocupa todo el carril. -->
+      <!-- BARRA PERSONALIZADA: carril amarillo ancho + tirador fino y centrado.
+           Es contextual: solo aparece cuando hay contenido que desplazar. -->
       <div
+        data-barra
         class="w-8 sm:w-10 2xl:w-12 h-full shrink-0 py-2 pl-1 select-none"
+        [class.hidden]="!hayScroll()"
         aria-hidden="true"
       >
         <div class="h-full w-full rounded-xl bg-[#f9f9b2] shadow-md px-1 py-2 2xl:py-3">
@@ -41,7 +44,8 @@ import {
           <div class="relative h-full w-full">
             <div
               data-thumb
-              class="absolute left-1/2 w-[36%] -translate-x-1/2 rounded-full bg-[#0d3b40] transition-[height] duration-200"
+              class="absolute left-1/2 w-[36%] -translate-x-1/2 rounded-full transition-[height] duration-200"
+              [style.background-color]="colorTirador()"
               [style.height.%]="alturaThumb()"
               [style.top.%]="posicionThumb()"
             ></div>
@@ -64,6 +68,8 @@ import {
 })
 export class PanelDesplazable implements AfterViewInit {
   readonly clasesExtra = input<string>('');
+  /** Color del tirador. Por defecto, el mismo fondo oscuro del panel (contextual). */
+  readonly colorTirador = input<string>('#082226');
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
@@ -73,6 +79,8 @@ export class PanelDesplazable implements AfterViewInit {
   protected readonly alturaThumb = signal<number>(100);
   /** Distancia desde arriba en % del carril. */
   protected readonly posicionThumb = signal<number>(0);
+  /** Verdadero solo cuando hay contenido que desplazar. */
+  protected readonly hayScroll = computed(() => this.alturaThumb() < 100);
 
   ngAfterViewInit(): void {
     this.onScroll();

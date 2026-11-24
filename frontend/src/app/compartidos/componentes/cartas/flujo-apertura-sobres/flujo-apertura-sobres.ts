@@ -20,6 +20,7 @@ import type { SobreInventarioUsuario, SobreAbiertoUsuario } from '@servicios/sob
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
 import type { VarianteSobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
+import { PanelDesplazable } from '@compartidos/componentes/controles/panel-desplazable/panel-desplazable';
 import {
   AperturaSobreRespuesta,
   CartaObtenidaRespuesta,
@@ -38,6 +39,9 @@ import {
 } from '@modelos/catalogo-cartas-imagenes';
 
 export type FaseApertura = 'cerrado' | 'seleccion' | 'preview' | 'carrusel' | 'corte' | 'revelacion';
+
+/** Filtro de la grilla de selección por tipo de sobre ('todos' = sin filtrar). */
+export type FiltroTipoSobre = 'todos' | 'GENERAL' | 'CATEGORIA' | 'MARCA';
 
 /** Inputs de `app-sobre-marca` que corresponden a un sobre del flujo. */
 export interface PropsSobre {
@@ -125,7 +129,7 @@ const CLIP_INFERIOR = `inset(${LINEA_CORTE}% 0 0 0)`;
 @Component({
   selector: 'app-flujo-apertura-sobres',
   standalone: true,
-  imports: [NgTemplateOutlet, CartaComponent, SobreMarca],  /* agregar PanelDesplazable si se agrega despues*/
+  imports: [NgTemplateOutlet, CartaComponent, SobreMarca, PanelDesplazable],
   templateUrl: './flujo-apertura-sobres.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -324,6 +328,9 @@ export class FlujoAperturaSobres {
     }
   }
 
+  /** Tipo de sobre por el que se filtra la grilla de selección ('todos' = sin filtrar). */
+  protected readonly filtroTipo = signal<FiltroTipoSobre>('todos');
+
   protected readonly listaSobresUI = computed<SobreItemUI[]>(() => {
     const catalogo = this.sobresCatalogo();
     const diarios = this.sobresDiariosDisponibles();
@@ -404,6 +411,19 @@ export class FlujoAperturaSobres {
 
     return items;
   });
+
+  /** La grilla filtrada por el tipo de sobre elegido; 'todos' devuelve la lista completa. */
+  protected readonly listaSobresFiltrada = computed<SobreItemUI[]>(() => {
+    const filtro = this.filtroTipo();
+    const lista = this.listaSobresUI();
+    if (filtro === 'todos') return lista;
+    return lista.filter((sobre) => sobre.tipo === filtro);
+  });
+
+  /** Cambia el filtro de tipo de la grilla de selección. */
+  cambiarFiltroTipo(tipo: FiltroTipoSobre): void {
+    this.filtroTipo.set(tipo);
+  }
 
   // Los 8 sobres distribuidos circularmente e infinitos alrededor del centro
   protected readonly sobresCarrusel = computed(() => {

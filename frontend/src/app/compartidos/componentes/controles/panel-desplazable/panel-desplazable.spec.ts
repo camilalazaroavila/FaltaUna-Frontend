@@ -36,9 +36,11 @@ describe('PanelDesplazable Component', () => {
     expect(panel.classList.contains('max-h-96')).toBe(true);
   });
 
-  it('debe mostrar el tirador ocupando todo el carril cuando no hay nada que desplazar', () => {
+  it('debe ocultar la barra cuando no hay nada que desplazar', () => {
+    const barra = fixture.nativeElement.querySelector('[data-barra]') as HTMLElement;
     const thumb = fixture.nativeElement.querySelector('[data-thumb]') as HTMLElement;
-    expect(thumb).not.toBeNull();
+    expect(barra).not.toBeNull();
+    expect(barra.classList.contains('hidden')).toBe(true);
     expect(thumb.style.height).toBe('100%');
     expect(thumb.style.top).toBe('0%');
   });
