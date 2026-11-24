@@ -62,6 +62,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         cartaId: 12,
         nombre: 'Golden Run',
         poder: 9,
+        costeTicket: 6,
         costoCupon: 6,
         rarezaId: 4,
         rareza: 'Legendaria',
@@ -72,6 +73,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         cartaId: 10,
         nombre: 'Aura Urban Pack',
         poder: 6,
+        costeTicket: 4,
         costoCupon: 4,
         rarezaId: 3,
         rareza: 'Épica',
@@ -82,6 +84,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         cartaId: 34,
         nombre: 'Royal de Chocolate y Rosa',
         poder: 8,
+        costeTicket: 5,
         costoCupon: 5,
         rarezaId: 3,
         rareza: 'Épica',
@@ -102,6 +105,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         cartaId: 24,
         nombre: 'Harmony Sound DJ Controller',
         poder: 10,
+        costeTicket: 6,
         costoCupon: 6,
         rarezaId: 4,
         rareza: 'Legendaria',
@@ -115,6 +119,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         cartaId: 11,
         nombre: 'Aura Weekender',
         poder: 8,
+        costeTicket: 5,
         costoCupon: 5,
         rarezaId: 3,
         rareza: 'Épica',
@@ -125,6 +130,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         cartaId: 35,
         nombre: 'Tarta Mousse Frutos del Bosque',
         poder: 6,
+        costeTicket: 4,
         costoCupon: 4,
         rarezaId: 3,
         rareza: 'Épica',
@@ -145,6 +151,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         cartaId: 36,
         nombre: 'Croquembouche Imperial de Caramelo',
         poder: 10,
+        costeTicket: 6,
         costoCupon: 6,
         rarezaId: 4,
         rareza: 'Legendaria',
@@ -158,6 +165,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         cartaId: 25,
         nombre: 'Harmony Sound Retro Mic',
         poder: 7,
+        costeTicket: 4,
         costoCupon: 4,
         rarezaId: 3,
         rareza: 'Épica',
@@ -171,6 +179,7 @@ const MAZOS_BIENVENIDA_RESPALDO: readonly MazoApi[] = [
         cartaId: 15,
         nombre: 'Aura High-Top Blanco',
         poder: 5,
+        costeTicket: 3,
         costoCupon: 3,
         rarezaId: 2,
         rareza: 'Rara',
@@ -330,6 +339,9 @@ export class UsuarioDashboard implements OnInit {
     const yaVisto = localStorage.getItem(this.claveBienvenidaMazos());
     if (yaVisto === 'true') return;
 
+    this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
+    this.mostrarBienvenida();
+
     if (this.barajaService) {
       this.barajaService.obtenerMazos().subscribe({
         next: (mazos) => {
@@ -337,19 +349,12 @@ export class UsuarioDashboard implements OnInit {
             this.mazosBienvenida.set(
               mazos.slice(0, 3).map((mazo, idx) => this.adaptarMazoParaBienvenida(mazo, idx)),
             );
-          } else {
-            this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
           }
-          this.mostrarBienvenida();
         },
         error: () => {
-          this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
-          this.mostrarBienvenida();
+          // El popout ya se mostró; si falla la carga, quedan los mazos de respaldo.
         },
       });
-    } else {
-      this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
-      this.mostrarBienvenida();
     }
   }
 

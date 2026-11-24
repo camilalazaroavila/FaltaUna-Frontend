@@ -23,6 +23,7 @@ const cartaApi = (overrides: Partial<CartaApi> = {}): CartaApi => ({
   nombre: 'Super Grido',
   descripcion: null,
   poder: 9,
+  costeTicket: 2,
   costoCupon: 2,
   rareza: 'Común',
   categoria: 'Comida',
@@ -38,6 +39,8 @@ const jugadorApi = (overrides: Partial<JugadorPartidaApi> = {}): JugadorPartidaA
   avatarUrl: null,
   esBot: false,
   puntosTotales: 10,
+  ticketsActuales: 3,
+  ticketsMaximos: 1,
   cuponActual: 3,
   cuponMaximo: 1,
   listo: false,
@@ -124,6 +127,8 @@ const resultadoApi = (overrides: Partial<ResultadoRondaApi> = {}): ResultadoRond
   puntosTotalesRival: 14,
   zonasNuevas: [zonaApi(20, 'izquierda', 'Sony', 0, 0, 'empate')],
   cartaRobada: null,
+  ticketsNuevoPropio: 2,
+  ticketsNuevoRival: 2,
   cuponNuevoPropio: 2,
   cuponNuevoRival: 2,
   fin: null,
@@ -282,7 +287,7 @@ describe('PartidaServicio', () => {
       expect(servicio.jugarCarta(cartaDeMano(), 'izquierda', 2)).toBe(true);
       expect(servicio.lugares().izquierda.propio[2]?.cartaId).toBe(100);
       expect(servicio.manoPropia()).toHaveLength(1);
-      expect(servicio.cuponesPropio()).toBe(1);
+      expect(servicio.ticketsPropio()).toBe(1);
 
       respuesta.next(
         estadoApi({
@@ -298,14 +303,14 @@ describe('PartidaServicio', () => {
             },
           ],
           manoPropia: [estadoApi().manoPropia[1]],
-          jugadorPropio: jugadorApi({ cuponActual: 1 }),
+          jugadorPropio: jugadorApi({ ticketsActuales: 1, cuponActual: 1 }),
         }),
       );
       respuesta.complete();
 
       expect(servicio.lugares().izquierda.propio[2]?.cartaId).toBe(100);
       expect(servicio.manoPropia()).toHaveLength(1);
-      expect(servicio.cuponesPropio()).toBe(1);
+      expect(servicio.ticketsPropio()).toBe(1);
       expect(servicio.enviandoCarta()).toBe(false);
     });
 
@@ -394,14 +399,14 @@ describe('PartidaServicio', () => {
     it('muestra el error del servidor sin dejar cambios locales', () => {
       iniciar();
       partidaApi.jugarCarta.mockReturnValue(
-        throwError(() => ({ status: 400, error: { mensaje: 'No tenés cupones suficientes.' } })),
+        throwError(() => ({ status: 400, error: { mensaje: 'No tenés tickets suficientes para esta carta' } })),
       );
 
       expect(servicio.jugarCarta(cartaDeMano(), 'izquierda', 2)).toBe(true);
 
       expect(servicio.lugares().izquierda.propio[2]).toBeNull();
       expect(servicio.manoPropia()).toHaveLength(2);
-      expect(servicio.error()).toBe('No tenés cupones suficientes.');
+      expect(servicio.error()).toBe('No tenés tickets suficientes para esta carta');
       expect(servicio.enviandoCarta()).toBe(false);
     });
 
@@ -413,7 +418,7 @@ describe('PartidaServicio', () => {
           estadoApi({
             ronda: 2,
             ultimoResultado: resultadoApi(),
-            jugadorPropio: jugadorApi({ cuponActual: 2, cuponMaximo: 2 }),
+            jugadorPropio: jugadorApi({ ticketsActuales: 2, ticketsMaximos: 2, cuponActual: 2, cuponMaximo: 2 }),
           }),
         ),
       );
@@ -996,7 +1001,7 @@ describe('PartidaServicio', () => {
   describe('Cola secuencial de jugadas y resincronización de polling', () => {
     it('envía las jugadas en orden secuencial sin llamadas concurrentes', () => {
       const estadoInicial = estadoApi({
-        jugadorPropio: jugadorApi({ cuponActual: 10 }),
+        jugadorPropio: jugadorApi({ ticketsActuales: 10, cuponActual: 10 }),
         manoPropia: [
           { cartaPartidaId: 11, carta: cartaApi({ cartaId: 100, costoCupon: 2 }), jugable: true },
           { cartaPartidaId: 12, carta: cartaApi({ cartaId: 101, costoCupon: 2 }), jugable: true },
@@ -1040,7 +1045,7 @@ describe('PartidaServicio', () => {
 
     it('finalizar el turno espera a que la cola de jugadas esté vacía antes de enviarse', () => {
       const estadoInicial = estadoApi({
-        jugadorPropio: jugadorApi({ cuponActual: 10 }),
+        jugadorPropio: jugadorApi({ ticketsActuales: 10, cuponActual: 10 }),
         manoPropia: [
           { cartaPartidaId: 11, carta: cartaApi({ cartaId: 100, costoCupon: 2 }), jugable: true },
           { cartaPartidaId: 12, carta: cartaApi({ cartaId: 101, costoCupon: 2 }), jugable: true },
@@ -1083,7 +1088,7 @@ describe('PartidaServicio', () => {
 
     it('el rechazo de una jugada revierte solo esa carta y no afecta a las demás', () => {
       const estadoInicial = estadoApi({
-        jugadorPropio: jugadorApi({ cuponActual: 10 }),
+        jugadorPropio: jugadorApi({ ticketsActuales: 10, cuponActual: 10 }),
         manoPropia: [
           { cartaPartidaId: 11, carta: cartaApi({ cartaId: 100, costoCupon: 2, poder: 5 }), jugable: true },
           { cartaPartidaId: 12, carta: cartaApi({ cartaId: 101, costoCupon: 3, poder: 7 }), jugable: true },
@@ -1117,7 +1122,7 @@ describe('PartidaServicio', () => {
 
     it('descarta respuestas de polling que se originaron antes de una jugada', () => {
       const estadoInicial = estadoApi({
-        jugadorPropio: jugadorApi({ cuponActual: 10 }),
+        jugadorPropio: jugadorApi({ ticketsActuales: 10, cuponActual: 10 }),
         manoPropia: [
           { cartaPartidaId: 11, carta: cartaApi({ cartaId: 100, costoCupon: 2 }), jugable: true },
         ],
@@ -1155,7 +1160,7 @@ describe('PartidaServicio', () => {
 
     it('segunda jugada idéntica ignorada sin llamar dos veces a la API', () => {
       const estadoInicial = estadoApi({
-        jugadorPropio: jugadorApi({ cuponActual: 10 }),
+        jugadorPropio: jugadorApi({ ticketsActuales: 10, cuponActual: 10 }),
         manoPropia: [
           { cartaPartidaId: 11, carta: cartaApi({ cartaId: 100, costoCupon: 2 }), jugable: true },
         ],
@@ -1176,7 +1181,7 @@ describe('PartidaServicio', () => {
 
     it('rechazo por carta que no está en la mano dispara resincronización y mantiene la carta en mesa si el servidor ya la tenía', () => {
       const estadoInicial = estadoApi({
-        jugadorPropio: jugadorApi({ cuponActual: 10 }),
+        jugadorPropio: jugadorApi({ ticketsActuales: 10, cuponActual: 10 }),
         manoPropia: [
           { cartaPartidaId: 11, carta: cartaApi({ cartaId: 100, costoCupon: 2 }), jugable: true },
         ],
@@ -1216,7 +1221,7 @@ describe('PartidaServicio', () => {
 
     it('carta solo vuelve a la mano si el servidor confirma tras resincronizar que sigue en la mano', () => {
       const estadoInicial = estadoApi({
-        jugadorPropio: jugadorApi({ cuponActual: 10 }),
+        jugadorPropio: jugadorApi({ ticketsActuales: 10, cuponActual: 10 }),
         manoPropia: [
           { cartaPartidaId: 11, carta: cartaApi({ cartaId: 100, costoCupon: 2 }), jugable: true },
         ],
@@ -1226,7 +1231,7 @@ describe('PartidaServicio', () => {
       partidaApi.jugarCarta.mockReturnValue(
         throwError(() => ({
           status: 400,
-          error: { mensaje: 'No tenés cupones suficientes.' },
+          error: { mensaje: 'No tenés tickets suficientes para esta carta' },
         })),
       );
 
@@ -1238,7 +1243,7 @@ describe('PartidaServicio', () => {
       expect(partidaApi.obtenerEstado).toHaveBeenCalledWith(7);
       expect(servicio.lugares().izquierda.propio[0]).toBeNull();
       expect(servicio.manoPropia().some((c) => c.cartaPartidaId === 11)).toBe(true);
-      expect(servicio.error()).toBe('No tenés cupones suficientes.');
+      expect(servicio.error()).toBe('No tenés tickets suficientes para esta carta');
     });
 
     it('traduce los efectos de categoría de la zona a partir del contrato', () => {

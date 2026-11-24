@@ -118,7 +118,7 @@
           [attr.aria-label]="item.mazo.nombre + (item.completo ? ', mazo completo' : ', incompleto: ' + item.motivoIncompleto)"
           (keydown)="manejarTeclado($event, idx)"
           (click)="seleccionar(item)"
-          class="tarjeta-mazo group relative flex flex-col justify-between gap-2.5 rounded-2xl border-2 p-3.5 transition-all outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+          class="tarjeta-mazo group relative flex flex-col justify-between gap-2.5 rounded-2xl border-2 p-3.5 transition-all outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco sm:only:col-span-2 sm:only:w-3/4 sm:only:justify-self-center"
           [class.tarjeta-mazo--seleccionada]="seleccionado"
           [class.tarjeta-mazo--incompleta]="!item.completo"
           [class.cursor-pointer]="item.completo"

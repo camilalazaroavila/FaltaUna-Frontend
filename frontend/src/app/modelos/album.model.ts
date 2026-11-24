@@ -125,7 +125,8 @@ export interface ImagenAlbumRespuesta {
   descripcion: string | null;
   rareza: string;
   poder: number;
-  costoCupon: number;
+  costeTicket?: number;
+  costoCupon?: number;
   totalObtenidas?: number;
   totalFavoritos?: number;
   totalIntercambios?: number;

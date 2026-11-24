@@ -89,12 +89,12 @@ describe('UsuarioCupones', () => {
 
   it('ignora una categoría inválida y conserva la de por defecto', async () => {
     await montar('inexistente');
-    expect(activa()).toBe('gastronomia');
+    expect(activa()).toBeNull();
   });
 
   it('reacciona a cambios posteriores del parámetro de categoría', async () => {
     await montar(null);
-    expect(activa()).toBe('gastronomia');
+    expect(activa()).toBeNull();
 
     params.next(convertToParamMap({ categoria: 'indumentaria' }));
     fixture.detectChanges();
@@ -244,7 +244,7 @@ describe('UsuarioCupones', () => {
 
     expect(sonido.precargar).toHaveBeenCalledWith('sonidos/canje.mp3');
 
-    (raiz.querySelector('ul button.sello') as HTMLButtonElement).click();
+    (raiz.querySelector('ul button.cupon') as HTMLButtonElement).click();
 
     expect(sonido.reproducir).toHaveBeenCalledWith('sonidos/canje.mp3');
   });
@@ -259,7 +259,7 @@ describe('UsuarioCupones', () => {
       raiz.querySelectorAll<HTMLButtonElement>('#menu-categorias-cupones button'),
     );
 
-    expect(botones).toHaveLength(7);
+    expect(botones).toHaveLength(8);
     expect(
       botones.filter((b) => b.getAttribute('aria-pressed') === 'true'),
     ).toHaveLength(1);
@@ -276,7 +276,7 @@ describe('UsuarioCupones', () => {
 
     const raiz: HTMLElement = fixture.nativeElement;
 
-    expect(activa()).toBe('gastronomia');
+    expect(activa()).toBeNull();
 
     (
       raiz.querySelector(

@@ -39,7 +39,8 @@ export interface CartaAlbum {
   readonly categoria: CategoriaCarta;
   /** `Carta.Poder` del backend (atributo izquierdo del componente `app-carta`). */
   readonly poder: number;
-  /** `Carta.costoCupon` del backend (atributo derecho del componente `app-carta`). */
+  /** `Carta.costeTicket` del backend (atributo derecho del componente `app-carta`). */
+  readonly costeTicket?: number;
   readonly costoCupon: number;
   readonly obtenida: boolean;
   readonly cantidad: number;
@@ -103,7 +104,7 @@ export function cartaAlbumACarta(carta: CartaAlbum): Carta {
     rareza: carta.rareza,
     categoria: carta.categoria,
     atributoIzquierdo: carta.poder,
-    atributoDerecho: carta.costoCupon,
+    atributoDerecho: carta.costeTicket ?? carta.costoCupon,
     cantidad: carta.cantidad,
     obtenida: carta.obtenida,
   };

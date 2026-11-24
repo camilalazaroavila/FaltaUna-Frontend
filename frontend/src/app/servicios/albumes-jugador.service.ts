@@ -38,7 +38,8 @@ interface AlbumCartaApi {
   readonly rarezaOrden: number;
   readonly categoria: string | null;
   readonly poder: number;
-  readonly costoCupon: number;
+  readonly costeTicket?: number;
+  readonly costoCupon?: number;
   readonly cantidad: number;
   readonly obtenida: boolean;
   readonly favorita: boolean;
@@ -78,7 +79,8 @@ const mapearCarta = (carta: AlbumCartaApi): CartaAlbum => ({
   rareza: rarezaDesdeNombre(carta.rareza),
   categoria: categoriaCartaDesdeNombre(carta.categoria) ?? CATEGORIA_POR_DEFECTO,
   poder: carta.poder,
-  costoCupon: carta.costoCupon,
+  costeTicket: carta.costeTicket ?? carta.costoCupon ?? 0,
+  costoCupon: carta.costeTicket ?? carta.costoCupon ?? 0,
   obtenida: carta.obtenida,
   cantidad: carta.cantidad,
   favorita: carta.favorita,

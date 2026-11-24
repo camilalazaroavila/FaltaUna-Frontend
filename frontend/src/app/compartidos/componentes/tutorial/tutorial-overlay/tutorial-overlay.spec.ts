@@ -43,7 +43,7 @@ describe('TutorialOverlay', () => {
     botonConTexto(host, 'Siguiente')?.click();
     fixture.detectChanges();
 
-    expect(host.querySelector('#tutorial-titulo')?.textContent).toContain('Los cupones');
+    expect(host.querySelector('#tutorial-titulo')?.textContent).toContain('Los tickets');
   });
 
   it('bloquea Siguiente en un paso con acción hasta que llega el evento', () => {
@@ -96,7 +96,7 @@ describe('TutorialOverlay', () => {
 
     expect(host.querySelector('.tutorial--vista-previa')).not.toBeNull();
     expect(botonConTexto(host, 'Salir')).toBeUndefined();
-    expect(host.querySelector('#tutorial-titulo')?.textContent).toContain('Los cupones');
+    expect(host.querySelector('#tutorial-titulo')?.textContent).toContain('Los tickets');
   });
 
   it('el overlay en vistaPrevia no reproduce sonidos', () => {

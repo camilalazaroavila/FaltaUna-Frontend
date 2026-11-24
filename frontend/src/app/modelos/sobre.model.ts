@@ -20,6 +20,7 @@ export interface CartaObtenidaRespuesta {
   readonly imagenUrl?: string | null;
   readonly rareza?: string | null;
   readonly poder?: number | null;
+  readonly costeTicket?: number | null;
   readonly costoMana?: number | null;
   readonly categoria?: string | null;
   readonly marca?: string | null;

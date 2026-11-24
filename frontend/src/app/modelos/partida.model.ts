@@ -136,7 +136,8 @@ export interface CartaApi {
   readonly nombre: string;
   readonly descripcion: string | null;
   readonly poder: number;
-  readonly costoCupon: number;
+  readonly costoCupon?: number;
+  readonly costeTicket?: number;
   readonly rareza: string;
   readonly categoria: string;
   readonly imagenUrl: string | null;
@@ -170,8 +171,10 @@ export interface JugadorPartidaApi {
   readonly avatarUrl: string | null;
   readonly esBot: boolean;
   readonly puntosTotales: number;
-  readonly cuponActual: number;
-  readonly cuponMaximo: number;
+  readonly cuponActual?: number;
+  readonly cuponMaximo?: number;
+  readonly ticketsActuales?: number;
+  readonly ticketsMaximos?: number;
   readonly listo: boolean;
   readonly cartasEnMano: number;
   readonly cartasEnMazo: number;
@@ -241,8 +244,10 @@ export interface ResultadoRondaApi {
   readonly puntosTotalesRival: number;
   readonly zonasNuevas: readonly ZonaPartidaApi[];
   readonly cartaRobada: CartaEnManoApi | null;
-  readonly cuponNuevoPropio: number;
-  readonly cuponNuevoRival: number;
+  readonly cuponNuevoPropio?: number;
+  readonly cuponNuevoRival?: number;
+  readonly ticketsNuevoPropio?: number;
+  readonly ticketsNuevoRival?: number;
   readonly fin: ResultadoPartidaApi | null;
 }
 
