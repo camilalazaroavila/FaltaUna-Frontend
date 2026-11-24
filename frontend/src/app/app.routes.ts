@@ -92,6 +92,14 @@ export const routes: Routes = [
       import('@paginas/usuario-cupones/usuario-cupones').then((m) => m.UsuarioCupones),
   },
   {
+    path: 'usuario/canjear-codigo',
+    title: 'Canjear código · Falta Una',
+    canActivate: [rolGuard],
+    data: { rolesPermitidos: ['Usuario'] },
+    loadComponent: () =>
+      import('@paginas/canjear-codigo/canjear-codigo').then((m) => m.CanjearCodigo),
+  },
+  {
     path: 'usuario/mis-cartas',
     title: 'Mis cartas · Falta Una',
     canActivate: [rolGuard],

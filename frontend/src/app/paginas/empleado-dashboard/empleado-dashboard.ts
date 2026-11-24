@@ -14,6 +14,7 @@ import { AuthService } from '@servicios/auth.service';
 import { CuponesService } from '@servicios/cupones.service';
 import { CanjeErrorRespuesta, CanjeExitosoRespuesta, CuponValidado } from '@modelos/cupon.model';
 import { ModalResultado } from '@compartidos/componentes/modal-resultado/modal-resultado';
+import { GeneradorCodigoSobre } from '@compartidos/componentes/empleado/generador-codigo-sobre/generador-codigo-sobre';
 
 import urlLogo from '@svgs/Imagotipo_claro.svg';
 
@@ -38,7 +39,7 @@ type ConstructorDetector = new (opciones: { formats: string[] }) => DetectorBarc
 @Component({
   selector: 'app-empleado-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe, ModalResultado],
+  imports: [RouterLink, DatePipe, ModalResultado, GeneradorCodigoSobre],
   templateUrl: './empleado-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown.escape)': 'cerrarModales()' },

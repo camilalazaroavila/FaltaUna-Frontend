@@ -193,13 +193,13 @@ describe('UsuarioDashboard Component', () => {
     expect(mockAuthService.logout).toHaveBeenCalled();
   });
 
-  it('no debe navegar ni cambiar sección activa si el destino está deshabilitado (canje)', () => {
+  it('debe navegar a la pantalla de canje al seleccionar su destino del dock', () => {
     const router = TestBed.inject(Router);
     const navigateSpy = jest.spyOn(router, 'navigateByUrl');
 
     component.seleccionarSeccion('qr');
-    expect(component['seccionActiva']()).toBeNull();
-    expect(navigateSpy).not.toHaveBeenCalled();
+    expect(component['seccionActiva']()).toBe('qr');
+    expect(navigateSpy).toHaveBeenCalledWith('/usuario/canjear-codigo');
   });
 
   it('debe navegar a Intercambio al seleccionar su destino del dock', () => {
