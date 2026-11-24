@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Preview Cartas Jaime</title>
+  <style>
+    body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .card { background: #2a2a2a; border-radius: 8px; overflow: hidden; padding: 10px; border: 1px solid #444; }
+    .card img { width: 100%; aspect-ratio: 1366 / 1410; object-fit: contain; background: #111; border-radius: 4px; }
+    .title { font-weight: bold; margin-top: 8px; font-size: 14px; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h1>Ilustraciones de Jaime / Falta Una</h1>
+  <div class="grid" id="grid"></div>
+  <script>
+    const images = [
+      "gatito brillito.png",
+      "jaime  doomscrolling.png",
+      "jaime alien.png",
+      "jaime developer.png",
+      "jaime fanatico del coleccionismo.png",
+      "jaime gymbro.png",
+      "jaime levantando el dedo.png",
+      "jaime obsesionado.png",
+      "jaime optimista.png",
+      "jaime re piolita.png",
+      "jaime ricachon.png",
+      "jaime sapo pepe.png",
+      "jaime six seven.png",
+      "jaime skibidi.png",
+      "jaime te de matcha.png",
+      "jaime uwu.png",
+      "Jaime ¿banana.png",
+      "nao nao.png",
+      "reflexion para casa.png",
+      "SOMOS FALTA.png",
+      "cara seria.webp",
+      "comiendo hamburguesa.webp",
+      "fritas.webp",
+      "jaime-vans.webp",
+      "sale GTA 6.webp",
+      "gatito monoculo.png",
+      "gatito señalando.jpg",
+      "gatito y robot.png",
+      "Gato astuto con cartas  para jugar.png",
+      "Gato tramposo invita a jugar.png",
+      "jaime diciendo no.png",
+      "jaime diciendo si.png"
+    ];
+
+    const grid = document.getElementById('grid');
+    for (const img of images) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="/imagenes/gatito/${encodeURIComponent(img)}" alt="${img}">
+        <div class="title">${img}</div>
+      `;
+      grid.appendChild(card);
+    }
+  </script>
+</body>
+</html>
