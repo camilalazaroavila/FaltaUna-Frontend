@@ -115,6 +115,9 @@ export interface CartaIntercambioApi {
   readonly cartaRareza: string;
   readonly imagenUrl?: string | null;
   readonly cartaImagenUrl?: string | null;
+  readonly atributoDerecho?: number;
+  readonly atributoIzquierdo?: number;
+  readonly categoria?: string;
 }
 
 /**

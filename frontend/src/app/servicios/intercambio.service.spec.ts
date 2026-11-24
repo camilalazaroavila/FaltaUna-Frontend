@@ -208,6 +208,59 @@ describe('IntercambioService', () => {
     });
   });
 
+  it('debe mapear correctamente favoritas con la forma real de CartaObtenidaRespuesta', (done) => {
+    // El backend retorna CartaObtenidaRespuesta: cartaId, nombre, cantidad, imagenUrl, rareza, poder, costeTicket, categoria
+    // sin rarezaOrden, sin rarezaId, sin categoriaId, sin descripcion
+    const favoritasApi = [
+      {
+        cartaId: 101,
+        nombre: 'Guacamole Supremo',
+        cantidad: 1,
+        imagenUrl: null,
+        rareza: 'Legendaria',
+        poder: 5,
+        costeTicket: 3,
+        categoria: 'gastronomia',
+      },
+    ];
+
+    apiMock.get.mockReturnValue(of(favoritasApi));
+
+    service.obtenerCartasFavoritasDeColeccionista(5).subscribe((favoritas) => {
+      expect(favoritas.length).toBe(1);
+      expect(favoritas[0].id).toBe('101');
+      expect(favoritas[0].atributoDerecho).toBe(5);
+      expect(favoritas[0].atributoIzquierdo).toBe(3);
+      expect(favoritas[0].rareza).toBe('legendaria');
+      done();
+    });
+  });
+
+  it('debe mostrar numeros reales cuando rareza/categoria vienen nulos desde el backend', (done) => {
+    // Si el backend no incluye navegaciones, rareza y categoria pueden venir null
+    const favoritasApi = [
+      {
+        cartaId: 101,
+        nombre: 'Guacamole Supremo',
+        cantidad: 1,
+        imagenUrl: null,
+        rareza: null,
+        poder: 8,
+        costeTicket: 4,
+        categoria: null,
+      },
+    ];
+
+    apiMock.get.mockReturnValue(of(favoritasApi));
+
+    service.obtenerCartasFavoritasDeColeccionista(5).subscribe((favoritas) => {
+      expect(favoritas.length).toBe(1);
+      expect(favoritas[0].atributoDerecho).toBe(8);
+      expect(favoritas[0].atributoIzquierdo).toBe(4);
+      done();
+    });
+  });
+
   it('debe crear un intercambio enviando la solicitud correcta por POST', (done) => {
     const respuestaMock = {
       id: 55,
