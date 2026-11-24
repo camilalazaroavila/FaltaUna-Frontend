@@ -1,3 +1,61 @@
 :host {
   display: block;
 }
+
+/* Optimización para laptops de resolución 1366x768 (rango 1280px a 1535px) y viewports compactos */
+@media (min-width: 1280px) and (max-width: 1535px), (min-width: 1280px) and (max-height: 820px) {
+  .hero-empresa-seccion {
+    padding-top: 1.25rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  .hero-empresa-contenedor {
+    align-items: center !important;
+  }
+
+  .hero-empresa-col-izq {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+
+  .hero-empresa-titulo {
+    font-size: 3.35rem !important;
+    line-height: 1.05 !important;
+  }
+
+  .hero-empresa-descripcion {
+    margin-top: 0.875rem !important;
+    font-size: 1.0625rem !important;
+    line-height: 1.45 !important;
+    max-width: 30rem !important;
+  }
+
+  .hero-empresa-boton-wrapper {
+    margin-top: 1.5rem !important;
+  }
+
+  .hero-empresa-col-der {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+  }
+
+  .hero-empresa-imagen-wrapper {
+    width: 100% !important;
+    max-width: 550px !important;
+    max-height: 385px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    transform: none !important;
+  }
+
+  .hero-empresa-imagen-wrapper img {
+    width: auto !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 385px !important;
+    object-fit: contain !important;
+  }
+}

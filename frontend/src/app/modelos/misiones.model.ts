@@ -233,22 +233,64 @@ export const mapearMision = (respuesta: MisionRespuesta): Mision => {
   };
 };
 
-/** Una fila del PT System: sobres abiertos de un tipo desde la última legendaria. */
-export interface ProgresoPity {
-  readonly id: string;
-  readonly sobre: SobreReferencia;
-  readonly abiertos: number;
+/** Tipos de contadores de pity soportados por el backend. */
+export const TIPOS_PITY_ORDEN = ['GENERAL', 'CATEGORIA', 'MARCA'] as const;
+export type TipoPity = (typeof TIPOS_PITY_ORDEN)[number];
+
+/** Contrato de `GET /api/Sobres/pity`. */
+export interface PityBackendRespuesta {
+  readonly tipo: string;
+  readonly contador: number;
   readonly umbral: number;
-  readonly imagenSvg?: string;
+  readonly sobresRestantes: number;
+  readonly porcentaje: number;
+  readonly garantizada: boolean;
 }
 
-export const faltantesPity = (p: Pick<ProgresoPity, 'abiertos' | 'umbral'>): number =>
-  Math.max(0, p.umbral - p.abiertos);
+/** Una fila del PT System: sobres abiertos de un tipo desde la última legendaria. */
+export interface ProgresoPity {
+  readonly tipo: TipoPity;
+  readonly contador: number;
+  readonly umbral: number;
+  readonly sobresRestantes: number;
+  readonly garantizada: boolean;
+}
+
+export const esTipoPityValido = (tipo: string): tipo is TipoPity =>
+  tipo === 'GENERAL' || tipo === 'CATEGORIA' || tipo === 'MARCA';
+
+export const faltantesPity = (p: Pick<ProgresoPity, 'contador' | 'umbral'>): number =>
+  Math.max(0, p.umbral - p.contador);
+
+/**
+ * Fila cercana a la garantía: al menos 75% completada pero aún no garantizada.
+ */
+export const estaCercaPity = (p: ProgresoPity): boolean =>
+  !p.garantizada && p.contador >= Math.ceil(p.umbral * 0.75);
+
+/**
+ * Mapea la respuesta del backend al modelo del frontend, filtrando tipos desconocidos
+ * y ordenando fijamente: GENERAL, CATEGORIA, MARCA.
+ */
+export const mapearPity = (respuestas: readonly PityBackendRespuesta[]): readonly ProgresoPity[] => {
+  const mapeados = respuestas
+    .filter((r) => esTipoPityValido(r.tipo))
+    .map((r) => ({
+      tipo: r.tipo as TipoPity,
+      contador: r.contador,
+      umbral: r.umbral,
+      sobresRestantes: r.sobresRestantes,
+      garantizada: r.garantizada,
+    }));
+
+  return mapeados.sort(
+    (a, b) => TIPOS_PITY_ORDEN.indexOf(a.tipo) - TIPOS_PITY_ORDEN.indexOf(b.tipo),
+  );
+};
 
 /**
  * Umbral de "¡Casi!" del PT System: una fila se destaca cuando le faltan estos
- * sobres o menos para la legendaria. Vive en una constante para no hardcodearlo
- * en la plantilla y para poder ajustarlo en un solo lugar.
+ * sobres o menos para la legendaria.
  */
 export const UMBRAL_CASI_PITY = 2;
 

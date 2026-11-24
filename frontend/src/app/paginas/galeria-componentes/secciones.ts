@@ -109,7 +109,7 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     id: 'partida',
     titulo: 'Partida',
     descripcion:
-      'Átomos de la pantalla de partida: casilla, contador de cupones, barra de puntos, chip de jugador, cabecera de turno y puntaje por zona.',
+      'Átomos de la pantalla de partida: casilla, contador de tickets, barra de puntos, chip de jugador, cabecera de turno y puntaje por zona.',
   },
   {
     id: 'navegacion-inferior-mobile',
@@ -122,6 +122,12 @@ export const SECCIONES: readonly SeccionGaleria[] = [
     titulo: 'Tarjeta de misión',
     descripcion:
       'Tarjeta compacta de app-tarjeta-mision en sus cuatro estados (en curso, lista para reclamar, reclamada y próximamente) comparada en modo jugador y empresa.',
+  },
+  {
+    id: 'tarjeta-pity',
+    titulo: 'Tarjeta del PT System',
+    descripcion:
+      'Tarjeta de progreso hacia la legendaria (app-tarjeta-pity) en sus tres estados (en progreso, cerca y garantizada).',
   },
   {
     id: 'barra-bono-misiones',

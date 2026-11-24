@@ -789,7 +789,7 @@ export class FlujoAperturaSobres {
           rareza: rarezaDesdeNombre(cartaBackend.rareza),
           categoria: categoriaCartaDesdeNombre(cartaBackend.categoria),
           atributoIzquierdo: cartaBackend.poder ?? 0,
-          atributoDerecho: cartaBackend.costoMana ?? 0,
+          atributoDerecho: (cartaBackend as { costeTicket?: number | null }).costeTicket ?? cartaBackend.costoMana ?? 0,
           obtenida: true,
         });
       }
@@ -801,7 +801,8 @@ export class FlujoAperturaSobres {
         imagenUrl: imagenResuelta || cartaBackend.imagenUrl,
         rareza: cartaBackend.rareza,
         poder: cartaBackend.poder,
-        costoMana: cartaBackend.costoMana,
+        costeTicket: (cartaBackend as { costeTicket?: number | null }).costeTicket ?? cartaBackend.costoMana,
+        costoMana: (cartaBackend as { costeTicket?: number | null }).costeTicket ?? cartaBackend.costoMana,
         categoria: cartaBackend.categoria,
       });
     }
@@ -818,6 +819,7 @@ export class FlujoAperturaSobres {
           imagenUrl: reemplazo.imagenUrl,
           rareza: reemplazo.rareza,
           poder: reemplazo.atributoIzquierdo,
+          costeTicket: reemplazo.atributoDerecho,
           costoMana: reemplazo.atributoDerecho,
           categoria: reemplazo.categoria,
         });

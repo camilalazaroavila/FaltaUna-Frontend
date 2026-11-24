@@ -39,6 +39,12 @@ export class BarraBonoMisiones {
 
   protected readonly reclamado = computed(() => Boolean(this.bono()?.reclamado));
 
+  protected readonly progresoRatio = computed(() => {
+    const b = this.bono();
+    if (!b || b.totalRequeridas <= 0) return 0;
+    return Math.min(1, Math.max(0, b.completadas / b.totalRequeridas));
+  });
+
   protected readonly segmentos = computed<readonly boolean[]>(() => {
     const b = this.bono();
     if (!b) return [];
@@ -59,7 +65,8 @@ export class BarraBonoMisiones {
 
   protected readonly etiquetaSobre = computed(() => {
     if (this.reclamado()) return 'Reclamado';
-    return 'Reclamar';
+    if (this.disponible()) return 'Reclamar';
+    return 'Premio';
   });
 
   protected readonly sobre = computed(() => mapearRecompensa(this.bono()?.recompensa));

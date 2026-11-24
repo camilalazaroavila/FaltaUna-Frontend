@@ -1,102 +1,119 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { Router } from '@angular/router';
 
+import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { BarraProgreso } from '@compartidos/componentes/feedback/barra-progreso/barra-progreso';
 import { SobreMarca } from '@compartidos/componentes/cartas/sobre-marca/sobre-marca';
-import { ETIQUETAS_CATEGORIA } from '@modelos/categoria.model';
-import { faltantesPity, UMBRAL_CASI_PITY, type ProgresoPity } from '@modelos/misiones.model';
+import { estaCercaPity, type ProgresoPity } from '@modelos/misiones.model';
 
 /**
- * Fila del PT System: sobres abiertos de un tipo desde la última legendaria.
- * El sobre de la derecha es informativo (nunca clickeable): solo comunica de
- * qué tipo es la recompensa que está en camino.
+ * Tarjeta del PT System: progreso hacia la carta legendaria garantizada.
  *
- * La jerarquía pone primero el dato que importa (cuántos sobres faltan) y deja
- * el tipo de sobre (Genérico / Categoría / Marca) como dato secundario. Cuando
- * la fila está cerca de la legendaria (faltantes <= UMBRAL_CASI_PITY) se
- * destaca con el acento amarillo.
+ * Tres estados:
+ * - En progreso: "Faltan N sobres para la garantía"
+ * - Cerca (>= 75%): badge "¡Casi!" y borde destacado
+ * - Garantizada: halo legendario, sobre holográfico, botón para abrir sobre.
+ *
+ * Disposición responsive:
+ * - Desktop (>= 1024px): tarjeta vertical con sobre grande arriba, título, barra y botón.
+ * - Mobile (< 1024px): tarjeta compacta con fila superior y barra/botón abajo.
  */
 @Component({
   selector: 'app-tarjeta-pity',
-  imports: [BarraProgreso, SobreMarca],
+  imports: [BarraProgreso, SobreMarca, Boton],
   templateUrl: './tarjeta-pity.html',
+  styleUrl: './tarjeta-pity.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'block' },
+  host: { class: 'block h-full' },
 })
 export class TarjetaPity {
+  private readonly router = inject(Router);
+
   readonly progreso = input.required<ProgresoPity>();
 
-  protected readonly faltantes = computed(() => faltantesPity(this.progreso()));
+  protected readonly garantizada = computed(() => this.progreso().garantizada);
 
-  /**
-   * Rótulo visible bajo el título: el TIPO de sobre, no su nombre.
-   * (El nombre concreto, ej. "Tecnología" o "McDonald's", sigue disponible en
-   * `etiquetaSobre` para accesibilidad y se ve en el sobre de la derecha.)
-   */
-  protected readonly nombreSobre = computed(() => {
-    switch (this.progreso().sobre.tipo) {
-      case 'categoria':
+  protected readonly cerca = computed(() => estaCercaPity(this.progreso()));
+
+  protected readonly progresoRatio = computed(() => {
+    const p = this.progreso();
+    if (!p || p.umbral <= 0) return 0;
+    return Math.min(1, Math.max(0, p.contador / p.umbral));
+  });
+
+  /** Rótulo visible: "General", "Categoría", "Marca". */
+  protected readonly nombreTipo = computed(() => {
+    switch (this.progreso().tipo) {
+      case 'GENERAL':
+        return 'General';
+      case 'CATEGORIA':
         return 'Categoría';
-      case 'marca':
+      case 'MARCA':
         return 'Marca';
       default:
-        return 'Genérico';
+        return 'General';
     }
   });
 
-  /** Nombre accesible completo del sobre, para la barra de progreso. */
-  protected readonly etiquetaSobre = computed(() => {
-    const sobre = this.progreso().sobre;
-    switch (sobre.tipo) {
-      case 'categoria':
-        return `Sobre de ${ETIQUETAS_CATEGORIA[sobre.categoria]}`;
-      case 'marca':
-        return `Sobre de ${sobre.nombre}`;
-      default:
-        return 'Sobre genérico';
-    }
-  });
-
-  /** Tipo de la legendaria, solo para el título de la fila ya completada. */
-  private readonly tipoLegendaria = computed<string | null>(() => {
-    const sobre = this.progreso().sobre;
-    if (sobre.tipo === 'categoria') return ETIQUETAS_CATEGORIA[sobre.categoria];
-    if (sobre.tipo === 'marca') return sobre.nombre;
-    return null;
-  });
+  protected readonly etiquetaSobre = computed(() => `Sobre de ${this.nombreTipo()}`);
 
   protected readonly textoFaltantes = computed(() => {
-    const faltantes = this.faltantes();
-    if (faltantes === 0) {
-      const tipo = this.tipoLegendaria();
-      return tipo ? `¡Legendaria de ${tipo} asegurada!` : '¡Legendaria asegurada!';
+    if (this.garantizada() || this.progreso().sobresRestantes <= 0) {
+      return '¡Tu próximo sobre trae una legendaria!';
     }
+    const faltantes = this.progreso().sobresRestantes;
     return faltantes === 1
-      ? 'Falta 1 sobre para la legendaria'
-      : `Faltan ${faltantes} sobres para la legendaria`;
-  });
-
-  /** Fila cercana a la legendaria: se destaca con acento (faltantes 1..umbral). */
-  protected readonly casi = computed(() => {
-    const faltantes = this.faltantes();
-    return faltantes > 0 && faltantes <= UMBRAL_CASI_PITY;
+      ? 'Falta 1 sobre para la legendaria asegurada'
+      : `Faltan ${faltantes} sobres para la legendaria asegurada`;
   });
 
   protected readonly textoBarra = computed(
-    () => `${this.progreso().abiertos} / ${this.progreso().umbral}`,
+    () => `${this.progreso().contador} / ${this.progreso().umbral}`,
   );
 
-  protected readonly categoria = computed(() => {
-    const sobre = this.progreso().sobre;
-    return sobre.tipo === 'categoria' ? sobre.categoria : null;
+  /**
+   * Texto del botón de apertura según el tipo de sobre.
+   * Borrador sujeto a aprobación final del equipo (misma capitalización en los 3).
+   */
+  protected readonly textoBotonAbrir = computed(() => {
+    switch (this.progreso().tipo) {
+      case 'GENERAL':
+        return 'Abrir sobre general';
+      case 'CATEGORIA':
+        return 'Abrir sobre de categoría';
+      case 'MARCA':
+        return 'Abrir sobre de marca';
+      default:
+        return 'Abrir sobre';
+    }
   });
 
-  protected readonly nombre = computed(() => {
-    const sobre = this.progreso().sobre;
-    return sobre.tipo === 'marca' ? sobre.nombre : null;
+  /**
+   * PUNTO ÚNICO DE HABILITACIÓN DEL BOTÓN DE APERTURA:
+   * Por definición de la tarea (Fase A, punto 2), el botón permanece apagado (deshabilitado)
+   * en las 3 tarjetas y en TODOS los estados.
+   *
+   * REGLA FUTURA A APROBAR (Open Decisions):
+   * Cuando el equipo defina la activación (por ejemplo, habilitar solo cuando `this.garantizada()`
+   * sea true y redirigir a `/usuario/sobres`), cambiar el retorno a:
+   * `return this.garantizada();`
+   */
+  protected readonly botonAbrirHabilitado = computed(() => {
+    return false;
   });
 
-  protected readonly logoUrl = computed(() => {
-    const sobre = this.progreso().sobre;
-    return sobre.tipo === 'marca' ? sobre.logoUrl : null;
+  /**
+   * Descripción asociada para lectores de pantalla mientras el botón permanece apagado.
+   * Borrador neutral a la espera de la definición de la regla de activación del equipo:
+   * no condiciona a la garantía, ya que en la tarjeta garantizada también permanece apagado.
+   */
+  protected readonly descripcionBotonDeshabilitado = computed(() => {
+    return `Apertura directa del sobre ${this.nombreTipo().toLowerCase()} no disponible por el momento en esta vista.`;
   });
+
+  protected irASobres(): void {
+    if (this.botonAbrirHabilitado()) {
+      this.router.navigate(['/usuario/sobres']);
+    }
+  }
 }

@@ -205,8 +205,41 @@ describe('MisionesService', () => {
   });
 
   it('ordena el PT System de menos a más faltantes', () => {
+    servicio.cargarPity().subscribe();
+    http
+      .expectOne((req) => req.method === 'GET' && req.url.endsWith('/api/Sobres/pity'))
+      .flush([
+        { tipo: 'GENERAL', contador: 10, umbral: 40, sobresRestantes: 30, porcentaje: 25, garantizada: false },
+        { tipo: 'CATEGORIA', contador: 18, umbral: 20, sobresRestantes: 2, porcentaje: 90, garantizada: false },
+        { tipo: 'MARCA', contador: 5, umbral: 10, sobresRestantes: 5, porcentaje: 50, garantizada: false },
+      ]);
+
     const faltantes = servicio.pityPorCercania().map(faltantesPity);
-    expect(faltantes).toEqual([...faltantes].sort((a, b) => a - b));
+    expect(faltantes).toEqual([2, 5, 30]);
+  });
+
+  it('cargarPity mapea la respuesta del backend y actualiza los signals', () => {
+    expect(servicio.cargandoPity()).toBe(false);
+
+    servicio.cargarPity().subscribe();
+    expect(servicio.cargandoPity()).toBe(true);
+
+    http
+      .expectOne((req) => req.method === 'GET' && req.url.endsWith('/api/Sobres/pity'))
+      .flush([
+        { tipo: 'MARCA', contador: 10, umbral: 10, sobresRestantes: 0, porcentaje: 100, garantizada: true },
+        { tipo: 'GENERAL', contador: 0, umbral: 40, sobresRestantes: 40, porcentaje: 0, garantizada: false },
+        { tipo: 'CATEGORIA', contador: 5, umbral: 20, sobresRestantes: 15, porcentaje: 25, garantizada: false },
+      ]);
+
+    expect(servicio.cargandoPity()).toBe(false);
+    expect(servicio.errorPity()).toBeNull();
+    const lista = servicio.pity();
+    expect(lista.length).toBe(3);
+    expect(lista[0].tipo).toBe('GENERAL');
+    expect(lista[1].tipo).toBe('CATEGORIA');
+    expect(lista[2].tipo).toBe('MARCA');
+    expect(lista[2].garantizada).toBe(true);
   });
 
   it('mapea PERMANENTE y los 4 objetivos nuevos; un objetivo desconocido queda no disponible', () => {

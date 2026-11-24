@@ -172,6 +172,31 @@ describe('Misiones (página)', () => {
     expect(el.querySelector('#panel-semanal app-sobre-marca')).not.toBeNull();
   });
 
+  it('en Permanente muestra sobres con recompensas, ordena completadas primero y no muestra contador de reinicio', () => {
+    misionesSignal.set([
+      crearMision({ id: 20, titulo: 'Permanente en curso', periodicidad: 'permanente', estado: 'en_curso' }),
+      crearMision({ id: 21, titulo: 'Permanente lista', periodicidad: 'permanente', estado: 'completada' }),
+      crearMision({ id: 22, titulo: 'Permanente reclamada', periodicidad: 'permanente', estado: 'reclamada' }),
+    ]);
+    resumenSignal.set(crearResumen());
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    (el.querySelector('#pestana-permanente') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    const titulos = Array.from(el.querySelectorAll('#panel-permanente app-tarjeta-mision h3')).map(
+      (h) => h.textContent?.trim(),
+    );
+    expect(titulos).toEqual(['Permanente lista', 'Permanente en curso', 'Permanente reclamada']);
+    expect(el.querySelector('#panel-permanente app-sobre-marca')).not.toBeNull();
+    expect(el.querySelector('app-reinicio-misiones')).toBeNull();
+
+    const botonTodas = el.querySelector('.misiones__reclamar-todas') as HTMLButtonElement;
+    expect(botonTodas).not.toBeNull();
+    expect(botonTodas.textContent).toContain('Reclamar todas (1)');
+  });
+
   it('expone acceso a PT System para mobile (/usuario/misiones/pity)', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;

@@ -51,6 +51,14 @@ export interface ImagenAlbumRespuesta {
   id: number;
   imagenUrl: string;
   descripcion: string | null;
+  rareza: string;
+  poder: number;
+  costeTicket?: number;
+  costoCupon?: number;
+  totalObtenidas?: number;
+  totalFavoritos?: number;
+  totalIntercambios?: number;
+  totalPartidas?: number;
 }
 
 /**

@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { BarraPuntos } from '@compartidos/componentes/partida/barra-puntos/barra-puntos';
 import { ControlTurno } from '@compartidos/componentes/partida/control-turno/control-turno';
-import { CuponRecurso } from '@compartidos/componentes/partida/cupon-recurso/cupon-recurso';
 import { IndicadorTurno } from '@compartidos/componentes/partida/indicador-turno/indicador-turno';
 import { JugadorChip } from '@compartidos/componentes/partida/jugador-chip/jugador-chip';
 import { Mano } from '@compartidos/componentes/partida/mano/mano';
 import { PantallaResultado } from '@compartidos/componentes/partida/pantalla-resultado/pantalla-resultado';
 import { PuntajeZona } from '@compartidos/componentes/partida/puntaje-zona/puntaje-zona';
 import { SlotCarta } from '@compartidos/componentes/partida/slot-carta/slot-carta';
+import { TicketRecurso } from '@compartidos/componentes/partida/ticket-recurso/ticket-recurso';
 import { SelectorMazos } from '@compartidos/componentes/cartas/selector-mazos/selector-mazos';
 import { Texto } from '@compartidos/componentes/textual/texto/texto';
 import { TarjetaMuestra } from '@paginas/galeria-componentes/tarjeta-muestra/tarjeta-muestra';
@@ -131,7 +131,7 @@ const ZONA_MOCK: ZonaTablero = {
 @Component({
   selector: 'app-seccion-partida',
   imports: [
-    CuponRecurso,
+    TicketRecurso,
     BarraPuntos,
     JugadorChip,
     IndicadorTurno,
@@ -176,6 +176,7 @@ export class SeccionPartida {
         cartaId: 100 + i,
         nombre: `Carta ${i + 1}`,
         poder: 3 + (i % 7),
+        costeTicket: 1 + (i % 3),
         costoCupon: 1 + (i % 3),
         rarezaId: i < 5 ? 1 : i < 9 ? 2 : i < 11 ? 3 : 4,
         rareza: i < 5 ? 'comun' : i < 9 ? 'rara' : i < 11 ? 'epicarta' : 'legendaria',
@@ -192,6 +193,7 @@ export class SeccionPartida {
           cartaId: 201,
           nombre: 'Carta Fuego',
           poder: 8,
+          costeTicket: 2,
           costoCupon: 2,
           rarezaId: 3,
           rareza: 'epicarta',
@@ -208,6 +210,7 @@ export class SeccionPartida {
         cartaId: 300 + i,
         nombre: `Trueno ${i + 1}`,
         poder: 4 + (i % 6),
+        costeTicket: 1 + (i % 4),
         costoCupon: 1 + (i % 4),
         rarezaId: i < 5 ? 1 : i < 9 ? 2 : i < 11 ? 3 : 4,
         rareza: i < 5 ? 'comun' : i < 9 ? 'rara' : i < 11 ? 'epicarta' : 'legendaria',

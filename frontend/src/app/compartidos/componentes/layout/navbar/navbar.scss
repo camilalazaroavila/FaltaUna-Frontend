@@ -1,3 +1,10 @@
 :host {
   display: block;
 }
+
+@media (min-width: 1280px) and (max-width: 1535px), (min-width: 1280px) and (max-height: 820px) {
+  header {
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+}

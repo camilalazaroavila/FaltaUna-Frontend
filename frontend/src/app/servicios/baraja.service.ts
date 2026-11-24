@@ -139,7 +139,7 @@ function mapearCartaInventario(carta: CartaInventarioApi): Carta {
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
     categoria: categoriaCartaDesdeNombre(carta.categoria),
     atributoDerecho: carta.poder,
-    atributoIzquierdo: carta.costoCupon,
+    atributoIzquierdo: (carta as { costeTicket?: number }).costeTicket ?? carta.costoCupon ?? 0,
     obtenida: true,
     cantidad: carta.cantidad,
     descripcion: carta.descripcion,
@@ -153,7 +153,7 @@ export function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
     categoria: categoriaCartaDesdeNombre(carta.categoria),
     atributoDerecho: carta.poder,
-    atributoIzquierdo: carta.costoCupon,
+    atributoIzquierdo: (carta as { costeTicket?: number }).costeTicket ?? carta.costoCupon ?? 0,
     obtenida: true,
   };
 }

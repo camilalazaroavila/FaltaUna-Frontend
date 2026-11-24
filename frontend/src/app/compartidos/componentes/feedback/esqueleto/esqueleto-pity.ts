@@ -20,7 +20,7 @@ import { Esqueleto } from './esqueleto';
   host: { class: 'block w-full' },
 })
 export class EsqueletoPity {
-  readonly cantidad = input<number>(4);
+  readonly cantidad = input<number>(3);
 
   protected readonly itemsIndices = computed(() =>
     Array.from({ length: Math.max(1, this.cantidad()) }, (_, i) => i),

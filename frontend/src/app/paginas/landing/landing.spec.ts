@@ -37,4 +37,19 @@ describe('Landing', () => {
 
     expect(listaFaq).toBeTruthy();
   });
+
+  it('debe incluir a Jaime y Falti en la sección Hero con el botón de abrir sobre', () => {
+    const fixture = TestBed.createComponent(Landing);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const jaimeHero = compiled.querySelector('img[src="/imagenes/landing-usuario/jaime_landing.png"]');
+    const faltiHero = compiled.querySelector('img[src="/imagenes/landing-usuario/falti_landing.png"]');
+    const botonHero = compiled.querySelector('a[routerLink="/registro"].landing-btn-pildora');
+
+    expect(jaimeHero).toBeTruthy();
+    expect(faltiHero).toBeTruthy();
+    expect(botonHero).toBeTruthy();
+    expect(botonHero?.textContent).toContain('ABRIR MI PRIMER SOBRE');
+  });
 });

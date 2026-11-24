@@ -12,8 +12,8 @@ const MAZOS_PRUEBA: MazoApi[] = [
     nombre: 'Mazo Alpha',
     completo: true,
     cartas: [
-      { cartaId: 101, nombre: 'Carta 1', poder: 5, costoCupon: 1, rarezaId: 1, rareza: 'comun', rarezaOrden: 1, imagenUrl: null },
-      { cartaId: 102, nombre: 'Carta 2', poder: 6, costoCupon: 2, rarezaId: 2, rareza: 'rara', rarezaOrden: 2, imagenUrl: null },
+      { cartaId: 101, nombre: 'Carta 1', poder: 5, costeTicket: 1, costoCupon: 1, rarezaId: 1, rareza: 'comun', rarezaOrden: 1, imagenUrl: null },
+      { cartaId: 102, nombre: 'Carta 2', poder: 6, costeTicket: 2, costoCupon: 2, rarezaId: 2, rareza: 'rara', rarezaOrden: 2, imagenUrl: null },
     ],
   },
   {
@@ -21,7 +21,7 @@ const MAZOS_PRUEBA: MazoApi[] = [
     nombre: 'Mazo Beta Incompleto',
     completo: false,
     cartas: [
-      { cartaId: 103, nombre: 'Carta 3', poder: 4, costoCupon: 1, rarezaId: 1, rareza: 'comun', rarezaOrden: 1, imagenUrl: null },
+      { cartaId: 103, nombre: 'Carta 3', poder: 4, costeTicket: 1, costoCupon: 1, rarezaId: 1, rareza: 'comun', rarezaOrden: 1, imagenUrl: null },
     ],
   },
   {
