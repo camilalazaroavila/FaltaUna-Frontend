@@ -29,6 +29,9 @@ describe('IntercambioActivos', () => {
           cartaRarezaId: 1,
           cartaRareza: 'comun',
           cartaImagenUrl: '/danonino.png',
+          atributoDerecho: 45,
+          atributoIzquierdo: 3,
+          categoria: 'Ropa',
         },
       ],
     },
@@ -49,6 +52,9 @@ describe('IntercambioActivos', () => {
           cartaRarezaId: 4,
           cartaRareza: 'legendaria',
           cartaImagenUrl: '/supergrido.png',
+          atributoDerecho: 90,
+          atributoIzquierdo: 6,
+          categoria: 'Tecnología',
         },
       ],
     },
@@ -119,5 +125,13 @@ describe('IntercambioActivos', () => {
     component.verDetalleIntercambio(item);
     expect(intercambioServiceMock.marcarIntercambioVisto).toHaveBeenCalledWith(2, 'PENDIENTE');
     expect(router.navigate).toHaveBeenCalledWith(['/usuario/intercambio/responder', 2]);
+  });
+
+  it('debe mapear atributos y categoría reales de la carta del detalle (no ceros ni categoría por defecto)', () => {
+    const carta = component['cartaDetalle']();
+    expect(carta).not.toBeNull();
+    expect(carta?.atributoDerecho).toBe(45);
+    expect(carta?.atributoIzquierdo).toBe(3);
+    expect(carta?.categoria).toBe('indumentaria');
   });
 });

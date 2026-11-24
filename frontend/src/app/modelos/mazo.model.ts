@@ -3,7 +3,8 @@ export interface CartaInventarioApi {
     readonly nombre: string;
     readonly descripcion: string | null;
     readonly poder: number;
-    readonly costoCupon: number;
+    readonly costeTicket?: number;
+    readonly costoCupon?: number;
     readonly rarezaId: number;
     readonly rareza: string;
     readonly rarezaOrden: number;
@@ -20,7 +21,8 @@ export interface MazoCartaApi {
     readonly cartaId: number;
     readonly nombre: string;
     readonly poder: number;
-    readonly costoCupon: number;
+    readonly costeTicket?: number;
+    readonly costoCupon?: number;
     readonly rarezaId: number;
     readonly rareza: string;
     readonly rarezaOrden: number;

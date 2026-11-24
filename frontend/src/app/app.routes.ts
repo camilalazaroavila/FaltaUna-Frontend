@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { rolGuard } from '@app/guardias/rol.guard';
-import { pagoAprobadoGuard } from '@app/guardias/pago-aprobado.guard';
+import { planElegidoGuard } from '@app/guardias/plan-elegido.guard';
 import { empresaRegistradaGuard } from '@app/guardias/empresa-registrada.guard';
 import { isDevMode } from '@angular/core';
 
@@ -253,9 +253,10 @@ export const routes: Routes = [
         redirectTo: 'album/pago/pendiente',
       },
       {
-        // Pasos 3 a 5: solo con pago aprobado (pagoAprobadoGuard).
+        // Pasos 2 a 4 (marca, álbum y vista previa): solo con un plan elegido (planElegidoGuard).
+        // El pago es el paso 5: sale del botón "Finalizar" de la vista previa y vuelve a album/pago/:resultado.
         path: 'album/crear',
-        canActivate: [pagoAprobadoGuard],
+        canActivate: [planElegidoGuard],
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'marca' },
           {
@@ -267,11 +268,19 @@ export const routes: Routes = [
               ),
           },
           {
-            path: 'identidad',
-            title: 'Qué te identifica · Falta Una',
+            path: 'album',
+            title: 'Tu primer álbum · Falta Una',
             loadComponent: () =>
-              import('@paginas/empresa-album-identidad/empresa-album-identidad').then(
-                (m) => m.EmpresaAlbumIdentidad,
+              import('@paginas/empresa-album-cartas/empresa-album-cartas').then(
+                (m) => m.EmpresaAlbumCartas,
+              ),
+          },
+          {
+            path: 'vista-previa',
+            title: 'Visualización previa · Falta Una',
+            loadComponent: () =>
+              import('@paginas/empresa-album-previa/empresa-album-previa').then(
+                (m) => m.EmpresaAlbumPrevia,
               ),
           },
           {

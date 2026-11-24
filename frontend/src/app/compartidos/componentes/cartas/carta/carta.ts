@@ -36,8 +36,8 @@ const FONDO_POR_RAREZA: Record<RarezaCarta, string> = {
   styleUrl: './carta.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.carta--no-obtenida]': '!carta().obtenida',
-    '[class.carta--oculta]': 'carta().oculta',
+    '[class.carta--no-obtenida]': '!modoSubida() && !carta().obtenida',
+    '[class.carta--oculta]': '!modoSubida() && carta().oculta',
     '[class.carta--legendaria]': 'carta().rareza === "legendaria"',
     '[attr.aria-label]': 'ariaLabel()',
     role: 'article',
@@ -46,6 +46,8 @@ const FONDO_POR_RAREZA: Record<RarezaCarta, string> = {
 export class CartaComponent {
   readonly carta = input.required<Carta>();
   readonly mostrarCantidad = input<boolean>(false);
+  readonly modoSubida = input<boolean>(false);
+  readonly imagenSubida = input<string | null>(null);
 
   protected readonly cantidad = computed(() => this.carta().cantidad ?? 1);
   protected readonly tieneRepetidas = computed(() => this.cantidad() > 1);

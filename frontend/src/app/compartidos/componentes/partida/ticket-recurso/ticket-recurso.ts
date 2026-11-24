@@ -15,34 +15,32 @@ import { GsapService } from '@servicios/gsap.service';
 import type { ContextoGsap } from '@servicios/gsap.service';
 
 const CLASES_CUERPO: Record<'completa' | 'compacta', string> = {
-  completa: 'cupon--completa gap-2.5 px-5 py-2.5',
-  compacta: 'cupon--compacta gap-1.5 px-4 py-2',
+  completa: 'ticket--completa gap-2.5 px-5 py-2.5',
+  compacta: 'ticket--compacta gap-1.5 px-4 py-2',
 };
 
 /**
- * Ticket del recurso de juego: muestra cuántos cupones quedan disponibles.
+ * Ticket del recurso de juego: muestra cuántos tickets quedan disponibles.
  *
- * Mantiene el nombre "cupón" porque el naming del recurso sigue pendiente
- * (context.md, sección 4). Al subir el valor el número asciende; al bajar
- * (gasto) hace un sacudón corto. Ambas microinteracciones se saltan por
- * completo cuando el usuario pidió reducir el movimiento.
+ * Al subir el valor el número asciende; al bajar (gasto) hace un sacudón corto.
+ * Ambas microinteracciones se saltan por completo cuando el usuario pidió reducir el movimiento.
  *
  * `variante="compacta"` se usa en la franja del tablero: solo número y
- * ticket, sin leyenda. El ingreso de la variante es interfaz (mock).
+ * ticket, sin leyenda.
  */
 @Component({
-  selector: 'app-cupon-recurso',
-  templateUrl: './cupon-recurso.html',
-  styleUrl: './cupon-recurso.css',
+  selector: 'app-ticket-recurso',
+  templateUrl: './ticket-recurso.html',
+  styleUrl: './ticket-recurso.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgIcon],
   host: {
-    class: 'inline-flex font-titulo text-cupon-texto cupon-contorno',
+    class: 'inline-flex font-titulo text-ticket-texto ticket-contorno',
     role: 'status',
     '[attr.aria-label]': 'etiqueta()',
   },
 })
-export class CuponRecurso implements AfterViewInit {
+export class TicketRecurso implements AfterViewInit {
   private readonly gsapServicio = inject(GsapService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementoRef = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -54,9 +52,11 @@ export class CuponRecurso implements AfterViewInit {
 
   protected readonly clasesCuerpo = computed(() => CLASES_CUERPO[this.variante()]);
   protected readonly esCompacta = computed(() => this.variante() === 'compacta');
-  protected readonly leyenda = computed(() => `cupones de ${this.maximo()}`);
+  protected readonly leyenda = computed(
+    () => `${this.valor() === 1 ? 'ticket' : 'tickets'} de ${this.maximo()}`,
+  );
   protected readonly etiqueta = computed(
-    () => `Cupones disponibles: ${this.valor()} de ${this.maximo()}`,
+    () => `Tickets disponibles: ${this.valor()} de ${this.maximo()}`,
   );
 
   protected readonly movimientoReducido = this.gsapServicio.movimientoReducido;
@@ -85,9 +85,6 @@ export class CuponRecurso implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // El contexto agrupa las microinteracciones para revertirlas al destruir el
-    // componente: `add()` las registra aunque se disparen después, cuando
-    // cambia el input.
     this.contexto = this.gsapServicio.crearContexto(
       this.elementoRef.nativeElement,
       () => undefined,
@@ -99,22 +96,27 @@ export class CuponRecurso implements AfterViewInit {
     const { gsap } = this.gsapServicio;
 
     if (sube) {
-      const duracion = this.gsapServicio.duracionPartida('vuelo-carta');
-
       gsap.fromTo(
         objetivo,
-        { y: 12, opacity: 0.35 },
-        { y: 0, opacity: 1, duration: duracion, ease: 'back.out(2)', overwrite: true },
+        { y: 8, scale: 0.8, opacity: 0 },
+        {
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          duration: this.gsapServicio.duracionPartida('micro', 0.3),
+          ease: 'back.out(2)',
+        },
       );
-      return;
+    } else {
+      gsap.fromTo(
+        objetivo,
+        { x: -3 },
+        {
+          x: 0,
+          duration: this.gsapServicio.duracionPartida('revelado-carta') * 0.75,
+          ease: 'elastic.out(1.2, 0.3)',
+        },
+      );
     }
-
-    const duracion = this.gsapServicio.duracionPartida('micro');
-
-    gsap.fromTo(
-      objetivo,
-      { x: -3 },
-      { x: 0, duration: duracion / 3, ease: 'power2.out', repeat: 3, yoyo: true, overwrite: true },
-    );
   }
 }

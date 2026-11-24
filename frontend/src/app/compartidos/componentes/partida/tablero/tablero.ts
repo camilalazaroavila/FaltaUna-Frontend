@@ -15,7 +15,7 @@ import {
 import { CartaPopupComponent } from '@compartidos/componentes/cartas/carta-popup/carta-popup';
 import { BarraPuntos } from '@compartidos/componentes/partida/barra-puntos/barra-puntos';
 import { ControlTurno } from '@compartidos/componentes/partida/control-turno/control-turno';
-import { CuponRecurso } from '@compartidos/componentes/partida/cupon-recurso/cupon-recurso';
+import { TicketRecurso } from '@compartidos/componentes/partida/ticket-recurso/ticket-recurso';
 import { JugadorChip } from '@compartidos/componentes/partida/jugador-chip/jugador-chip';
 import { Mano } from '@compartidos/componentes/partida/mano/mano';
 import type { PosicionArrastre } from '@compartidos/componentes/partida/mano/mano';
@@ -76,7 +76,7 @@ interface SlotSobrevolado {
     CartaPopupComponent,
     JugadorChip,
     BarraPuntos,
-    CuponRecurso,
+    TicketRecurso,
     ControlTurno,
     Mano,
     TooltipPartidaDirective,

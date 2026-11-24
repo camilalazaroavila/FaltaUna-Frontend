@@ -159,7 +159,7 @@ export const ESCENARIO_TUTORIAL: EscenarioPartidaTutorial = {
   mano: CARTAS_TUTORIAL,
   turno: 1,
   segundos: 60,
-  cupones: 3,
+  tickets: 3,
   barraPropia: 0,
   barraRival: 0,
 };

@@ -37,13 +37,37 @@
       </button>
     </div>
 
+    <!-- Filtros por tipo de sobre -->
+    <div class="flex flex-wrap gap-2 mb-3 2xl:mb-5" role="group" aria-label="Filtrar sobres por tipo">
+      <button type="button" (click)="cambiarFiltroTipo('todos')"
+        class="cursor-pointer rounded-pildora px-3 py-1 2xl:px-4 2xl:py-1.5 font-interfaz text-[11px] sm:text-xs 2xl:text-sm font-black uppercase tracking-wider transition"
+        [class.bg-marca-primaria]="filtroTipo() === 'todos'" [class.text-marca-sobre-primaria]="filtroTipo() === 'todos'"
+        [class.bg-white/10]="filtroTipo() !== 'todos'" [class.text-white]="filtroTipo() !== 'todos'"
+        [attr.aria-pressed]="filtroTipo() === 'todos'">Todos</button>
+      <button type="button" (click)="cambiarFiltroTipo('GENERAL')"
+        class="cursor-pointer rounded-pildora px-3 py-1 2xl:px-4 2xl:py-1.5 font-interfaz text-[11px] sm:text-xs 2xl:text-sm font-black uppercase tracking-wider transition"
+        [class.bg-marca-primaria]="filtroTipo() === 'GENERAL'" [class.text-marca-sobre-primaria]="filtroTipo() === 'GENERAL'"
+        [class.bg-white/10]="filtroTipo() !== 'GENERAL'" [class.text-white]="filtroTipo() !== 'GENERAL'"
+        [attr.aria-pressed]="filtroTipo() === 'GENERAL'">General</button>
+      <button type="button" (click)="cambiarFiltroTipo('CATEGORIA')"
+        class="cursor-pointer rounded-pildora px-3 py-1 2xl:px-4 2xl:py-1.5 font-interfaz text-[11px] sm:text-xs 2xl:text-sm font-black uppercase tracking-wider transition"
+        [class.bg-marca-primaria]="filtroTipo() === 'CATEGORIA'" [class.text-marca-sobre-primaria]="filtroTipo() === 'CATEGORIA'"
+        [class.bg-white/10]="filtroTipo() !== 'CATEGORIA'" [class.text-white]="filtroTipo() !== 'CATEGORIA'"
+        [attr.aria-pressed]="filtroTipo() === 'CATEGORIA'">Categoría</button>
+      <button type="button" (click)="cambiarFiltroTipo('MARCA')"
+        class="cursor-pointer rounded-pildora px-3 py-1 2xl:px-4 2xl:py-1.5 font-interfaz text-[11px] sm:text-xs 2xl:text-sm font-black uppercase tracking-wider transition"
+        [class.bg-marca-primaria]="filtroTipo() === 'MARCA'" [class.text-marca-sobre-primaria]="filtroTipo() === 'MARCA'"
+        [class.bg-white/10]="filtroTipo() !== 'MARCA'" [class.text-white]="filtroTipo() !== 'MARCA'"
+        [attr.aria-pressed]="filtroTipo() === 'MARCA'">Marca</button>
+    </div>
+
     <!-- Panel con scrollbar personalizado -->
     <div class="flex-1 min-h-0 overflow-hidden">
-      <div clasesExtra="h-full"> <!-- este div cambiarlo por app-panel-desplazable si se quiere agregar despues el scroll -->
+      <app-panel-desplazable clasesExtra="h-full">
         <div
           data-sin-sonido-boton
           class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 2xl:gap-6 p-2 pb-4 2xl:p-4">
-          @for (sobre of listaSobresUI(); track $index) {
+          @for (sobre of listaSobresFiltrada(); track $index) {
           @let p = propsDeSobre(sobre);
           <div class="group flex flex-col items-center gap-1.5 2xl:gap-3 transition-opacity"
             [class.opacity-40]="!sobre.disponible" [attr.inert]="sobre.disponible ? null : ''">
@@ -64,7 +88,7 @@
           </div>
           }
         </div>
-      </div>
+      </app-panel-desplazable>
     </div>
   </div>
   }
@@ -77,7 +101,7 @@
     <div class="relative flex flex-col items-center select-none">
       <!-- Badge superior con la Marca/Categoría -->
       <div
-        class="absolute -top-3 -right-2 sm:right-0 z-20 rounded-lg bg-[#f9f9b2] px-2.5 py-0.5 sm:px-3 sm:py-1 2xl:px-5 2xl:py-1.5 shadow-md border border-black/10 text-teal-950 font-titulo text-xs sm:text-sm 2xl:text-xl font-black tracking-wider uppercase">
+        class="mb-3 sm:mb-4 2xl:mb-6 rounded-pildora border border-borde-coleccion bg-marca-acento px-3.5 py-1 sm:px-4 sm:py-1.5 2xl:px-6 2xl:py-2 text-center font-titulo text-xs sm:text-sm 2xl:text-base font-black tracking-wider text-marca-sobre-acento uppercase shadow-cartoon-clara">
         {{ sobreSeleccionado()!.etiqueta }}
       </div>
 

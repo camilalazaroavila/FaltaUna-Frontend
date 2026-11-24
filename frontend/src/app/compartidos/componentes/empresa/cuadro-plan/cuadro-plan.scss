@@ -13,6 +13,7 @@
   max-width: 280px;
   margin-inline: auto;
   user-select: none;
+  container-type: inline-size;
 }
 
 .cuadro-plan__marco {
@@ -40,12 +41,18 @@
   z-index: 2;
   font-family: var(--fuente-titulo, 'Changa', sans-serif);
   font-weight: 900;
-  font-size: clamp(1.25rem, 4vw, 2rem);
+  font-size: clamp(1rem, 11cqw, 2rem);
+  max-width: 85%;
   color: #ffffff;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-align: center;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.5rem;
   line-height: 1.1;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
+.cuadro-plan--standard .cuadro-plan__texto {
+  font-size: clamp(0.85rem, 9.2cqw, 1.65rem);
+  letter-spacing: 0.015em;
 }

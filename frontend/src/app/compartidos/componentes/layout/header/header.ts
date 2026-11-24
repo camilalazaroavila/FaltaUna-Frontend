@@ -14,6 +14,7 @@ import { AuthService } from '@servicios/auth.service';
 import urlLogoClaro from '@svgs/Imagotipo_claro.svg';
 import urlLogoOscuro from '@svgs/Imagotipo_Negro.svg';
 import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
+import urlLogoVerde from '@svgs/Imagotipo_Verde.svg';
 
 @Component({
   selector: 'app-header',
@@ -92,12 +93,13 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
         [class.bg-marca-acento]="fondoAmarillo()"
         [class.bg-header-auth-fondo]="enAuth()"
         [class.text-landing-oscuro-texto]="!fondoAmarillo() && !fondoVerde()"
-        [class.text-black]="fondoAmarillo() || fondoVerde()"
+        [class.text-black]="fondoAmarillo()"
+        [class.text-landing-oscuro-fondo]="fondoVerde()"
 
       >
         <a [routerLink]="destinoLogo()" class="shrink-0" aria-label="Falta Una, ir al inicio">
           <img
-            [src]="(fondoVerde() || fondoAmarillo()) ? urlLogoOscuro : urlLogo"
+            [src]="fondoVerde() ? urlLogoVerde : (fondoAmarillo() ? urlLogoOscuro : urlLogo)"
             alt="Falta Una"
             class="w-auto lg:h-[75px]"
             [class.h-8]="!enAuth()"
@@ -118,10 +120,12 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
             class="font-interfaz text-[10px] font-bold uppercase tracking-wide transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
     
             [class.text-landing-oscuro-texto]="!fondoAmarillo() && !fondoVerde()"
-            [class.text-black]="fondoAmarillo() || fondoVerde()"
+            [class.text-black]="fondoAmarillo()"
+            [class.text-landing-oscuro-fondo]="fondoVerde()"
 
             [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo() && !fondoVerde()"
-            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo() || fondoVerde()"
+            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo()"
+            [class.hover:opacity-80]="fondoVerde()"
             [class.hover:text-marca-primaria]="enAuth() && modo() === 'jugador'"
             [class.hover:text-landing-acento]="enAuth() && modo() === 'empresa'"
           >
@@ -135,10 +139,12 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
             class="font-interfaz text-[10px] font-bold uppercase tracking-wide transition-colors sm:text-[11px] lg:font-titulo lg:text-xl"
     
             [class.text-landing-oscuro-texto]="!fondoAmarillo() && !fondoVerde()"
-            [class.text-black]="fondoAmarillo() || fondoVerde()"
+            [class.text-black]="fondoAmarillo()"
+            [class.text-landing-oscuro-fondo]="fondoVerde()"
 
             [class.hover:text-landing-marca]="!enAuth() && !fondoAmarillo() && !fondoVerde()"
-            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo() || fondoVerde()"
+            [class.hover:text-landing-oscuro-fondo]="fondoAmarillo()"
+            [class.hover:opacity-80]="fondoVerde()"
             [class.hover:text-marca-primaria]="enAuth() && modo() === 'jugador'"
             [class.hover:text-landing-acento]="enAuth() && modo() === 'empresa'"
           >
@@ -164,6 +170,9 @@ export class Header {
   /** Logo blanco, para el header verde de la landing. */
   protected readonly urlLogoBlanco = urlLogoBlanco;
 
+  /** Logo verde oscuro, para el header verde de la landing del modo usuario. */
+  protected readonly urlLogoVerde = urlLogoVerde;
+
   protected readonly termino = signal('');
 
   /** Variante para Login/Registro. */
@@ -175,7 +184,7 @@ export class Header {
   /** Header amarillo con texto y logo negros. */
   readonly amarillo = input(false);
 
-  /** Header verde de la landing de usuario con logo blanco y texto blanco. */
+  /** Header verde de la landing de usuario con logo e items de texto verde oscuro. */
   readonly verde = input(false);
 
   protected readonly fondoAmarillo = computed(() => this.amarillo() && !this.enAuth());

@@ -133,6 +133,10 @@
     --color-marca-coleccion-sobre: var(--marca-coleccion-sobre);
     --color-marca-coleccion-fondo: var(--marca-coleccion-fondo);
 
+    /* PT System (Pity): borde y aro de tarjeta garantizada */
+    --color-pity-garantizada-borde: var(--pity-garantizada-borde);
+    --color-pity-garantizada-aro: var(--pity-garantizada-aro);
+
     /* Sobres de cartas: el componente los baja por cascada a tres variables
        locales y de ahi los pinta con `fill`, asi que no usa utilidades. El
        mapeo existe para que queden disponibles en la capa 3 (`bg-sobre-*`,
@@ -280,11 +284,11 @@
    --font-subtitulo: var(--fuente-subtitulo);
    --font-cuerpo: var(--fuente-cuerpo);
    --font-interfaz: var(--fuente-interfaz);
-    /* Cupón de recurso: ticket del recurso de juego de la pantalla de partida. */
-    --color-cupon-fondo: var(--cupon-fondo);
-    --color-cupon-borde: var(--cupon-borde);
-    --color-cupon-texto: var(--cupon-texto);
-    --color-cupon-perforacion: var(--cupon-perforacion);
+    /* Ticket de recurso: recurso de juego de la pantalla de partida. */
+    --color-ticket-fondo: var(--ticket-fondo);
+    --color-ticket-borde: var(--ticket-borde);
+    --color-ticket-texto: var(--ticket-texto);
+    --color-ticket-perforacion: var(--ticket-perforacion);
 
     /* Barra de puntos de la partida: relleno propio (verde) y rival (amarillo). */
     --color-barra-puntos-fondo: var(--barra-puntos-fondo);

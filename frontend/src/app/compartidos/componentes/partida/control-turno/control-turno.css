@@ -38,8 +38,8 @@
     flex-shrink: 0;
     padding: 0.2rem 0.55rem;
     border-radius: var(--radio-pildora);
-    background-color: var(--color-cupon-fondo);
-    color: var(--color-cupon-texto);
+    background-color: var(--color-ticket-fondo);
+    color: var(--color-ticket-texto);
     font-family: var(--fuente-titulo);
     font-size: var(--tipografia-menor);
     font-weight: 700;

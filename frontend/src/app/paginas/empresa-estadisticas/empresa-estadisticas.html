@@ -5,27 +5,66 @@
     </p>
     <div class="mt-1 flex flex-wrap items-center gap-3">
       <h1 class="font-titulo text-4xl text-texto-primario sm:text-5xl">Estadísticas</h1>
-      <span
-        class="rounded-pildora bg-marca-primaria px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-sobre-primaria uppercase"
-      >
-        {{ empresa.nombre }}
-      </span>
-      <span
-        class="rounded-pildora bg-marca-secundaria-suave px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-secundaria uppercase"
-      >
-        {{ empresa.categoriaEtiqueta }}
-      </span>
+      @if (marcaSeleccionadaId() !== undefined || marcas().length <= 1) {
+        <span
+          class="rounded-pildora bg-marca-primaria px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-sobre-primaria uppercase"
+        >
+          {{ nombreMarca() }}
+        </span>
+        <span
+          class="rounded-pildora bg-marca-secundaria-suave px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-secundaria uppercase"
+        >
+          {{ categoria() }}
+        </span>
+      } @else {
+        <span
+          class="rounded-pildora bg-marca-primaria px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-sobre-primaria uppercase"
+        >
+          Todas las marcas
+        </span>
+      }
     </div>
     <p class="mt-2 max-w-2xl font-interfaz text-sm text-texto-secundario">
       Mirá cómo interactúan los
-      <strong class="font-bold text-texto-primario">{{ totalUsuarios }}</strong>
+      <strong class="font-bold text-texto-primario">{{ totalUsuarios() }}</strong>
       jugadores con las cartas de tus álbumes.
     </p>
+
+    @if (marcas().length > 1) {
+      <div class="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Filtrar por marca">
+        <button
+          type="button"
+          (click)="seleccionarMarca(undefined)"
+          class="cursor-pointer rounded-pildora px-3.5 py-1.5 font-interfaz text-xs font-bold tracking-wide uppercase transition-colors"
+          [class]="
+            marcaSeleccionadaId() === undefined
+              ? 'bg-marca-primaria text-marca-sobre-primaria'
+              : 'border border-borde-default bg-fondo-superficie text-texto-secundario hover:text-texto-primario'
+          "
+        >
+          Todas
+        </button>
+        @for (marca of marcas(); track marca.id) {
+          <button
+            type="button"
+            (click)="seleccionarMarca(marca.id)"
+            class="cursor-pointer rounded-pildora px-3.5 py-1.5 font-interfaz text-xs font-bold tracking-wide uppercase transition-colors"
+            [class]="
+              marcaSeleccionadaId() === marca.id
+                ? 'bg-marca-primaria text-marca-sobre-primaria'
+                : 'border border-borde-default bg-fondo-superficie text-texto-secundario hover:text-texto-primario'
+            "
+          >
+            {{ marca.nombre }}
+          </button>
+        }
+      </div>
+    }
   </header>
 
   <!-- KPIs generales -->
   <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    @for (kpi of kpis; track kpi.id) {
+    @for (kpi of kpis(); track kpi.id) {
       <article class="rounded-2xl border border-borde-default bg-fondo-superficie p-5 shadow-baja">
         <div class="flex items-start justify-between gap-3">
           <span

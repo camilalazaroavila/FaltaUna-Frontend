@@ -11,6 +11,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
 import { Boton } from '@compartidos/componentes/controles/boton/boton';
 import { StepperSuscripcion } from '@compartidos/componentes/empresa/stepper-suscripcion/stepper-suscripcion';
+import { toast } from 'ngx-sonner';
+import { AlbumesService } from '@servicios/albumes.service';
 import { PagosService } from '@servicios/pagos.service';
 import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
 import { PagoRespuesta, ResultadoUrlPago } from '@modelos/pago.model';
@@ -18,8 +20,10 @@ import { PagoRespuesta, ResultadoUrlPago } from '@modelos/pago.model';
 type EstadoVista = 'cargando' | 'exito' | 'pendiente' | 'error';
 
 /**
- * Página a la que Mercado Pago redirige tras el Checkout Pro.
+ * Página a la que Mercado Pago redirige tras el Checkout Pro (paso 6 del alta).
  * Sincroniza la confirmación mediante payment_id y muestra el estado final.
+ * Con el pago aprobado el back ya publicó el álbum: se muestra el éxito y se redirige
+ * al panel de la empresa.
  */
 @Component({
   selector: 'app-empresa-pago-resultado',
@@ -32,6 +36,7 @@ export class EmpresaPagoResultado implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly pagos = inject(PagosService);
+  private readonly albumes = inject(AlbumesService);
   private readonly estado = inject(SuscripcionEstado);
   private temporizador: ReturnType<typeof setTimeout> | null = null;
 
@@ -45,6 +50,10 @@ export class EmpresaPagoResultado implements OnInit {
   protected readonly estadoVista = signal<EstadoVista>('cargando');
   protected readonly pago = signal<PagoRespuesta | null>(null);
   protected readonly mensajeError = signal<string | null>(null);
+  protected readonly reintentandoPago = signal(false);
+
+  /** Si quedó un borrador sin pagar se puede reintentar el cobro sin rearmar el álbum. */
+  protected readonly hayBorradorPendiente = this.estado.albumBorradorGuardado() !== null;
 
   private reintentos = 0;
 
@@ -89,7 +98,7 @@ export class EmpresaPagoResultado implements OnInit {
     if (externalRef) this.estado.recordarReferencia(externalRef);
 
     // La URL sola no alcanza para dar el pago por acreditado: siempre se valida
-    // contra el backend antes de mostrar el éxito y habilitar el paso 3.
+    // contra el backend antes de mostrar el éxito y habilitar el paso 2.
     if (externalRef && paymentId) {
       this.confirmarConBackend(externalRef, paymentId);
     } else if (externalRef) {
@@ -125,6 +134,7 @@ export class EmpresaPagoResultado implements OnInit {
       if (this.temporizador) clearTimeout(this.temporizador);
       this.temporizador = null;
       this.estadoVista.set('exito');
+      this.alAprobarse();
       return;
     }
 
@@ -179,13 +189,48 @@ export class EmpresaPagoResultado implements OnInit {
     this.verificarPago(referencia);
   }
 
-  /** Pago aprobado: sigue el alta en el paso 3 (nombre e imágenes de la marca). */
-  protected irACrearAlbum(): void {
-    if (this.temporizador) clearTimeout(this.temporizador);
-    this.router.navigate(['/empresa/album/crear/marca']);
+  /**
+   * Pago aprobado: el álbum ya quedó publicado en el back. Se marca el alta como completa y se
+   * lleva a la empresa directo a "Álbumes" del panel, donde ve su álbum recién creado.
+   */
+  private alAprobarse(): void {
+    this.estado.marcarAltaCompletada();
+    this.estado.olvidarAlbumBorrador();
+    toast.success('¡Pago aprobado! Tu álbum ya está publicado.');
+    this.irAlPanel();
   }
 
+  /** Dashboard de la empresa, en la sección con la lista de sus álbumes. */
+  protected irAlPanel(): void {
+    if (this.temporizador) clearTimeout(this.temporizador);
+    // replaceUrl: el botón "atrás" no vuelve a esta pantalla de resultado del pago.
+    this.router.navigate(['/empresa/panel/albumes'], { replaceUrl: true });
+  }
+
+  /**
+   * Pago rechazado o cancelado: si el borrador sigue en el back se crea un pago nuevo para ese
+   * mismo álbum y se vuelve a Mercado Pago; si no, se vuelve a elegir plan.
+   */
   protected reintentar(): void {
-    this.router.navigate(['/empresa']);
+    const albumId = this.estado.albumBorradorGuardado();
+    if (albumId === null) {
+      this.router.navigate(['/empresa']);
+      return;
+    }
+
+    this.reintentandoPago.set(true);
+    this.albumes.pagar(albumId).subscribe({
+      next: (respuesta) => {
+        this.estado.ultimoPago.set(respuesta.pago);
+        this.estado.recordarReferencia(respuesta.pago.referenciaExterna);
+        this.pagos.redirigirACheckout(respuesta.urlPago);
+      },
+      error: (err) => {
+        this.reintentandoPago.set(false);
+        toast.error(
+          err?.error?.mensaje || err?.error?.message || 'No se pudo conectar con Mercado Pago. Intentá de nuevo.',
+        );
+      },
+    });
   }
 }

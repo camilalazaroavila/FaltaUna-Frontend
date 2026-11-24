@@ -19,6 +19,7 @@ import { Confeti } from '@compartidos/componentes/confeti/confeti';
 import { CuponesService } from '@servicios/cupones.service';
 import { SonidoService } from '@servicios/sonido.service';
 import { CategoriaCupon, CuponDescuento, EstadoCupon } from '@modelos/cupon.model';
+import { toast } from 'ngx-sonner';
 
 import urlIconoGastro from '@svgs/Icon_GastroInv.svg';
 import urlIconoDeco from '@svgs/Icon_DecoInv.svg';
@@ -29,9 +30,9 @@ import urlIconoMusica from '@svgs/Icon_MusicaINV.svg';
 import urlIconoTecno from '@svgs/Icon_TecnoInv.svg';
 
 interface FiltroCategoria {
-  readonly id: CategoriaCupon;
+  readonly id: CategoriaCupon | null;
   readonly nombre: string;
-  readonly urlIcono: string;
+  readonly urlIcono: string | null;
 }
 
 /**
@@ -67,23 +68,6 @@ interface FiltroCategoria {
     .titulo-cupones {
       color: var(--crema);
       text-shadow: 3px 3px 0 color-mix(in srgb, var(--color-verde-jugador) 55%, var(--fondo));
-    }
-
-    /* Tipografía Rockstone: copiar el archivo de la fuente a public/fuentes/ (ver README del cambio). */
-    @font-face {
-      font-family: 'Rockstone';
-      src:
-        url('/fuentes/Rockstone.woff2') format('woff2'),
-        url('/fuentes/Rockstone.otf') format('opentype'),
-        url('/fuentes/Rockstone.ttf') format('truetype');
-      font-display: swap;
-    }
-
-    /* Rockstone en toda la vista (títulos, botones, buscador, modal). */
-    .pagina,
-    .pagina * {
-      font-family: 'Rockstone', 'Russo One', system-ui, sans-serif !important;
-      font-weight: 400 !important;
     }
 
     .pagina {
@@ -132,6 +116,7 @@ export class UsuarioCupones {
   private readonly sonidoCanje = 'sonidos/canje.mp3';
 
   protected readonly categorias: readonly FiltroCategoria[] = [
+    { id: null, nombre: 'Todos', urlIcono: null },
     { id: 'gastronomia', nombre: 'Gastronomía', urlIcono: urlIconoGastro },
     { id: 'deco', nombre: 'Deco', urlIcono: urlIconoDeco },
     {
@@ -155,7 +140,8 @@ export class UsuarioCupones {
 
   protected readonly cargando = signal(true);
   protected readonly error = signal<string | null>(null);
-  protected readonly categoriaActiva = signal<CategoriaCupon>('gastronomia');
+  /** Categoría elegida en el filtro; null significa "Todos". */
+  protected readonly categoriaActiva = signal<CategoriaCupon | null>(null);
 
   /** Texto del buscador. */
   protected readonly busqueda = signal('');
@@ -172,7 +158,13 @@ export class UsuarioCupones {
   protected readonly menuCategoriasAbierto = signal(false);
 
   protected readonly categoriaActivaObjeto = computed(
-    () => this.categorias.find((c) => c.id === this.categoriaActiva()) ?? null,
+    () => {
+      const categoria = this.categoriaActiva();
+      if (categoria === null) {
+        return null;
+      }
+      return this.categorias.find((c) => c.id === categoria) ?? null;
+    },
   );
 
   protected readonly hayFiltros = computed(
@@ -181,7 +173,6 @@ export class UsuarioCupones {
 
   protected readonly cuponSeleccionado = signal<CuponDescuento | null>(null);
   protected readonly urlQr = signal<string | null>(null);
-  protected readonly tokenQr = signal<string | null>(null);
   protected readonly qrCargando = signal(false);
   protected readonly qrError = signal(false);
 
@@ -191,7 +182,8 @@ export class UsuarioCupones {
     const texto = this.busqueda().trim().toLowerCase();
 
     return this.cupones().filter((c) => {
-      if (c.categoria !== categoria) {
+      // Si no hay categoría activa, mostramos todos (filtro "Todos").
+      if (categoria !== null && c.categoria !== categoria) {
         return false;
       }
 
@@ -255,6 +247,10 @@ export class UsuarioCupones {
         if (!coincide) {
           continue;
         }
+      }
+
+      if (c.categoria === null) {
+        continue;
       }
 
       encontradas.add(c.categoria);
@@ -323,6 +319,20 @@ export class UsuarioCupones {
         next: (cupones) => {
           this.cupones.set(cupones);
           this.cargando.set(false);
+
+          // Notificación automática: si hay cupones disponibles, avisamos al usuario.
+          const disponibles = cupones.filter((c) => c.estado === 'Disponible');
+          if (disponibles.length > 0) {
+            toast.success(
+              `¡Tienes ${disponibles.length} cupón${
+                disponibles.length > 1 ? 'es' : ''
+              } disponible${disponibles.length > 1 ? 's' : ''}!`,
+              {
+                description: 'Ve tu colección de cupones y canjéalos cuando quieras.',
+                position: 'top-center',
+              }
+            );
+          }
         },
         error: () => {
           this.error.set(
@@ -333,7 +343,7 @@ export class UsuarioCupones {
       });
   }
 
-  protected elegirCategoria(id: CategoriaCupon): void {
+  protected elegirCategoria(id: CategoriaCupon | null): void {
     this.categoriaActiva.set(id);
     this.menuCategoriasAbierto.set(false);
   }
@@ -395,26 +405,17 @@ export class UsuarioCupones {
 
     this.qrCargando.set(true);
 
-    // Con enlace de la marca, el QR se genera acá y lleva directo a la página del descuento.
+    // Siempre generar el QR localmente con el código del cupón.
+    // Esto evita llamadas al backend que retornan 400 cuando el cupón
+    // está vencido o ya fue usado, y el QR local se puede escanear
+    // o ingresar el código manualmente en el panel del empleado.
     if (cupon.enlace) {
       this.generarQrLocal(cupon, cupon.enlace);
       return;
     }
 
-    this.cuponesService.obtenerQr(cupon.id).subscribe({
-      next: ({ imagen, token }) => {
-        // Si se cerró o cambió el cupón, se descarta la respuesta.
-        if (this.cuponSeleccionado()?.id !== cupon.id) {
-          return;
-        }
-
-        this.tokenQr.set(token);
-        this.urlQr.set(URL.createObjectURL(imagen));
-        this.qrCargando.set(false);
-      },
-      // Si el backend no entrega el QR, se genera uno acá con el código del cupón.
-      error: () => this.generarQrLocal(cupon, cupon.codigo),
-    });
+    this.generarQrLocal(cupon, cupon.codigo);
+    return;
   }
 
   /** Dibuja el QR en el navegador; así todos los cupones tienen QR aunque falle el backend. */
@@ -468,6 +469,5 @@ export class UsuarioCupones {
     }
 
     this.urlQr.set(null);
-    this.tokenQr.set(null);
   }
 }

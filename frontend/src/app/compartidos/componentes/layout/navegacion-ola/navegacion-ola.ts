@@ -36,15 +36,15 @@ const OLA = {
   circulo: 46,              // diámetro del círculo activo
   holgura: 6,               // separación constante círculo ↔ curva
   hombro: 24,               // tramo suave entre el borde recto y la curva
-  altoMobile: 72,
-  centroYMobile: 29,        // altura del centro del círculo dentro de la barra (px). Más alto = hueco más profundo
+  altoMobile: 76,
+  centroYMobile: 31,        // altura del centro del círculo dentro de la barra (px). Más alto = hueco más profundo
   radioEsquinaMobile: 14,
   paddingLateralMobile: 12,
   jugarRadio: 29,           // mitad del botón Jugar (3.625rem ≈ 58 px)
   respiro: 4,
   anchoDesktop: 80,
   centroXDesktop: 40,       // centro horizontal común para los ítemes y el círculo
-  pasoDesktop: 62,          // alto de cada ítem
+  pasoDesktop: 70,          // alto de cada ítem (más aire vertical entre destinos)
   margenDesktop: 46,        // aire arriba y abajo
   radioEsquinaDesktop: 20,  // lado que da al contenido
   sangradoIzquierdoDesktop: 14, // sangrado hacia la izquierda para que la sombra cartoon inferior cubra hasta x=0 sin corte

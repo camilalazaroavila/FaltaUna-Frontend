@@ -139,7 +139,7 @@ function mapearCartaInventario(carta: CartaInventarioApi): Carta {
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
     categoria: categoriaCartaDesdeNombre(carta.categoria),
     atributoDerecho: carta.poder,
-    atributoIzquierdo: carta.costoCupon,
+    atributoIzquierdo: (carta as { costeTicket?: number }).costeTicket ?? carta.costoCupon ?? 0,
     obtenida: true,
     cantidad: carta.cantidad,
     descripcion: carta.descripcion,
@@ -153,7 +153,7 @@ export function mapearCartaMazo(carta: MazoApi['cartas'][number]): Carta {
     rareza: mapearRareza(carta.rareza, carta.rarezaOrden),
     categoria: categoriaCartaDesdeNombre(carta.categoria),
     atributoDerecho: carta.poder,
-    atributoIzquierdo: carta.costoCupon,
+    atributoIzquierdo: (carta as { costeTicket?: number }).costeTicket ?? carta.costoCupon ?? 0,
     obtenida: true,
   };
 }
@@ -164,8 +164,8 @@ function normalizar(valor: string): string {
     .trim()
     .toLowerCase();
 }
-export function mapearRareza(valor: string, orden: number): RarezaCarta {
-  switch (normalizar(valor)) {
+export function mapearRareza(valor: string | null | undefined, orden: number | null | undefined): RarezaCarta {
+  switch (normalizar(valor ?? '')) {
     case 'comun':
       return 'comun';
     case 'rara':
@@ -176,6 +176,6 @@ export function mapearRareza(valor: string, orden: number): RarezaCarta {
     case 'legendaria':
       return 'legendaria';
     default:
-      return ({ 1: 'comun', 2: 'rara', 3: 'epicarta', 4: 'legendaria' } as const)[orden] ?? 'comun';
+      return ({ 1: 'comun', 2: 'rara', 3: 'epicarta', 4: 'legendaria' } as const)[orden ?? 0] ?? 'comun';
   }
 }

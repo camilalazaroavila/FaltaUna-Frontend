@@ -8,6 +8,21 @@ import type { Carta } from '@modelos/carta.model';
 import { categoriaCartaDesdeNombre } from '@modelos/carta.model';
 import { esCartaSinMarca } from '@modelos/catalogo-cartas-imagenes';
 import type { CartaInventarioApi } from '@modelos/mazo.model';
+
+type CartaFavoritaApi = {
+  cartaId?: number;
+  id?: number;
+  nombre?: string;
+  cantidad?: number;
+  imagenUrl?: string | null;
+  rareza?: string | null;
+  rarezaOrden?: number | null;
+  poder?: number | null;
+  costeTicket?: number | null;
+  costoCupon?: number | null;
+  categoria?: string | null;
+  descripcion?: string | null;
+};
 import { resolverImagenCarta, mapearRareza } from './baraja.service';
 import type {
   CartaIntercambioApi,
@@ -239,28 +254,13 @@ export class IntercambioService {
    * permitiendo que el usuario vea hasta 5 favoritas destacadas y las expanda en detalle.
    */
   obtenerCartasFavoritasDeColeccionista(coleccionistaId: number): Observable<Carta[]> {
-    return this.api.get<CartaInventarioApi[]>(`CartaFavorita/usuario/${coleccionistaId}`).pipe(
-      map((cartas) => {
-        if (cartas && cartas.length > 0) {
-          return cartas.map(this.mapearCartaInventario);
-        }
-        return [];
-      }),
+    return this.api.get<CartaFavoritaApi[]>(`CartaFavorita/usuario/${coleccionistaId}`).pipe(
+      map((cartas) => (cartas ?? []).map((c) => this.mapearCartaFavorita(c))),
       catchError(() =>
         this.api.get<any[]>(`Intercambios/sugerencias/${coleccionistaId}`).pipe(
           map((sugerencias) => {
             const favs = (sugerencias ?? []).filter((s) => s.esFavoritaDelOtro);
-            return favs.map((s) => ({
-              id: String(s.cartaId ?? s.id),
-              nombre: s.nombre,
-              imagenUrl: resolverImagenCarta(s.imagenUrl, s.nombre),
-              rareza: mapearRareza(s.rareza, s.rarezaOrden ?? 1),
-              categoria: categoriaCartaDesdeNombre(s.categoria ?? ''),
-              atributoDerecho: s.poder ?? 0,
-              atributoIzquierdo: s.costoCupon ?? 0,
-              obtenida: true,
-              descripcion: s.descripcion,
-            }));
+            return favs.map((s) => this.mapearSugerenciaComoCarta(s));
           }),
           catchError(() => of([])),
         ),
@@ -367,6 +367,9 @@ export class IntercambioService {
       cartaRareza: c.rareza ?? c.cartaRareza ?? 'Común',
       imagenUrl: c.imagenUrl ?? c.cartaImagenUrl ?? null,
       cartaImagenUrl: c.imagenUrl ?? c.cartaImagenUrl ?? null,
+      atributoDerecho: Number(c.poder ?? 0),
+      atributoIzquierdo: Number(c.costeTicket ?? c.costoCupon ?? 0),
+      categoria: c.categoria ?? null,
     }));
 
     return {
@@ -416,10 +419,42 @@ export class IntercambioService {
       rareza: mapearRareza(c.rareza, c.rarezaOrden),
       categoria: categoriaCartaDesdeNombre(c.categoria),
       atributoDerecho: c.poder,
-      atributoIzquierdo: c.costoCupon,
+      atributoIzquierdo: (c as { costeTicket?: number }).costeTicket ?? c.costoCupon ?? 0,
       obtenida: true,
       cantidad: c.cantidad,
       descripcion: c.descripcion,
+    };
+  }
+
+  private mapearCartaFavorita(c: CartaFavoritaApi): Carta {
+    const nombre = c.nombre ?? '';
+    return {
+      id: String(c.cartaId ?? c.id ?? ''),
+      nombre,
+      imagenUrl: resolverImagenCarta(c.imagenUrl, nombre),
+      rareza: mapearRareza(c.rareza, c.rarezaOrden),
+      categoria: categoriaCartaDesdeNombre(c.categoria ?? ''),
+      atributoDerecho: Number(c.poder ?? 0),
+      atributoIzquierdo: Number(c.costeTicket ?? c.costoCupon ?? 0),
+      obtenida: true,
+      cantidad: c.cantidad ?? 1,
+      descripcion: c.descripcion ?? undefined,
+    };
+  }
+
+  private mapearSugerenciaComoCarta(s: any): Carta {
+    const nombre = s?.nombre ?? '';
+    return {
+      id: String(s?.cartaId ?? s?.id ?? ''),
+      nombre,
+      imagenUrl: resolverImagenCarta(s?.imagenUrl, nombre),
+      rareza: mapearRareza(s?.rareza, s?.rarezaOrden),
+      categoria: categoriaCartaDesdeNombre(s?.categoria ?? ''),
+      atributoDerecho: Number(s?.poder ?? 0),
+      atributoIzquierdo: Number((s as { costeTicket?: number })?.costeTicket ?? s?.costoCupon ?? 0),
+      obtenida: true,
+      cantidad: s?.cantidadIntercambiable ?? s?.cantidad ?? 1,
+      descripcion: s?.descripcion ?? undefined,
     };
   }
 

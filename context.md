@@ -103,7 +103,7 @@
 
 - **Probabilidades (sobre genérico, por carta):** 50 % Común · 30 % Rara · 15 % Epicarta · 5 % Legendaria. **Pendiente:** tablas de categoría y marca.
 - Se pueden obtener **repetidas dentro del mismo sobre**.
-- **Pity (garantía) por barras de progreso:** el usuario tiene una barra por tipo de sobre (genérico, categoría, marca) para no frustrarse con las legendarias. Por ejemplo, 50 sobres genéricos garantizan una legendaria. Los sobres de categoría y marca requieren menos aperturas porque son más difíciles de conseguir. El usuario puede elegir qué barra avanzar. Al salir una legendaria, la barra **vuelve a 0**. **Pendiente:** valores para categoría y marca, y si hay una barra por categoría/marca o una global por tipo.
+- **Pity (garantía) por barras de progreso:** el usuario tiene 3 contadores globales por tipo de sobre (General, Categoría, Marca) calculados por el backend (`GET /api/Sobres/pity`). Umbrales confirmados: **General = 40**, **Categoría = 20**, **Marca = 10**. Al alcanzar el umbral (`contador >= umbral`), la condición de garantía se activa (`garantizada = true`) y el sobre siguiente trae una carta legendaria garantizada (sobre 41, 21 u 11). Al obtener una legendaria de ese tipo, el contador vuelve a 0 y la garantía a false. El frontend no usa filtros ni ordenamiento dinámico: muestra siempre los 3 contadores en orden fijo (General, Categoría, Marca).
 - **Sobres diarios:** 2 por día, genéricos y no elegibles, uno cada 12 horas. No se acumulan. **A confirmar:** si es un sobre a las 00:00 y otro a las 12:00.
 - Los sobres **no se compran**: se obtienen por misiones, bienvenida y otras recompensas.
 - Se abren **de inmediato**. Si la apertura se interrumpe, las cartas van directo a la colección.
@@ -133,7 +133,7 @@
 - **Reinicio:** los martes a las 21:00. La recompensa no reclamada **se pierde**. **A confirmar:** si esto aplica también a las diarias y a qué hora se reinician.
 - El premio se reclama **manualmente**, con un botón **"Reclamar todo"**.
 - Algunas misiones dan más progreso por jugar en matchmaking.
-- **Estado de implementación:** la vista `/usuario/misiones` consume `GET /api/Misiones` y `POST /api/Misiones/{id}/reclamar` con JWT. Las misiones diarias y semanales salen de `SeedMisiones` (equivalente a `database/seeds/05_misiones.sql`), que corre junto con `SeedSobres` al arrancar la API, así que cada recompensa apunta a un sobre real. La pestaña **Permanente** queda como placeholder y el **PT System** sigue alimentado con datos de prueba. Al reclamar, el modal abre el sobre por su `sobreId` acreditado y nunca cae al sobre diario (ese tiene su propio límite de cargas).
+- **Estado de implementación:** la vista `/usuario/misiones` consume `GET /api/Misiones` y `POST /api/Misiones/{id}/reclamar` con JWT. Las misiones diarias, semanales y permanentes salen de `SeedMisiones` (equivalente a `database/seeds/05_misiones.sql`), que corre junto con `SeedSobres` al arrancar la API, así que cada recompensa apunta a un sobre real. La pestaña **Permanente** lista los hitos únicos que nunca se reinician (abrir sobres, jugar partidas, obtener cartas de rareza alta y reclamos diarios) y permite reclamar sus sobres de recompensa. El **PT System** está conectado con contadores reales y garantía legendaria. Al reclamar, el modal abre el sobre por su `sobreId` acreditado y nunca cae al sobre diario (ese tiene su propio límite de cargas).
 
 ---
 
@@ -258,7 +258,7 @@ Cambios necesarios para alinearlo con las reglas de negocio:
 | **Agregar** | `Marca`, `Plan`, `Mision` y progreso por usuario, favoritas por usuario, progreso de pity por tipo de sobre, inventario de sobres, local/sucursal por colección, rol de usuario y su empresa, visibilidad del perfil, icono de perfil. |
 | **Revisar** | `Cupon` hoy cuelga de `Coleccion`; debe vincularse a `Marca` e hitos. `Intercambio` necesita fecha de vencimiento y reserva de cartas. `Carta` con una sola colección (hoy `ColeccionCarta` es N:N). Cartas de bienvenida marcadas como no intercambiables. `Ronda.FechaFin` es obligatoria y debería ser opcional. Renombrar `Mana` según la decisión de naming (sección 4). `ZonaPartida` hoy tiene `ZonaId` fijo y `CartaPartida` apunta a `ZonaPartidaId`: para que las cartas no se muevan al rotar, `ZonaPartida` debe representar el lugar físico y la zona activa debe variar por ronda (`ZonaRonda` podría cubrirlo); pendiente de revisión del backend. |
 
-> El frontend ya tiene componentes de misiones, pity, apertura de sobres y suscripción de empresa (ver estructura en la sección 5). **Misiones ya está respaldada por el backend** (`GET /api/Misiones`, `POST /api/Misiones/{id}/reclamar`) y por los seeds `SeedSobres`/`SeedMisiones`; el **PT System** y la pestaña **Permanente** siguen siendo mock/placeholder.
+> El frontend ya tiene componentes de misiones, pity, apertura de sobres y suscripción de empresa (ver estructura en la sección 5). **Misiones ya está respaldada por el backend** (`GET /api/Misiones`, `POST /api/Misiones/{id}/reclamar`) y por los seeds `SeedSobres`/`SeedMisiones` para las tres periodicidades (Diaria, Semanal y Permanente); el **PT System** está conectado a contadores reales y garantía legendaria.
 
 ### Estado del tablero de partida
 
@@ -586,7 +586,7 @@ docker compose down    # Detener manteniendo datos
 1. Alcance de la entrega (TPI) frente a la visión futura.
 2. Resolver las contradicciones abiertas de la sección 12 (intercambio sincrónico o asincrónico, slots y cartas jugables por ronda, sobres populares, amistades) y el detalle de la victoria por 100 puntos (empate si ambos la superan en la misma ronda).
 3. Nombre alternativo para el recurso de juego (conflicto "cupón") y renombrado de `Mana` en el modelo.
-4. Probabilidades y valores de pity para sobres de categoría y marca.
+4. Probabilidades para sobres de categoría y marca (valores de pity y contadores por tipo resueltos: General 40, Categoría 20, Marca 10 en `GET /api/Sobres/pity`).
 5. Planes: nombres, precios, cantidad de colecciones y duración del cooldown.
 6. Reglas exactas de reinicio de misiones diarias.
 7. Slots por lado y cartas jugables por ronda (las 2 zonas simultáneas fijas con rotación por turno quedaron resueltas).
