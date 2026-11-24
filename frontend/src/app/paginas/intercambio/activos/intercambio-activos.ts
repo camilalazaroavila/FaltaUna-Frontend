@@ -120,9 +120,9 @@ export class IntercambioActivos implements OnInit {
       nombre,
       imagenUrl: resolverImagenCarta(img, nombre),
       rareza: mapearRareza(rarezaNombre, rarezaId),
-      categoria: categoriaCartaDesdeNombre(''),
-      atributoDerecho: 0,
-      atributoIzquierdo: 0,
+      categoria: categoriaCartaDesdeNombre(cartaApi.categoria ?? ''),
+      atributoDerecho: cartaApi.atributoDerecho ?? 0,
+      atributoIzquierdo: cartaApi.atributoIzquierdo ?? 0,
       obtenida: true,
     };
   });

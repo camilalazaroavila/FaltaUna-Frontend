@@ -28,6 +28,9 @@ describe('IntercambioPendiente', () => {
         cartaRarezaId: 4,
         cartaRareza: 'legendaria',
         cartaImagenUrl: '/supergrido.png',
+        atributoDerecho: 40,
+        atributoIzquierdo: 2,
+        categoria: 'Ropa',
       },
     ],
   };
@@ -49,6 +52,9 @@ describe('IntercambioPendiente', () => {
         cartaRarezaId: 4,
         cartaRareza: 'legendaria',
         cartaImagenUrl: '/supergrido.png',
+        atributoDerecho: 40,
+        atributoIzquierdo: 2,
+        categoria: 'Ropa',
       },
       {
         usuarioId: 20,
@@ -57,6 +63,9 @@ describe('IntercambioPendiente', () => {
         cartaRarezaId: 1,
         cartaRareza: 'comun',
         cartaImagenUrl: '/danonino.png',
+        atributoDerecho: 60,
+        atributoIzquierdo: 5,
+        categoria: 'Tecnología',
       },
     ],
   };
@@ -156,6 +165,15 @@ describe('IntercambioPendiente', () => {
       component.confirmarRechazo();
       expect(intercambioServiceMock.rechazarIntercambio).toHaveBeenCalledWith(2);
       expect(router.navigate).toHaveBeenCalledWith(['/usuario/intercambio/activos']);
+    });
+
+    it('debe mapear atributos y categoría reales de ambas cartas (no ceros ni categoría por defecto)', () => {
+      expect(component['cartaOfertante']()?.atributoDerecho).toBe(40);
+      expect(component['cartaOfertante']()?.atributoIzquierdo).toBe(2);
+      expect(component['cartaOfertante']()?.categoria).toBe('indumentaria');
+      expect(component['cartaReceptor']()?.atributoDerecho).toBe(60);
+      expect(component['cartaReceptor']()?.atributoIzquierdo).toBe(5);
+      expect(component['cartaReceptor']()?.categoria).toBe('tecnologia');
     });
 
     it('al presionar Aceptar debe confirmar el intercambio e iniciar la animación', fakeAsync(() => {
