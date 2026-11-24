@@ -1,42 +1,36 @@
 <div class="w-full overflow-x-clip">
-  <!-- SECCIÓN SUPERIOR: HEADER FLOTANTE EN FORMA PASTILLA Y HERO -->
+
   <div class="bg-landing-oscuro-fondo flow-root">
     <app-header [verde]="true" />
 
-    <!-- HERO SECTION -->
+  
     <section
       class="relative pt-6 pb-12 sm:pt-8 sm:pb-16 md:pt-10 md:pb-20 lg:pt-14 lg:pb-24 xl:pt-16 xl:pb-28 2xl:pt-20 2xl:pb-32 text-landing-oscuro-texto overflow-hidden select-none">
       
-      <!-- FORMAS ORGÁNICAS VERDES Y DECORACIONES EN EL FONDO -->
       <div class="pointer-events-none absolute inset-0 overflow-hidden select-none z-0" aria-hidden="true">
-        <!-- Destello estrella superior izquierda -->
+       
         <svg class="absolute top-[16%] left-[6%] sm:left-[8%] lg:left-[10%] xl:left-[12%] w-5 h-5 sm:w-7 sm:h-7 text-landing-acento" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0 C12 7.5 12 7.5 19.5 12 C12 12 12 16.5 12 24 C12 16.5 12 12 4.5 12 C12 12 12 7.5 12 0 Z"/>
         </svg>
 
-        <!-- Destello estrella inferior derecha -->
         <svg class="absolute bottom-[20%] right-[32%] sm:right-[26%] lg:right-[22%] xl:right-[24%] w-4 h-4 sm:w-6 sm:h-6 text-landing-acento" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0 C12 7.5 12 7.5 19.5 12 C12 12 12 16.5 12 24 C12 16.5 12 12 4.5 12 C12 12 12 7.5 12 0 Z"/>
         </svg>
 
-        <!-- Forma verde izquierda (bajo Jaime) -->
         <svg class="absolute -bottom-1 -left-10 w-[48vw] max-w-[620px] min-[1920px]:max-w-[850px] min-w-[280px] h-auto text-landing-marca opacity-95"
           viewBox="0 0 620 340" fill="currentColor">
           <path d="M0,340 L0,220 C40,160 140,140 230,160 C330,180 390,240 500,230 C560,225 600,270 620,340 Z" />
         </svg>
 
-        <!-- Forma verde derecha (detrás de Falti) -->
         <svg class="absolute -bottom-1 -right-8 w-[45vw] max-w-[600px] min-[1920px]:max-w-[800px] min-w-[280px] h-auto text-landing-marca opacity-95"
           viewBox="0 0 600 380" fill="currentColor">
           <path d="M600,0 C510,30 450,110 450,180 C450,235 480,260 440,300 C390,345 300,345 240,380 L600,380 Z" />
         </svg>
       </div>
 
-      <!-- CONTENEDOR HERO: JAIME - TEXTO CENTRADO - FALTI -->
       <div class="contenedor-landing relative z-10">
         <div class="grid grid-cols-2 lg:grid-cols-[1fr_minmax(0,1.9fr)_1fr] min-[1920px]:grid-cols-[1.2fr_minmax(0,2fr)_1.2fr] items-center justify-items-center gap-6 lg:gap-4 xl:gap-8 min-[1920px]:gap-12">
-          
-          <!-- Columna Izquierda: Jaime -->
+
           <div class="order-2 lg:order-1 col-span-1 flex justify-center lg:justify-end items-end w-full">
             <img
               src="/imagenes/landing-usuario/jaime_landing.png"
@@ -45,7 +39,6 @@
             />
           </div>
 
-          <!-- Columna Central: Titular, Subtítulo y Botón CTA -->
           <div class="order-1 lg:order-2 col-span-2 lg:col-span-1 flex flex-col items-center text-center max-w-xl xl:max-w-2xl min-[1920px]:max-w-3xl px-2">
             <h1
               class="font-titulo font-black text-2xl min-[400px]:text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl min-[1920px]:text-8xl leading-[1.08] tracking-tight">
@@ -66,7 +59,6 @@
             </div>
           </div>
 
-          <!-- Columna Derecha: Falti -->
           <div class="order-3 lg:order-3 col-span-1 flex justify-center lg:justify-start items-end w-full relative">
             <div class="relative inline-block">
               <img
@@ -74,7 +66,7 @@
                 alt="Falti"
                 class="w-40 min-[400px]:w-48 sm:w-60 md:w-64 lg:w-72 xl:w-80 2xl:w-[24rem] min-[1920px]:w-[30rem] h-auto object-contain select-none drop-shadow-xl"
               />
-              <!-- Rayitas cerca de la mano con seña de paz -->
+             
               <svg class="absolute -top-1 right-2 sm:right-4 w-5 h-5 sm:w-7 sm:h-7 text-landing-acento"
                 viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" aria-hidden="true">
                 <path d="M8 20 L2 23" />
@@ -89,17 +81,14 @@
     </section>
   </div>
 
-  <!-- CARRUSEL DE MARCAS-->
   <app-carrusel-marcas [marcas]="marcas" [animado]="true" [duracionSegundos]="35" />
 
-  <!-- ONDA -->
   <div class="landing-onda bg-landing-oscuro-fondo" aria-hidden="true">
     <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
       <path d="M0,0 L1440,0 L1440,35 C1160,110 880,-10 580,85 C340,140 160,15 0,60 Z" fill="#F9F9B2" />
     </svg>
   </div>
 
-  <!-- ¿CÓMO FUNCIONA? -->
   <section
     class="bg-landing-oscuro-fondo py-14 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40 text-landing-oscuro-texto">
     <div class="contenedor-landing flex flex-col items-center">
@@ -108,7 +97,6 @@
         ¿CÓMO FUNCIONA?
       </h2>
 
-      <!-- Grid de los 4 pasos-->
       <div
         class="mt-10 sm:mt-12 md:mt-16 lg:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:gap-x-10 lg:gap-x-8 xl:gap-x-12 w-full max-w-6xl 2xl:max-w-7xl justify-items-center">
         @for (paso of pasosFunciona; track paso.numero) {
@@ -124,7 +112,6 @@
         }
       </div>
 
-      <!-- Botón Comenzá a coleccionar -->
       <div class="mt-16 sm:mt-20 md:mt-24 lg:mt-24 2xl:mt-28 text-center">
         <a routerLink="/login" class="landing-btn-pildora max-w-full">
           Comenzá a coleccionar &rarr;
@@ -133,14 +120,12 @@
     </div>
   </section>
 
-  <!-- ONDA -->
   <div class="landing-onda bg-landing-claro-fondo" aria-hidden="true">
     <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
       <path d="M0,0 L1440,0 L1440,40 C1200,120 920,0 640,90 C400,140 180,20 0,70 Z" fill="#0D3B40" />
     </svg>
   </div>
 
-  <!-- ¿Y SI SOY UN NEGOCIO? -->
   <section class="bg-landing-claro-fondo py-14 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40 text-landing-claro-texto">
     <div class="contenedor-landing flex flex-col items-center">
       <h2
@@ -148,7 +133,6 @@
         ¿Y SI SOY UN NEGOCIO?
       </h2>
 
-      <!-- Grid de los 4 pasos -->
       <div
         class="mt-10 sm:mt-12 md:mt-16 lg:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:gap-x-10 lg:gap-x-8 xl:gap-x-12 w-full max-w-6xl 2xl:max-w-7xl justify-items-center">
         @for (paso of pasosNegocio; track paso.numero) {
@@ -179,7 +163,6 @@
         }
       </div>
 
-      <!-- Botón Explorar modo empresa -->
       <div class="mt-16 sm:mt-20 md:mt-24 lg:mt-24 2xl:mt-28 text-center">
         <a routerLink="/empresa/landing" class="landing-btn-pildora max-w-full">
           Explorá el modo empresa &rarr;
@@ -188,17 +171,15 @@
     </div>
   </section>
 
-  <!-- ONDA -->
   <div class="landing-onda bg-landing-oscuro-fondo" aria-hidden="true">
     <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
       <path d="M0,0 L1440,0 L1440,35 C1160,110 880,-10 580,85 C340,140 160,15 0,60 Z" fill="#F9F9B2" />
     </svg>
   </div>
 
-  <!-- PREGUNTAS FRECUENTES -->
   <section class="relative overflow-hidden bg-landing-oscuro-fondo py-14 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40 text-landing-oscuro-texto"
     aria-labelledby="faq-titulo">
-    <!-- Jaime asomándose por la izquierda (arriba) -->
+    
     <img
       src="/imagenes/landing-usuario/jaimeqa.png"
       alt="Jaime asomándose"
@@ -206,7 +187,6 @@
       class="pointer-events-none absolute left-0 top-[22%] sm:top-[24%] md:top-[24%] lg:top-[25%] xl:top-[26%] hidden md:block w-28 md:w-36 lg:w-44 xl:w-52 2xl:w-60 max-w-[18vw] z-10 select-none"
     />
 
-    <!-- Falti asomándose por la derecha (abajo) -->
     <img
       src="/imagenes/landing-usuario/faltiqa.png"
       alt="Falti asomándose"
@@ -232,23 +212,19 @@
     </div>
   </section>
 
-  <!-- ONDA -->
   <div class="landing-onda bg-landing-claro-fondo" aria-hidden="true">
     <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
       <path d="M0,0 L1440,0 L1440,40 C1200,120 920,0 640,90 C400,140 180,20 0,70 Z" fill="#0D3B40" />
     </svg>
   </div>
 
-  <!-- ¿QUIÉNES SOMOS? -->
   <app-team-section [integrantes]="equipo" />
 
-  <!-- ONDA -->
   <div class="landing-onda bg-landing-oscuro-fondo" aria-hidden="true">
     <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
       <path d="M0,0 L1440,0 L1440,35 C1160,110 880,-10 580,85 C340,140 160,15 0,60 Z" fill="#F9F9B2" />
     </svg>
   </div>
 
-  <!-- FOOTER INSTITUCIONAL -->
   <app-footer />
 </div>
