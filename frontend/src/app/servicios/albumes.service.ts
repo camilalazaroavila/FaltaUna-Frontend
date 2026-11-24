@@ -3,7 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
-import { AlbumRespuesta, CategoriaApi, CrearAlbumSolicitud } from '@modelos/album.model';
+import {
+  AlbumBorradorRespuesta,
+  AlbumRespuesta,
+  CategoriaApi,
+  CrearBorradorSolicitud,
+  CuponBorradorSolicitud,
+  DatosBorradorAlbum,
+  RarezaApi,
+} from '@modelos/album.model';
+import { IniciarPagoRespuesta } from '@modelos/pago.model';
 
 /** Forma de cada colección tal como la devuelve el backend (ColeccionRespuesta). */
 interface ColeccionBackend {
@@ -18,6 +27,7 @@ interface ColeccionBackend {
   activa: boolean;
   imagenesAlbum?: AlbumRespuesta['imagenesAlbum'];
   imagenes?: AlbumRespuesta['imagenesAlbum'];
+  categoriaNombre?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -26,6 +36,9 @@ export class AlbumesService {
 
   /** Base: ej. https://miapi.com/api/Colecciones */
   private readonly apiUrl = `${environment.apiUrl}/Colecciones`;
+
+  /** Flujo nuevo de empresa: borrador → cupón → vista previa → pago (`AlbumesEmpresaController`). */
+  private readonly borradorUrl = `${environment.apiUrl}/empresa/albumes`;
 
   /**
    * GET /api/Colecciones/mis-colecciones
@@ -48,6 +61,7 @@ export class AlbumesService {
               fechaFin: c.fechaFin,
               activa: c.activa,
               imagenesAlbum: c.imagenesAlbum || c.imagenes || [],
+              categoriaNombre: c.categoriaNombre ?? null,
             }) as AlbumRespuesta,
         ),
       ),
@@ -55,7 +69,7 @@ export class AlbumesService {
   }
 
   /**
-   * Categorías de marca para el desplegable del paso 4.
+   * Categorías de marca para el desplegable del paso 3.
    * Esta ruta NO está en ColeccionesController: confirmá en el controller
    * de categorías cuál es (probablemente `${environment.apiUrl}/Categorias`).
    */
@@ -63,26 +77,108 @@ export class AlbumesService {
     return this.http.get<CategoriaApi[]>(`${environment.apiUrl}/Categorias`);
   }
 
-  /**
-   * POST /api/Colecciones, multipart/form-data. Requiere rol "Empresa".
-   * Los nombres de campo coinciden con `CrearColeccionSolicitud` del backend.
-   */
-  crear(solicitud: CrearAlbumSolicitud): Observable<AlbumRespuesta> {
-    const form = new FormData();
-    form.append('ReferenciaPago', solicitud.referenciaPago);
-    form.append('NombreMarca', solicitud.nombreMarca);
-    // El back exige NombreColeccion. Si tu formulario tiene un campo propio
-    // para el nombre del álbum, usalo acá en lugar de nombreMarca.
-    form.append('NombreColeccion', solicitud.nombreMarca);
-    form.append('DescripcionMarca', solicitud.descripcion);
-    form.append('EmailContacto', solicitud.emailContacto);
-    form.append('RedesSociales', `${solicitud.redSocial}: ${solicitud.usuarioRedSocial}`);
-    form.append('CategoriaId', String(solicitud.categoriaId));
-    form.append('FechaInicio', solicitud.fechaInicio);
-    form.append('FechaFin', solicitud.fechaFin);
-    form.append('Logo', solicitud.logo);
-    solicitud.imagenes.forEach((imagen) => form.append('ImagenesCartas', imagen));
+  // ------------------------------------------------------------------
+  // Flujo nuevo: el álbum nace como BORRADOR y el pago (Mercado Pago) es el último paso.
+  // ------------------------------------------------------------------
 
-    return this.http.post<AlbumRespuesta>(this.apiUrl, form);
+  /** GET /api/empresa/albumes/rarezas: ids reales de las rarezas (Común, Rara, Épica, Legendaria). */
+  obtenerRarezas(): Observable<RarezaApi[]> {
+    return this.http.get<RarezaApi[]>(`${this.borradorUrl}/rarezas`);
+  }
+
+  /** GET /api/empresa/albumes/{id}: vista previa (borrador o publicado). */
+  obtener(id: number): Observable<AlbumBorradorRespuesta> {
+    return this.http.get<AlbumBorradorRespuesta>(`${this.borradorUrl}/${id}`);
+  }
+
+  /** POST /api/empresa/albumes/marca (multipart): guarda el perfil de la marca antes de omitir álbum. */
+  guardarMarca(datos: {
+    nombreMarca: string;
+    descripcion: string;
+    emailContacto: string;
+    redSocial: string;
+    usuarioRedSocial: string;
+    categoriaId: number;
+    logo?: File | null;
+    fotoLocal?: File | null;
+  }): Observable<unknown> {
+    const form = new FormData();
+    form.append('NombreMarca', datos.nombreMarca);
+    form.append('DescripcionMarca', datos.descripcion);
+    form.append('EmailContacto', datos.emailContacto);
+    form.append('RedesSociales', `${datos.redSocial}: ${datos.usuarioRedSocial}`);
+    form.append('CategoriaId', String(datos.categoriaId));
+    if (datos.logo) form.append('Logo', datos.logo);
+    if (datos.fotoLocal) form.append('FotoLocal', datos.fotoLocal);
+    return this.http.post(`${this.borradorUrl}/marca`, form);
+  }
+
+  /**
+   * POST /api/empresa/albumes/borrador (multipart). Crea el álbum en estado Borrador con el plan
+   * elegido en el paso 1. NO cobra nada. Los campos coinciden con `CrearBorradorAlbumSolicitud`.
+   */
+  crearBorrador(solicitud: CrearBorradorSolicitud): Observable<AlbumBorradorRespuesta> {
+    const form = this.formularioDatos(solicitud);
+    form.append('PlanId', String(solicitud.planId));
+    solicitud.imagenes.forEach((imagen) => form.append('ImagenesCartas', imagen));
+    // La rareza i corresponde a la imagen i (mismo orden), como exige el back.
+    solicitud.rarezaIds.forEach((id) => form.append('RarezasCartas', String(id)));
+    if (solicitud.nombresCartas) {
+      solicitud.nombresCartas.forEach((nombre) => form.append('NombresCartas', nombre));
+    }
+    return this.http.post<AlbumBorradorRespuesta>(`${this.borradorUrl}/borrador`, form);
+  }
+
+  /** PUT /api/empresa/albumes/{id} (multipart): actualiza textos, logo y foto del borrador. */
+  actualizarBorrador(id: number, datos: DatosBorradorAlbum): Observable<AlbumBorradorRespuesta> {
+    return this.http.put<AlbumBorradorRespuesta>(`${this.borradorUrl}/${id}`, this.formularioDatos(datos));
+  }
+
+  /** POST /api/empresa/albumes/{id}/imagenes (multipart): suma una carta al borrador. */
+  agregarImagen(id: number, imagen: File, rarezaId: number): Observable<AlbumBorradorRespuesta> {
+    const form = new FormData();
+    form.append('Imagen', imagen);
+    form.append('RarezaId', String(rarezaId));
+    return this.http.post<AlbumBorradorRespuesta>(`${this.borradorUrl}/${id}/imagenes`, form);
+  }
+
+  /** DELETE /api/empresa/albumes/{id}/imagenes/{imagenId}: saca una carta del borrador. */
+  eliminarImagen(id: number, imagenId: number): Observable<AlbumBorradorRespuesta> {
+    return this.http.delete<AlbumBorradorRespuesta>(`${this.borradorUrl}/${id}/imagenes/${imagenId}`);
+  }
+
+  /** PUT /api/empresa/albumes/{id}/imagenes/{imagenId}/rareza */
+  cambiarRareza(id: number, imagenId: number, rarezaId: number): Observable<AlbumBorradorRespuesta> {
+    return this.http.put<AlbumBorradorRespuesta>(`${this.borradorUrl}/${id}/imagenes/${imagenId}/rareza`, {
+      rarezaId,
+    });
+  }
+
+  /** PUT /api/empresa/albumes/{id}/cupon: crea o actualiza el cupón del álbum (uno por álbum). */
+  guardarCupon(id: number, cupon: CuponBorradorSolicitud): Observable<AlbumBorradorRespuesta> {
+    return this.http.put<AlbumBorradorRespuesta>(`${this.borradorUrl}/${id}/cupon`, cupon);
+  }
+
+  /**
+   * POST /api/empresa/albumes/{id}/pagar: crea el pago atado al borrador y devuelve la URL de
+   * Mercado Pago. Cuando MP aprueba el cobro, el back publica el álbum.
+   */
+  pagar(id: number): Observable<IniciarPagoRespuesta> {
+    return this.http.post<IniciarPagoRespuesta>(`${this.borradorUrl}/${id}/pagar`, {});
+  }
+
+  /** Campos de texto y archivos que comparten el alta del borrador y su edición. */
+  private formularioDatos(d: DatosBorradorAlbum): FormData {
+    const form = new FormData();
+    form.append('NombreMarca', d.nombreMarca);
+    form.append('DescripcionMarca', d.descripcion);
+    form.append('EmailContacto', d.emailContacto);
+    form.append('RedesSociales', `${d.redSocial}: ${d.usuarioRedSocial}`);
+    form.append('CategoriaId', String(d.categoriaId));
+    if (d.fechaInicio) form.append('FechaInicio', `${d.fechaInicio}T00:00:00`);
+    if (d.fechaFin) form.append('FechaFin', `${d.fechaFin}T23:59:59`);
+    if (d.logo) form.append('Logo', d.logo);
+    if (d.fotoLocal) form.append('FotoLocal', d.fotoLocal);
+    return form;
   }
 }
