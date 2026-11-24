@@ -1,59 +1,277 @@
-<main class="mx-auto w-full max-w-6xl px-4 pb-16 pt-4 sm:px-8">
+<main class="mx-auto w-full max-w-[1600px] 2xl:max-w-[1800px] px-6 sm:px-10 lg:px-14 pb-8 sm:pb-4 tablet:pb-12 min-[1440px]:pb-2 2xl:pb-4 pt-1 sm:pt-2 2xl:pt-5 min-[1440px]:overflow-hidden min-[1440px]:[scrollbar-width:none] min-[1440px]:[&::-webkit-scrollbar]:hidden">
   <app-encabezado-paso
-    titulo="¿Cómo te llamamos?"
-    [paso]="3"
-    rutaVolver="/empresa/album/pago/exito"
-    etiquetaVolver="Volver"
+    titulo="Tu marca"
+    [paso]="2"
+    rutaVolver="/empresa"
   />
 
-  <form class="mt-10 grid gap-10 lg:grid-cols-2" (ngSubmit)="siguiente()" novalidate>
-    <div class="space-y-8">
-      <app-campo-texto
-        etiqueta="Nombre de tu marca"
-        [requerido]="true"
-        [maxLength]="40"
-        autocompletar="organization"
-        [error]="errorNombre()"
-        [ngModel]="borrador.nombreMarca()"
-        (ngModelChange)="borrador.nombreMarca.set($event)"
-        name="nombreMarca"
-      />
+  <form class="mt-4 sm:mt-3 2xl:mt-8 min-[1920px]:mt-10 grid gap-4 sm:gap-6 2xl:gap-12 lg:grid-cols-2 items-start" (ngSubmit)="siguiente()" novalidate>
+    <!-- Columna Izquierda: Información de la marca -->
+    <div class="space-y-4 sm:space-y-3.5 2xl:space-y-8">
+      <div>
+        <label for="nombreMarca" class="block font-cuerpo text-xs sm:text-sm 2xl:text-xl font-bold text-[#122B2E] mb-1 2xl:mb-2">
+          Nombre de tu marca <span class="text-rose-500">*</span>
+        </label>
+        <input
+          id="nombreMarca"
+          name="nombreMarca"
+          type="text"
+          class="block w-full rounded-full sm:rounded-2xl border-2 border-[#122B2E] bg-white px-3.5 py-1.5 sm:py-2 2xl:py-3.5 font-cuerpo text-xs sm:text-sm 2xl:text-base text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs"
+          [class.border-rose-500]="intentado() && !borrador.nombreMarca().trim()"
+          [ngModel]="borrador.nombreMarca()"
+          (ngModelChange)="borrador.nombreMarca.set($event)"
+          maxlength="50"
+          placeholder="Ej: Havanna"
+          required
+        />
+      </div>
 
       <div>
-        <app-etiqueta-campo
-          texto="Subí el logo de tu marca"
-          [contador]="(borrador.logo() ? 1 : 0) + '/1'"
-          [ayuda]="'La imagen no puede pesar más de ' + maxKb + 'kb.'"
-        />
-        <app-subida-imagen
-          etiquetaAccesible="logo de la marca"
-          [maxKb]="maxKb"
-          [(archivo)]="borrador.logo"
-          (rechazado)="avisarRechazo($event)"
+        <label for="descripcion" class="block font-cuerpo text-xs sm:text-sm 2xl:text-xl font-bold text-[#122B2E] mb-1 2xl:mb-2">
+          Descripción de tu marca <span class="text-rose-500">*</span>
+        </label>
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          rows="2"
+          class="block w-full rounded-2xl border-2 border-[#122B2E] bg-white px-3.5 py-1.5 sm:py-2 2xl:py-3.5 font-cuerpo text-xs sm:text-sm 2xl:text-base text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs resize-none"
+          [class.border-rose-500]="intentado() && !borrador.descripcion().trim()"
+          [ngModel]="borrador.descripcion()"
+          (ngModelChange)="borrador.descripcion.set($event)"
+          maxlength="500"
+          placeholder="Contanos brevemente sobre los productos o identidad de tu marca..."
+          required
+        ></textarea>
+      </div>
+
+      <div class="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-3 2xl:gap-6">
+        <div>
+          <label for="redSocial" class="block font-cuerpo text-xs sm:text-sm 2xl:text-xl font-bold text-[#122B2E] mb-1 2xl:mb-2">
+            Red social
+          </label>
+          <div class="relative">
+            <select
+              id="redSocial"
+              name="redSocial"
+              class="block w-full appearance-none rounded-full sm:rounded-2xl border-2 border-[#122B2E] bg-white px-3.5 py-1.5 sm:py-2 2xl:py-3.5 font-cuerpo text-xs sm:text-sm 2xl:text-base text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs cursor-pointer pr-10"
+              [ngModel]="borrador.redSocial()"
+              (ngModelChange)="borrador.redSocial.set($event)"
+            >
+              @for (red of redes; track red.valor) {
+                <option [value]="red.valor">{{ red.etiqueta }}</option>
+              }
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#122B2E]">
+              <svg class="size-4 fill-current" viewBox="0 0 20 20">
+                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label for="usuarioRedSocial" class="block font-cuerpo text-xs sm:text-sm 2xl:text-xl font-bold text-[#122B2E] mb-1 2xl:mb-2">
+            Link o usuario <span class="text-rose-500">*</span>
+          </label>
+          <input
+            id="usuarioRedSocial"
+            name="usuarioRedSocial"
+            type="text"
+            class="block w-full rounded-full sm:rounded-2xl border-2 border-[#122B2E] bg-white px-3.5 py-1.5 sm:py-2 2xl:py-3.5 font-cuerpo text-xs sm:text-sm 2xl:text-base text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs"
+            [class.border-rose-500]="intentado() && !borrador.usuarioRedSocial().trim()"
+            [ngModel]="borrador.usuarioRedSocial()"
+            (ngModelChange)="borrador.usuarioRedSocial.set($event)"
+            placeholder="@usuario o https://..."
+            required
+          />
+        </div>
+      </div>
+
+      <div>
+        <label for="emailContacto" class="block font-cuerpo text-xs sm:text-sm 2xl:text-xl font-bold text-[#122B2E] mb-1 2xl:mb-2">
+          Mail de contacto <span class="text-rose-500">*</span>
+        </label>
+        <input
+          id="emailContacto"
+          name="emailContacto"
+          type="email"
+          class="block w-full rounded-full sm:rounded-2xl border-2 border-[#122B2E] bg-white px-3.5 py-1.5 sm:py-2 2xl:py-3.5 font-cuerpo text-xs sm:text-sm 2xl:text-base text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs"
+          [class.border-rose-500]="intentado() && (!borrador.emailContacto().trim() || !borrador.emailContacto().includes('@'))"
+          [ngModel]="borrador.emailContacto()"
+          (ngModelChange)="borrador.emailContacto.set($event)"
+          placeholder="contacto@mimarca.com"
+          required
         />
       </div>
     </div>
 
-    <div>
-      <app-etiqueta-campo
-        texto="Subí las imágenes que van a formar parte de tu álbum de marca"
-        [contador]="borrador.cantidadImagenes() + '/' + cantidad"
-        [ayuda]="'Subí entre ' + minimo + ' y ' + cantidad + ' imágenes. Cada una puede pesar hasta ' + maxKb + 'kb.'"
-      />
-      <app-grilla-imagenes
-        [cantidad]="cantidad"
-        [maxKb]="maxKb"
-        etiquetaAccesible="Imágenes del álbum"
-        [(archivos)]="borrador.imagenes"
-        (rechazado)="avisarRechazo($event)"
-      />
+    <!-- Columna Derecha: Categoría, Logo y Foto del Local -->
+    <div class="space-y-4 sm:space-y-3.5 2xl:space-y-8">
+      <div>
+        <label for="categoria" class="block font-cuerpo text-xs sm:text-sm 2xl:text-xl font-bold text-[#122B2E] mb-1 2xl:mb-2">
+          ¿A qué categoría pertenece tu marca? <span class="text-rose-500">*</span>
+        </label>
+        <div class="relative">
+          <select
+            id="categoria"
+            name="categoria"
+            class="w-full appearance-none rounded-full sm:rounded-2xl border-2 border-[#122B2E] bg-white px-3.5 py-1.5 sm:py-2 2xl:py-3.5 font-cuerpo text-xs sm:text-sm 2xl:text-base text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs cursor-pointer pr-10"
+            [class.border-rose-500]="intentado() && !borrador.categoria()"
+            [ngModel]="borrador.categoria()"
+            (ngModelChange)="elegirCategoria($event)"
+            required
+          >
+            @for (cat of categorias(); track cat.id) {
+              <option [value]="cat.id">{{ cat.nombre }}</option>
+            }
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#122B2E]">
+            <svg class="size-4 fill-current" viewBox="0 0 20 20">
+              <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjetas para subir Logo y Foto del Local -->
+      <div class="flex flex-col sm:flex-row sm:flex-nowrap items-start gap-4 sm:gap-6 2xl:gap-8 pt-1 2xl:pt-2">
+        <!-- Logo -->
+        <div class="flex flex-col items-start">
+          <div class="flex items-center gap-1.5 mb-1.5 2xl:mb-2 text-xs sm:text-sm 2xl:text-xl font-cuerpo font-bold text-[#122B2E]">
+            <span>Subí el logo de tu marca</span>
+            <span class="font-bold text-rose-500">{{ borrador.logo() ? '1/1*' : '0/1*' }}</span>
+            <span
+              class="flex size-3.5 sm:size-4 2xl:size-5 items-center justify-center rounded-full bg-[#584462] text-[9px] sm:text-[10px] 2xl:text-xs text-white cursor-help"
+              title="Logo de la marca (máx. 200 KB). Identificará tus sobres y cartas."
+            >i</span>
+          </div>
+
+          <div
+            class="relative flex size-28 sm:size-32 2xl:size-48 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-4 border-[#3c2a47] bg-[#584462] shadow-md transition-transform hover:scale-[1.02]"
+            (click)="inputLogo.click()"
+            [class.border-rose-500]="intentado() && !borrador.logo()"
+          >
+            @if (logoPreviewUrl(); as url) {
+              <img [src]="url" alt="Logo de la marca" class="size-full object-cover" />
+              <button
+                type="button"
+                class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-white text-black shadow-md hover:bg-rose-500 hover:text-white transition-colors"
+                (click)="quitarLogo($event)"
+                title="Quitar logo"
+              >
+                ✕
+              </button>
+            } @else {
+              <span class="font-titulo text-5xl font-extrabold text-white leading-none select-none">+</span>
+            }
+
+            <input
+              #inputLogo
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              class="sr-only"
+              (change)="seleccionarLogo($event)"
+            />
+          </div>
+        </div>
+
+        <!-- Foto Local -->
+        <div class="flex flex-col items-start">
+          <div class="flex items-center gap-1.5 mb-1.5 2xl:mb-2 text-xs sm:text-sm 2xl:text-xl font-cuerpo font-bold text-[#122B2E]">
+            <span>Subí una foto del local</span>
+            <span class="font-bold text-rose-500">{{ borrador.fotoLocal() ? '1/1*' : '0/1*' }}</span>
+            <span
+              class="flex size-3.5 sm:size-4 2xl:size-5 items-center justify-center rounded-full bg-[#584462] text-[9px] sm:text-[10px] 2xl:text-xs text-white cursor-help"
+              title="Foto del local (máx. 200 KB). Se usará como zona dentro del juego."
+            >i</span>
+          </div>
+
+          <div
+            class="relative flex h-28 w-40 sm:h-32 sm:w-44 2xl:h-48 2xl:w-64 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-4 border-[#3c2a47] bg-[#584462] shadow-md transition-transform hover:scale-[1.02]"
+            (click)="inputLocal.click()"
+            [class.border-rose-500]="intentado() && !borrador.fotoLocal()"
+          >
+            @if (localPreviewUrl(); as url) {
+              <img [src]="url" alt="Foto del local" class="size-full object-cover" />
+              <button
+                type="button"
+                class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-white text-black shadow-md hover:bg-rose-500 hover:text-white transition-colors"
+                (click)="quitarFotoLocal($event)"
+                title="Quitar foto del local"
+              >
+                ✕
+              </button>
+            } @else {
+              <span class="font-titulo text-5xl font-extrabold text-white leading-none select-none">+</span>
+            }
+
+            <input
+              #inputLocal
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              class="sr-only"
+              (change)="seleccionarFotoLocal($event)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <p class="font-cuerpo text-[11px] sm:text-xs 2xl:text-base text-[#122B2E] italic leading-tight 2xl:leading-relaxed pt-1 2xl:pt-2">
+        (El logo será usado para identificar tus álbumes y tus sobres. La imagen del local se usará como zona dentro del juego)
+      </p>
     </div>
 
-    <div class="flex justify-end lg:col-span-2">
-      <button app-boton type="submit" variante="secundario" tamanio="lg">
-        Siguiente paso
-        <ng-icon name="phosphorArrowRightFill" aria-hidden="true" />
+    <!-- Botón Siguiente Paso -->
+    <div class="flex justify-end lg:col-span-2 mt-2 sm:-mt-4 2xl:-mt-6">
+      <button
+        type="submit"
+        class="inline-flex items-center gap-2 rounded-full bg-[#0D2E33] hover:bg-[#15464d] px-6 py-2.5 2xl:px-10 2xl:py-4 font-titulo text-xs sm:text-sm 2xl:text-lg uppercase tracking-wider text-white shadow-md transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+      >
+        <span>SIGUIENTE PASO</span>
+        <span class="text-base 2xl:text-lg">→</span>
       </button>
     </div>
   </form>
 </main>
+
+<!-- Popup Modal de Confirmación: Paso 2 (2-2.png) -->
+@if (modalAbierto()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+    <div
+      class="relative w-full max-w-lg 2xl:max-w-2xl rounded-3xl border-4 border-[#584462] bg-[#FFFDF9] p-6 sm:p-10 2xl:p-14 flex flex-col items-center text-center animate-in zoom-in-95 duration-200"
+      style="box-shadow: -10px 10px 0 #584462;"
+    >
+      <h2 class="font-titulo text-3xl sm:text-4xl 2xl:text-5xl font-extrabold uppercase text-[#584462] tracking-wider">
+        ¿CONTINUAR?
+      </h2>
+
+      <p class="font-cuerpo text-sm sm:text-base 2xl:text-xl text-[#122B2E] my-6 2xl:my-8 leading-relaxed max-w-sm 2xl:max-w-lg">
+        El siguiente paso te lleva a crear tu primer álbum, pero podés omitirlo por ahora e ir directamente al pago. Después podés crear tu álbum desde tu perfil.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
+        <button
+          type="button"
+          class="w-full sm:w-auto px-6 py-3 2xl:px-8 2xl:py-4 rounded-full bg-[#0D2E33] hover:bg-[#15464d] text-white font-titulo text-xs sm:text-sm 2xl:text-base uppercase tracking-wider shadow-md transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+          [disabled]="guardando()"
+          (click)="omitirYPagar()"
+        >
+          @if (guardando()) {
+            Guardando...
+          } @else {
+            OMITIR Y PAGAR
+          }
+        </button>
+
+        <button
+          type="button"
+          class="w-full sm:w-auto px-6 py-3 2xl:px-8 2xl:py-4 rounded-full bg-[#584462] hover:bg-[#6c5478] text-white font-titulo text-xs sm:text-sm 2xl:text-base uppercase tracking-wider shadow-md transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+          [disabled]="guardando()"
+          (click)="irACrearAlbum()"
+        >
+          IR A CREAR ÁLBUM
+        </button>
+      </div>
+    </div>
+  </div>
+}

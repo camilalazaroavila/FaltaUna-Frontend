@@ -8,6 +8,7 @@ import { AuthService } from '@servicios/auth.service';
 import logoClaro from '@svgs/Imagotipo_claro.svg';
 import logoOscuro from '@svgs/Imagotipo_Alt.svg';
 import logoNegro from '@svgs/Imagotipo_Negro.svg';
+import logoVerde from '@svgs/Imagotipo_Verde.svg';
 
 describe('Header', () => {
   let component: Header;
@@ -93,16 +94,16 @@ describe('Header', () => {
     expect(componente.urlLogo).not.toBe(logoOscuro);
   });
 
-  it('en la landing con variante verde usa fondo verde, texto negro y logo negro', () => {
+  it('en la landing con variante verde usa fondo verde, texto verde oscuro y logo verde', () => {
     fixture.componentRef.setInput('verde', true);
     fixture.detectChanges();
 
     const encabezado = fixture.nativeElement.querySelector('header') as HTMLElement;
     expect(encabezado.classList.contains('bg-landing-marca')).toBe(true);
-    expect(encabezado.classList.contains('text-black')).toBe(true);
+    expect(encabezado.classList.contains('text-landing-oscuro-fondo')).toBe(true);
 
     const logo = encabezado.querySelector('img') as HTMLImageElement;
-    expect(logo.getAttribute('src')).toBe(`unsafe:${logoNegro}`);
+    expect(logo.getAttribute('src')).toBe(`unsafe:${logoVerde}`);
   });
 });
 

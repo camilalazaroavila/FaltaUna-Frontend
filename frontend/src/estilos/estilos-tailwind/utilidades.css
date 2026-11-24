@@ -11,8 +11,10 @@
    `habilitado` permite aplicar estados hover/active solo cuando el control
    realmente responde. Funciona tanto en <button> (que soporta :disabled)
    como en <a> (que solo admite aria-disabled), a diferencia de `enabled`.
+   `tablet` aplica estilos exclusivamente en el rango tablet (768px a 1439px).
    ========================================================================== */
 @custom-variant habilitado (&:where(:not(:disabled):not([aria-disabled='true'])));
+@custom-variant tablet (@media (min-width: 768px) and (max-width: 1439px));
 
 /* ==========================================================================
    UTILIDADES PERSONALIZADAS

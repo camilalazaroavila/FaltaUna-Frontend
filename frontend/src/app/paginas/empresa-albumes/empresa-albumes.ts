@@ -190,6 +190,22 @@ export class EmpresaAlbumes implements OnInit {
     }));
   });
 
+  private rarezaDeImagen(img: { rarezaNombre?: string | null; rarezaId?: number | null }): RarezaCarta {
+    if (img.rarezaNombre) {
+      return rarezaDesdeNombre(img.rarezaNombre);
+    }
+    switch (img.rarezaId) {
+      case 2:
+        return 'rara';
+      case 3:
+        return 'epicarta';
+      case 4:
+        return 'legendaria';
+      default:
+        return 'comun';
+    }
+  }
+
   protected readonly kpisAlbum = computed<readonly KpiAlbum[]>(() => {
     const album = this.albumActual();
     if (album === null) return [];
