@@ -38,7 +38,8 @@ export function categoriaCuponDesdeCarta(
 export interface CuponDescuento {
   id: number;
   marca: string;
-  categoria: CategoriaCupon;
+  /** Categoría del cupón según el backend. Puede ser null si el backend no la informa. */
+  categoria: CategoriaCupon | null;
   titulo: string;
   descripcion: string;
   detalles: string;
@@ -50,6 +51,8 @@ export interface CuponDescuento {
   enlace: string | null;
   /** Porcentaje de descuento, si el backend lo informa (se muestra como "20% OFF"). */
   porcentajeDescuento?: number;
+  tieneQr?: boolean;
+  marcaLogoUrl?: string | null;
 }
 
 /** El backend identifica el cupón del usuario por el token de su QR (no por el código del cupón). */
@@ -61,6 +64,7 @@ export interface CanjearCuponSolicitud {
 export interface MiCuponApi {
   cuponId: number;
   marca: string;
+  categoria?: string | null;
   nombre: string;
   descripcion: string;
   codigo: string;
@@ -71,6 +75,8 @@ export interface MiCuponApi {
   fechaObtencion: string;
   fechaUso: string | null;
   tieneQr: boolean;
+  marcaLogoUrl?: string | null;
+  enlace?: string | null;
 }
 
 /** Respuesta cruda de GET /Cupones/{cuponId}/qr. */
