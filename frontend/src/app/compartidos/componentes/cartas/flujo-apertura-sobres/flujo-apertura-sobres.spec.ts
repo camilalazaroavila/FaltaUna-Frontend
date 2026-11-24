@@ -120,6 +120,23 @@ describe('FlujoAperturaSobres Component', () => {
     expect(lista[3].etiqueta).toBe('GRIDO');
   });
 
+  it('filtra la grilla por tipo de sobre y vuelve a la lista completa con "todos"', () => {
+    // Sin filtrar: están los 2 diarios (GENERAL) + Sobre Clásico (GENERAL) + Sobre Grido (MARCA).
+    expect(component['listaSobresFiltrada']().length).toBe(4);
+
+    component.cambiarFiltroTipo('MARCA');
+    const marcas = component['listaSobresFiltrada']();
+    expect(marcas.length).toBe(1);
+    expect(marcas[0].tipo).toBe('MARCA');
+    expect(marcas[0].etiqueta).toBe('GRIDO');
+
+    component.cambiarFiltroTipo('GENERAL');
+    expect(component['listaSobresFiltrada']().every((s) => s.tipo === 'GENERAL')).toBe(true);
+
+    component.cambiarFiltroTipo('todos');
+    expect(component['listaSobresFiltrada']().length).toBe(4);
+  });
+
   it('abre por id el sobre acreditado y no cae al sobre diario', () => {
     fixture.componentRef.setInput('sobreInicial', {
       sobreId: 2,
