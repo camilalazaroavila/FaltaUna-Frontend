@@ -26,14 +26,30 @@ import { StepperSuscripcion } from '@compartidos/componentes/empresa/stepper-sus
       </div>
     }
 
-    <div class="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between w-full">
+    <div class="relative flex flex-col-reverse gap-4 sm:flex-row sm:items-start sm:justify-between w-full min-h-[48px]">
       <h1
-        class="font-titulo font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-[#584462] text-left"
+        class="font-titulo font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-[#584462] text-left leading-none"
       >
-        {{ titulo() }}
+        @if (tituloTablet() || tituloSegundaLineaTablet()) {
+          <!-- Variante Tablet (768px a 1439px) -->
+          <span class="hidden tablet:inline">{{ (tituloTablet() ?? titulo()) + (tituloSegundaLineaTablet() ? ' ' : '') }}</span>
+          @if (tituloSegundaLineaTablet()) {
+            <span class="hidden tablet:block">{{ tituloSegundaLineaTablet() }}</span>
+          }
+
+          <!-- Variante otros tamaños (< 768px y >= 1440px) -->
+          <span class="tablet:hidden inline">{{ titulo() + (tituloSegundaLinea() ? ' ' : '') }}</span>
+          @if (tituloSegundaLinea()) {
+            <span class="tablet:hidden block">{{ tituloSegundaLinea() }}</span>
+          }
+        } @else if (tituloSegundaLinea()) {
+          <span>{{ titulo() + ' ' }}</span><span class="block">{{ tituloSegundaLinea() }}</span>
+        } @else {
+          {{ titulo() }}
+        }
       </h1>
 
-      <div class="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex justify-center w-full sm:w-auto">
+      <div class="sm:absolute sm:left-1/2 sm:top-[18px] lg:top-[24px] sm:-translate-x-1/2 sm:-translate-y-1/2 flex justify-center w-full sm:w-auto">
         <app-stepper-suscripcion [pasoActual]="paso()" />
       </div>
     </div>
@@ -41,6 +57,9 @@ import { StepperSuscripcion } from '@compartidos/componentes/empresa/stepper-sus
 })
 export class EncabezadoPaso {
   readonly titulo = input.required<string>();
+  readonly tituloSegundaLinea = input<string | null>(null);
+  readonly tituloTablet = input<string | null>(null);
+  readonly tituloSegundaLineaTablet = input<string | null>(null);
   readonly paso = input.required<number>();
   readonly rutaVolver = input<string | string[] | null>(null);
   readonly etiquetaVolver = input('Volver');

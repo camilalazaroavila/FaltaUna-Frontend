@@ -1,22 +1,24 @@
 <main class="mx-auto w-full max-w-[1600px] 2xl:max-w-[1800px] px-6 sm:px-10 lg:px-14 pb-16 pt-6">
   <app-encabezado-paso
     titulo="Tu primer álbum"
+    tituloTablet="Tu primer"
+    tituloSegundaLineaTablet="álbum"
     [paso]="3"
     rutaVolver="/empresa/album/crear/marca"
   />
 
   <!-- Información y aclaración sobre las cartas y rarezas -->
   <section class="mt-6 space-y-2">
-    <div class="flex items-center gap-2 font-cuerpo text-base font-bold text-[#122B2E]">
+    <div class="font-cuerpo text-sm sm:text-base 2xl:text-xl font-bold text-[#122B2E] leading-snug">
       <span>Subí las imágenes y dale nombre a las cartas que van a formar parte de tu álbum</span>
-      <span class="text-rose-500">{{ cantidadSubidas() }}/{{ cantidad() }}*</span>
+      <span class="text-rose-500 whitespace-nowrap ml-1.5">{{ cantidadSubidas() }}/{{ cantidad() }}*</span>
       <span
-        class="flex size-4 items-center justify-center rounded-full bg-[#584462] text-[10px] text-white cursor-help"
+        class="inline-flex size-5 sm:size-5 2xl:size-6 items-center justify-center rounded-full bg-[#584462] text-xs font-bold text-white cursor-help ml-1.5 align-middle shadow-xs"
         title="Subí entre {{ minimo }} y {{ cantidad() }} imágenes para crear el álbum. Cada carta puede tener un nombre de hasta 15 caracteres."
       >i</span>
     </div>
 
-    <p class="font-cuerpo text-xs sm:text-sm text-[#122B2E] leading-relaxed max-w-4xl">
+    <p class="font-cuerpo text-xs sm:text-sm 2xl:text-base text-[#122B2E] leading-relaxed w-full max-w-none">
       Las cartas tienen rarezas, queda completamente a elección de la marca que imágenes/productos pertenecen a cada rareza.
       Las cartas de mayor rareza tienen un porcentaje menor de salir en los sobres y tienen mas puntos en el juego.
       ¡Los puntos los ponemos nosotros!
@@ -24,7 +26,7 @@
   </section>
 
   <!-- Grilla de cartas de la colección -->
-  <section class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 items-start">
+  <section class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 2xl:max-w-6xl mx-auto items-start">
     @for (casilla of casillas(); track casilla.indice) {
       <div class="flex flex-col items-center gap-2 w-full">
         <!-- Carta con marco oficial por rareza y slot central blanco -->
@@ -66,7 +68,7 @@
             (input)="actualizarNombreCarta(casilla.indice, $event)"
             maxlength="15"
             placeholder="Nombre carta"
-            class="w-full rounded-xl border-2 border-[#122B2E] bg-white px-2 py-1 font-cuerpo text-xs text-center text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs"
+            class="w-full rounded-xl border-2 border-[#122B2E] bg-white px-2 py-1 2xl:py-1.5 font-cuerpo text-xs 2xl:text-sm text-center text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs"
           />
         </div>
       </div>

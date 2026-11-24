@@ -70,6 +70,12 @@ export interface PreviaCartaItem {
   standalone: true,
   imports: [EncabezadoPaso, CartaComponent],
   templateUrl: './empresa-album-previa.html',
+  styles: [`
+    :host {
+      display: block;
+      overflow-x: hidden;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmpresaAlbumPrevia {

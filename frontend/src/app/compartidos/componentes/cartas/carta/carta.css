@@ -300,10 +300,11 @@
 /* Modo de subida para creación de álbum de empresa */
 .carta__subida-slot {
   position: absolute;
-  top: 10%;
-  bottom: 22%;
-  left: 12%;
-  right: 12%;
+  top: 7%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78%;
+  aspect-ratio: 1 / 1;
   background-color: #ffffff;
   border-radius: 0.6em;
   display: flex;
@@ -317,7 +318,7 @@
 }
 
 :host(:hover) .carta__subida-slot {
-  transform: scale(1.02);
+  transform: translateX(-50%) scale(1.02);
 }
 
 .carta__subida-imagen {

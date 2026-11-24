@@ -1,11 +1,13 @@
-<main class="mx-auto w-full max-w-[1600px] 2xl:max-w-[1800px] px-6 sm:px-10 lg:px-14 pb-16 pt-6">
+<main class="mx-auto w-full max-w-[1600px] 2xl:max-w-[1800px] px-6 sm:px-10 lg:px-14 pb-4 2xl:pb-16 pt-3 2xl:pt-6">
   <app-encabezado-paso
     titulo="Elegí tu plan"
+    tituloTablet="Elegí tu"
+    tituloSegundaLineaTablet="plan"
     [paso]="1"
   />
 
   <section
-    class="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8 items-stretch"
+    class="mt-8 sm:mt-10 2xl:mt-20 min-[1920px]:mt-24 max-w-5xl 2xl:max-w-6xl mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6 2xl:gap-10 items-stretch"
     aria-label="Planes mensuales disponibles"
   >
     @for (plan of planes; track plan.id) {

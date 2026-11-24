@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
@@ -33,6 +33,18 @@ interface CategoriaOpcion {
   standalone: true,
   imports: [FormsModule, EncabezadoPaso],
   templateUrl: './empresa-album-marca.html',
+  styles: [`
+    :host {
+      display: block;
+      overflow-x: hidden;
+    }
+    @media (min-width: 1440px) {
+      :host {
+        max-height: calc(100vh - 100px);
+        overflow-y: hidden;
+      }
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmpresaAlbumMarca {
@@ -42,6 +54,7 @@ export class EmpresaAlbumMarca {
   private readonly albumes = inject(AlbumesService);
   private readonly pagos = inject(PagosService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly redes = REDES_SOCIALES;
   protected readonly categorias = signal<CategoriaOpcion[]>([]);
@@ -55,6 +68,17 @@ export class EmpresaAlbumMarca {
   protected readonly localPreviewUrl = signal<string | null>(null);
 
   constructor() {
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      const esDesktopGrande = typeof window.matchMedia === 'function' && window.matchMedia('(min-width: 1440px)').matches;
+      if (esDesktopGrande) {
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        this.destroyRef.onDestroy(() => {
+          document.body.style.overflow = prevOverflow;
+        });
+      }
+    }
+
     // Si no eligió un plan, regresar al paso 1
     if (!this.estado.planElegido()) {
       this.router.navigate(['/empresa']);
@@ -98,7 +122,9 @@ export class EmpresaAlbumMarca {
   }
 
   private mapearCategorias(lista: CategoriaApi[]): void {
-    const mapeadas = lista.map((c) => ({ id: String(c.id), nombre: c.nombre }));
+    const mapeadas = lista
+      .filter((c) => c.nombre.trim().toLowerCase() !== 'general')
+      .map((c) => ({ id: String(c.id), nombre: c.nombre }));
     this.categorias.set(mapeadas);
 
     if (mapeadas.length > 0 && !this.borrador.categoria()) {

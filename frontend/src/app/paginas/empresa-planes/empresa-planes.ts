@@ -5,7 +5,7 @@ import { Plan, PLANES } from '@modelos/plan.model';
 import { AlbumBorrador } from '@servicios/album-borrador.service';
 import { AuthService } from '@servicios/auth.service';
 import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
-import { EncabezadoPaso } from '@compartidos/componentes/controles/encabezado-paso/encabezado-paso';
+import { EncabezadoPaso } from '@compartidos/componentes/encabezado-paso/encabezado-paso';
 import { TarjetaPlan } from '@compartidos/componentes/empresa/tarjeta-plan/tarjeta-plan';
 
 /**
