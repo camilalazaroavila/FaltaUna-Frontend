@@ -339,6 +339,9 @@ export class UsuarioDashboard implements OnInit {
     const yaVisto = localStorage.getItem(this.claveBienvenidaMazos());
     if (yaVisto === 'true') return;
 
+    this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
+    this.mostrarBienvenida();
+
     if (this.barajaService) {
       this.barajaService.obtenerMazos().subscribe({
         next: (mazos) => {
@@ -346,19 +349,12 @@ export class UsuarioDashboard implements OnInit {
             this.mazosBienvenida.set(
               mazos.slice(0, 3).map((mazo, idx) => this.adaptarMazoParaBienvenida(mazo, idx)),
             );
-          } else {
-            this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
           }
-          this.mostrarBienvenida();
         },
         error: () => {
-          this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
-          this.mostrarBienvenida();
+          // El popout ya se mostró; si falla la carga, quedan los mazos de respaldo.
         },
       });
-    } else {
-      this.mazosBienvenida.set(MAZOS_BIENVENIDA_RESPALDO);
-      this.mostrarBienvenida();
     }
   }
 

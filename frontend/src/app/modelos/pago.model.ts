@@ -34,6 +34,8 @@ export interface PagoRespuesta {
   plan: PlanBackend;
   fechaCreacion: string;
   fechaAprobacion?: string | null;
+  /** Álbum (borrador) que se está pagando. Null en los pagos del flujo viejo. */
+  coleccionId?: number | null;
 }
 
 export interface ConfiguracionPagoRespuesta {

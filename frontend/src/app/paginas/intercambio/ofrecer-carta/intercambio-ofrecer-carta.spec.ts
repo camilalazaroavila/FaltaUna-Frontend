@@ -171,4 +171,32 @@ describe('IntercambioOfrecerCarta', () => {
     expect(component.esFavoritaDelOtro('2')).toBe(true);
     expect(component.esFavoritaDelOtro('1')).toBe(false);
   });
+
+  it('debe mostrar los numeros reales de las cartas favoritas en capsula y modal', () => {
+    component['cargandoFavoritas'].set(false);
+    component['cartasFavoritas'].set([
+      {
+        id: '101',
+        nombre: 'Guacamole Supremo',
+        imagenUrl: '',
+        rareza: 'legendaria',
+        categoria: 'gastronomia',
+        atributoDerecho: 8,
+        atributoIzquierdo: 4,
+        obtenida: true,
+      },
+    ]);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('8');
+    expect(compiled.textContent).toContain('4');
+
+    component.abrirModalFavoritas();
+    fixture.detectChanges();
+
+    const modal = fixture.nativeElement as HTMLElement;
+    expect(modal.textContent).toContain('8');
+    expect(modal.textContent).toContain('4');
+  });
 });

@@ -5,6 +5,7 @@ import { AuthService } from '@servicios/auth.service';
 import { LoginSolicitud, Rol } from '@modelos/usuario.model';
 import { AuthLayout } from '@compartidos/componentes/layout/auth-layout/auth-layout';
 import { injectModoAuth } from '@compartidos/componentes/layout/auth-layout/auth-modo';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-login',
@@ -60,6 +61,15 @@ export class Login implements OnInit {
 
   ngOnInit(): void {
     this.recienRegistrado = this.ruta.snapshot.queryParamMap.get('registrado') === '1';
+
+    if (this.recienRegistrado) {
+      toast.success('¡Tu cuenta está lista!', {
+        description:
+          'Ingresá para empezar a coleccionar. Ya tenés tus mazos y cartas de bienvenida esperándote.',
+        position: 'top-center',
+        duration: 6000,
+      });
+    }
   }
 
   iniciarSesion(): void {
@@ -78,6 +88,20 @@ export class Login implements OnInit {
       next: (respuesta) => {
         this.cargando.set(false);
         this.cdr.markForCheck();
+
+        const qp = this.ruta.snapshot.queryParamMap;
+        const paymentId = qp.get('payment_id') || qp.get('collection_id');
+        const externalRef = qp.get('external_reference');
+
+        if (paymentId && externalRef && respuesta.usuario.rol === 'Empresa') {
+          const status = qp.get('status') || qp.get('collection_status');
+          const resultado = status === 'approved' ? 'exito' : status === 'pending' ? 'pendiente' : 'error';
+          this.router.navigate([`/empresa/album/pago/${resultado}`], {
+            queryParams: this.ruta.snapshot.queryParams,
+          });
+          return;
+        }
+
         this.router.navigate([this.authService.rutaSegunRol(respuesta.usuario.rol)]);
       },
       error: (error) => {

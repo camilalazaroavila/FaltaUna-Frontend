@@ -53,11 +53,22 @@
 
     <!-- Título + buscador y filtros -->
     <div class="mt-2 flex flex-wrap items-center gap-x-6 gap-y-3 sm:gap-x-10">
-      <h1
-        class="titulo-cupones font-titulo text-3xl uppercase tracking-[0.04em] sm:text-3xl"
-      >
-        Tus cupones
-      </h1>
+      <div class="flex items-baseline gap-2">
+        <h1
+          class="titulo-cupones font-titulo text-3xl uppercase tracking-[0.04em] sm:text-3xl"
+        >
+          Tus cupones
+        </h1>
+
+        @if (!cargando() && cuponesFiltrados().length > 0) {
+          <span
+            class="font-interfaz text-xs font-bold text-(--crema)/70"
+            aria-live="polite"
+          >
+            {{ cuponesFiltrados().length }} {{ cuponesFiltrados().length === 1 ? 'cupón' : 'cupones' }}
+          </span>
+        }
+      </div>
 
       <!-- Buscador y filtros de cupones propios -->
       <div
@@ -121,7 +132,7 @@
                 style="filter: brightness(0) saturate(100%) invert(44%) sepia(34%) saturate(229%) hue-rotate(19deg) brightness(173%) contrast(129%)" />
               <span class="truncate">Categoría: {{ cat.nombre }}</span>
             } @else {
-              <span class="truncate">Categorías</span>
+              <span class="truncate">Todos</span>
             }
             <svg class="size-4 shrink-0 transition-transform" [class.rotate-180]="menuCategoriasAbierto()" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -147,8 +158,10 @@
                     [attr.aria-pressed]="categoriaActiva() === cat.id"
                     (click)="elegirCategoria(cat.id)"
                   >
-                    <img class="size-5 shrink-0 object-contain" [src]="cat.urlIcono" alt="" aria-hidden="true"
-                      style="filter: brightness(0) saturate(100%) invert(44%) sepia(34%) saturate(229%) hue-rotate(19deg) brightness(173%) contrast(129%)" />
+                    @if (cat.urlIcono) {
+                      <img class="size-5 shrink-0 object-contain" [src]="cat.urlIcono" alt="" aria-hidden="true"
+                        style="filter: brightness(0) saturate(100%) invert(44%) sepia(34%) saturate(229%) hue-rotate(19deg) brightness(173%) contrast(129%)" />
+                    }
                     <span class="truncate">{{ cat.nombre }}</span>
                   </button>
                 </li>
@@ -270,7 +283,7 @@
                   Hay resultados en:
 
                   @for (cat of categorias; track cat.id) {
-                    @if (categoriasConResultados().has(cat.id)) {
+                    @if (cat.id === null || categoriasConResultados().has(cat.id)) {
                       <button
                         type="button"
                         (click)="elegirCategoria(cat.id)"
@@ -386,11 +399,9 @@
           {{ cupon.codigo }}
         </p>
 
-        @if (tokenQr(); as token) {
-          <p class="mt-1 break-all font-interfaz text-xs text-texto-secundario">
-            Token de canje: <span class="font-bold">{{ token }}</span>
-          </p>
-        }
+        <p class="mt-1 break-all font-interfaz text-xs text-texto-secundario">
+          Código de canje: <span class="font-bold">{{ cupon.codigo }}</span>
+        </p>
 
         <p class="mt-3 font-interfaz text-sm font-bold text-marca-primaria">
           @if (cupon.enlace) {

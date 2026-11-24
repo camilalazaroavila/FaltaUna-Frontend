@@ -1,4 +1,33 @@
-@if (carta().oculta) {
+@if (modoSubida()) {
+  <div class="carta__marco">
+    <img
+      class="carta__fondo"
+      [src]="urlFondo()"
+      alt=""
+      aria-hidden="true"
+      draggable="false"
+    />
+
+    <div class="carta__subida-slot">
+      @if (imagenSubida()) {
+        <img
+          class="carta__subida-imagen"
+          [src]="imagenSubida()!"
+          alt="Carta"
+          draggable="false"
+        />
+      } @else {
+        <span class="carta__subida-plus">+</span>
+      }
+    </div>
+
+    <div class="carta__estrellas">
+      @for (estrella of estrellas(); track $index) {
+        <app-estrella-rareza class="carta__estrella-slot" />
+      }
+    </div>
+  </div>
+} @else if (carta().oculta) {
   <div class="carta__reverso" role="img" aria-label="Carta oculta">
     <div class="carta__reverso-diseno"></div>
   </div>
