@@ -158,9 +158,9 @@ export class IntercambioPendiente implements OnInit, OnDestroy {
         nombre,
         imagenUrl: resolverImagenCarta(img, nombre),
         rareza: mapearRareza(rarezaStr, rarezaId),
-        categoria: categoriaCartaDesdeNombre(''),
-        atributoDerecho: 0,
-        atributoIzquierdo: 0,
+        categoria: categoriaCartaDesdeNombre(carta1.categoria ?? ''),
+        atributoDerecho: carta1.atributoDerecho ?? 0,
+        atributoIzquierdo: carta1.atributoIzquierdo ?? 0,
         obtenida: true,
       });
     }
@@ -177,9 +177,9 @@ export class IntercambioPendiente implements OnInit, OnDestroy {
         nombre,
         imagenUrl: resolverImagenCarta(img, nombre),
         rareza: mapearRareza(rarezaStr, rarezaId),
-        categoria: categoriaCartaDesdeNombre(''),
-        atributoDerecho: 0,
-        atributoIzquierdo: 0,
+        categoria: categoriaCartaDesdeNombre(carta2.categoria ?? ''),
+        atributoDerecho: carta2.atributoDerecho ?? 0,
+        atributoIzquierdo: carta2.atributoIzquierdo ?? 0,
         obtenida: true,
       });
     }
