@@ -30,8 +30,8 @@ describe('CodigosSobreService', () => {
 
     it('generar hace POST /CodigosSobre/generar y adapta la respuesta', () => {
         const respuestaApi: CodigoSobreApi = {
-            marca: "McDonald's",
-            sobre: "Sobre McDonald's",
+            marca: 'McDonald\'s',
+            sobre: 'Sobre McDonald\'s',
             codigo: 'WBWV-KC8Q',
             qrToken: 'ABC123',
             qrDataUrl: 'data:image/png;base64,iVBORw0K',
@@ -47,8 +47,8 @@ describe('CodigosSobreService', () => {
         peticion.flush(respuestaApi);
 
         expect(generado).toEqual({
-            marca: "McDonald's",
-            sobre: "Sobre McDonald's",
+            marca: 'McDonald\'s',
+            sobre: 'Sobre McDonald\'s',
             codigo: 'WBWV-KC8Q',
             qrDataUrl: 'data:image/png;base64,iVBORw0K',
             vencimientoUtc: '2026-11-20T15:02:00Z',
@@ -59,9 +59,9 @@ describe('CodigosSobreService', () => {
     it('canjear hace POST /CodigosSobre/canjear con el código y devuelve la respuesta', () => {
         const respuesta: CanjeCodigoSobreRespuesta = {
             mensaje: '¡Listo! Sumaste "Sobre McDonald\'s" a tu inventario.',
-            marca: "McDonald's",
+            marca: 'McDonald\'s',
             sobreId: 3,
-            sobre: "Sobre McDonald's",
+            sobre: 'Sobre McDonald\'s',
         };
 
         let canjeado: CanjeCodigoSobreRespuesta | undefined;

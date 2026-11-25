@@ -6,8 +6,8 @@ import { CodigoSobreGenerado } from '@modelos/codigo-sobre.model';
 import { GeneradorCodigoSobre } from './generador-codigo-sobre';
 
 const GENERADO: CodigoSobreGenerado = {
-    marca: "McDonald's",
-    sobre: "Sobre McDonald's",
+    marca: 'McDonald\'s',
+    sobre: 'Sobre McDonald\'s',
     codigo: 'WBWV-KC8Q',
     qrDataUrl: 'data:image/png;base64,iVBORw0K',
     vencimientoUtc: '2026-11-20T15:02:00Z',
@@ -57,9 +57,9 @@ describe('GeneradorCodigoSobre', () => {
 
         const imagen = raiz(fixture).querySelector('img') as HTMLImageElement;
         expect(imagen.getAttribute('src')).toBe(GENERADO.qrDataUrl);
-        expect(imagen.getAttribute('alt')).toBe("Código QR del sobre de McDonald's");
+        expect(imagen.getAttribute('alt')).toBe('Código QR del sobre de McDonald\'s');
         expect(texto(fixture)).toContain('WBWV-KC8Q');
-        expect(texto(fixture)).toContain("Sobre McDonald's");
+        expect(texto(fixture)).toContain('Sobre McDonald\'s');
         expect(texto(fixture)).toContain('Vence en 2:00');
         expect(boton(fixture).textContent).toContain('Generar otro QR');
     });

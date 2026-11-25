@@ -1,24 +1,20 @@
 <div
-  class="relative flex min-h-dvh flex-col bg-btn-juego-bg text-btn-juego-texto"
+  class="relative flex min-h-dvh flex-col bg-fondo-app text-texto-primario"
 >
   <!-- Encabezado -->
   <header class="w-full">
     <div
-      class="m-3 flex items-center justify-between gap-3 rounded-md bg-landing-oscuro-fondo px-3 py-2 text-landing-oscuro-texto shadow-md sm:m-5 sm:px-4 lg:rounded-2xl lg:px-8 lg:py-3"
+      class="m-3 flex items-center justify-between gap-3 rounded-md bg-marca-primaria px-3 py-2 text-marca-sobre-primaria shadow-md sm:m-5 sm:px-4 lg:rounded-2xl lg:px-8 lg:py-3"
     >
       <a routerLink="/empleado" class="flex shrink-0 items-center" aria-label="Falta Una">
         <img [src]="urlLogo" alt="Falta Una" class="h-8 w-auto object-contain sm:h-9 lg:h-[75px]" />
       </a>
 
-      <p class="hidden font-interfaz text-xs font-bold uppercase tracking-wider text-texto-secundario sm:block">
-        Panel de empleado
-      </p>
-
       <div class="relative shrink-0">
         <button
           type="button"
           (click)="menuAbierto.set(!menuAbierto())"
-          class="flex size-9 cursor-pointer items-center justify-center rounded-circulo bg-marca-acento text-marca-sobre-acento shadow-sm transition hover:brightness-105 sm:size-10"
+          class="flex size-9 cursor-pointer items-center justify-center rounded-circulo border border-black/10 bg-marca-secundaria text-marca-sobre-secundaria shadow-sm transition hover:brightness-110 sm:size-10"
           aria-label="Menú de perfil"
           [attr.aria-expanded]="menuAbierto()"
         >
@@ -33,16 +29,16 @@
 
         @if (menuAbierto()) {
           <div
-            class="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-white/10 bg-fondo-hundido p-3 shadow-alta"
+            class="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-borde-default bg-fondo-superficie p-3 shadow-alta"
           >
             <p class="font-interfaz text-xs uppercase tracking-wide text-texto-apagado">Sesión activa</p>
-            <p class="mb-2 truncate border-b border-white/10 pb-2 font-titulo text-sm text-marca-acento">
+            <p class="mb-2 truncate border-b border-borde-default pb-2 font-titulo text-sm text-marca-primaria">
               {{ authService.usuarioActual()?.nombreUsuario || 'Empleado' }}
             </p>
             <button
               type="button"
               (click)="cerrarSesion()"
-              class="w-full cursor-pointer rounded-lg bg-white/10 px-3 py-2 text-left font-interfaz text-xs font-bold text-white transition hover:bg-error/30"
+              class="w-full cursor-pointer rounded-lg bg-fondo-elevado px-3 py-2 text-left font-interfaz text-xs font-bold text-texto-primario transition hover:bg-error-fondo hover:text-error-texto"
             >
               Cerrar sesión
             </button>
@@ -54,7 +50,7 @@
 
   <!-- Canje -->
   <main class="flex flex-1 flex-col items-center justify-center gap-6 px-4 pb-16 text-center">
-    <h1 class="font-titulo text-3xl uppercase tracking-wide sm:text-5xl">
+    <h1 class="font-titulo text-3xl uppercase tracking-wide sm:text-5xl text-texto-primario">
       Ingrese el token de canje
     </h1>
 
@@ -71,64 +67,32 @@
         placeholder="Token del QR"
         [value]="codigo()"
         (input)="alEscribir($event)"
-        class="h-12 w-full rounded-pildora border-2 border-solid border-btn-juego-texto bg-landing-claro-fondo px-6 text-center font-interfaz text-lg font-black tracking-wide text-btn-juego-texto outline-none placeholder:text-btn-juego-texto/40 focus-visible:border-marca-primaria focus-visible:ring-4 focus-visible:ring-marca-primaria/40"
+        class="h-12 w-full rounded-pildora border-2 border-solid border-borde-default bg-fondo-superficie px-6 text-center font-interfaz text-lg font-black tracking-wide text-texto-primario outline-none placeholder:text-texto-secundario/40 focus-visible:border-marca-primaria focus-visible:ring-4 focus-visible:ring-marca-primaria/40"
       />
 
       <div class="flex flex-wrap items-center justify-center gap-3">
         <button
           type="submit"
           [disabled]="!codigo() || enviando()"
-          class="inline-flex cursor-pointer items-center gap-2 rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-base font-black uppercase text-marca-sobre-primaria shadow-baja transition hover:bg-marca-primaria-hover disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
+          class="inline-flex cursor-pointer items-center gap-2 rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-base font-black uppercase text-marca-sobre-primaria shadow-baja transition hover:bg-marca-secundaria disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
         >
           {{ enviando() ? 'Validando…' : 'Validar' }}
           <span aria-hidden="true"></span>
         </button>
-
-        @if (escanerDisponible) {
-          <button
-            type="button"
-            (click)="iniciarEscaner()"
-            class="inline-flex cursor-pointer items-center gap-2 rounded-pildora border-2 border-solid border-btn-juego-texto px-6 py-3 font-interfaz text-base font-black uppercase transition hover:bg-btn-juego-texto hover:text-btn-juego-bg motion-reduce:transition-none"
-          >
-            Escanear QR
-          </button>
-        }
       </div>
-
-      @if (errorEscaner()) {
-        <p class="font-interfaz text-sm font-bold" role="alert">{{ errorEscaner() }}</p>
-      }
     </form>
+
+    <!-- Lector QR: escanea el código del cupón con la cámara -->
+    <app-lector-qr (leido)="alLeerQr($event)" />
 
     <!-- Regalar un sobre de la marca: genera el QR y el codigo para el cliente -->
     <app-generador-codigo-sobre class="mt-6 flex w-full justify-center" />
   </main>
 
-  <!-- Escáner -->
-  @if (escaneando()) {
-    <div class="fixed inset-0 z-40 bg-landing-oscuro-fondo/80 backdrop-blur-xs" aria-hidden="true"></div>
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Escanear código QR"
-      class="fixed left-1/2 top-1/2 z-50 w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-landing-oscuro-fondo p-5 text-center text-landing-oscuro-texto shadow-alta"
-    >
-      <video #video playsinline muted class="aspect-square w-full rounded-xl bg-black object-cover"></video>
-      <p class="mt-3 font-interfaz text-sm font-bold">Apuntá la cámara al QR del cliente</p>
-      <button
-        type="button"
-        (click)="detenerEscaner()"
-        class="mt-3 cursor-pointer rounded-pildora bg-white/10 px-6 py-2 font-interfaz text-xs font-bold uppercase transition hover:bg-white/20"
-      >
-        Cancelar
-      </button>
-    </div>
-  }
-
   <!-- Cupón validado: el empleado confirma el canje -->
   @if (validacion(); as cupon) {
     <div
-      class="fixed inset-0 z-40 bg-landing-oscuro-fondo/70 backdrop-blur-xs"
+      class="fixed inset-0 z-40 bg-fondo-app/70 backdrop-blur-xs"
       (click)="cancelarValidacion()"
       aria-hidden="true"
     ></div>
@@ -137,7 +101,7 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="titulo-validacion"
-      class="fixed left-1/2 top-1/2 z-50 w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-landing-oscuro-fondo p-6 text-center text-landing-oscuro-texto shadow-alta"
+      class="fixed left-1/2 top-1/2 z-50 w-[min(92vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-fondo-superficie p-6 text-center text-texto-primario shadow-alta"
     >
       <button
         type="button"
@@ -151,14 +115,14 @@
       <h2 id="titulo-validacion" class="font-titulo text-3xl uppercase text-marca-primaria">
         Cupón válido
       </h2>
-      <p class="mt-4 font-titulo text-2xl uppercase text-marca-acento">{{ cupon.marca }}</p>
-      <p class="mt-1 font-interfaz text-base font-bold">{{ cupon.titulo }}</p>
-      <p class="mt-1 font-interfaz text-sm">{{ cupon.descuento }}% de descuento</p>
-      <p class="mt-3 font-interfaz text-xs text-texto-secundario">
+      <p class="mt-4 font-titulo text-2xl uppercase text-marca-secundaria">{{ cupon.marca }}</p>
+      <p class="mt-1 font-interfaz text-base font-bold text-texto-primario">{{ cupon.titulo }}</p>
+      <p class="mt-1 font-interfaz text-sm text-texto-secundario">{{ cupon.descuento }}% de descuento</p>
+      <p class="mt-3 font-interfaz text-xs text-texto-apagado">
         Cliente: <span class="font-bold">{{ cupon.usuario }}</span> · Código:
         <span class="font-bold">{{ cupon.codigo }}</span>
       </p>
-      <p class="mt-1 font-interfaz text-xs text-texto-secundario">
+      <p class="mt-1 font-interfaz text-xs text-texto-apagado">
         Vence el {{ cupon.vencimientoUtc | date: 'dd/MM/yy' : 'UTC' }}
       </p>
 
@@ -166,7 +130,7 @@
         <button
           type="button"
           (click)="confirmarCanje()"
-          class="cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2 font-interfaz text-sm font-black uppercase text-marca-sobre-primaria transition hover:bg-marca-primaria-hover motion-reduce:transition-none"
+          class="cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2 font-interfaz text-sm font-black uppercase text-marca-sobre-primaria transition hover:bg-marca-secundaria motion-reduce:transition-none"
         >
           Confirmar canje
         </button>
@@ -176,20 +140,22 @@
 
   <!-- Resultado del canje -->
   @if (resultado(); as res) {
-    @if (res.tipo === 'exito') {
-      <app-modal-resultado
-        tipo="exito"
-        titulo="¡Canjeo exitoso!"
-        mensaje="Ahora puedes reclamar las recompensas"
-        (cerrar)="cerrarResultado()"
-      />
-    } @else {
-      <app-modal-resultado
-        tipo="error"
-        titulo="Hubo un problema :("
-        [mensaje]="res.mensaje"
-        (cerrar)="cerrarResultado()"
-      />
-    }
+    <div data-modo="empresa">
+      @if (res.tipo === 'exito') {
+        <app-modal-resultado
+          tipo="exito"
+          titulo="¡Canjeo exitoso!"
+          mensaje="Ahora puedes reclamar las recompensas"
+          (cerrar)="cerrarResultado()"
+        />
+      } @else {
+        <app-modal-resultado
+          tipo="error"
+          titulo="Hubo un problema :("
+          [mensaje]="res.mensaje"
+          (cerrar)="cerrarResultado()"
+        />
+      }
+    </div>
   }
 </div>
