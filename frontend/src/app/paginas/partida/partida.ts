@@ -19,10 +19,12 @@ import { PantallaResultado } from '@compartidos/componentes/partida/pantalla-res
 import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
 import { Texto } from '@compartidos/componentes/textual/texto/texto';
 import { Titulo } from '@compartidos/componentes/textual/titulo/titulo';
+import { PantallaCargaJuego } from '@paginas/pantalla-carga-juego/pantalla-carga-juego';
 import type { MazoApi } from '@modelos/mazo.model';
 import { BarajaService } from '@servicios/baraja.service';
 import { SalaJuegoService } from '@servicios/sala-juego.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
+import { TransicionCargaService } from '@servicios/servicios-partida/transicion-carga.service';
 import { SonidoService } from '@servicios/sonido.service';
 import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja';
 
@@ -38,6 +40,7 @@ import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja
   imports: [
     Boton,
     Caja,
+    PantallaCargaJuego,
     PantallaResultado,
     RouterLink,
     SelectorMazos,
@@ -56,13 +59,17 @@ export class Partida implements OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly sonido = inject(SonidoService);
+  private readonly transicionCarga = inject(TransicionCargaService);
+
+  protected readonly mostrandoCarga = signal(false);
 
   constructor() {
     effect(() => {
       const enJuego = this.enPartida();
+      const enCarga = this.mostrandoCarga();
       const conResultado = this.mostrarPantallaResultado();
 
-      if (enJuego && !conResultado) {
+      if (enJuego && !enCarga && !conResultado) {
         this.sonido.iniciarMusicaFondo(0.18);
       } else if (conResultado) {
         this.sonido.ajustarVolumenMusicaFondo(0.04);
@@ -157,7 +164,8 @@ export class Partida implements OnInit, OnDestroy {
     () =>
       this.mazoSeleccionado() !== null &&
       this.mazoSeleccionadoEsReglamentario() &&
-      !this.servicio.cargando(),
+      !this.servicio.cargando() &&
+      !this.mostrandoCarga(),
   );
 
   protected seleccionarMazo(mazoId: number): void {
@@ -241,15 +249,23 @@ export class Partida implements OnInit, OnDestroy {
     this.salaService.limpiarEstadoRevancha();
   }
 
-  /** Crea una partida nueva contra el bot con el mazo elegido. */
+  /** Crea una partida nueva contra el bot con el mazo elegido, mostrando la pantalla de carga. */
   protected jugar(): void {
     const mazoId = this.mazoSeleccionado();
 
-    if (mazoId === null || !this.mazoSeleccionadoEsReglamentario()) {
+    if (mazoId === null || !this.mazoSeleccionadoEsReglamentario() || this.mostrandoCarga()) {
       return;
     }
 
-    this.servicio.iniciarContraBot(mazoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    this.mostrandoCarga.set(true);
+
+    this.transicionCarga
+      .esperarConAccion('ia', this.servicio.iniciarContraBot(mazoId))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.mostrandoCarga.set(false),
+        error: () => this.mostrandoCarga.set(false),
+      });
   }
 
   /** Abandona la partida (la confirmación visual previa ya se resolvió en el control de turno). */

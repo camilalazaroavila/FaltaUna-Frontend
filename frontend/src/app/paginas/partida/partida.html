@@ -1,9 +1,12 @@
+@if (mostrandoCarga()) {
+  <app-pantalla-carga-juego />
+} @else {
 <div
   class="flex min-h-[100dvh] flex-col overflow-x-hidden font-interfaz text-texto-primario"
   [class.h-[100dvh]]="enPartida()"
   [class.overflow-y-hidden]="enPartida()"
-  [class.bg-fondo-app]="enPartida()"
-  [class.pantalla-seleccion-fondo]="!enPartida()"
+  [class.bg-fondo-app]="enPartida() || servicio.cargando()"
+  [class.pantalla-seleccion-fondo]="!enPartida() && !servicio.cargando()"
 >
   @if (enPartida()) {
     <!-- Partida activa: pantalla completa sin cabecera superior -->
@@ -33,6 +36,10 @@
           (volverAlMenu)="volverAlMenu()"
         />
       }
+    </main>
+  } @else if (servicio.cargando()) {
+    <main class="flex flex-1 items-center justify-center p-6">
+      <p app-texto variante="secundario">Cargando partida...</p>
     </main>
   } @else {
     <!-- Sin partida activa: pantalla de selección de mazo escalable (con ilustración del bot) -->
@@ -169,3 +176,4 @@
     </main>
   }
 </div>
+}

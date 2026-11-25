@@ -183,5 +183,65 @@ describe('Partida', () => {
       ) as HTMLButtonElement;
       expect(botonJugar.disabled).toBe(true);
     });
+
+    it('muestra la pantalla de carga al iniciar contra el bot y luego pasa al tablero', () => {
+      jest.useFakeTimers();
+      try {
+        const servicio = fixture.componentInstance['servicio'];
+        (servicio.iniciarContraBot as jest.Mock).mockImplementation(() => {
+          partidaIdSignal.set(42);
+          return of(true);
+        });
+
+        fixture.componentInstance['cargandoMazos'].set(false);
+        fixture.componentInstance['mazos'].set([
+          { id: 10, nombre: 'Mazo Campeón', completo: true, cartas: [] } as any,
+        ]);
+        fixture.componentInstance['mazoSeleccionado'].set(10);
+        fixture.detectChanges();
+
+        const botonJugar = Array.from(
+          fixture.nativeElement.querySelectorAll('button[app-boton]'),
+        ).find((b) =>
+          (b as HTMLButtonElement).textContent?.includes('Jugar contra el bot'),
+        ) as HTMLButtonElement;
+        botonJugar.click();
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('app-pantalla-carga-juego')).toBeTruthy();
+        expect(fixture.nativeElement.querySelector('app-tablero')).toBeFalsy();
+
+        jest.advanceTimersByTime(2900);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('app-pantalla-carga-juego')).toBeFalsy();
+        expect(fixture.nativeElement.querySelector('app-tablero')).toBeTruthy();
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('oculta la pantalla de carga de inmediato si falla el inicio contra el bot', () => {
+      const servicio = fixture.componentInstance['servicio'];
+      (servicio.iniciarContraBot as jest.Mock).mockReturnValue(of(false));
+
+      fixture.componentInstance['cargandoMazos'].set(false);
+      fixture.componentInstance['mazos'].set([
+        { id: 10, nombre: 'Mazo Campeón', completo: true, cartas: [] } as any,
+      ]);
+      fixture.componentInstance['mazoSeleccionado'].set(10);
+      fixture.detectChanges();
+
+      const botonJugar = Array.from(
+        fixture.nativeElement.querySelectorAll('button[app-boton]'),
+      ).find((b) =>
+        (b as HTMLButtonElement).textContent?.includes('Jugar contra el bot'),
+      ) as HTMLButtonElement;
+      botonJugar.click();
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('app-pantalla-carga-juego')).toBeFalsy();
+      expect(fixture.nativeElement.querySelector('app-selector-mazos')).toBeTruthy();
+    });
   });
 });
