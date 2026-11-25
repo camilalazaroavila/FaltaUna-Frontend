@@ -1,0 +1,38 @@
+<section
+    class="flex w-full max-w-md flex-col items-center gap-4 rounded-3xl border-2 border-solid border-btn-juego-texto/20 p-6"
+    aria-labelledby="titulo-regalar-sobre">
+    <h2 id="titulo-regalar-sobre" class="font-titulo text-2xl uppercase tracking-wide">
+        Regalar un sobre
+    </h2>
+    <p class="font-interfaz text-sm">
+        Generá un QR para que el cliente lo escanee desde la app y reciba un sobre de tu marca.
+    </p>
+
+    <button type="button" (click)="generar()" [disabled]="generando()"
+        class="inline-flex cursor-pointer items-center gap-2 rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-base font-black uppercase text-marca-sobre-primaria shadow-baja transition hover:bg-marca-primaria-hover disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none">
+        {{ generando() ? 'Generando…' : codigo() ? 'Generar otro QR' : 'Generar QR de sobre' }}
+    </button>
+
+    @if (error()) {
+    <p class="font-interfaz text-sm font-bold" role="alert">{{ error() }}</p>
+    }
+
+    @if (codigo(); as generado) {
+    <div class="flex flex-col items-center gap-3">
+        <p class="font-titulo text-lg uppercase">{{ generado.sobre }}</p>
+
+        <img [src]="generado.qrDataUrl" [alt]="'Código QR del sobre de ' + generado.marca"
+            class="size-56 rounded-xl bg-white p-2 transition" [class.opacity-30]="vencido()" />
+
+        <p class="font-interfaz text-3xl font-black tracking-widest">{{ generado.codigo }}</p>
+
+        @if (vencido()) {
+        <p class="font-interfaz text-sm font-bold" role="status">
+            Este código venció. Generá uno nuevo.
+        </p>
+        } @else {
+        <p class="font-interfaz text-sm" role="timer">Vence en {{ tiempoRestante() }}</p>
+        }
+    </div>
+    }
+</section>

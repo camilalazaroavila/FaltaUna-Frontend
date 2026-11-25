@@ -27,7 +27,8 @@
               ".svg": "file"
             },
             "allowedCommonJsDependencies": [
-              "qrcode"
+              "qrcode",
+              "jsqr"
             ],
             "assets": [
               {
