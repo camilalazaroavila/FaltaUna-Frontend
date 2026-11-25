@@ -6,6 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+
 import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
 import { AlbumBorrador } from '@servicios/album-borrador.service';
@@ -15,6 +16,7 @@ import {
   MAX_KB_IMAGEN,
   MINIMO_IMAGENES,
   TOPE_CARTAS_ALBUM,
+  rarezasPorPlan,
 } from '@modelos/album.model';
 import { FormsModule } from '@angular/forms';
 import { EncabezadoPaso } from '@compartidos/componentes/encabezado-paso/encabezado-paso';
@@ -40,21 +42,6 @@ const ESTRELLAS_CANTIDAD: Record<RarezaCarta, number> = {
   legendaria: 4,
 };
 
-/** Distribución de rarezas para las 12 casillas del Plan Básico (idéntica a 3.png) */
-const RAREZAS_BASICO_12: RarezaCarta[] = [
-  'comun',
-  'comun',
-  'comun',
-  'comun',
-  'comun',
-  'rara',
-  'rara',
-  'rara',
-  'rara',
-  'epicarta',
-  'epicarta',
-  'legendaria',
-];
 
 export interface CasillaCarta {
   indice: number;
@@ -96,8 +83,9 @@ export class EmpresaAlbumCartas {
 
   protected readonly casillas = computed<CasillaCarta[]>(() => {
     const total = this.cantidad();
+    const distribucion = rarezasPorPlan(total);
     return Array.from({ length: total }, (_, i) => {
-      const rareza = RAREZAS_BASICO_12[i % RAREZAS_BASICO_12.length];
+      const rareza = distribucion[i] ?? 'comun';
       const cantidadEstrellas = ESTRELLAS_CANTIDAD[rareza];
       return {
         indice: i,
@@ -124,11 +112,7 @@ export class EmpresaAlbumCartas {
 
     // Inicializar rarezas predeterminadas en el borrador si están vacías
     if (this.borrador.rarezas().length !== cantidad) {
-      const rarezasIniciales = Array.from(
-        { length: cantidad },
-        (_, i) => RAREZAS_BASICO_12[i % RAREZAS_BASICO_12.length],
-      );
-      this.borrador.rarezas.set(rarezasIniciales);
+      this.borrador.rarezas.set(rarezasPorPlan(cantidad));
     }
 
     effect((alLimpiar) => {
