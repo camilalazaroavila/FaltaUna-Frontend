@@ -47,24 +47,13 @@ import { CuadroPlan } from '@compartidos/componentes/empresa/cuadro-plan/cuadro-
         </div>
 
         <!-- Botón de selección -->
-        @if (plan().id === 'basico') {
-          <button
-            type="button"
-            class="w-full max-w-xs py-2.5 2xl:py-3 px-5 2xl:px-6 rounded-full bg-[#0D2E33] hover:bg-[#15464d] text-white font-titulo text-xs sm:text-sm 2xl:text-base uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
-            (click)="elegir.emit(plan())"
-          >
-            ELEGIR PLAN BÁSICO
-          </button>
-        } @else {
-          <button
-            type="button"
-            disabled
-            class="w-full max-w-xs py-2.5 2xl:py-3 px-5 2xl:px-6 rounded-full bg-[#0D2E33]/40 text-white/70 font-titulo text-xs sm:text-sm 2xl:text-base uppercase tracking-wider cursor-not-allowed shadow-none"
-            [title]="'Plan ' + plan().nombre + ' estará disponible próximamente'"
-          >
-            ELEGIR PLAN {{ plan().nombre.toUpperCase() }}
-          </button>
-        }
+        <button
+          type="button"
+          class="w-full max-w-xs py-2.5 2xl:py-3 px-5 2xl:px-6 rounded-full bg-[#0D2E33] hover:bg-[#15464d] text-white font-titulo text-xs sm:text-sm 2xl:text-base uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
+          (click)="elegir.emit(plan())"
+        >
+          ELEGIR PLAN {{ plan().nombre.toUpperCase() }}
+        </button>
       </div>
     </article>
   `,
