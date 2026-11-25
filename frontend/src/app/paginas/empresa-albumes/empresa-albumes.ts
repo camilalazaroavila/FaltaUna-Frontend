@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarjeta-album';
@@ -8,7 +8,11 @@ import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta
 import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import { ETIQUETA_RAREZA, rarezaDesdeNombre } from '@modelos/carta.model';
+import { PLANES, type Plan } from '@modelos/plan.model';
+import { AlbumBorrador } from '@servicios/album-borrador.service';
 import { AlbumesService } from '@servicios/albumes.service';
+import { PagosService } from '@servicios/pagos.service';
+import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
 import { AlbumRespuesta } from '@modelos/album.model';
 import {
   ORDEN_RAREZA,
@@ -57,7 +61,10 @@ interface AlbumConResumen extends AlbumEmpresa {
 export class EmpresaAlbumes implements OnInit {
   private readonly albumesService = inject(AlbumesService);
   private readonly estadisticasService = inject(EstadisticasEmpresaService);
-
+  private readonly estado = inject(SuscripcionEstado);
+  private readonly borrador = inject(AlbumBorrador);
+  private readonly pagosService = inject(PagosService);
+  private readonly router = inject(Router);
 
   /** Datos crudos traídos del backend */
   protected readonly coleccionesBackend = signal<AlbumRespuesta[]>([]);
@@ -70,8 +77,50 @@ export class EmpresaAlbumes implements OnInit {
   );
   protected readonly etiquetaRareza = ETIQUETA_RAREZA;
 
+  /** Plan activo conocido (desde la sesión o el último pago verificado). */
+  protected readonly planActual = computed<Plan | null>(() => {
+    const elegido = this.estado.planElegido();
+    if (elegido) return elegido;
+    const idDelPago = this.estado.ultimoPago()?.plan?.id;
+    if (idDelPago) return PLANES.find((p) => p.backendId === idDelPago) ?? null;
+    return null;
+  });
+
+  /** Tope de álbumes del plan activo (1 Básico, 5 Standard, 10 Premium). */
+  protected readonly maxAlbumesPlan = computed<number | null>(() => {
+    return this.planActual()?.maxAlbumes ?? null;
+  });
+
+  /** Habilita crear un nuevo álbum cuando el plan permite más de 1 álbum y aún no llegó al tope. */
+  protected readonly puedeCrearNuevoAlbum = computed<boolean>(() => {
+    const max = this.maxAlbumesPlan();
+    const cantidadActual = this.coleccionesBackend().length;
+    if (max !== null) {
+      return max > 1 && cantidadActual < max;
+    }
+    return cantidadActual < 10;
+  });
+
   ngOnInit(): void {
+    const ref = this.estado.referenciaGuardada();
+    if (!this.estado.planElegido() && ref) {
+      this.pagosService.obtenerPago(ref).subscribe({
+        next: (pago) => this.estado.ultimoPago.set(pago),
+      });
+    }
     this.cargarColecciones();
+  }
+
+  protected crearNuevoAlbum(): void {
+    this.borrador.limpiar();
+    this.estado.olvidarAlbumBorrador();
+    const plan = this.planActual();
+    if (plan) {
+      this.estado.planElegido.set(plan);
+      void this.router.navigate(['/empresa/album/crear/marca']);
+    } else {
+      void this.router.navigate(['/empresa']);
+    }
   }
 
   private cargarColecciones(): void {

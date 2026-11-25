@@ -13,7 +13,7 @@ export const PLANES_EMPRESA: PlanEmpresa[] = [
     precio: '$15.000',
     periodo: '/mes',
     beneficios: [
-      { texto: 'Campaña de colección personalizada', icono: 'megafono' },
+      { texto: '1 álbum coleccionable personalizado', icono: 'megafono' },
       { texto: 'Mayor visibilidad para la marca', icono: 'ojo' },
       { texto: 'Hasta 12 cartas coleccionables', icono: 'cartas' },
     ],
@@ -26,7 +26,7 @@ export const PLANES_EMPRESA: PlanEmpresa[] = [
     precio: '$35.000',
     periodo: '/mes',
     beneficios: [
-      { texto: 'Campaña de colección personalizada', icono: 'megafono' },
+      { texto: 'Hasta 5 álbumes coleccionables', icono: 'megafono' },
       { texto: 'Estadísticas de participación', icono: 'estadisticas' },
       { texto: 'Mayor visibilidad para la marca', icono: 'ojo' },
       { texto: 'Hasta 20 cartas coleccionables', icono: 'cartas' },
@@ -40,7 +40,7 @@ export const PLANES_EMPRESA: PlanEmpresa[] = [
     precio: '$60.000',
     periodo: '/mes',
     beneficios: [
-      { texto: 'Campaña de colección personalizada', icono: 'megafono' },
+      { texto: 'Hasta 10 álbumes coleccionables', icono: 'megafono' },
       { texto: 'Estadísticas de participación', icono: 'estadisticas' },
       { texto: 'Mayor visibilidad para la marca', icono: 'ojo' },
       { texto: 'Hasta 30 cartas coleccionables', icono: 'cartas' },
