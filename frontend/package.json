@@ -41,6 +41,7 @@
     "@ng-icons/phosphor-icons": "^32.5.0",
     "@tailwindcss/postcss": "^4.3.3",
     "gsap": "^3.15.0",
+    "jsqr": "^1.4.0",
     "ngx-sonner": "^3.1.0",
     "postcss": "^8.5.28",
     "qrcode": "^1.5.4",

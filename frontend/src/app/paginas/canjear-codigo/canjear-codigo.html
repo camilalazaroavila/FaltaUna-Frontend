@@ -1,0 +1,59 @@
+<div class="pagina relative flex min-h-dvh flex-col overflow-hidden">
+    <app-header [logueado]="true" />
+
+    <main class="area-contenido-con-nav relative z-10 flex flex-1 flex-col items-center gap-6 px-4 pt-4 pb-16 sm:px-6">
+        <div class="w-full max-w-md px-1">
+            <a routerLink="/usuario"
+                class="inline-flex items-center gap-2 font-titulo text-sm tracking-[0.06em] uppercase transition-colors hover:text-marca-primaria">
+                <svg class="h-4 w-6" viewBox="0 0 28 16" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M27 8H2M9 1L2 8l7 7" />
+                </svg>
+                Volver
+            </a>
+        </div>
+
+        <section class="flex w-full max-w-md flex-col gap-4" aria-labelledby="titulo-canjear-codigo">
+            <h1 id="titulo-canjear-codigo" class="font-titulo text-3xl uppercase tracking-[0.04em]">
+                Canjear código
+            </h1>
+            <p class="font-interfaz text-sm">
+                Escaneá el QR del empleado (si tu dispositivo lo permite) o escribí el código para
+                recibir un sobre de la marca.
+            </p>
+
+            <app-lector-qr (leido)="alLeerQr($event)" />
+
+            <form class="flex flex-col gap-3" (submit)="canjear($event)" novalidate>
+                <label for="codigo-sobre" class="font-interfaz text-sm font-bold">Código del sobre</label>
+                <input id="codigo-sobre" name="codigo" type="text" [value]="codigo()" (input)="alEscribir($event)"
+                    placeholder="XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                    maxlength="120"
+                    class="w-full rounded-xl border-2 border-solid border-btn-juego-texto/30 bg-white px-4 py-3 font-interfaz text-xl font-black uppercase tracking-widest" />
+
+                <button type="submit" [disabled]="enviando()"
+                    class="inline-flex cursor-pointer items-center justify-center rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-base font-black uppercase text-marca-sobre-primaria shadow-baja transition hover:bg-marca-primaria-hover disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none">
+                    {{ enviando() ? 'Canjeando…' : 'Canjear sobre' }}
+                </button>
+            </form>
+
+            @if (resultado(); as r) {
+            @if (r.tipo === 'exito') {
+            <div class="flex flex-col gap-3 rounded-2xl border-2 border-solid border-btn-juego-texto/20 bg-white/70 p-4"
+                role="status">
+                <p class="font-interfaz text-base font-bold">{{ r.canje.mensaje }}</p>
+                <a routerLink="/usuario"
+                    class="font-interfaz text-sm font-black uppercase underline hover:text-marca-primaria">
+                    Ir a abrir mis sobres
+                </a>
+            </div>
+            } @else {
+            <p class="rounded-2xl border-2 border-solid border-btn-juego-texto/20 bg-white/70 p-4 font-interfaz text-sm font-bold"
+                role="alert">
+                {{ r.mensaje }}
+            </p>
+            }
+            }
+        </section>
+    </main>
+</div>

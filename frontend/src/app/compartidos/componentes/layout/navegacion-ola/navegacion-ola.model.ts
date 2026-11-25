@@ -67,8 +67,9 @@ export const DESTINOS_NAVEGACION_OLA: readonly DestinoNavegacionOla[] = [
   {
     id: 'qr',
     etiqueta: 'Canje',
+    ruta: '/usuario/canjear-codigo',
+    rutasCoincidentes: ['/usuario/canjear-codigo'],
     urlIcono: urlIconoQr,
-    deshabilitado: true,
   },
   {
     id: 'cupones',

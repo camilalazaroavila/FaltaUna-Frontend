@@ -2,10 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  ElementRef,
   inject,
   signal,
-  viewChild,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -14,8 +12,10 @@ import { AuthService } from '@servicios/auth.service';
 import { CuponesService } from '@servicios/cupones.service';
 import { CanjeErrorRespuesta, CanjeExitosoRespuesta, CuponValidado } from '@modelos/cupon.model';
 import { ModalResultado } from '@compartidos/componentes/modal-resultado/modal-resultado';
+import { GeneradorCodigoSobre } from '@compartidos/componentes/empleado/generador-codigo-sobre/generador-codigo-sobre';
+import { LectorQr } from '@compartidos/componentes/usuario/lector-qr/lector-qr';
 
-import urlLogo from '@svgs/Imagotipo_claro.svg';
+import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
 
 const MENSAJE_CODIGO_INVALIDO = 'El código que ingresaste es incorrecto o está expirado';
 const MENSAJE_SIN_CONEXION = 'No pudimos conectarnos con el servidor. Probá de nuevo en un momento.';
@@ -23,12 +23,6 @@ const MENSAJE_SIN_CONEXION = 'No pudimos conectarnos con el servidor. Probá de 
 type ResultadoCanje =
   | { tipo: 'exito'; cupon: CanjeExitosoRespuesta }
   | { tipo: 'error'; mensaje: string };
-
-/** API del navegador (Chrome/Android) para leer QR sin librerías; no está en los tipos de TS. */
-interface DetectorBarcode {
-  detect(fuente: HTMLVideoElement): Promise<{ rawValue: string }[]>;
-}
-type ConstructorDetector = new (opciones: { formats: string[] }) => DetectorBarcode;
 
 /**
  * Panel del empleado: ingresa el token o escanea el QR del cliente, VALIDA el cupón
@@ -38,7 +32,7 @@ type ConstructorDetector = new (opciones: { formats: string[] }) => DetectorBarc
 @Component({
   selector: 'app-empleado-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe, ModalResultado],
+  imports: [RouterLink, DatePipe, ModalResultado, GeneradorCodigoSobre, LectorQr],
   templateUrl: './empleado-dashboard.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown.escape)': 'cerrarModales()' },
@@ -48,7 +42,7 @@ export class EmpleadoDashboard {
   private readonly cuponesService = inject(CuponesService);
   private readonly router = inject(Router);
 
-  protected readonly urlLogo = urlLogo;
+  protected readonly urlLogo = urlLogoBlanco;
 
   protected readonly codigo = signal('');
   protected readonly enviando = signal(false);
@@ -57,18 +51,15 @@ export class EmpleadoDashboard {
   protected readonly validacion = signal<CuponValidado | null>(null);
   protected readonly menuAbierto = signal(false);
 
-  protected readonly escaneando = signal(false);
-  protected readonly errorEscaner = signal<string | null>(null);
-  protected readonly escanerDisponible =
-    typeof window !== 'undefined' &&
-    'BarcodeDetector' in window &&
-    !!navigator.mediaDevices?.getUserMedia;
-
-  private readonly video = viewChild<ElementRef<HTMLVideoElement>>('video');
-  private flujo: MediaStream | null = null;
-
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.detenerEscaner());
+    const raiz = document.documentElement;
+    const modoPrevio = raiz.getAttribute('data-modo');
+    raiz.setAttribute('data-modo', 'empresa');
+
+    inject(DestroyRef).onDestroy(() => {
+      if (modoPrevio) raiz.setAttribute('data-modo', modoPrevio);
+      else raiz.removeAttribute('data-modo');
+    });
   }
 
   /** Normaliza lo que se escribe o pega: sin espacios y en mayúsculas (el token puede ser largo). */
@@ -136,63 +127,15 @@ export class EmpleadoDashboard {
     this.resultado.set(null);
   }
 
-  protected async iniciarEscaner(): Promise<void> {
-    if (!this.escanerDisponible || this.escaneando()) return;
-    this.errorEscaner.set(null);
-
-    try {
-      this.flujo = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-    } catch {
-      this.errorEscaner.set('No pudimos acceder a la cámara. Revisá los permisos del navegador.');
-      return;
-    }
-
-    this.escaneando.set(true);
-    // El <video> se crea al activar `escaneando`; se espera un ciclo de render.
-    await new Promise((resolver) => setTimeout(resolver));
-
-    const elemento = this.video()?.nativeElement;
-    if (!elemento || !this.flujo) {
-      this.detenerEscaner();
-      return;
-    }
-    elemento.srcObject = this.flujo;
-    await elemento.play();
-
-    const Detector = (window as unknown as { BarcodeDetector: ConstructorDetector })
-      .BarcodeDetector;
-    const detector = new Detector({ formats: ['qr_code'] });
-    void this.leerCuadros(elemento, detector);
-  }
-
-  protected detenerEscaner(): void {
-    this.flujo?.getTracks().forEach((pista) => pista.stop());
-    this.flujo = null;
-    this.escaneando.set(false);
+  /** El QR leído por la cámara va directo a validar (no pasa por el campo de texto). */
+  protected alLeerQr(contenido: string): void {
+    this.codigo.set(contenido.trim().toUpperCase());
+    this.validar();
   }
 
   protected cerrarSesion(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
-  }
-
-  private async leerCuadros(elemento: HTMLVideoElement, detector: DetectorBarcode): Promise<void> {
-    while (this.escaneando() && this.flujo) {
-      try {
-        const lecturas = await detector.detect(elemento);
-        if (lecturas.length > 0) {
-          this.detenerEscaner();
-          this.codigo.set(lecturas[0].rawValue.toUpperCase());
-          this.validar();
-          return;
-        }
-      } catch {
-        // Un cuadro que no se pudo analizar no corta el escaneo.
-      }
-      await new Promise((resolver) => setTimeout(resolver, 250));
-    }
   }
 
   private mensajeDeError(respuesta: HttpErrorResponse): string {
