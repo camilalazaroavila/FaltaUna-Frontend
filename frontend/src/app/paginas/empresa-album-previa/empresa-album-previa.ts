@@ -12,6 +12,11 @@ import { AlbumBorrador } from '@servicios/album-borrador.service';
 import { AlbumFlujo } from '@servicios/album-flujo.service';
 import { PagosService } from '@servicios/pagos.service';
 import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
+import {
+  CARTAS_POR_ALBUM,
+  TOPE_CARTAS_ALBUM,
+  rarezasPorPlan,
+} from '@modelos/album.model';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import { EncabezadoPaso } from '@compartidos/componentes/encabezado-paso/encabezado-paso';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
@@ -35,20 +40,6 @@ const ESTRELLAS_CANTIDAD: Record<RarezaCarta, number> = {
   legendaria: 4,
 };
 
-const RAREZAS_BASICO_12: RarezaCarta[] = [
-  'comun',
-  'comun',
-  'comun',
-  'comun',
-  'comun',
-  'rara',
-  'rara',
-  'rara',
-  'rara',
-  'epicarta',
-  'epicarta',
-  'legendaria',
-];
 
 export interface PreviaCartaItem {
   indice: number;
@@ -92,11 +83,18 @@ export class EmpresaAlbumPrevia {
   protected readonly localUrl = signal<string | null>(null);
   private readonly cartasUrls = signal<(string | null)[]>([]);
 
+  protected readonly cantidad = computed(() => {
+    const delPlan = this.estado.planElegido()?.maxCartas;
+    return delPlan && delPlan > 0 ? Math.min(delPlan, TOPE_CARTAS_ALBUM) : CARTAS_POR_ALBUM;
+  });
+
   protected readonly cartas = computed<PreviaCartaItem[]>(() => {
+    const total = this.cantidad();
     const urls = this.cartasUrls();
     const rarezas = this.borrador.rarezas();
-    return Array.from({ length: 12 }, (_, i) => {
-      const rareza = rarezas[i] ?? RAREZAS_BASICO_12[i % RAREZAS_BASICO_12.length];
+    const distribucion = rarezasPorPlan(total);
+    return Array.from({ length: total }, (_, i) => {
+      const rareza = rarezas[i] ?? distribucion[i] ?? 'comun';
       return {
         indice: i,
         rareza,

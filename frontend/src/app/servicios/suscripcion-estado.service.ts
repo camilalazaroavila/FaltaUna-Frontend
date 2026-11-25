@@ -1,11 +1,12 @@
 import { Injectable, effect, inject, signal } from '@angular/core';
 import { AuthService } from '@servicios/auth.service';
-import { Plan } from '@modelos/plan.model';
+import { PLANES, Plan } from '@modelos/plan.model';
 import { PagoRespuesta } from '@modelos/pago.model';
 
 const CLAVE_REFERENCIA = 'faltauna_pago_ref';
 const CLAVE_ALTA = 'faltauna_alta_completada';
 const CLAVE_BORRADOR = 'faltauna_album_borrador_id';
+const CLAVE_PLAN = 'faltauna_plan_id';
 
 /**
  * Estado del flujo de alta de la empresa (pasos 1 a 6). El plan se elige primero (sin pagar)
@@ -18,14 +19,43 @@ const CLAVE_BORRADOR = 'faltauna_album_borrador_id';
 export class SuscripcionEstado {
   private readonly auth = inject(AuthService);
 
-  readonly planElegido = signal<Plan | null>(null);
+  readonly planElegido = signal<Plan | null>(this.planGuardado());
   readonly ultimoPago = signal<PagoRespuesta | null>(null);
 
   constructor() {
     effect(() => {
-      const referencia = this.ultimoPago()?.referenciaExterna;
-      if (referencia) this.recordarReferencia(referencia);
+      const plan = this.planElegido();
+      if (plan) this.recordarPlan(plan.id);
     });
+
+    effect(() => {
+      const pago = this.ultimoPago();
+      const referencia = pago?.referenciaExterna;
+      if (referencia) this.recordarReferencia(referencia);
+      if (pago?.plan?.id) {
+        const encontrado = PLANES.find((p) => p.backendId === pago.plan.id);
+        if (encontrado && this.planElegido()?.id !== encontrado.id) {
+          this.planElegido.set(encontrado);
+        }
+      }
+    });
+  }
+
+  private recordarPlan(planId: string): void {
+    try {
+      sessionStorage.setItem(CLAVE_PLAN, planId);
+    } catch {
+      /* almacenamiento no disponible */
+    }
+  }
+
+  private planGuardado(): Plan | null {
+    try {
+      const id = sessionStorage.getItem(CLAVE_PLAN);
+      return id ? (PLANES.find((p) => p.id === id) ?? null) : null;
+    } catch {
+      return null;
+    }
   }
 
   /**
