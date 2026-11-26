@@ -216,25 +216,43 @@
     Volver a estadísticas
   </a>
 
-  <header class="mb-8">
-    <p class="font-interfaz text-xs font-bold tracking-[0.18em] text-marca-secundaria uppercase">
-      Panel de empresa
-    </p>
-    <div class="mt-1 flex flex-wrap items-center gap-3">
-      <h1 class="font-titulo text-4xl text-texto-primario sm:text-5xl">Álbumes</h1>
-      @if (nombreMarca()) {
-      <span
-        class="rounded-pildora bg-marca-primaria px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-sobre-primaria uppercase">
-        {{ nombreMarca() }}
-      </span>
-      }
+  <header class="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="font-interfaz text-xs font-bold tracking-[0.18em] text-marca-secundaria uppercase">
+        Panel de empresa
+      </p>
+      <div class="mt-1 flex flex-wrap items-center gap-3">
+        <h1 class="font-titulo text-4xl text-texto-primario sm:text-5xl">Álbumes</h1>
+        @if (nombreMarca()) {
+        <span
+          class="rounded-pildora bg-marca-primaria px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-sobre-primaria uppercase">
+          {{ nombreMarca() }}
+        </span>
+        }
+        @if (maxAlbumesPlan(); as topeAlbumes) {
+        <span
+          class="rounded-pildora bg-marca-secundaria-suave px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-secundaria uppercase">
+          {{ albumes().length }} / {{ topeAlbumes }} álbumes
+        </span>
+        }
+      </div>
+      <p class="mt-2 max-w-2xl font-interfaz text-sm text-texto-secundario">
+        Estas son las colecciones que publicaste. Cada álbum reúne cartas de tus productos y
+        desbloquea una recompensa para los
+        <strong class="font-bold text-texto-primario">{{ totalUsuarios() }}</strong> jugadores que lo
+        completen.
+      </p>
     </div>
-    <p class="mt-2 max-w-2xl font-interfaz text-sm text-texto-secundario">
-      Estas son las colecciones que publicaste. Cada álbum reúne cartas de tus productos y
-      desbloquea una recompensa para los
-      <strong class="font-bold text-texto-primario">{{ totalUsuarios() }}</strong> jugadores que lo
-      completen.
-    </p>
+
+    @if (puedeCrearNuevoAlbum()) {
+    <button
+      type="button"
+      (click)="crearNuevoAlbum()"
+      class="inline-flex cursor-pointer items-center gap-2 rounded-pildora bg-marca-primaria px-5 py-2.5 font-titulo text-xs sm:text-sm uppercase tracking-wider text-marca-sobre-primaria shadow-baja transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+    >
+      <span>+ Crear nuevo álbum</span>
+    </button>
+    }
   </header>
 
   <div class="grid gap-6 md:grid-cols-2">
