@@ -190,5 +190,9 @@ describe('BotonNavegacionCircular Component', () => {
     // La etiqueta flotante usa colores de la marca activa
     const etiqueta = btnEl.querySelector('span');
     expect(etiqueta?.classList.contains('bg-marca-primaria')).toBe(true);
+
+    const img = btnEl.querySelector('img');
+    expect(img?.classList.contains('brightness-0')).toBe(true);
+    expect(img?.classList.contains('invert')).toBe(true);
   });
 });

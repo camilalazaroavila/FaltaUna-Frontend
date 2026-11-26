@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
+import { Esqueleto } from '@compartidos/componentes/feedback/esqueleto/esqueleto';
 import { EstadisticasEmpresaService } from '@app/servicios/estadisticas-empresa-service';
 import { AlbumesService } from '@servicios/albumes.service';
 
@@ -88,7 +89,7 @@ export interface EstadisticasEmpresaRespuesta {
 @Component({
   selector: 'app-empresa-estadisticas',
   standalone: true,
-  imports: [NgIcon],
+  imports: [NgIcon, Esqueleto],
   templateUrl: './empresa-estadisticas.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -156,39 +157,49 @@ export class EmpresaEstadisticas implements OnInit {
     const d = this.datos();
     if (!d) return [];
 
+    const estaFiltrado = this.marcaSeleccionadaId() !== undefined;
+
     return [
       {
         id: 'completaron',
-        etiqueta: 'Completaron tus álbumes',
+        etiqueta: estaFiltrado
+          ? 'Total de jugadores que completaron el álbum'
+          : 'Total de jugadores que completaron tus álbumes',
         valor: d.jugadoresCompletaronAlbumes.toLocaleString('es-AR'),
-        detalle: `${d.porcentajeJugadoresCompletaron}% de los jugadores`,
+        detalle: '',
         icono: 'phosphorTrophyFill',
         tendencia: this.formatearTendencia(d.variacionCompletaronPorcentaje),
         tendenciaPositiva: d.variacionCompletaronPorcentaje >= 0,
       },
       {
         id: 'intercambios',
-        etiqueta: 'Cartas intercambiadas',
+        etiqueta: estaFiltrado
+          ? 'Total de cartas intercambiadas del álbum'
+          : 'Total de cartas intercambiadas de tus álbumes',
         valor: d.cartasIntercambiadas.toLocaleString('es-AR'),
-        detalle: 'Entre tus álbumes',
+        detalle: '',
         icono: 'phosphorArrowsLeftRightFill',
         tendencia: this.formatearTendencia(d.variacionIntercambiosPorcentaje),
         tendenciaPositiva: d.variacionIntercambiosPorcentaje >= 0,
       },
       {
         id: 'favoritas',
-        etiqueta: 'Jugadores con favoritas',
+        etiqueta: estaFiltrado
+          ? 'Total de jugadores que marcaron cartas del álbum como favoritas'
+          : 'Total de jugadores que marcaron tus cartas como favoritas',
         valor: d.jugadoresConCartasFavoritas.toLocaleString('es-AR'),
-        detalle: 'Marcaron alguna carta',
+        detalle: '',
         icono: 'phosphorHeartFill',
         tendencia: this.formatearTendencia(d.variacionJugadoresFavoritasPorcentaje),
         tendenciaPositiva: d.variacionJugadoresFavoritasPorcentaje >= 0,
       },
       {
         id: 'partidas',
-        etiqueta: 'Partidas con tus cartas',
+        etiqueta: estaFiltrado
+          ? 'Total de cartas del álbum usadas en partidas'
+          : 'Total de cartas usadas en partidas',
         valor: d.partidasConTusCartas.toLocaleString('es-AR'),
-        detalle: 'Usaron una carta de tu marca',
+        detalle: '',
         icono: 'phosphorPlayFill',
         tendencia: this.formatearTendencia(d.variacionPartidasPorcentaje),
         tendenciaPositiva: d.variacionPartidasPorcentaje >= 0,
@@ -220,10 +231,10 @@ export class EmpresaEstadisticas implements OnInit {
     }));
   });
 
-  /** Ranking de cartas por cantidad de favoritos (top 5). */
+  /** Ranking de cartas por cantidad de favoritos (top 3). */
   protected readonly topCartas = computed<readonly CartaTopEmpresa[]>(() => {
     const lista = this.datos()?.cartasMasQueridas ?? [];
-    return lista.map((c) => ({
+    return lista.slice(0, 3).map((c) => ({
       nombre: c.nombreCarta,
       album: c.nombreAlbum,
       favoritos: c.cantidadFavoritos,

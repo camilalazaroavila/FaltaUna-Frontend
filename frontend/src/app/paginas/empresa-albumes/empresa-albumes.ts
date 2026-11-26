@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { NgIcon } from '@ng-icons/core';
-import { Router, RouterLink } from '@angular/router';
-import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
 import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
 import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarjeta-album';
 import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
-import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
+import { Esqueleto } from '@compartidos/componentes/feedback/esqueleto/esqueleto';
 import type { Carta, RarezaCarta } from '@modelos/carta.model';
 import { ETIQUETA_RAREZA, rarezaDesdeNombre } from '@modelos/carta.model';
 import { PLANES, type Plan } from '@modelos/plan.model';
@@ -51,8 +52,7 @@ interface AlbumConResumen extends AlbumEmpresa {
     CartaComponent,
     TarjetaAlbum,
     TarjetaKpi,
-    BarraRareza,
-    TarjetaRecompensa,
+    Esqueleto,
   ],
   templateUrl: './empresa-albumes.html',
   styleUrl: './empresa-albumes.css',
@@ -66,6 +66,19 @@ export class EmpresaAlbumes implements OnInit {
   private readonly pagosService = inject(PagosService);
   private readonly router = inject(Router);
 
+  constructor() {
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe((e) => {
+        if (e.urlAfterRedirects === '/empresa/panel/albumes') {
+          this.volverAAlbumes();
+        }
+      });
+  }
+
   /** Datos crudos traídos del backend */
   protected readonly coleccionesBackend = signal<AlbumRespuesta[]>([]);
   protected readonly estadisticasPorMarca = signal<Record<number, EstadisticasEmpresaRespuesta>>({});
@@ -76,6 +89,10 @@ export class EmpresaAlbumes implements OnInit {
     () => this.estadisticasGenerales()?.totalJugadoresInteractuando ?? 0,
   );
   protected readonly etiquetaRareza = ETIQUETA_RAREZA;
+
+  protected limpiarNombre(nombre: string): string {
+    return (nombre || '').replace(/^(?:[áa]lbum\s+|colecci[oó]n\s*)/gi, '').replace(/colecci[oó]n\s*/gi, '').trim();
+  }
 
   /** Plan activo conocido (desde la sesión o el último pago verificado). */
   protected readonly planActual = computed<Plan | null>(() => {
@@ -172,7 +189,7 @@ export class EmpresaAlbumes implements OnInit {
         estado: c.activa ? 'activo' : 'finalizado',
         tono: 'azul',
         descripcion: c.descripcion,
-        recompensa: 'Premio por completar la colección',
+        recompensa: 'Premio por completar el álbum',
         imagenPortada: c.marcaLogoUrl,
         cartasIds: imagenes.map((img) => String(img.id)),
         jugadoresCompletaron: est?.jugadoresCompletaronAlbumes ?? 0,
@@ -263,7 +280,7 @@ export class EmpresaAlbumes implements OnInit {
       {
         etiqueta: 'Cartas',
         valor: String(resumen.totalCartas),
-        contexto: 'En toda la colección',
+        contexto: 'En todo el álbum',
       },
       {
         etiqueta: 'Completaron',

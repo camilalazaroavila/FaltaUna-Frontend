@@ -144,7 +144,7 @@ describe('EmpresaAlbumes (estadísticas por álbum y por carta)', () => {
     fixture.detectChanges();
 
     expect(componente['kpisAlbum']()).toEqual([
-      { etiqueta: 'Cartas', valor: '2', contexto: 'En toda la colección' },
+      { etiqueta: 'Cartas', valor: '2', contexto: 'En todo el álbum' },
       { etiqueta: 'Completaron', valor: '25%', contexto: '50 jugadores' },
       { etiqueta: 'Favoritos', valor: '95', contexto: 'Marcas de tus cartas' },
       { etiqueta: 'Intercambios', valor: '80', contexto: 'Entre jugadores' },
@@ -212,5 +212,12 @@ describe('EmpresaAlbumes (estadísticas por álbum y por carta)', () => {
 
     expect(limpiarSpy).toHaveBeenCalled();
     expect(navSpy).toHaveBeenCalledWith(['/empresa/album/crear/marca']);
+  });
+
+  it('muestra esqueletos de carga mientras cargando() es verdadero', () => {
+    componente['cargando'].set(true);
+    fixture.detectChanges();
+    const esqueletos = fixture.nativeElement.querySelectorAll('app-esqueleto');
+    expect(esqueletos.length).toBeGreaterThan(0);
   });
 });
