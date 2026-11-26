@@ -210,7 +210,7 @@ export const ALBUMES_EMPRESA: readonly AlbumEmpresa[] = [
     temporada: '2026',
     estado: 'activo',
     tono: 'violeta',
-    descripcion: 'La colección fundacional: los sabores clásicos que nunca faltan en el mostrador.',
+    descripcion: 'El álbum fundacional: los sabores clásicos que nunca faltan en el mostrador.',
     recompensa: '20% de descuento en tu próximo kilo de helado',
     imagenPortada: IMAGEN_PRODUCTO,
     cartasIds: [

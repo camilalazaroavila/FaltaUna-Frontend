@@ -1,18 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
-import { TONO_EMPRESA, type AlbumEmpresa, type ResumenAlbum } from '@modelos/empresa.mock';
-import { BarraRareza } from '@compartidos/componentes/cartas/barra-rareza/barra-rareza';
-import { TarjetaRecompensa } from '@compartidos/componentes/usuario/tarjeta-recompensa/tarjeta-recompensa';
+import { type AlbumEmpresa, type ResumenAlbum } from '@modelos/empresa.mock';
 
 /**
- * Tarjeta de álbum de empresa con estética de cupón: banda del color del álbum
- * con el nombre, cupón de recompensa, métricas agregadas y medidor de rareza.
- * Es la tarjeta que usan la grilla de empresa y la galería de componentes.
+ * Tarjeta de álbum de empresa: banda violeta con el nombre del álbum,
+ * métricas agregadas y botón de acción.
  */
 @Component({
   selector: 'app-tarjeta-album',
   standalone: true,
-  imports: [NgIcon, BarraRareza, TarjetaRecompensa],
+  imports: [NgIcon],
   templateUrl: './tarjeta-album.html',
   styleUrl: './tarjeta-album.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,7 +20,21 @@ export class TarjetaAlbum {
   readonly resumen = input.required<ResumenAlbum>();
   readonly seleccionar = output<string>();
 
-  protected readonly acento = computed(() => TONO_EMPRESA[this.album().tono]);
+  protected readonly tituloAlbum = computed(() => {
+    return this.album().nombre
+      .replace(/^(?:[áa]lbum\s+|colecci[oó]n\s*)/gi, '')
+      .replace(/colecci[oó]n\s*/gi, '')
+      .trim()
+      .toUpperCase();
+  });
+
+  protected readonly descripcionAlbum = computed(() => {
+    return this.album().descripcion
+      .replace(/la colecci[oó]n/gi, 'el álbum')
+      .replace(/las colecciones/gi, 'los álbumes')
+      .replace(/colecci[oó]n/gi, 'álbum')
+      .replace(/colecciones/gi, 'álbumes');
+  });
   protected readonly estado = computed(() =>
     this.album().estado === 'activo' ? 'Activo' : 'Finalizado',
   );

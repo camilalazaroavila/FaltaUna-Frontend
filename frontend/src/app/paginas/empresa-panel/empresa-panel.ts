@@ -69,8 +69,8 @@ export class EmpresaPanel {
     { initialValue: this.router.url },
   );
 
-  /** El aside no se persiste en Álbumes: esa vista ocupa todo el ancho. */
-  protected readonly mostrarAside = computed(() => !this.urlActual().includes('/albumes'));
+  /** El dock lateral se muestra en todas las vistas del panel de empresa. */
+  protected readonly mostrarAside = computed(() => true);
 
   protected esActivo(destino: DestinoPanel): boolean {
     const ruta = destino.ruta;

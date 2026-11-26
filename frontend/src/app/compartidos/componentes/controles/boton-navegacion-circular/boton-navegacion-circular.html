@@ -18,7 +18,9 @@
           [src]="urlIcono()"
           alt=""
           [class]="tamanio() === 'lg' ? 'size-6' : 'size-5'"
-          class="shrink-0 object-contain"
+          class="shrink-0 object-contain transition-[filter] duration-200"
+          [class.brightness-0]="activo()"
+          [class.invert]="activo()"
           aria-hidden="true"
         />
       } @else if (icono()) {
@@ -39,7 +41,9 @@
         [src]="urlIcono()"
         alt=""
         [class]="tamanio() === 'lg' ? 'size-6' : 'size-5'"
-        class="shrink-0 object-contain"
+        class="shrink-0 object-contain transition-[filter] duration-200"
+        [class.brightness-0]="activo()"
+        [class.invert]="activo()"
         aria-hidden="true"
       />
     } @else if (icono()) {

@@ -103,18 +103,54 @@ describe('EmpresaEstadisticas', () => {
     expect(kpis).toHaveLength(4);
 
     const kpiCompletaron = kpis.find((k) => k.id === 'completaron')!;
+    expect(kpiCompletaron.etiqueta).toBe('Total de jugadores que completaron tus álbumes');
     expect(kpiCompletaron.valor).toBe((300).toLocaleString('es-AR'));
-    expect(kpiCompletaron.detalle).toBe('20% de los jugadores');
+    expect(kpiCompletaron.detalle).toBe('');
     expect(kpiCompletaron.tendencia).toBe('+12%');
     expect(kpiCompletaron.tendenciaPositiva).toBe(true);
 
     const kpiIntercambios = kpis.find((k) => k.id === 'intercambios')!;
+    expect(kpiIntercambios.etiqueta).toBe('Total de cartas intercambiadas de tus álbumes');
     expect(kpiIntercambios.tendencia).toBe('-5%');
     expect(kpiIntercambios.tendenciaPositiva).toBe(false);
 
     const kpiFavoritas = kpis.find((k) => k.id === 'favoritas')!;
+    expect(kpiFavoritas.etiqueta).toBe('Total de jugadores que marcaron tus cartas como favoritas');
     expect(kpiFavoritas.tendencia).toBe('+0%');
     expect(kpiFavoritas.tendenciaPositiva).toBe(true);
+
+    const kpiPartidas = kpis.find((k) => k.id === 'partidas')!;
+    expect(kpiPartidas.etiqueta).toBe('Total de cartas usadas en partidas');
+  });
+
+  it('adapta las descripciones de los KPIs a singular cuando está filtrado por marca/álbum', () => {
+    componente['seleccionarMarca'](10);
+    const kpis = componente['kpis']();
+
+    expect(kpis.find((k) => k.id === 'completaron')?.etiqueta).toBe('Total de jugadores que completaron el álbum');
+    expect(kpis.find((k) => k.id === 'intercambios')?.etiqueta).toBe('Total de cartas intercambiadas del álbum');
+    expect(kpis.find((k) => k.id === 'favoritas')?.etiqueta).toBe('Total de jugadores que marcaron cartas del álbum como favoritas');
+    expect(kpis.find((k) => k.id === 'partidas')?.etiqueta).toBe('Total de cartas del álbum usadas en partidas');
+  });
+
+  it('muestra esqueletos de carga mientras el estado cargando es verdadero', () => {
+    componente['cargando'].set(true);
+    fixture.detectChanges();
+    const esqueletos = fixture.nativeElement.querySelectorAll('app-esqueleto');
+    expect(esqueletos.length).toBeGreaterThan(0);
+  });
+
+  it('limita el ranking de cartas más queridas al top 3', () => {
+    componente['datos'].set({
+      ...ESTADISTICAS_MOCK,
+      cartasMasQueridas: [
+        { posicion: 1, cartaId: 1, nombreCarta: 'C1', nombreAlbum: 'A', cantidadFavoritos: 10 },
+        { posicion: 2, cartaId: 2, nombreCarta: 'C2', nombreAlbum: 'A', cantidadFavoritos: 9 },
+        { posicion: 3, cartaId: 3, nombreCarta: 'C3', nombreAlbum: 'A', cantidadFavoritos: 8 },
+        { posicion: 4, cartaId: 4, nombreCarta: 'C4', nombreAlbum: 'A', cantidadFavoritos: 7 },
+      ],
+    });
+    expect(componente['topCartas']()).toHaveLength(3);
   });
 
   it('normaliza los porcentajes de favoritos por álbum respecto al álbum con más favoritos', () => {
