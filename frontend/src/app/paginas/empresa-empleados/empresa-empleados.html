@@ -1,0 +1,79 @@
+<section>
+  <header class="mb-8">
+    <p class="font-interfaz text-xs font-bold tracking-[0.18em] text-marca-secundaria uppercase">
+      Panel de empresa
+    </p>
+    <div class="mt-1 flex flex-wrap items-center gap-3">
+      <h1
+        class="font-titulo font-black text-4xl sm:text-5xl uppercase tracking-wider text-[#584462]"
+        style="text-shadow: 3px 3px 0 #3c2a47;"
+      >
+        EMPLEADOS
+      </h1>
+    </div>
+    <p class="mt-2 max-w-2xl font-interfaz text-sm text-texto-secundario">
+      Registrá cuentas de empleado asociadas a tu marca para que puedan generar códigos QR de sobres y validar cupones.
+    </p>
+  </header>
+
+  <article
+    class="max-w-xl rounded-2xl border-2 border-[#584462] bg-fondo-superficie p-6 sm:p-8 shadow-[4px_4px_0_#584462]"
+    style="box-shadow: 4px 4px 0 #584462;"
+  >
+    <h2 class="font-titulo text-2xl font-bold uppercase text-[#584462]">Registrar nuevo empleado</h2>
+
+    <form class="mt-5 flex flex-col gap-4" (submit)="registrar($event)">
+      <div>
+        <label for="emp-usuario" class="mb-1 block font-interfaz text-xs font-bold text-texto-primario uppercase">
+          Nombre de usuario
+        </label>
+        <input id="emp-usuario" type="text" required autocomplete="off"
+          [value]="nombreUsuario()"
+          (input)="nombreUsuario.set($any($event.target).value)"
+          placeholder="ej. empleado-sucursal1"
+          class="w-full rounded-md border border-borde-default bg-fondo-app px-3.5 py-2.5 text-sm text-texto-primario outline-none focus-visible:border-borde-foco" />
+      </div>
+
+      <div>
+        <label for="emp-email" class="mb-1 block font-interfaz text-xs font-bold text-texto-primario uppercase">
+          Email
+        </label>
+        <input id="emp-email" type="email" required autocomplete="off"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          placeholder="empleado@tumarca.com"
+          class="w-full rounded-md border border-borde-default bg-fondo-app px-3.5 py-2.5 text-sm text-texto-primario outline-none focus-visible:border-borde-foco" />
+      </div>
+
+      <div>
+        <label for="emp-password" class="mb-1 block font-interfaz text-xs font-bold text-texto-primario uppercase">
+          Contraseña
+        </label>
+        <input id="emp-password" type="password" required autocomplete="new-password"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+          placeholder="••••••••"
+          class="w-full rounded-md border border-borde-default bg-fondo-app px-3.5 py-2.5 text-sm text-texto-primario outline-none focus-visible:border-borde-foco" />
+      </div>
+
+      @if (error(); as msgError) {
+      <p class="rounded-md bg-error-fondo px-3 py-2 font-interfaz text-xs font-semibold text-error-texto">
+        {{ msgError }}
+      </p>
+      }
+
+      @if (exito(); as msgExito) {
+      <p class="rounded-md bg-exito-fondo px-3 py-2 font-interfaz text-xs font-semibold text-exito-texto">
+        {{ msgExito }}
+      </p>
+      }
+
+      <div class="mt-2 flex justify-end">
+        <button type="submit" [disabled]="registrando()"
+          class="cursor-pointer rounded-pildora bg-marca-primaria px-6 py-2.5 font-titulo text-xs uppercase tracking-wider text-marca-sobre-primaria shadow-baja transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50">
+          {{ registrando() ? 'Registrando...' : '+ Registrar empleado' }}
+        </button>
+      </div>
+    </form>
+  </article>
+</section>

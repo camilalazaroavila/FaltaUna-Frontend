@@ -1,18 +1,29 @@
 <section>
   @if (albumActual(); as album) {
   <!-- ===================== DETALLE DEL ÁLBUM ===================== -->
-  <button type="button" (click)="volverAAlbumes()"
-    class="mb-4 inline-flex cursor-pointer items-center gap-1.5 font-interfaz text-xs font-bold tracking-[0.08em] text-marca-secundaria uppercase transition-colors hover:text-marca-secundaria-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco">
+  <button
+    type="button"
+    (click)="volverAAlbumes()"
+    class="mb-4 inline-flex cursor-pointer items-center gap-2 rounded-full border-2 border-[#584462] bg-white px-4 py-1.5 font-titulo text-xs font-bold uppercase tracking-wider text-[#584462] shadow-[2px_2px_0_#584462] transition-all hover:bg-[#584462] hover:text-white active:scale-95"
+  >
     <ng-icon name="phosphorArrowLeftFill" size="14" aria-hidden="true" />
     Volver a álbumes
   </button>
 
   <header class="mb-6">
     <p class="font-interfaz text-xs font-bold tracking-[0.18em] text-marca-secundaria uppercase">
-      Álbum de {{ album.marcaNombre }}
+      <button type="button" (click)="volverAAlbumes()" class="cursor-pointer hover:underline uppercase text-marca-secundaria">
+        Álbumes
+      </button>
+      <span> / {{ album.marcaNombre }}</span>
     </p>
     <div class="mt-1 flex flex-wrap items-center gap-3">
-      <h1 class="font-titulo text-4xl text-texto-primario sm:text-5xl">{{ album.nombre }}</h1>
+      <h1
+        class="font-titulo font-black text-4xl sm:text-5xl uppercase tracking-wider text-[#584462]"
+        style="text-shadow: 3px 3px 0 #3c2a47;"
+      >
+        {{ limpiarNombre(album.nombre) }}
+      </h1>
       <span class="rounded-pildora px-3 py-1 font-interfaz text-xs font-bold tracking-wide uppercase" [class]="
             album.estado === 'activo'
               ? 'bg-exito-fondo text-exito-texto'
@@ -30,33 +41,12 @@
     </p>
   </header>
 
-  <!-- Recompensa al completar -->
-  <app-tarjeta-recompensa class="mb-6 block" [recompensa]="album.recompensa" [tono]="album.tono" />
-
   <!-- KPIs del álbum -->
   <div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
     @for (kpi of kpisAlbum(); track kpi.etiqueta) {
     <app-tarjeta-kpi [etiqueta]="kpi.etiqueta" [valor]="kpi.valor" />
     }
   </div>
-
-  <!-- Reparto por rareza -->
-  <article
-    class="mb-6 rounded-md border-2 border-texto-primario bg-fondo-superficie p-5 shadow-[4px_4px_0_var(--texto-primario)]">
-    <div class="mb-3 flex items-center gap-2.5">
-      <span class="text-marca-primaria" aria-hidden="true">
-        <ng-icon name="phosphorChartDonutFill" size="20" />
-      </span>
-      <div>
-        <h2 class="font-titulo text-lg text-texto-primario">Reparto por rareza</h2>
-        <p class="font-interfaz text-xs text-texto-apagado">
-          Cómo se compone la colección según la rareza de sus cartas.
-        </p>
-      </div>
-    </div>
-
-    <app-barra-rareza [reparto]="album.resumen.reparto" [etiqueta]="'Reparto por rareza de ' + album.nombre" />
-  </article>
 
   <!-- Barra de filtros -->
   <div class="flex flex-wrap items-center gap-3">
@@ -210,19 +200,18 @@
   }
   } @else {
   <!-- ===================== GRILLA DE ÁLBUMES ===================== -->
-  <a routerLink="/empresa/panel/estadisticas"
-    class="mb-4 inline-flex items-center gap-1.5 font-interfaz text-xs font-bold tracking-[0.08em] text-marca-secundaria uppercase transition-colors hover:text-marca-secundaria-hover">
-    <ng-icon name="phosphorArrowLeftFill" size="14" aria-hidden="true" />
-    Volver a estadísticas
-  </a>
-
   <header class="mb-8 flex flex-wrap items-end justify-between gap-4">
     <div>
       <p class="font-interfaz text-xs font-bold tracking-[0.18em] text-marca-secundaria uppercase">
         Panel de empresa
       </p>
       <div class="mt-1 flex flex-wrap items-center gap-3">
-        <h1 class="font-titulo text-4xl text-texto-primario sm:text-5xl">Álbumes</h1>
+        <h1
+          class="font-titulo font-black text-4xl sm:text-5xl uppercase tracking-wider text-[#584462]"
+          style="text-shadow: 3px 3px 0 #3c2a47;"
+        >
+          ÁLBUMES
+        </h1>
         @if (nombreMarca()) {
         <span
           class="rounded-pildora bg-marca-primaria px-3 py-1 font-interfaz text-xs font-bold tracking-wide text-marca-sobre-primaria uppercase">
@@ -237,7 +226,7 @@
         }
       </div>
       <p class="mt-2 max-w-2xl font-interfaz text-sm text-texto-secundario">
-        Estas son las colecciones que publicaste. Cada álbum reúne cartas de tus productos y
+        Estos son los álbumes que publicaste. Cada álbum reúne cartas de tus productos y
         desbloquea una recompensa para los
         <strong class="font-bold text-texto-primario">{{ totalUsuarios() }}</strong> jugadores que lo
         completen.
@@ -255,10 +244,42 @@
     }
   </header>
 
+  @if (cargando()) {
+  <div class="grid gap-6 md:grid-cols-2" aria-busy="true" aria-live="polite">
+    <span class="sr-only" role="status">Cargando álbumes…</span>
+    @for (i of [1, 2]; track i) {
+    <article
+      class="flex h-full min-h-[340px] flex-col overflow-hidden rounded-2xl border-2 border-[#584462] bg-fondo-superficie shadow-[4px_4px_0_#584462]"
+      style="box-shadow: 4px 4px 0 #584462;"
+    >
+      <div class="bg-[#584462] p-5 space-y-3">
+        <div class="flex justify-between">
+          <app-esqueleto variante="pildora" ancho="5rem" alto="1.25rem" />
+          <app-esqueleto variante="pildora" ancho="4rem" alto="1.25rem" />
+        </div>
+        <app-esqueleto variante="texto" ancho="70%" alto="1.75rem" />
+      </div>
+      <div class="p-5 flex-1 flex flex-col justify-between gap-4">
+        <div class="space-y-2">
+          <app-esqueleto variante="texto" ancho="90%" alto="0.875rem" />
+          <app-esqueleto variante="texto" ancho="60%" alto="0.875rem" />
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <app-esqueleto variante="bloque" ancho="100%" alto="3.5rem" class="rounded-md" />
+          <app-esqueleto variante="bloque" ancho="100%" alto="3.5rem" class="rounded-md" />
+          <app-esqueleto variante="bloque" ancho="100%" alto="3.5rem" class="rounded-md" />
+        </div>
+        <app-esqueleto variante="pildora" ancho="100%" alto="2.5rem" class="mt-auto" />
+      </div>
+    </article>
+    }
+  </div>
+  } @else {
   <div class="grid gap-6 md:grid-cols-2">
     @for (album of albumes(); track album.id) {
     <app-tarjeta-album [album]="album" [resumen]="album.resumen" (seleccionar)="seleccionarAlbum($event)" />
     }
   </div>
+  }
   }
 </section>

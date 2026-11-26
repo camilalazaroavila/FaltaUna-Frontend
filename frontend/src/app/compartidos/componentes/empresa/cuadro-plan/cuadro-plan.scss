@@ -10,7 +10,7 @@
   justify-content: center;
   width: 100%;
   aspect-ratio: 240 / 180;
-  max-width: 280px;
+  max-width: 100%;
   margin-inline: auto;
   user-select: none;
   container-type: inline-size;
@@ -41,7 +41,7 @@
   z-index: 2;
   font-family: var(--fuente-titulo, 'Changa', sans-serif);
   font-weight: 900;
-  font-size: clamp(1rem, 11cqw, 2rem);
+  font-size: clamp(1.2rem, 11cqw, 2.75rem);
   max-width: 85%;
   color: #ffffff;
   text-transform: uppercase;
@@ -53,6 +53,6 @@
 }
 
 .cuadro-plan--standard .cuadro-plan__texto {
-  font-size: clamp(0.85rem, 9.2cqw, 1.65rem);
+  font-size: clamp(1.05rem, 9.5cqw, 2.35rem);
   letter-spacing: 0.015em;
 }

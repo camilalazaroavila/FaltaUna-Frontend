@@ -52,12 +52,32 @@ describe('EmpresaAlbumCartas (Given-When-Then)', () => {
     expect(router.navigate).not.toHaveBeenCalledWith(['/empresa/album/crear/vista-previa']);
   });
 
-  it('Dado el componente Paso 3 con al menos 2 cartas cargadas, Cuando se presiona Siguiente Paso, Entonces navega con éxito a la vista previa (Paso 4)', () => {
+  it('Dado el componente Paso 3 con al menos 2 cartas cargadas pero sin nombres asignados, Cuando se presiona Siguiente Paso, Entonces no navega a la vista previa', () => {
     // Given
     const cartas = Array(12).fill(null);
     cartas[0] = new File(['dummy1'], 'carta1.png', { type: 'image/png' });
     cartas[1] = new File(['dummy2'], 'carta2.png', { type: 'image/png' });
     borrador.imagenes.set(cartas);
+
+    const fixture = TestBed.createComponent(EmpresaAlbumCartas);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // When
+    (component as unknown as { siguiente: () => void }).siguiente();
+
+    // Then
+    expect(router.navigate).not.toHaveBeenCalledWith(['/empresa/album/crear/vista-previa']);
+  });
+
+  it('Dado el componente Paso 3 con al menos 2 cartas cargadas y con nombres válidos, Cuando se presiona Siguiente Paso, Entonces navega con éxito a la vista previa (Paso 4)', () => {
+    // Given
+    const cartas = Array(12).fill(null);
+    cartas[0] = new File(['dummy1'], 'carta1.png', { type: 'image/png' });
+    cartas[1] = new File(['dummy2'], 'carta2.png', { type: 'image/png' });
+    borrador.imagenes.set(cartas);
+    borrador.establecerNombreCarta(0, 'Carta 1');
+    borrador.establecerNombreCarta(1, 'Carta 2');
 
     const fixture = TestBed.createComponent(EmpresaAlbumCartas);
     const component = fixture.componentInstance;
@@ -84,7 +104,7 @@ describe('EmpresaAlbumCartas (Given-When-Then)', () => {
     const cartas = el.querySelectorAll('app-carta');
     expect(cartas.length).toBe(12);
 
-    const inputs = el.querySelectorAll<HTMLInputElement>('input[placeholder="Nombre carta"]');
+    const inputs = el.querySelectorAll<HTMLInputElement>('input[type="text"]');
     expect(inputs.length).toBe(12);
     expect(inputs[0].maxLength).toBe(15);
 

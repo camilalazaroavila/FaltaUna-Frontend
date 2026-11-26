@@ -23,7 +23,11 @@ import { PantallaCargaJuego } from '@paginas/pantalla-carga-juego/pantalla-carga
 import type { MazoApi } from '@modelos/mazo.model';
 import { BarajaService } from '@servicios/baraja.service';
 import { SalaJuegoService } from '@servicios/sala-juego.service';
+<<<<<<< HEAD
 import { TransicionCargaService } from '@servicios/servicios-partida/transicion-carga.service';
+=======
+import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
+>>>>>>> main
 import { SelectorMazos } from '@compartidos/componentes/cartas/selector-mazos/selector-mazos';
 
 @Component({
@@ -35,6 +39,7 @@ import { SelectorMazos } from '@compartidos/componentes/cartas/selector-mazos/se
 })
 export class PartidaJugador implements OnInit, OnDestroy {
   protected readonly salaService = inject(SalaJuegoService);
+  private readonly partidaServicio = inject(PartidaServicio);
   private readonly barajaService = inject(BarajaService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
@@ -43,14 +48,21 @@ export class PartidaJugador implements OnInit, OnDestroy {
   protected readonly mazos = signal<readonly MazoApi[]>([]);
   protected readonly mazoSeleccionado = signal<number | null>(null);
   protected readonly cargandoMazos = signal<boolean>(true);
+<<<<<<< HEAD
   protected readonly mostrandoCarga = signal<boolean>(false);
+=======
+  protected readonly entrandoAPartida = signal<boolean>(false);
+  protected readonly enBusquedaOEntrando = computed(
+    () => this.salaService.buscandoRival() || this.entrandoAPartida(),
+  );
+>>>>>>> main
 
   protected readonly mazosValidos = computed(() =>
     this.mazos().filter((m) => m.completo || m.cartas?.length === 12),
   );
 
   protected readonly puedeAccionar = computed(() =>
-    this.mazoSeleccionado() !== null && !this.salaService.cargando(),
+    this.mazoSeleccionado() !== null && !this.salaService.cargando() && !this.entrandoAPartida(),
   );
 
   constructor() {
@@ -62,10 +74,16 @@ export class PartidaJugador implements OnInit, OnDestroy {
           localStorage.setItem('faltauna_ultimo_mazo', String(mazoId));
         }
         localStorage.setItem('faltauna_partida_activa', String(evento.partidaId));
+<<<<<<< HEAD
         this.mostrandoCarga.set(true);
 
         this.transicionCarga
           .esperarPantallaCarga('pvp')
+=======
+        this.entrandoAPartida.set(true);
+        this.partidaServicio
+          .reconectar()
+>>>>>>> main
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(() => {
             void this.router.navigate(['/juego/ia']);

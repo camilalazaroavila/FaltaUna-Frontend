@@ -15,4 +15,12 @@ export class UsuariosService {
     return this.api.get<UsuarioRespuesta[]>('Usuarios');
   }
 
+  registrarEmpleado(datos: {
+    nombreUsuario: string;
+    email: string;
+    password: string;
+  }): Observable<UsuarioRespuesta> {
+    return this.api.post<UsuarioRespuesta>('empresa/empleados', datos);
+  }
+
 }

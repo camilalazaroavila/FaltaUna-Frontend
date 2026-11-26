@@ -239,8 +239,11 @@ export class Partida implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarMazos();
-    // Si quedó una partida guardada, se retoma; si no, se ofrece empezar una.
-    this.servicio.reconectar().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    // Si quedó una partida guardada (y no fue hidratada recién desde PartidaJugador), se retoma.
+    const guardada = Number(localStorage.getItem('faltauna_partida_activa'));
+    if (!this.enPartida() || (Number.isInteger(guardada) && guardada > 0 && this.servicio.partidaId() !== guardada)) {
+      this.servicio.reconectar().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    }
   }
 
   ngOnDestroy(): void {
