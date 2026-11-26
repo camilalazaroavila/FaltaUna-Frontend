@@ -7,15 +7,15 @@ import { ApiService } from './api.service';
 import type { CartaInventarioApi, GuardarMazoRequest, MazoApi } from '@modelos/mazo.model';
 
 /**
- * Nombres temáticos para los 3 mazos de bienvenida según las cartas que contienen:
- * 1. Golden Run + Aura Urban Pack + Royal de Chocolate y Rosa -> Estilo Urbano & Gourmet
- * 2. Harmony Sound DJ Controller + Aura Weekender + Tarta Mousse -> Pulso & Ritmo DJ
- * 3. Croquembouche Imperial + Estatueta Coleccionable + Claqueta -> Festín Imperial & Cine
+ * Nombres temáticos para los 3 mazos de bienvenida según las cartas que contienen (Falta Una / Jaime):
+ * 1. Amor al Mazo + Jaime Banana + Existo y Alcanza -> Jaime Tech Starter
+ * 2. Mañana Otro Día + Modo Dev + Somos Falta -> Jaime Callejero
+ * 3. Selección táctica de Falta Una -> Jaime Táctico Falta Una
  */
 export const NOMBRES_MAZOS_BIENVENIDA: readonly [string, string, string] = [
-  'Estilo Urbano & Gourmet',
-  'Pulso & Ritmo DJ',
-  'Festín Imperial & Cine',
+  'Jaime Tech Starter',
+  'Jaime Callejero',
+  'Jaime Táctico Falta Una',
 ];
 
 /**
@@ -35,13 +35,13 @@ export function resolverNombreMazoInicial(
   }
 
   const nombresCartas = cartas.map((c) => normalizar(c.nombre));
-  if (nombresCartas.some((n) => n.includes('golden run') || n.includes('urban pack'))) {
+  if (nombresCartas.some((n) => n.includes('amor al mazo') || n.includes('jaime banana') || n.includes('golden run') || n.includes('urban pack'))) {
     return NOMBRES_MAZOS_BIENVENIDA[0];
   }
-  if (nombresCartas.some((n) => n.includes('dj controller') || n.includes('retro mic'))) {
+  if (nombresCartas.some((n) => n.includes('manana otro dia') || n.includes('modo dev') || n.includes('dj controller') || n.includes('retro mic'))) {
     return NOMBRES_MAZOS_BIENVENIDA[1];
   }
-  if (nombresCartas.some((n) => n.includes('croquembouche') || n.includes('estatueta'))) {
+  if (nombresCartas.some((n) => n.includes('somos falta') || n.includes('croquembouche') || n.includes('estatueta'))) {
     return NOMBRES_MAZOS_BIENVENIDA[2];
   }
 
