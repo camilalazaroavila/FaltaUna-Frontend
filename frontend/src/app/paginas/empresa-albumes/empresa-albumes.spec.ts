@@ -220,4 +220,16 @@ describe('EmpresaAlbumes (estadísticas por álbum y por carta)', () => {
     const esqueletos = fixture.nativeElement.querySelectorAll('app-esqueleto');
     expect(esqueletos.length).toBeGreaterThan(0);
   });
+
+  it('permite volver a la vista principal de álbumes desde el detalle con el botón de volver', () => {
+    componente['seleccionarAlbum']('1');
+    fixture.detectChanges();
+    expect(componente['albumActual']()).not.toBeNull();
+
+    const botonVolver = fixture.nativeElement.querySelector('button');
+    botonVolver.click();
+    fixture.detectChanges();
+
+    expect(componente['albumActual']()).toBeNull();
+  });
 });

@@ -1,6 +1,15 @@
 <section>
   @if (albumActual(); as album) {
   <!-- ===================== DETALLE DEL ÁLBUM ===================== -->
+  <button
+    type="button"
+    (click)="volverAAlbumes()"
+    class="mb-4 inline-flex cursor-pointer items-center gap-2 rounded-full border-2 border-[#584462] bg-white px-4 py-1.5 font-titulo text-xs font-bold uppercase tracking-wider text-[#584462] shadow-[2px_2px_0_#584462] transition-all hover:bg-[#584462] hover:text-white active:scale-95"
+  >
+    <ng-icon name="phosphorArrowLeftFill" size="14" aria-hidden="true" />
+    Volver a álbumes
+  </button>
+
   <header class="mb-6">
     <p class="font-interfaz text-xs font-bold tracking-[0.18em] text-marca-secundaria uppercase">
       <button type="button" (click)="volverAAlbumes()" class="cursor-pointer hover:underline uppercase text-marca-secundaria">
