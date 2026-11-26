@@ -21,6 +21,12 @@
       }
     </div>
 
+    @if (nombreVisible()) {
+      <div class="carta__nombre-wrapper">
+        <span class="carta__nombre">{{ nombreVisible() }}</span>
+      </div>
+    }
+
     <div class="carta__estrellas">
       @for (estrella of estrellas(); track $index) {
         <app-estrella-rareza class="carta__estrella-slot" />
