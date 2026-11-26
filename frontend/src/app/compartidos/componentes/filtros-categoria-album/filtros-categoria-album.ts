@@ -28,7 +28,7 @@ import { ETIQUETA_CATEGORIA } from '@modelos/carta.model';
   templateUrl: './filtros-categoria-album.html',
   styleUrl: './filtros-categoria-album.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'relative inline-block' },
+  host: { class: 'relative block w-full' },
 })
 export class FiltrosCategoriaAlbum {
   private readonly elementoRef = inject(ElementRef<HTMLElement>);
