@@ -25,17 +25,10 @@
       </a>
     </div>
 
-    <div class="flex flex-wrap items-center justify-between gap-4 py-4">
+    <div class="flex flex-wrap items-center gap-4 py-4">
       <h1 class="shrink-0 titulo-sombreado font-titulo text-3xl uppercase tracking-[0.04em] text-marca-acento sm:text-3xl">
         ÁLBUMES
       </h1>
-      <div class="ml-auto flex items-center gap-3">
-        <app-filtros-categoria-album
-          [categorias]="categorias()"
-          [categoriaActiva]="categoriaActiva()"
-          (cambiar)="cambiarCategoria($event)"
-        />
-      </div>
     </div>
 
     <div class="mt-2 flex flex-col gap-6 md:flex-row md:items-start">
@@ -44,23 +37,30 @@
         class="w-full md:block md:w-64 md:min-w-0 md:shrink-0"
         [class.hidden]="albumSeleccionado()"
       >
-        <div class="relative">
-          <label class="sr-only" for="buscador-marcas">Buscar marca</label>
-          <ng-icon
-            name="phosphorMagnifyingGlassFill"
-            size="16"
-            class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-texto-apagado"
-            aria-hidden="true"
-          />
-          <input
-            id="buscador-marcas"
-            type="search"
-            aria-label="Buscar marca"
-            placeholder="Buscar marca"
-            autocomplete="off"
-            class="w-full rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie py-2 pr-3 pl-9 text-sm text-texto-primario placeholder:text-texto-apagado focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
-            [value]="busqueda()"
-            (input)="buscar($event)"
+        <div class="flex flex-col w-full gap-3 mb-3">
+          <div class="relative min-w-0 w-full">
+            <label class="sr-only" for="buscador-marcas">Buscar marca</label>
+            <ng-icon
+              name="phosphorMagnifyingGlassFill"
+              size="16"
+              class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-texto-apagado"
+              aria-hidden="true"
+            />
+            <input
+              id="buscador-marcas"
+              type="search"
+              aria-label="Buscar marca"
+              placeholder="Buscar marca"
+              autocomplete="off"
+              class="w-full rounded-pildora border border-borde-coleccion bg-fondo-coleccion-superficie py-2 pr-3 pl-9 text-sm text-texto-primario placeholder:text-texto-apagado focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
+              [value]="busqueda()"
+              (input)="buscar($event)"
+            />
+          </div>
+          <app-filtros-categoria-album
+            [categorias]="categorias()"
+            [categoriaActiva]="categoriaActiva()"
+            (cambiar)="cambiarCategoria($event)"
           />
         </div>
 
