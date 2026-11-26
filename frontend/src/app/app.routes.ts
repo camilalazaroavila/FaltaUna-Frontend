@@ -319,6 +319,14 @@ export const routes: Routes = [
             loadComponent: () =>
               import('@paginas/empresa-albumes/empresa-albumes').then((m) => m.EmpresaAlbumes),
           },
+          {
+            path: 'empleados',
+            title: 'Empleados · Falta Una',
+            loadComponent: () =>
+              import('@paginas/empresa-empleados/empresa-empleados').then(
+                (m) => m.EmpresaEmpleados,
+              ),
+          },
         ],
       },
     ],
