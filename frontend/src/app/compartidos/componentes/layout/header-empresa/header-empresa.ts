@@ -47,12 +47,12 @@ import urlLogoBlanco from '@svgs/ImagotipoBlanco.svg';
           <button
             type="button"
             (click)="toggleMenu()"
-            class="flex size-9 cursor-pointer items-center justify-center rounded-circulo border border-black/10 bg-marca-secundaria text-marca-sobre-secundaria shadow-sm transition hover:brightness-110 sm:size-10 2xl:size-14"
+            class="flex size-9 cursor-pointer items-center justify-center rounded-circulo text-white transition hover:brightness-105 hover:scale-105 sm:size-10 2xl:size-14"
             aria-label="Menú de cuenta"
             [attr.aria-expanded]="menuAbierto()"
           >
             <svg
-              class="size-5 sm:size-6 2xl:size-8"
+              class="size-8 sm:size-10 2xl:size-10"
               viewBox="0 0 24 24"
               fill="currentColor"
               aria-hidden="true"

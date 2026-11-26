@@ -1,4 +1,4 @@
-<main class="mx-auto w-full max-w-[1600px] 2xl:max-w-[1800px] px-6 sm:px-10 lg:px-14 pb-16 pt-6">
+<main class="mx-auto w-full max-w-[1600px] 2xl:max-w-[1800px] px-6 sm:px-10 lg:px-14 pb-16 pt-4 2xl:pt-6">
   <app-encabezado-paso
     titulo="Tu primer álbum"
     tituloTablet="Tu primer"
@@ -8,7 +8,7 @@
   />
 
   <!-- Información y aclaración sobre las cartas y rarezas -->
-  <section class="mt-6 space-y-2">
+  <section class="mt-4 2xl:mt-6 space-y-1.5 2xl:space-y-2">
     <div class="font-cuerpo text-sm sm:text-base 2xl:text-xl font-bold text-[#122B2E] leading-snug">
       <span>Subí las imágenes y dale nombre a las cartas que van a formar parte de tu álbum</span>
       <span class="text-rose-500 whitespace-nowrap ml-1.5">{{ cantidadSubidas() }}/{{ cantidad() }}*</span>
@@ -20,63 +20,105 @@
 
     <p class="font-cuerpo text-xs sm:text-sm 2xl:text-base text-[#122B2E] leading-relaxed w-full max-w-none">
       Las cartas tienen rarezas, queda completamente a elección de la marca que imágenes/productos pertenecen a cada rareza.
-      Las cartas de mayor rareza tienen un porcentaje menor de salir en los sobres y tienen mas puntos en el juego.
+      Las cartas de mayor rareza tienen un porcentaje menor de salir en los sobres y tienen más puntos en el juego.
       ¡Los puntos los ponemos nosotros!
     </p>
   </section>
 
-  <!-- Grilla de cartas de la colección -->
-  <section class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 2xl:max-w-6xl mx-auto items-start">
-    @for (casilla of casillas(); track casilla.indice) {
-      <div class="flex flex-col items-center gap-2 w-full">
-        <!-- Carta con marco oficial por rareza y slot central blanco -->
-        <div
-          class="relative w-full cursor-pointer transition-transform duration-200 hover:scale-[1.02]"
-          (click)="fileInput.click()"
-        >
-          <app-carta
-            [modoSubida]="true"
-            [carta]="cartaPara(casilla)"
-            [imagenSubida]="previews()[casilla.indice] ?? null"
-          />
+  <!-- Grilla de cartas de la colección en 2 filas con carrusel horizontal y flechas -->
+  <section class="relative mt-6 2xl:mt-8 w-full max-w-[1720px] mx-auto">
+    <!-- Flecha Izquierda -->
+    @if (puedeRetroceder()) {
+      <button
+        type="button"
+        (click)="desplazarCartas(-1)"
+        class="absolute -left-3 sm:-left-5 lg:-left-7 top-1/2 -translate-y-1/2 z-30 flex size-9 sm:size-11 2xl:size-13 items-center justify-center rounded-full bg-[#0D2E33] hover:bg-[#15464d] text-white shadow-alta transition hover:scale-110 active:scale-95 cursor-pointer"
+        aria-label="Ver cartas anteriores"
+      >
+        <svg class="size-5 sm:size-6 2xl:size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+    }
 
-          @if (previews()[casilla.indice]) {
-            <button
-              type="button"
-              class="absolute top-1 right-1 z-20 flex size-6 items-center justify-center rounded-full bg-white text-black border border-black shadow hover:bg-rose-500 hover:text-white transition-colors cursor-pointer"
-              (click)="quitarImagen(casilla.indice, $event)"
-              title="Quitar imagen"
+    <!-- Contenedor scrollable horizontal (2 filas, 8 cartas a primera vista en pantallas grandes) -->
+    <div
+      #contenedorCartas
+      (scroll)="alScrollear()"
+      class="w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth px-2 pt-6 pb-6 -mt-3"
+    >
+      <div
+        class="grid grid-rows-2 grid-flow-col gap-3 sm:gap-3.5 2xl:gap-4 auto-cols-[calc((100%-1*0.75rem)/2)] sm:auto-cols-[calc((100%-2*0.75rem)/3)] md:auto-cols-[calc((100%-3*0.875rem)/4)] lg:auto-cols-[calc((100%-5*0.875rem)/6)] xl:auto-cols-[calc((100%-7*0.875rem)/8)] min-[1920px]:auto-cols-[calc((100%-7*1rem)/8)] items-start"
+      >
+        @for (casilla of casillasOrdenadas(); track casilla.indice) {
+          <div class="flex flex-col items-center gap-1.5 2xl:gap-2 w-full relative group hover:z-20">
+            <!-- Carta con marco oficial por rareza y slot central blanco -->
+            <div
+              class="relative w-full cursor-pointer"
+              (click)="fileInput.click()"
             >
-              ✕
-            </button>
-          }
+              <app-carta
+                [modoSubida]="true"
+                [carta]="cartaPara(casilla)"
+                [imagenSubida]="previews()[casilla.indice] ?? null"
+              />
 
-          <input
-            #fileInput
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            class="sr-only"
-            (change)="seleccionarArchivo(casilla.indice, $event)"
-          />
-        </div>
+              @if (previews()[casilla.indice]) {
+                <button
+                  type="button"
+                  class="absolute top-1 right-1 z-20 flex size-6 items-center justify-center rounded-full bg-white text-black border border-black shadow hover:bg-rose-500 hover:text-white transition-colors cursor-pointer"
+                  (click)="quitarImagen(casilla.indice, $event)"
+                  title="Quitar imagen"
+                >
+                  ✕
+                </button>
+              }
 
-        <!-- Input de nombre de la carta debajo -->
-        <div class="w-full">
-          <input
-            type="text"
-            [value]="borrador.nombreCartaDe(casilla.indice)"
-            (input)="actualizarNombreCarta(casilla.indice, $event)"
-            maxlength="15"
-            placeholder="Nombre carta"
-            class="w-full rounded-xl border-2 border-[#122B2E] bg-white px-2 py-1 2xl:py-1.5 font-cuerpo text-xs 2xl:text-sm text-center text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs"
-          />
-        </div>
+              <input
+                #fileInput
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                class="sr-only"
+                (change)="seleccionarArchivo(casilla.indice, $event)"
+              />
+            </div>
+
+            <!-- Input de nombre de la carta debajo (obligatorio si tiene foto) -->
+            <div class="w-full">
+              <input
+                type="text"
+                [value]="borrador.nombreCartaDe(casilla.indice)"
+                (input)="actualizarNombreCarta(casilla.indice, $event)"
+                maxlength="15"
+                [placeholder]="borrador.imagenes()[casilla.indice] ? 'Nombre obligatorio *' : 'Nombre carta'"
+                class="w-full rounded-xl border-2 border-[#122B2E] bg-white px-2 py-1 2xl:py-1.5 font-cuerpo text-xs 2xl:text-sm text-center text-[#122B2E] focus:outline-none focus:ring-2 focus:ring-[#584462] shadow-xs transition-colors"
+                [class.!border-rose-500]="intentado() && tieneFotoSinNombre(casilla.indice)"
+                [class.ring-2]="intentado() && tieneFotoSinNombre(casilla.indice)"
+                [class.ring-rose-300]="intentado() && tieneFotoSinNombre(casilla.indice)"
+              />
+            </div>
+          </div>
+        }
       </div>
+    </div>
+
+    <!-- Flecha Derecha -->
+    @if (puedeAvanzar()) {
+      <button
+        type="button"
+        (click)="desplazarCartas(1)"
+        class="absolute -right-3 sm:-right-5 lg:-right-7 top-1/2 -translate-y-1/2 z-30 flex size-9 sm:size-11 2xl:size-13 items-center justify-center rounded-full bg-[#0D2E33] hover:bg-[#15464d] text-white shadow-alta transition hover:scale-110 active:scale-95 cursor-pointer"
+        aria-label="Ver más cartas"
+      >
+        <svg class="size-5 sm:size-6 2xl:size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
     }
   </section>
 
   <!-- Botón Siguiente Paso -->
-  <div class="mt-10 flex justify-end">
+  <div class="mt-6 2xl:mt-8 flex justify-end">
     <button
       type="button"
       class="inline-flex items-center gap-2 rounded-full bg-[#0D2E33] hover:bg-[#15464d] px-8 py-3.5 font-titulo text-sm sm:text-base uppercase tracking-wider text-white shadow-md transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
