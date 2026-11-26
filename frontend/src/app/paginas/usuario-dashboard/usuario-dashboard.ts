@@ -245,7 +245,7 @@ export class UsuarioDashboard implements OnInit {
     { id: 'misiones', nombre: 'Misiones', ruta: '/usuario/misiones', icono: 'phosphorTrophyFill' },
     { id: 'album', nombre: 'Álbumes', ruta: '/usuario/albumes', urlIcono: urlIconoAlbum },
     { id: 'intercambios', nombre: 'Intercambio', ruta: '/usuario/intercambio', urlIcono: urlIconoIntercambios },
-    { id: 'qr', nombre: 'Canje', urlIcono: urlIconoQr, deshabilitado: true },
+    { id: 'qr', nombre: 'Canje', ruta: '/usuario/canjear-codigo', urlIcono: urlIconoQr },
     { id: 'cupones', nombre: 'Mis cupones', ruta: '/usuario/cupones', urlIcono: urlIconoDescuento },
   ];
 

@@ -1,11 +1,16 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  HostListener,
+  afterNextRender,
   computed,
   effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
+
 import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
 import { AlbumBorrador } from '@servicios/album-borrador.service';
@@ -15,6 +20,7 @@ import {
   MAX_KB_IMAGEN,
   MINIMO_IMAGENES,
   TOPE_CARTAS_ALBUM,
+  rarezasPorPlan,
 } from '@modelos/album.model';
 import { FormsModule } from '@angular/forms';
 import { EncabezadoPaso } from '@compartidos/componentes/encabezado-paso/encabezado-paso';
@@ -40,21 +46,6 @@ const ESTRELLAS_CANTIDAD: Record<RarezaCarta, number> = {
   legendaria: 4,
 };
 
-/** Distribución de rarezas para las 12 casillas del Plan Básico (idéntica a 3.png) */
-const RAREZAS_BASICO_12: RarezaCarta[] = [
-  'comun',
-  'comun',
-  'comun',
-  'comun',
-  'comun',
-  'rara',
-  'rara',
-  'rara',
-  'rara',
-  'epicarta',
-  'epicarta',
-  'legendaria',
-];
 
 export interface CasillaCarta {
   indice: number;
@@ -65,7 +56,7 @@ export interface CasillaCarta {
 
 /**
  * Paso 3 del alta de empresa:
- * Grilla de cartas de la colección con marcos temáticos por rareza (estrellas y fondos).
+ * Grilla de cartas de la colección en 2 filas con marcos temáticos por rareza (estrellas y fondos).
  * Ranura central blanca con signo + que aloja la foto subida adaptada a la carta.
  */
 @Component({
@@ -83,7 +74,15 @@ export class EmpresaAlbumCartas {
   protected readonly minimo = MINIMO_IMAGENES; // 2 para la demo
   protected readonly maxKb = MAX_KB_IMAGEN;
 
-  /** Total de cartas permitido por el plan elegido (12 para el Plan Básico) */
+  /** Referencia al contenedor scrollable de cartas */
+  protected readonly contenedorCartas = viewChild<ElementRef<HTMLElement>>('contenedorCartas');
+
+  /** Control de flechas de navegación horizontal */
+  protected readonly puedeRetroceder = signal(false);
+  protected readonly puedeAvanzar = signal(false);
+  protected readonly intentado = signal(false);
+
+  /** Total de cartas permitido por el plan elegido (12 para el Plan Básico, 20 para Standard, 30 Premium) */
   protected readonly cantidad = computed(() => {
     const delPlan = this.estado.planElegido()?.maxCartas;
     return delPlan && delPlan > 0 ? Math.min(delPlan, TOPE_CARTAS_ALBUM) : CARTAS_POR_ALBUM;
@@ -96,8 +95,9 @@ export class EmpresaAlbumCartas {
 
   protected readonly casillas = computed<CasillaCarta[]>(() => {
     const total = this.cantidad();
+    const distribucion = rarezasPorPlan(total);
     return Array.from({ length: total }, (_, i) => {
-      const rareza = RAREZAS_BASICO_12[i % RAREZAS_BASICO_12.length];
+      const rareza = distribucion[i] ?? 'comun';
       const cantidadEstrellas = ESTRELLAS_CANTIDAD[rareza];
       return {
         indice: i,
@@ -106,6 +106,27 @@ export class EmpresaAlbumCartas {
         estrellas: Array.from({ length: cantidadEstrellas }, (_, idx) => idx),
       };
     });
+  });
+
+  /**
+   * Ordena las casillas para un layout CSS Grid con 2 filas (grid-flow-col):
+   * La primera mitad queda en la fila superior y la segunda mitad en la fila inferior.
+   */
+  protected readonly casillasOrdenadas = computed<CasillaCarta[]>(() => {
+    const lista = this.casillas();
+    const total = lista.length;
+    const columnas = Math.ceil(total / 2);
+    const resultado: CasillaCarta[] = [];
+    for (let c = 0; c < columnas; c++) {
+      if (c < lista.length) {
+        resultado.push(lista[c]);
+      }
+      const segundoIndice = c + columnas;
+      if (segundoIndice < lista.length) {
+        resultado.push(lista[segundoIndice]);
+      }
+    }
+    return resultado;
   });
 
   constructor() {
@@ -124,11 +145,7 @@ export class EmpresaAlbumCartas {
 
     // Inicializar rarezas predeterminadas en el borrador si están vacías
     if (this.borrador.rarezas().length !== cantidad) {
-      const rarezasIniciales = Array.from(
-        { length: cantidad },
-        (_, i) => RAREZAS_BASICO_12[i % RAREZAS_BASICO_12.length],
-      );
-      this.borrador.rarezas.set(rarezasIniciales);
+      this.borrador.rarezas.set(rarezasPorPlan(cantidad));
     }
 
     effect((alLimpiar) => {
@@ -149,12 +166,47 @@ export class EmpresaAlbumCartas {
         urls.forEach((u) => u && URL.revokeObjectURL(u));
       });
     });
+
+    afterNextRender(() => {
+      this.actualizarVisibilidadFlechas();
+    });
+  }
+
+  @HostListener('window:resize')
+  protected onResize(): void {
+    this.actualizarVisibilidadFlechas();
+  }
+
+  protected alScrollear(): void {
+    this.actualizarVisibilidadFlechas();
+  }
+
+  private actualizarVisibilidadFlechas(): void {
+    const el = this.contenedorCartas()?.nativeElement;
+    if (!el) return;
+    this.puedeRetroceder.set(el.scrollLeft > 10);
+    this.puedeAvanzar.set(
+      el.scrollWidth > el.clientWidth + 10 && el.scrollLeft < el.scrollWidth - el.clientWidth - 10,
+    );
+  }
+
+  protected desplazarCartas(direccion: -1 | 1): void {
+    const el = this.contenedorCartas()?.nativeElement;
+    if (!el) return;
+    const paso = el.clientWidth * 0.75;
+    el.scrollBy({ left: direccion * paso, behavior: 'smooth' });
+  }
+
+  protected tieneFotoSinNombre(indice: number): boolean {
+    const tieneFoto = !!this.borrador.imagenes()[indice];
+    const tieneNombre = !!this.borrador.nombreCartaDe(indice).trim();
+    return tieneFoto && !tieneNombre;
   }
 
   protected cartaPara(casilla: CasillaCarta): Carta {
     return {
       id: String(casilla.indice),
-      nombre: this.borrador.nombreCartaDe(casilla.indice) || `Carta ${casilla.indice + 1}`,
+      nombre: this.borrador.nombreCartaDe(casilla.indice),
       imagenUrl: this.previews()[casilla.indice] ?? '',
       rareza: casilla.rareza,
       categoria: 'gastronomia',
@@ -201,6 +253,22 @@ export class EmpresaAlbumCartas {
       toast.error(
         `Subí al menos ${this.minimo} imágenes para tu álbum (podés subir hasta ${this.cantidad()}).`,
       );
+      return;
+    }
+
+    // El nombre es obligatorio para toda carta que tenga foto subida
+    const imagenes = this.borrador.imagenes();
+    let faltaNombre = false;
+    for (let i = 0; i < this.cantidad(); i++) {
+      if (imagenes[i] && !this.borrador.nombreCartaDe(i).trim()) {
+        faltaNombre = true;
+        break;
+      }
+    }
+
+    if (faltaNombre) {
+      this.intentado.set(true);
+      toast.error('Cada carta con foto subida debe tener un nombre asignado.');
       return;
     }
 

@@ -1,0 +1,21 @@
+@if (disponible) {
+<div class="flex w-full flex-col items-center gap-3">
+    @if (escaneando()) {
+    <video #video playsinline muted aria-label="Vista de la cámara para escanear el código QR"
+        class="aspect-square w-full max-w-sm rounded-2xl bg-black object-cover"></video>
+    <button type="button" (click)="detener()"
+        class="inline-flex cursor-pointer items-center justify-center rounded-pildora border-2 border-solid border-btn-juego-texto/40 px-6 py-2 font-interfaz text-sm font-black uppercase transition hover:bg-white/50 motion-reduce:transition-none">
+        Cancelar
+    </button>
+    } @else {
+    <button type="button" (click)="iniciar()"
+        class="inline-flex cursor-pointer items-center justify-center rounded-pildora bg-marca-primaria px-8 py-3 font-interfaz text-base font-black uppercase text-marca-sobre-primaria shadow-baja transition hover:bg-marca-primaria-hover motion-reduce:transition-none">
+        Escanear QR con la cámara
+    </button>
+    }
+
+    @if (error()) {
+    <p class="font-interfaz text-sm font-bold" role="alert">{{ error() }}</p>
+    }
+</div>
+}

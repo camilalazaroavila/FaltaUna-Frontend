@@ -134,7 +134,7 @@
       </div>
 
       <!-- Tarjetas para subir Logo y Foto del Local -->
-      <div class="flex flex-col sm:flex-row sm:flex-nowrap items-start gap-4 sm:gap-6 2xl:gap-8 pt-1 2xl:pt-2">
+      <div class="flex flex-col sm:flex-row sm:flex-nowrap items-start gap-5 sm:gap-6 2xl:gap-10 pt-1 2xl:pt-3">
         <!-- Logo -->
         <div class="flex flex-col items-start">
           <div class="flex items-center gap-1.5 mb-1.5 2xl:mb-2 text-xs sm:text-sm 2xl:text-xl font-cuerpo font-bold text-[#122B2E]">
@@ -147,22 +147,40 @@
           </div>
 
           <div
-            class="relative flex size-28 sm:size-32 2xl:size-48 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-4 border-[#3c2a47] bg-[#584462] shadow-md transition-transform hover:scale-[1.02]"
+            class="relative flex h-44 w-44 sm:h-52 sm:w-52 lg:h-60 lg:w-60 xl:h-40 xl:w-40 2xl:h-76 2xl:w-76 cursor-pointer items-center justify-center transition-transform hover:scale-[1.02] filter drop-shadow-md overflow-hidden rounded-2xl"
             (click)="inputLogo.click()"
+            [class.border-2]="intentado() && !borrador.logo()"
             [class.border-rose-500]="intentado() && !borrador.logo()"
           >
             @if (logoPreviewUrl(); as url) {
-              <img [src]="url" alt="Logo de la marca" class="size-full object-cover" />
+              <img [src]="url" alt="Logo de la marca" class="size-full object-cover rounded-2xl" />
               <button
                 type="button"
-                class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-white text-black shadow-md hover:bg-rose-500 hover:text-white transition-colors"
+                class="absolute top-2 right-2 z-20 flex size-6 items-center justify-center rounded-full bg-white text-black shadow-md hover:bg-rose-500 hover:text-white transition-colors cursor-pointer"
                 (click)="quitarLogo($event)"
                 title="Quitar logo"
               >
                 ✕
               </button>
             } @else {
-              <span class="font-titulo text-5xl font-extrabold text-white leading-none select-none">+</span>
+              <svg class="absolute inset-0 size-full pointer-events-none" viewBox="0 0 200 200" fill="none" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="grad-subida-logo" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#341b3d" />
+                    <stop offset="50%" stop-color="#462452" />
+                    <stop offset="100%" stop-color="#5a2f69" />
+                  </linearGradient>
+                  <clipPath id="clip-subida-logo">
+                    <path d="M 14,8 C 65,4 135,4 186,8 C 194,9 196,16 195,30 C 193,70 195,130 193,170 C 192,184 186,192 172,192 C 130,196 70,196 28,192 C 14,192 8,184 7,170 C 5,130 7,70 5,30 C 4,16 6,9 14,8 Z" />
+                  </clipPath>
+                </defs>
+                <rect x="0" y="0" width="200" height="200" clip-path="url(#clip-subida-logo)" fill="url(#grad-subida-logo)" />
+                <path d="M 12,8 C 65,4 135,4 188,8 C 195,9 197,15 196,28 C 194,70 196,130 194,170 C 193,184 187,192 173,192 C 130,196 70,196 27,192 C 13,192 7,184 6,170 C 4,130 6,70 4,28 C 3,15 5,9 12,8 Z" stroke="white" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+                <path d="M 20,16 C 68,12 132,12 180,16 C 187,17 189,23 188,34 C 186,72 188,128 186,164 C 185,176 179,184 167,184 C 128,187 72,187 33,184 C 21,184 15,176 14,164 C 12,128 14,72 12,34 C 11,23 13,17 20,16 Z" stroke="white" stroke-width="2.5" stroke-opacity="0.9" stroke-linejoin="round" stroke-linecap="round" />
+              </svg>
+              <div class="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                <span class="font-titulo text-5xl xl:text-4xl 2xl:text-6xl font-extrabold text-white leading-none select-none flex items-center justify-center text-center translate-y-1" aria-hidden="true">+</span>
+              </div>
             }
 
             <input
@@ -187,22 +205,40 @@
           </div>
 
           <div
-            class="relative flex h-28 w-40 sm:h-32 sm:w-44 2xl:h-48 2xl:w-64 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-4 border-[#3c2a47] bg-[#584462] shadow-md transition-transform hover:scale-[1.02]"
+            class="relative flex h-44 w-60 sm:h-52 sm:w-72 lg:h-60 lg:w-84 xl:h-40 xl:w-60 2xl:h-76 2xl:w-[460px] cursor-pointer items-center justify-center transition-transform hover:scale-[1.02] filter drop-shadow-md overflow-hidden rounded-2xl"
             (click)="inputLocal.click()"
+            [class.border-2]="intentado() && !borrador.fotoLocal()"
             [class.border-rose-500]="intentado() && !borrador.fotoLocal()"
           >
             @if (localPreviewUrl(); as url) {
-              <img [src]="url" alt="Foto del local" class="size-full object-cover" />
+              <img [src]="url" alt="Foto del local" class="size-full object-cover rounded-2xl" />
               <button
                 type="button"
-                class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-white text-black shadow-md hover:bg-rose-500 hover:text-white transition-colors"
+                class="absolute top-2 right-2 z-20 flex size-6 items-center justify-center rounded-full bg-white text-black shadow-md hover:bg-rose-500 hover:text-white transition-colors cursor-pointer"
                 (click)="quitarFotoLocal($event)"
                 title="Quitar foto del local"
               >
                 ✕
               </button>
             } @else {
-              <span class="font-titulo text-5xl font-extrabold text-white leading-none select-none">+</span>
+              <svg class="absolute inset-0 size-full pointer-events-none" viewBox="0 0 240 180" fill="none" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="grad-subida-local" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#341b3d" />
+                    <stop offset="50%" stop-color="#462452" />
+                    <stop offset="100%" stop-color="#5a2f69" />
+                  </linearGradient>
+                  <clipPath id="clip-subida-local">
+                    <path d="M 16,8 C 75,4 165,4 224,8 C 232,9 235,16 234,30 C 232,70 234,110 232,150 C 231,164 225,172 211,172 C 160,176 80,176 29,172 C 15,172 9,164 8,150 C 6,110 8,70 6,30 C 5,16 7,9 16,8 Z" />
+                  </clipPath>
+                </defs>
+                <rect x="0" y="0" width="240" height="180" clip-path="url(#clip-subida-local)" fill="url(#grad-subida-local)" />
+                <path d="M 14,8 C 75,4 165,4 226,8 C 233,9 236,15 235,28 C 233,70 235,110 233,150 C 232,164 226,172 212,172 C 160,176 80,176 28,172 C 14,172 8,164 7,150 C 5,110 7,70 5,28 C 4,15 6,9 14,8 Z" stroke="white" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+                <path d="M 22,16 C 78,12 162,12 218,16 C 225,17 228,23 227,34 C 225,72 227,108 225,144 C 224,156 218,164 206,164 C 158,167 82,167 34,164 C 22,164 16,156 15,144 C 13,108 15,72 13,34 C 12,23 14,17 22,16 Z" stroke="white" stroke-width="2.5" stroke-opacity="0.9" stroke-linejoin="round" stroke-linecap="round" />
+              </svg>
+              <div class="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                <span class="font-titulo text-5xl xl:text-4xl 2xl:text-6xl font-extrabold text-white leading-none select-none flex items-center justify-center text-center translate-y-1" aria-hidden="true">+</span>
+              </div>
             }
 
             <input

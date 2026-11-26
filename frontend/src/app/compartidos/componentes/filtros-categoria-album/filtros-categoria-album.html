@@ -1,7 +1,7 @@
 <button
   type="button"
   (click)="alternar()"
-  class="inline-flex h-[2.75rem] cursor-pointer items-center gap-2 rounded-pildora border border-borde-coleccion bg-fondo-coleccion-superficie px-4 text-sm font-semibold text-texto-primario transition-colors hover:bg-white/6 focus-visible:border-borde-foco"
+  class="inline-flex w-full h-[2.75rem] cursor-pointer items-center gap-2 rounded-pildora border border-borde-coleccion bg-fondo-coleccion-superficie px-4 text-sm font-semibold text-texto-primario transition-colors hover:bg-white/6 focus-visible:border-borde-foco"
   [class.border-borde-coleccion-fuerte]="categoriaActiva() !== null"
   [class.text-marca-coleccion]="categoriaActiva() !== null"
   aria-haspopup="listbox"
