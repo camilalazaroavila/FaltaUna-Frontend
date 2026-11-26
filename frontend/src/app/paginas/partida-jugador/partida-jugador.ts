@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnDestroy,
   OnInit,
   computed,
@@ -8,6 +9,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { phosphorMagnifyingGlassFill } from '@ng-icons/phosphor-icons/fill';
@@ -19,6 +21,7 @@ import { Titulo } from '@compartidos/componentes/textual/titulo/titulo';
 import type { MazoApi } from '@modelos/mazo.model';
 import { BarajaService } from '@servicios/baraja.service';
 import { SalaJuegoService } from '@servicios/sala-juego.service';
+import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
 import { SelectorMazos } from '@compartidos/componentes/cartas/selector-mazos/selector-mazos';
 
 @Component({
@@ -30,19 +33,25 @@ import { SelectorMazos } from '@compartidos/componentes/cartas/selector-mazos/se
 })
 export class PartidaJugador implements OnInit, OnDestroy {
   protected readonly salaService = inject(SalaJuegoService);
+  private readonly partidaServicio = inject(PartidaServicio);
   private readonly barajaService = inject(BarajaService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
 
   protected readonly mazos = signal<readonly MazoApi[]>([]);
   protected readonly mazoSeleccionado = signal<number | null>(null);
   protected readonly cargandoMazos = signal<boolean>(true);
+  protected readonly entrandoAPartida = signal<boolean>(false);
+  protected readonly enBusquedaOEntrando = computed(
+    () => this.salaService.buscandoRival() || this.entrandoAPartida(),
+  );
 
   protected readonly mazosValidos = computed(() =>
     this.mazos().filter((m) => m.completo || m.cartas?.length === 12),
   );
 
   protected readonly puedeAccionar = computed(() =>
-    this.mazoSeleccionado() !== null && !this.salaService.cargando(),
+    this.mazoSeleccionado() !== null && !this.salaService.cargando() && !this.entrandoAPartida(),
   );
 
   constructor() {
@@ -54,7 +63,13 @@ export class PartidaJugador implements OnInit, OnDestroy {
           localStorage.setItem('faltauna_ultimo_mazo', String(mazoId));
         }
         localStorage.setItem('faltauna_partida_activa', String(evento.partidaId));
-        this.router.navigate(['/juego/ia']);
+        this.entrandoAPartida.set(true);
+        this.partidaServicio
+          .reconectar()
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => {
+            void this.router.navigate(['/juego/ia']);
+          });
       }
     });
   }
