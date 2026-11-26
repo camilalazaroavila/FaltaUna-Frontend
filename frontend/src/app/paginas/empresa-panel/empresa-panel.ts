@@ -55,9 +55,9 @@ export class EmpresaPanel {
     },
     {
       id: 'empleado',
-      nombre: 'Empleados (próximamente)',
+      nombre: 'Empleados',
+      ruta: '/empresa/panel/empleados',
       icono: 'phosphorUserFill',
-      deshabilitado: true,
     },
   ];
 
