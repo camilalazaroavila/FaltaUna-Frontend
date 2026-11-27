@@ -149,18 +149,18 @@ describe('Albumes', () => {
   it('carga los álbumes al iniciar y los lista', () => {
     expect(servicio.listarAlbumes).toHaveBeenCalledTimes(1);
 
-    const texto = raiz().textContent ?? '';
-    expect(texto).toContain('Colección Grido');
-    expect(texto).toContain('1 de 2 cartas');
+    const titulo = raiz().querySelector('.album-item .text-texto-primario')?.textContent?.trim();
+    expect(titulo).toBe('Grido');
+    expect(raiz().querySelector('.album-item')?.textContent).toContain('1 de 2 cartas');
   });
 
-  it('distingue álbumes de una misma marca por el nombre de la colección', () => {
+  it('muestra el nombre de marca de cada álbum y conserva sus portadas', () => {
     const coleccionLego: ResumenAlbum = {
       ...RESUMEN,
       id: 10,
       nombreColeccion: 'Lego',
       imagenUrl: 'https://album.test/lego.png',
-      marcaNombre: 'bbbs',
+      marcaNombre: 'Lego',
     };
     const coleccionBbBs: ResumenAlbum = {
       ...RESUMEN,
@@ -176,8 +176,9 @@ describe('Albumes', () => {
 
     const albumes = [...raiz().querySelectorAll('.album-item')];
     expect(albumes).toHaveLength(2);
-    expect(albumes[0].textContent).toContain('Lego');
-    expect(albumes[1].textContent).toContain('bbbs');
+    expect(
+      albumes.map((album) => album.querySelector('.text-texto-primario')?.textContent?.trim()),
+    ).toEqual(['Lego', 'bbbs']);
     expect(albumes.map((album) => album.querySelector('img')?.getAttribute('src'))).toEqual([
       'https://album.test/lego.png',
       'https://album.test/bbbs.png',
@@ -337,9 +338,10 @@ describe('Albumes', () => {
 
     buscar('colección zara');
 
-    const texto = raiz().textContent ?? '';
-    expect(texto).toContain('Colección Zara');
-    expect(texto).not.toContain('Colección Grido');
+    const titulos = [...raiz().querySelectorAll('.album-item')].map((album) =>
+      album.querySelector('.text-texto-primario')?.textContent?.trim(),
+    );
+    expect(titulos).toEqual(['Zara']);
   });
 
   it('filtra en el cliente sobre lo ya cargado, sin volver a pedir los álbumes', () => {
