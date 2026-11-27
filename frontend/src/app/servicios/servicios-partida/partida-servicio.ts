@@ -724,8 +724,9 @@ export class PartidaServicio {
     if (
       !estado ||
       estado.terminada ||
-      estado.listo ||
-      estado.fase !== 'jugando' ||
+      // Bloquear basándose en listo/fase solo cuando NO es el turno del usuario.
+      // Cuando es el turno del usuario, permitir jugar aunque el rival ya confirmó.
+      (estado.listo || estado.fase !== 'jugando') && !this.esMiTurno() ||
       this.confirmandoSignal() ||
       this.pendienteFinalizar
     ) {
@@ -1386,6 +1387,13 @@ export class PartidaServicio {
   marcarListo(): void {
     if (!this.modoRealSignal()) {
       this.mock.marcarListo();
+      return;
+    }
+
+    // Si ya el servidor tiene al jugador como listo, no hacer nada
+    const estado = this.estadoRealSignal();
+    if (estado && estado.listo) {
+      this.anuncioSignal.set('Tu turno ya fue confirmado.');
       return;
     }
 
