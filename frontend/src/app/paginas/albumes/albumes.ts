@@ -22,7 +22,7 @@ import { AlbumesJugadorService } from '@servicios/albumes-jugador.service';
 /**
  * Vista "Álbumes" del jugador.
  *
- * A la izquierda, filtro por categoría de marca, buscador por nombre y listado
+ * A la izquierda, filtro por categoría, buscador por álbum o marca y listado
  * de álbumes; a la derecha, el álbum seleccionado con su progreso y su grilla.
  * Al entrar (o al cambiar de categoría/búsqueda) se selecciona el primer álbum
  * visible. En mobile se navega en dos pantallas (listado → detalle).
@@ -90,7 +90,9 @@ export class Albumes implements OnInit {
     return this.albumes().filter(
       (album) =>
         (categoriaId === null || album.categoriaId === categoriaId) &&
-        (!termino || normalizarNombre(album.marcaNombre ?? '').includes(termino)),
+        (!termino ||
+          normalizarNombre(album.nombreColeccion ?? '').includes(termino) ||
+          normalizarNombre(album.marcaNombre ?? '').includes(termino)),
     );
   });
 
@@ -235,7 +237,7 @@ export class Albumes implements OnInit {
   }
 
   protected mostrarLogo(album: ResumenAlbum): boolean {
-    return !!album.logoUrl && !this.logosFallidos().has(album.id);
+    return !!(album.imagenUrl || album.logoUrl) && !this.logosFallidos().has(album.id);
   }
 
   protected inicialMarca(album: ResumenAlbum): string {

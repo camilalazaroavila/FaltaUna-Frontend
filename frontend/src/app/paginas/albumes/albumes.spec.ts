@@ -17,6 +17,8 @@ const ICONO = '<svg viewBox="0 0 16 16"><path d="M0 0h16v16H0z"/></svg>';
 
 const RESUMEN: ResumenAlbum = {
   id: 4,
+  nombreColeccion: 'Colección Grido',
+  imagenUrl: null,
   marcaNombre: 'Grido',
   logoUrl: null,
   descripcion: 'Helados de barrio.',
@@ -29,6 +31,8 @@ const RESUMEN: ResumenAlbum = {
 
 const RESUMEN2: ResumenAlbum = {
   id: 5,
+  nombreColeccion: 'Colección Zara',
+  imagenUrl: null,
   marcaNombre: 'Zara',
   logoUrl: null,
   descripcion: 'Indumentaria.',
@@ -136,7 +140,7 @@ describe('Albumes', () => {
   const raiz = () => fixture.nativeElement as HTMLElement;
 
   const buscar = (valor: string): void => {
-    const input = raiz().querySelector('#buscador-marcas') as HTMLInputElement;
+    const input = raiz().querySelector('#buscador-albumes') as HTMLInputElement;
     input.value = valor;
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
@@ -145,9 +149,40 @@ describe('Albumes', () => {
   it('carga los álbumes al iniciar y los lista', () => {
     expect(servicio.listarAlbumes).toHaveBeenCalledTimes(1);
 
-    const texto = raiz().textContent ?? '';
-    expect(texto).toContain('Grido');
-    expect(texto).toContain('1 de 2 cartas');
+    const titulo = raiz().querySelector('.album-item .text-texto-primario')?.textContent?.trim();
+    expect(titulo).toBe('Grido');
+    expect(raiz().querySelector('.album-item')?.textContent).toContain('1 de 2 cartas');
+  });
+
+  it('muestra el nombre de marca de cada álbum y conserva sus portadas', () => {
+    const coleccionLego: ResumenAlbum = {
+      ...RESUMEN,
+      id: 10,
+      nombreColeccion: 'Lego',
+      imagenUrl: 'https://album.test/lego.png',
+      marcaNombre: 'Lego',
+    };
+    const coleccionBbBs: ResumenAlbum = {
+      ...RESUMEN,
+      id: 11,
+      nombreColeccion: 'bbbs',
+      imagenUrl: 'https://album.test/bbbs.png',
+      marcaNombre: 'bbbs',
+    };
+    servicio.listarAlbumes.mockReturnValue(of([coleccionLego, coleccionBbBs]));
+
+    fixture.componentInstance['cargarAlbumes']();
+    fixture.detectChanges();
+
+    const albumes = [...raiz().querySelectorAll('.album-item')];
+    expect(albumes).toHaveLength(2);
+    expect(
+      albumes.map((album) => album.querySelector('.text-texto-primario')?.textContent?.trim()),
+    ).toEqual(['Lego', 'bbbs']);
+    expect(albumes.map((album) => album.querySelector('img')?.getAttribute('src'))).toEqual([
+      'https://album.test/lego.png',
+      'https://album.test/bbbs.png',
+    ]);
   });
 
   it('ignora álbumes y cartas cuya marca no existe sin romper la vista', () => {
@@ -296,6 +331,19 @@ describe('Albumes', () => {
     expect(texto).not.toContain('Grido');
   });
 
+  it('filtra el listado por nombre de colección', () => {
+    servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
+    fixture.componentInstance['cargarAlbumes']();
+    fixture.detectChanges();
+
+    buscar('colección zara');
+
+    const titulos = [...raiz().querySelectorAll('.album-item')].map((album) =>
+      album.querySelector('.text-texto-primario')?.textContent?.trim(),
+    );
+    expect(titulos).toEqual(['Zara']);
+  });
+
   it('filtra en el cliente sobre lo ya cargado, sin volver a pedir los álbumes', () => {
     servicio.listarAlbumes.mockReturnValue(of([RESUMEN, RESUMEN2]));
     fixture.componentInstance['cargarAlbumes']();
@@ -315,7 +363,7 @@ describe('Albumes', () => {
   it('muestra el mensaje de "sin resultados" y limpia el panel cuando nada coincide', () => {
     buscar('zzz');
 
-    expect(raiz().textContent).toContain('No encontramos marcas con ese nombre.');
+    expect(raiz().textContent).toContain('No encontramos álbumes con ese nombre o marca.');
     expect(raiz().querySelector('app-encabezado-album')).toBeNull();
   });
 

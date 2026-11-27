@@ -39,7 +39,7 @@
       >
         <div class="flex flex-col w-full gap-3 mb-3">
           <div class="relative min-w-0 w-full">
-            <label class="sr-only" for="buscador-marcas">Buscar marca</label>
+            <label class="sr-only" for="buscador-albumes">Buscar álbum o marca</label>
             <ng-icon
               name="phosphorMagnifyingGlassFill"
               size="16"
@@ -47,10 +47,10 @@
               aria-hidden="true"
             />
             <input
-              id="buscador-marcas"
+              id="buscador-albumes"
               type="search"
-              aria-label="Buscar marca"
-              placeholder="Buscar marca"
+              aria-label="Buscar álbum o marca"
+              placeholder="Buscar álbum o marca"
               autocomplete="off"
               class="w-full rounded-pildora border border-borde-coleccion bg-fondo-coleccion-superficie py-2 pr-3 pl-9 text-sm text-texto-primario placeholder:text-texto-apagado focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-borde-foco"
               [value]="busqueda()"
@@ -88,7 +88,7 @@
             </p>
           } @else if (albumesVisibles().length === 0) {
             <p class="rounded-md border border-borde-coleccion bg-fondo-coleccion-superficie p-3 text-sm text-texto-apagado">
-              {{ busqueda() ? 'No encontramos marcas con ese nombre.' : 'No hay álbumes en esta categoría.' }}
+              {{ busqueda() ? 'No encontramos álbumes con ese nombre o marca.' : 'No hay álbumes en esta categoría.' }}
             </p>
           } @else {
             <ul class="flex flex-col gap-2" aria-label="Álbumes disponibles">
@@ -104,8 +104,8 @@
                     @if (mostrarLogo(album)) {
                       <img
                         class="album-item__logo"
-                        [src]="album.logoUrl"
-                        [alt]="'Logo de ' + album.marcaNombre"
+                        [src]="album.imagenUrl || album.logoUrl"
+                        [alt]="album.imagenUrl ? 'Portada de ' + album.nombreColeccion : 'Logo de ' + album.marcaNombre"
                         (error)="alFallarLogo(album)"
                       />
                     } @else {
@@ -216,7 +216,7 @@
               Elegí un álbum para verlo.
             </p>
             <p class="text-sm text-texto-apagado">
-              Filtrá por categoría y tocá una marca del listado.
+              Filtrá por categoría y tocá un álbum del listado.
             </p>
           </div>
         }

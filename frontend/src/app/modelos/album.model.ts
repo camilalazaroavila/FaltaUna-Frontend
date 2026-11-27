@@ -8,7 +8,7 @@ export const TOPE_CARTAS_ALBUM = 30;
 /** Mínimo de imágenes que hay que cargar para poder continuar. Debe coincidir con el backend (CrearColeccion). */
 export const MINIMO_IMAGENES = 2;
 /** Peso máximo por imagen, en kb. */
-export const MAX_KB_IMAGEN = 200;
+export const MAX_KB_IMAGEN = 800;
 
 export const REDES_SOCIALES: OpcionSelect[] = [
   { valor: 'Instagram', etiqueta: 'Instagram', icono: 'phosphorInstagramLogoFill' },
