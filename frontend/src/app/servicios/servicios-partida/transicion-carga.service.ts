@@ -1,21 +1,23 @@
-import { Injectable, inject } from '@angular/core';
-import { Observable, delay } from 'rxjs';
-import { ModoJuego } from '@app/modelos/modo-juego.model';
-import { EmparejamientoService } from '@servicios/emparejamiento.service';
+import { Injectable, inject } from "@angular/core";
+import { Observable, delay } from "rxjs";
+import { ModoJuego } from "@app/modelos/modo-juego.model";
+import { EmparejamientoService } from "@servicios/emparejamiento.service";
 
 /**
  * Tiempo adicional tras completarse `EmparejamientoService` para que el jugador
  * alcance a ver el estado final ("Partida lista" / "Jugador encontrado") antes
  * de entrar al tablero.
  */
-export const PAUSA_CONFIRMACION_CARGA_MS = 900;
+export const PAUSA_CONFIRMACION_CARGA_MS = 1500;
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class TransicionCargaService {
   private readonly emparejamiento = inject(EmparejamientoService);
 
   esperarPantallaCarga(modo: ModoJuego): Observable<boolean> {
-    return this.emparejamiento.buscarPartida(modo).pipe(delay(PAUSA_CONFIRMACION_CARGA_MS));
+    return this.emparejamiento
+      .buscarPartida(modo)
+      .pipe(delay(PAUSA_CONFIRMACION_CARGA_MS));
   }
 
   /**
@@ -23,7 +25,10 @@ export class TransicionCargaService {
    * (por ejemplo, crear la partida contra el bot). Si la acción falla (`false`),
    * finaliza de inmediato sin retener al jugador en la pantalla de carga.
    */
-  esperarConAccion(modo: ModoJuego, accion$: Observable<boolean>): Observable<boolean> {
+  esperarConAccion(
+    modo: ModoJuego,
+    accion$: Observable<boolean>,
+  ): Observable<boolean> {
     return new Observable<boolean>((subscriber) => {
       let accionTerminada = false;
       let cargaTerminada = false;
