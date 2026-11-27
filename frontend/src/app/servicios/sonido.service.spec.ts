@@ -42,14 +42,13 @@ describe('SonidoService', () => {
       cloneNode: jest.Mock;
     }>;
     let audioOriginal: typeof Audio | undefined;
-
     beforeEach(() => {
       audioInstancias = [];
       playMock = jest.fn().mockResolvedValue(undefined);
       audioOriginal = globalThis.Audio;
 
       // Mock de HTMLAudioElement
-       
+
       (globalThis as any).Audio = class MockAudio {
         src: string;
         preload = '';
@@ -77,7 +76,7 @@ describe('SonidoService', () => {
     });
 
     afterEach(() => {
-       
+
       (globalThis as any).Audio = audioOriginal;
     });
 
