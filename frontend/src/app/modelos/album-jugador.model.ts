@@ -18,6 +18,8 @@ import {
 /** Resumen de un álbum de marca para el listado lateral por categoría. */
 export interface ResumenAlbum {
   readonly id: number;
+  readonly nombreColeccion: string;
+  readonly imagenUrl: string | null;
   readonly marcaNombre: string;
   readonly logoUrl: string | null;
   readonly descripcion: string | null;

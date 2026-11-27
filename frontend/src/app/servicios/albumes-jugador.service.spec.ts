@@ -10,7 +10,9 @@ import type { DetalleAlbum, ResumenAlbum } from '@modelos/album-jugador.model';
 
 const RESUMEN_API = {
   id: 1,
+  nombreColeccion: 'Colección Aura',
   marcaNombre: 'Aura',
+  imagenUrl: 'https://album.test/aura.png',
   logoUrl: 'https://logo.test/aura.png',
   descripcion: 'Indumentaria urbana.',
   categoriaId: 2,
@@ -64,7 +66,9 @@ describe('AlbumesJugadorService', () => {
       expect(resultado).toEqual([
         {
           id: 1,
+          nombreColeccion: 'Colección Aura',
           marcaNombre: 'Aura',
+          imagenUrl: 'https://album.test/aura.png',
           logoUrl: 'https://logo.test/aura.png',
           descripcion: 'Indumentaria urbana.',
           categoriaId: 2,
@@ -116,7 +120,9 @@ describe('AlbumesJugadorService', () => {
 
       expect(resultado).toEqual({
         id: 1,
+        nombreColeccion: 'Colección Aura',
         marcaNombre: 'Aura',
+        imagenUrl: 'https://album.test/aura.png',
         logoUrl: 'https://logo.test/aura.png',
         descripcion: 'Indumentaria urbana.',
         categoriaId: 2,
