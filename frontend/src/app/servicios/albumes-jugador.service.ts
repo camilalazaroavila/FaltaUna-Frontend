@@ -19,7 +19,9 @@ import { esCartaSinMarca } from '@modelos/catalogo-cartas-imagenes';
 /** Contrato del backend para el resumen de un álbum (`GET /api/Albumes`). */
 interface AlbumResumenApi {
   readonly id: number;
+  readonly nombreColeccion?: string | null;
   readonly marcaNombre: string;
+  readonly imagenUrl?: string | null;
   readonly logoUrl: string | null;
   readonly descripcion: string | null;
   readonly categoriaId: number | null;
@@ -62,6 +64,8 @@ const esAlbumConMarcaValida = (
 
 const mapearResumen = (album: AlbumResumenApi): ResumenAlbum => ({
   id: album.id,
+  nombreColeccion: album.nombreColeccion?.trim() || album.marcaNombre.trim(),
+  imagenUrl: album.imagenUrl ?? null,
   marcaNombre: album.marcaNombre.trim(),
   logoUrl: album.logoUrl,
   descripcion: album.descripcion,

@@ -8,7 +8,7 @@ import type { ResumenAlbum } from '@modelos/album-jugador.model';
 import type { CategoriaCupon } from '@modelos/cupon.model';
 
 /**
- * Encabezado del álbum seleccionado: marca, descripción y progreso de obtención.
+ * Encabezado del álbum seleccionado: nombre de colección, marca y progreso.
  * Cuando el álbum está completo ofrece un acceso directo a los cupones de esa
  * categoría.
  *
@@ -39,7 +39,7 @@ export class EncabezadoAlbum {
   });
 
   protected readonly mostrarLogo = computed(() => {
-    const url = this.album().logoUrl;
+    const url = this.album().imagenUrl || this.album().logoUrl;
     return !!url && this.logoFallido() !== url;
   });
 
@@ -48,6 +48,6 @@ export class EncabezadoAlbum {
   );
 
   protected alFallarLogo(): void {
-    this.logoFallido.set(this.album().logoUrl);
+    this.logoFallido.set(this.album().imagenUrl || this.album().logoUrl);
   }
 }
