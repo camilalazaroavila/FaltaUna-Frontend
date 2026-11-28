@@ -1,12 +1,16 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import type { MazoApi } from '@modelos/mazo.model';
+import type { JugadorTablero } from '@modelos/partida.model';
+import { AuthService } from '@servicios/auth.service';
 import { BarajaService } from '@servicios/baraja.service';
+import { GsapService } from '@servicios/gsap.service';
 import { PartidaIniciadaEvento, SalaJuegoService } from '@servicios/sala-juego.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
+import { PAUSA_CONFIRMACION_CARGA_MS } from '@servicios/servicios-partida/transicion-carga.service';
 import { PartidaJugador } from './partida-jugador';
 
 const MAZOS_MOCK: MazoApi[] = [
@@ -49,6 +53,10 @@ describe('PartidaJugador', () => {
   let partidaIniciadaSignal: ReturnType<typeof signal<PartidaIniciadaEvento | null>>;
   let cargandoSalaSignal: ReturnType<typeof signal<boolean>>;
   let errorSalaSignal: ReturnType<typeof signal<string | null>>;
+  let partidaIdSignal: ReturnType<typeof signal<number | null>>;
+  let jugadoresSignal: ReturnType<
+    typeof signal<{ propio: JugadorTablero; rival: JugadorTablero }>
+  >;
 
   let salaMock: {
     buscandoRival: ReturnType<typeof signal<boolean>>;
@@ -65,16 +73,24 @@ describe('PartidaJugador', () => {
   };
 
   let partidaServicioMock: {
+    partidaId: ReturnType<typeof signal<number | null>>;
+    jugadores: ReturnType<typeof signal<{ propio: JugadorTablero; rival: JugadorTablero }>>;
     reconectar: jest.Mock;
   };
 
   beforeEach(async () => {
+    jest.useFakeTimers();
     localStorage.clear();
 
     buscandoRivalSignal = signal<boolean>(false);
     partidaIniciadaSignal = signal<PartidaIniciadaEvento | null>(null);
     cargandoSalaSignal = signal<boolean>(false);
     errorSalaSignal = signal<string | null>(null);
+    partidaIdSignal = signal<number | null>(null);
+    jugadoresSignal = signal({
+      propio: { nombre: 'Gonzamirko', avatarUrl: null },
+      rival: { nombre: 'Pedrope', avatarUrl: null },
+    });
 
     salaMock = {
       buscandoRival: buscandoRivalSignal,
@@ -90,17 +106,38 @@ describe('PartidaJugador', () => {
     };
 
     partidaServicioMock = {
-      reconectar: jest.fn().mockReturnValue(of(true)),
+      partidaId: partidaIdSignal,
+      jugadores: jugadoresSignal,
+      reconectar: jest.fn().mockImplementation(() => {
+        partidaIdSignal.set(99);
+        jugadoresSignal.set({
+          propio: { nombre: 'UsuarioReal', avatarUrl: null },
+          rival: { nombre: 'RivalReal', avatarUrl: null },
+        });
+        return of(true);
+      }),
+    };
+
+    const authMock = {
+      usuarioActual: signal({ nombreUsuario: 'UsuarioReal' }),
+    };
+
+    const gsapMock = {
+      movimientoReducido: jest.fn().mockReturnValue(true),
+      crearContexto: jest.fn(),
+      gsap: {},
     };
 
     await TestBed.configureTestingModule({
       imports: [PartidaJugador],
       providers: [
         provideRouter([]),
-
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { modo: 'pvp' } } } },
+        { provide: AuthService, useValue: authMock },
         { provide: SalaJuegoService, useValue: salaMock },
         { provide: BarajaService, useValue: barajaMock },
         { provide: PartidaServicio, useValue: partidaServicioMock },
+        { provide: GsapService, useValue: gsapMock },
       ],
     }).compileComponents();
 
@@ -114,6 +151,7 @@ describe('PartidaJugador', () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     localStorage.clear();
   });
 
@@ -167,7 +205,9 @@ describe('PartidaJugador', () => {
 
     const botonBuscar = Array.from(
       fixture.nativeElement.querySelectorAll('button[app-boton]'),
-    ).find((b) => (b as HTMLButtonElement).textContent?.includes('Buscar Partida')) as HTMLButtonElement;
+    ).find((b) =>
+      (b as HTMLButtonElement).textContent?.includes('Buscar Partida'),
+    ) as HTMLButtonElement;
 
     expect(botonBuscar).toBeTruthy();
     expect(botonBuscar.disabled).toBe(false);
@@ -181,7 +221,9 @@ describe('PartidaJugador', () => {
 
     const botonBuscar = Array.from(
       fixture.nativeElement.querySelectorAll('button[app-boton]'),
-    ).find((b) => (b as HTMLButtonElement).textContent?.includes('Conectando...')) as HTMLButtonElement;
+    ).find((b) =>
+      (b as HTMLButtonElement).textContent?.includes('Conectando...'),
+    ) as HTMLButtonElement;
 
     expect(botonBuscar).toBeTruthy();
     expect(botonBuscar.disabled).toBe(true);
@@ -235,7 +277,7 @@ describe('PartidaJugador', () => {
     );
   });
 
-  it('guarda datos en localStorage, reconecta y navega a /juego/ia cuando inicia la partida', () => {
+  it('guarda datos, muestra los nombres reales del backend en la pantalla de carga y navega al completarse', () => {
     partidaIniciadaSignal.set({ partidaId: 99 });
     fixture.detectChanges();
 
@@ -243,7 +285,29 @@ describe('PartidaJugador', () => {
     expect(localStorage.getItem('faltauna_partida_activa')).toBe('99');
     expect(componente['entrandoAPartida']()).toBe(true);
     expect(partidaServicioMock.reconectar).toHaveBeenCalledTimes(1);
+    expect(fixture.nativeElement.querySelector('app-pantalla-carga-juego')).toBeTruthy();
+    expect(router.navigate).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(4000);
+    fixture.detectChanges();
+
+    const textoCarga = fixture.nativeElement.textContent;
+    expect(textoCarga).toContain('UsuarioReal');
+    expect(textoCarga).toContain('RivalReal');
+    expect(router.navigate).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(PAUSA_CONFIRMACION_CARGA_MS);
     expect(router.navigate).toHaveBeenCalledWith(['/juego/ia']);
+  });
+
+  it('vuelve a la selección si falla la reconexión sin navegar al tablero', () => {
+    partidaServicioMock.reconectar.mockReturnValueOnce(of(false));
+    partidaIniciadaSignal.set({ partidaId: 99 });
+    fixture.detectChanges();
+
+    expect(componente['mostrandoCarga']()).toBe(false);
+    expect(componente['entrandoAPartida']()).toBe(false);
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 
   it('desconecta salaService al destruir el componente', () => {

@@ -9,18 +9,19 @@ import {
   effect,
   inject,
   input,
-} from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { ActivatedRoute } from "@angular/router";
-import { ModoJuego, esModoJuego } from "@app/modelos/modo-juego.model";
-import { EmparejamientoService } from "@app/servicios/emparejamiento.service";
-import { GsapService } from "@app/servicios/gsap.service"; // ajustá la ruta si difiere
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
+import { sanitizarNombreJugador } from '@compartidos/utilidades/nombre-jugador';
+import { ModoJuego, esModoJuego } from '@app/modelos/modo-juego.model';
+import { EmparejamientoService } from '@app/servicios/emparejamiento.service';
+import { GsapService } from '@app/servicios/gsap.service';
 
-const MODO_POR_DEFECTO: ModoJuego = "pvp";
+const MODO_POR_DEFECTO: ModoJuego = 'pvp';
 
 @Component({
-  selector: "app-pantalla-carga-juego",
-  templateUrl: "./pantalla-carga-juego.html",
+  selector: 'app-pantalla-carga-juego',
+  templateUrl: './pantalla-carga-juego.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PantallaCargaJuego {
@@ -34,22 +35,24 @@ export class PantallaCargaJuego {
   private readonly modo = this.leerModoDeLaRuta();
 
   // toSignal se desuscribe solo cuando la pantalla se destruye.
-  protected readonly encontrado = toSignal(
-    this.emparejamiento.buscarPartida(this.modo),
-    {
-      initialValue: false,
-    },
-  );
+  protected readonly encontrado = toSignal(this.emparejamiento.buscarPartida(this.modo), {
+    initialValue: false,
+  });
 
-  // TODO: reemplazar por los nombres reales de la partida
-  // (por ejemplo, servicio.jugadores().propio.nombre y .rival.nombre).
-  readonly nombrePropio = input("Jaime");
-  readonly nombreRival = input(this.modo === "pvp" ? "Falti" : "Bot");
+  readonly nombrePropio = input<string>('');
+  readonly nombreRival = input<string>('');
+
+  protected readonly nombrePropioSeguro = computed(() =>
+    sanitizarNombreJugador(this.nombrePropio(), 'Jugador'),
+  );
+  protected readonly nombreRivalSeguro = computed(() =>
+    sanitizarNombreJugador(this.nombreRival(), this.modo === 'pvp' ? 'Rival' : 'Bot'),
+  );
 
   protected readonly anuncio = computed(() =>
     this.encontrado()
-      ? `${this.nombrePropio()} contra ${this.nombreRival()}. ¡A luchar!`
-      : "Cargando...",
+      ? `${this.nombrePropioSeguro()} contra ${this.nombreRivalSeguro()}. ¡A luchar!`
+      : 'Cargando...',
   );
 
   constructor() {
@@ -85,24 +88,20 @@ export class PantallaCargaJuego {
           window.innerHeight - el.getBoundingClientRect().top + 24;
 
         gsap
-          .timeline({ defaults: { ease: "power4.out" } })
+          .timeline({ defaults: { ease: 'power4.out' } })
           .from('[data-anim="nombre-propio"]', {
             x: desdeIzquierda,
             duration: 0.7,
           })
-          .from(
-            '[data-anim="nombre-rival"]',
-            { x: desdeDerecha, duration: 0.7 },
-            "<",
-          )
+          .from('[data-anim="nombre-rival"]', { x: desdeDerecha, duration: 0.7 }, '<')
           .from(
             '[data-anim="versus"]',
-            { y: desdeArriba, duration: 0.6, ease: "back.out(1.6)" },
+            { y: desdeArriba, duration: 0.6, ease: 'back.out(1.6)' },
             0.25,
           )
           .from(
             '[data-anim="luchar"]',
-            { y: desdeAbajo, duration: 0.7, ease: "back.out(1.2)" },
+            { y: desdeAbajo, duration: 0.7, ease: 'back.out(1.2)' },
             0.6,
           );
       },
@@ -111,7 +110,7 @@ export class PantallaCargaJuego {
   }
 
   private leerModoDeLaRuta(): ModoJuego {
-    const modoRuta: unknown = this.ruta.snapshot.data["modo"];
+    const modoRuta: unknown = this.ruta.snapshot.data['modo'];
     return esModoJuego(modoRuta) ? modoRuta : MODO_POR_DEFECTO;
   }
 }

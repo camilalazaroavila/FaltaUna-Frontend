@@ -12,12 +12,20 @@
       class="flex items-center justify-center gap-[0.4em] font-titulo text-[clamp(2rem,min(8vw,13dvh),8rem)] leading-none uppercase"
     >
       @if (encontrado()) {
-      <span data-anim="nombre-propio" class="max-w-[40%] min-w-0 truncate" [title]="nombrePropio()">
-        {{ nombrePropio() }}
+      <span
+        data-anim="nombre-propio"
+        class="max-w-[40%] min-w-0 truncate"
+        [title]="nombrePropioSeguro()"
+      >
+        {{ nombrePropioSeguro() }}
       </span>
       <span data-anim="versus">vs</span>
-      <span data-anim="nombre-rival" class="max-w-[40%] min-w-0 truncate" [title]="nombreRival()">
-        {{ nombreRival() }}
+      <span
+        data-anim="nombre-rival"
+        class="max-w-[40%] min-w-0 truncate"
+        [title]="nombreRivalSeguro()"
+      >
+        {{ nombreRivalSeguro() }}
       </span>
       } @else {
       Cargando...

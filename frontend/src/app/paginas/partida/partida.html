@@ -1,5 +1,8 @@
 @if (mostrandoCarga()) {
-  <app-pantalla-carga-juego />
+  <app-pantalla-carga-juego
+    [nombrePropio]="nombresCarga().propio"
+    [nombreRival]="nombresCarga().rival"
+  />
 } @else {
 <div
   class="flex min-h-[100dvh] flex-col overflow-x-hidden font-interfaz text-texto-primario"

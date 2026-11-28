@@ -6,23 +6,23 @@ import {
   computed,
   inject,
   signal,
-} from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { filter } from "rxjs";
-import { NavigationEnd, Router, RouterLink } from "@angular/router";
-import { NgIcon } from "@ng-icons/core";
-import { CartaComponent } from "@compartidos/componentes/cartas/carta/carta";
-import { TarjetaAlbum } from "@compartidos/componentes/cartas/tarjeta-album/tarjeta-album";
-import { TarjetaKpi } from "@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi";
-import { Esqueleto } from "@compartidos/componentes/feedback/esqueleto/esqueleto";
-import type { Carta, RarezaCarta } from "@modelos/carta.model";
-import { ETIQUETA_RAREZA, rarezaDesdeNombre } from "@modelos/carta.model";
-import { PLANES, type Plan } from "@modelos/plan.model";
-import { AlbumBorrador } from "@servicios/album-borrador.service";
-import { AlbumesService } from "@servicios/albumes.service";
-import { PagosService } from "@servicios/pagos.service";
-import { SuscripcionEstado } from "@servicios/suscripcion-estado.service";
-import { AlbumRespuesta } from "@modelos/album.model";
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { NgIcon } from '@ng-icons/core';
+import { CartaComponent } from '@compartidos/componentes/cartas/carta/carta';
+import { TarjetaAlbum } from '@compartidos/componentes/cartas/tarjeta-album/tarjeta-album';
+import { TarjetaKpi } from '@compartidos/componentes/empresa/tarjeta-kpi/tarjeta-kpi';
+import { Esqueleto } from '@compartidos/componentes/feedback/esqueleto/esqueleto';
+import type { Carta, RarezaCarta } from '@modelos/carta.model';
+import { ETIQUETA_RAREZA, rarezaDesdeNombre } from '@modelos/carta.model';
+import { PLANES, type Plan } from '@modelos/plan.model';
+import { AlbumBorrador } from '@servicios/album-borrador.service';
+import { AlbumesService } from '@servicios/albumes.service';
+import { PagosService } from '@servicios/pagos.service';
+import { SuscripcionEstado } from '@servicios/suscripcion-estado.service';
+import { AlbumRespuesta } from '@modelos/album.model';
 import {
   ORDEN_RAREZA,
   RAREZAS_ORDENADAS,
@@ -32,11 +32,11 @@ import {
   type EstadoAlbum,
   type EstadisticasCartaEmpresa,
   type ResumenAlbum,
-} from "@modelos/empresa.mock";
-import { EstadisticasEmpresaService } from "@servicios/estadisticas-empresa-service";
-import type { EstadisticasEmpresaRespuesta } from "@paginas/empresa-estadisticas/empresa-estadisticas";
+} from '@modelos/empresa.mock';
+import { EstadisticasEmpresaService } from '@servicios/estadisticas-empresa-service';
+import type { EstadisticasEmpresaRespuesta } from '@paginas/empresa-estadisticas/empresa-estadisticas';
 
-export type CriterioOrdenAlbum = "nombre-asc" | "nombre-desc" | "rareza";
+export type CriterioOrdenAlbum = 'nombre-asc' | 'nombre-desc' | 'rareza';
 
 /** Dato que alimenta una tarjeta KPI del detalle del álbum. */
 interface KpiAlbum {
@@ -52,11 +52,11 @@ interface AlbumConResumen extends AlbumEmpresa {
 }
 
 @Component({
-  selector: "app-empresa-albumes",
+  selector: 'app-empresa-albumes',
   standalone: true,
   imports: [NgIcon, CartaComponent, TarjetaAlbum, TarjetaKpi, Esqueleto],
-  templateUrl: "./empresa-albumes.html",
-  styleUrl: "./empresa-albumes.css",
+  templateUrl: './empresa-albumes.html',
+  styleUrl: './empresa-albumes.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmpresaAlbumes implements OnInit {
@@ -74,7 +74,7 @@ export class EmpresaAlbumes implements OnInit {
         takeUntilDestroyed(),
       )
       .subscribe((e) => {
-        if (e.urlAfterRedirects === "/empresa/panel/albumes") {
+        if (e.urlAfterRedirects === '/empresa/panel/albumes') {
           this.volverAAlbumes();
         }
       });
@@ -95,9 +95,9 @@ export class EmpresaAlbumes implements OnInit {
   protected readonly etiquetaRareza = ETIQUETA_RAREZA;
 
   protected limpiarNombre(nombre: string): string {
-    return (nombre || "")
-      .replace(/^(?:[áa]lbum\s+|colecci[oó]n\s*)/gi, "")
-      .replace(/colecci[oó]n\s*/gi, "")
+    return (nombre || '')
+      .replace(/^(?:[áa]lbum\s+|colecci[oó]n\s*)/gi, '')
+      .replace(/colecci[oó]n\s*/gi, '')
       .trim();
   }
 
@@ -141,9 +141,9 @@ export class EmpresaAlbumes implements OnInit {
     const plan = this.planActual();
     if (plan) {
       this.estado.planElegido.set(plan);
-      void this.router.navigate(["/empresa/album/crear/marca"]);
+      void this.router.navigate(['/empresa/album/crear/marca']);
     } else {
-      void this.router.navigate(["/empresa"]);
+      void this.router.navigate(['/empresa']);
     }
   }
 
@@ -173,7 +173,7 @@ export class EmpresaAlbumes implements OnInit {
         }
       },
       error: (err) => {
-        console.error("Error al obtener álbumes del backend:", err);
+        console.error('Error al obtener álbumes del backend:', err);
         this.cargando.set(false);
       },
     });
@@ -199,10 +199,10 @@ export class EmpresaAlbumes implements OnInit {
         id: String(c.id),
         nombre: c.nombre,
         temporada,
-        estado: c.activa ? "activo" : "finalizado",
-        tono: "azul",
+        estado: c.activa ? 'activo' : 'finalizado',
+        tono: 'azul',
         descripcion: c.descripcion,
-        recompensa: "Premio por completar el álbum",
+        recompensa: 'Premio por completar el álbum',
         imagenPortada: c.marcaLogoUrl,
         cartasIds: imagenes.map((img) => String(img.id)),
         jugadoresCompletaron: est?.jugadoresCompletaronAlbumes ?? 0,
@@ -242,13 +242,13 @@ export class EmpresaAlbumes implements OnInit {
 
   /** Nombre de la marca para el encabezado de la grilla de álbumes. */
   protected readonly nombreMarca = computed(
-    () => this.albumes()[0]?.marcaNombre ?? "",
+    () => this.albumes()[0]?.marcaNombre ?? '',
   );
 
   protected readonly albumActivo = signal<string | null>(null);
-  protected readonly busqueda = signal("");
+  protected readonly busqueda = signal('');
   protected readonly rarezaActiva = signal<RarezaCarta | null>(null);
-  protected readonly criterioOrden = signal<CriterioOrdenAlbum>("nombre-asc");
+  protected readonly criterioOrden = signal<CriterioOrdenAlbum>('nombre-asc');
   protected readonly cartaSeleccionada = signal<Carta | null>(null);
 
   protected readonly albumActual = computed<AlbumConResumen | null>(() => {
@@ -273,7 +273,7 @@ export class EmpresaAlbumes implements OnInit {
       nombre: img.descripcion || `${coleccionBackend.nombre} #${idx + 1}`,
       imagenUrl: img.imagenUrl,
       rareza: rarezaDesdeNombre(img.rareza),
-      categoria: "gastronomia",
+      categoria: 'gastronomia',
       atributoIzquierdo: img.poder ?? 10,
       atributoDerecho: img.costeTicket ?? img.costoCupon ?? 10,
       obtenida: true,
@@ -289,13 +289,13 @@ export class EmpresaAlbumes implements OnInit {
     }
     switch (img.rarezaId) {
       case 2:
-        return "rara";
+        return 'rara';
       case 3:
-        return "epicarta";
+        return 'epicarta';
       case 4:
-        return "legendaria";
+        return 'legendaria';
       default:
-        return "comun";
+        return 'comun';
     }
   }
 
@@ -305,24 +305,24 @@ export class EmpresaAlbumes implements OnInit {
     const resumen = album.resumen;
     return [
       {
-        etiqueta: "Cartas",
+        etiqueta: 'Cartas',
         valor: String(resumen.totalCartas),
-        contexto: "En todo el álbum",
+        contexto: 'En todo el álbum',
       },
       {
-        etiqueta: "Completaron",
+        etiqueta: 'Completaron',
         valor: `${resumen.porcentajeCompletado}%`,
         contexto: `${album.jugadoresCompletaron} jugadores`,
       },
       {
-        etiqueta: "Favoritos",
-        valor: resumen.favoritos.toLocaleString("es-AR"),
-        contexto: "Marcas de tus cartas",
+        etiqueta: 'Favoritos',
+        valor: resumen.favoritos.toLocaleString('es-AR'),
+        contexto: 'Marcas de tus cartas',
       },
       {
-        etiqueta: "Intercambios",
-        valor: resumen.intercambios.toLocaleString("es-AR"),
-        contexto: "Entre jugadores",
+        etiqueta: 'Intercambios',
+        valor: resumen.intercambios.toLocaleString('es-AR'),
+        contexto: 'Entre jugadores',
       },
     ];
   });
@@ -354,13 +354,13 @@ export class EmpresaAlbumes implements OnInit {
     const orden = this.criterioOrden();
     return [...cartas].sort((a, b) => {
       switch (orden) {
-        case "nombre-desc":
-          return b.nombre.localeCompare(a.nombre, "es");
-        case "rareza":
+        case 'nombre-desc':
+          return b.nombre.localeCompare(a.nombre, 'es');
+        case 'rareza':
           return ORDEN_RAREZA[a.rareza] - ORDEN_RAREZA[b.rareza];
-        case "nombre-asc":
+        case 'nombre-asc':
         default:
-          return a.nombre.localeCompare(b.nombre, "es");
+          return a.nombre.localeCompare(b.nombre, 'es');
       }
     });
   });
@@ -377,7 +377,7 @@ export class EmpresaAlbumes implements OnInit {
   protected seleccionarAlbum(id: string): void {
     this.albumActivo.set(id);
     this.rarezaActiva.set(null);
-    this.busqueda.set("");
+    this.busqueda.set('');
     this.cartaSeleccionada.set(null);
   }
 
@@ -401,9 +401,9 @@ export class EmpresaAlbumes implements OnInit {
   }
 
   protected limpiarFiltros(): void {
-    this.busqueda.set("");
+    this.busqueda.set('');
     this.rarezaActiva.set(null);
-    this.criterioOrden.set("nombre-asc");
+    this.criterioOrden.set('nombre-asc');
   }
 
   protected abrirCarta(carta: Carta): void {
@@ -415,7 +415,7 @@ export class EmpresaAlbumes implements OnInit {
   }
 
   protected etiquetaEstado(estado: EstadoAlbum): string {
-    return estado === "activo" ? "Activo" : "Finalizado";
+    return estado === 'activo' ? 'Activo' : 'Finalizado';
   }
 
   protected obtenerEstadisticasCarta(id: string): EstadisticasCartaEmpresa {
@@ -445,7 +445,7 @@ export class EmpresaAlbumes implements OnInit {
     return SIN_ESTADISTICAS;
   }
 
-  @HostListener("document:keydown.escape")
+  @HostListener('document:keydown.escape')
   protected alPresionarEscape(): void {
     if (this.cartaSeleccionada() !== null) {
       this.cerrarCarta();

@@ -2,11 +2,14 @@ import { Component, signal } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { BarajaService } from '@servicios/baraja.service';
+import { AuthService } from '@servicios/auth.service';
+import { GsapService } from '@servicios/gsap.service';
 import { SalaJuegoService } from '@servicios/sala-juego.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
+import { PAUSA_CONFIRMACION_CARGA_MS } from '@servicios/servicios-partida/transicion-carga.service';
 import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
 import type { ResultadoRonda } from '@modelos/partida.model';
 import { Partida } from './partida';
@@ -72,12 +75,24 @@ describe('Partida', () => {
       obtenerMazos: jest.fn().mockReturnValue(of([])),
     };
 
+    const authMock = {
+      usuarioActual: signal({ nombreUsuario: 'JugadorSesion' }),
+    };
+
+    const gsapMock = {
+      movimientoReducido: jest.fn().mockReturnValue(true),
+      crearContexto: jest.fn(),
+      gsap: {},
+    };
+
     await TestBed.configureTestingModule({
       imports: [Partida],
       providers: [
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
+        { provide: AuthService, useValue: authMock },
+        { provide: GsapService, useValue: gsapMock },
         { provide: PartidaServicio, useValue: servicioMock },
         { provide: SalaJuegoService, useValue: salaMock },
         { provide: BarajaService, useValue: barajaMock },
@@ -184,10 +199,15 @@ describe('Partida', () => {
       expect(botonJugar.disabled).toBe(true);
     });
 
-    it('muestra la pantalla de carga al iniciar contra el bot y luego pasa al tablero', () => {
+    it('muestra la pantalla de carga con los nombres reales al iniciar contra el bot y luego pasa al tablero', () => {
       jest.useFakeTimers();
       try {
+        TestBed.inject(ActivatedRoute).snapshot.data = { modo: 'ia' };
         const servicio = fixture.componentInstance['servicio'];
+        (servicio.jugadores as unknown as { set: (v: unknown) => void }).set({
+          propio: { nombre: 'JugadorBackend', avatarUrl: null },
+          rival: { nombre: 'Bot', avatarUrl: null },
+        });
         (servicio.iniciarContraBot as jest.Mock).mockImplementation(() => {
           partidaIdSignal.set(42);
           return of(true);
@@ -211,7 +231,14 @@ describe('Partida', () => {
         expect(fixture.nativeElement.querySelector('app-pantalla-carga-juego')).toBeTruthy();
         expect(fixture.nativeElement.querySelector('app-tablero')).toBeFalsy();
 
-        jest.advanceTimersByTime(2900);
+        jest.advanceTimersByTime(2000);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.textContent).toContain('JugadorBackend');
+        expect(fixture.nativeElement.textContent).toContain('Bot');
+        expect(fixture.nativeElement.querySelector('app-pantalla-carga-juego')).toBeTruthy();
+
+        jest.advanceTimersByTime(PAUSA_CONFIRMACION_CARGA_MS);
         fixture.detectChanges();
 
         expect(fixture.nativeElement.querySelector('app-pantalla-carga-juego')).toBeFalsy();

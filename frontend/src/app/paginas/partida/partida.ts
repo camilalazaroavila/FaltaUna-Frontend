@@ -20,7 +20,9 @@ import { Tablero } from '@compartidos/componentes/partida/tablero/tablero';
 import { Texto } from '@compartidos/componentes/textual/texto/texto';
 import { Titulo } from '@compartidos/componentes/textual/titulo/titulo';
 import { PantallaCargaJuego } from '@paginas/pantalla-carga-juego/pantalla-carga-juego';
+import { resolverNombresPartidaCarga } from '@compartidos/utilidades/nombre-jugador';
 import type { MazoApi } from '@modelos/mazo.model';
+import { AuthService } from '@servicios/auth.service';
 import { BarajaService } from '@servicios/baraja.service';
 import { SalaJuegoService } from '@servicios/sala-juego.service';
 import { PartidaServicio } from '@servicios/servicios-partida/partida-servicio';
@@ -55,6 +57,7 @@ import type { VarianteCaja } from '@compartidos/componentes/contenedor/caja/caja
 export class Partida implements OnInit, OnDestroy {
   protected readonly servicio = inject(PartidaServicio);
   protected readonly salaService = inject(SalaJuegoService);
+  private readonly auth = inject(AuthService);
   private readonly baraja = inject(BarajaService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
@@ -62,6 +65,14 @@ export class Partida implements OnInit, OnDestroy {
   private readonly transicionCarga = inject(TransicionCargaService);
 
   protected readonly mostrandoCarga = signal(false);
+  protected readonly nombresCarga = computed(() =>
+    resolverNombresPartidaCarga({
+      partidaCargadaId: this.servicio.partidaId(),
+      jugadoresPartida: this.servicio.jugadores(),
+      nombreSesion: this.auth.usuarioActual()?.nombreUsuario,
+      modo: 'ia',
+    }),
+  );
 
   constructor() {
     effect(() => {

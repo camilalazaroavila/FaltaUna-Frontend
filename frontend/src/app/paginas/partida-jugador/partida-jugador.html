@@ -1,5 +1,8 @@
 @if (mostrandoCarga()) {
-<app-pantalla-carga-juego/>
+  <app-pantalla-carga-juego
+    [nombrePropio]="nombresCarga().propio"
+    [nombreRival]="nombresCarga().rival"
+  />
 } @else {
 <div
   class="flex min-h-dvh flex-col overflow-x-hidden bg-[#053a43] bg-[url('/imagenes/fondos/fondo-juego-pvp.png')] bg-cover bg-center bg-no-repeat font-interfaz text-texto-primario"

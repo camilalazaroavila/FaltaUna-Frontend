@@ -1,7 +1,7 @@
-import { Injectable, inject } from "@angular/core";
-import { Observable, delay } from "rxjs";
-import { ModoJuego } from "@app/modelos/modo-juego.model";
-import { EmparejamientoService } from "@servicios/emparejamiento.service";
+import { Injectable, inject } from '@angular/core';
+import { Observable, delay } from 'rxjs';
+import { ModoJuego } from '@app/modelos/modo-juego.model';
+import { EmparejamientoService } from '@servicios/emparejamiento.service';
 
 /**
  * Tiempo adicional tras completarse `EmparejamientoService` para que el jugador
@@ -10,7 +10,7 @@ import { EmparejamientoService } from "@servicios/emparejamiento.service";
  */
 export const PAUSA_CONFIRMACION_CARGA_MS = 1500;
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export class TransicionCargaService {
   private readonly emparejamiento = inject(EmparejamientoService);
 
